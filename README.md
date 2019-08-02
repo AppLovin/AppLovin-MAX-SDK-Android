@@ -1,7 +1,7 @@
 # AppLovin MAX SDK
 
 ## Overview
-MAX is AppLovin's in-app header bidding monetization solution. 
+MAX is AppLovin's in-app monetization solution.
 
 MAX offers advertisers equal opportunity to bid simultaneously on each impression in a publisher’s inventory via a single unified auction to drive the highest possible yield. You can read more about it [here](https://www.applovin.com/max-header-bidding).
 
