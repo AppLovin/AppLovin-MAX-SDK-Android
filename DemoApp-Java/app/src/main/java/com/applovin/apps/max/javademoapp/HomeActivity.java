@@ -50,14 +50,14 @@ public class HomeActivity
         recyclerView.setAdapter( adapter );
     }
 
-    private static List<ListItem> generateHomeListItems()
+    private List<ListItem> generateHomeListItems()
     {
         final List<ListItem> items = new ArrayList<>();
 
         items.add( new SectionHeader( "MAX Ads" ) );
-        items.add( new AdType( "Interstitial", InterstitialAdActivity.class ) );
-        items.add( new AdType( "Rewarded", RewardedAdActivity.class ) );
-        items.add( new AdType( "Banners / Leaders", BannerAdActivity.class ) );
+        items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
+        items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
+        items.add( new AdType( "Banners / Leaders", new Intent( this, BannerAdActivity.class ) ) );
 
         return items;
     }
@@ -68,8 +68,7 @@ public class HomeActivity
         if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
             final AdType adType = (AdType) item;
-            final Intent intent = new Intent( this, adType.getActivityToLaunch() );
-            startActivity( intent );
+            startActivity( adType.getIntent() );
         }
     }
 }

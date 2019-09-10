@@ -1,6 +1,7 @@
 package com.applovin.apps.max.javademoapp.data.home;
 
 import android.app.Activity;
+import android.content.Intent;
 
 /**
  * A {@link ListItem} representing an ad type on the home screen
@@ -11,12 +12,12 @@ public class AdType
         implements ListItem
 {
     private final String                    adType;
-    private final Class<? extends Activity> activityToLaunch;
+    private final Intent intent;
 
-    public AdType(final String adType, final Class<? extends Activity> activityToLaunch)
+    public AdType(final String adType, final Intent intent)
     {
         this.adType = adType;
-        this.activityToLaunch = activityToLaunch;
+        this.intent = intent;
     }
 
     /**
@@ -28,11 +29,11 @@ public class AdType
     }
 
     /**
-     * @return An {@link Activity} class to which to navigate to when this item is clicked.
+     * @return the intent to launch.
      */
-    public Class<? extends Activity> getActivityToLaunch()
+    public Intent getIntent()
     {
-        return activityToLaunch;
+        return intent;
     }
 
     @Override
