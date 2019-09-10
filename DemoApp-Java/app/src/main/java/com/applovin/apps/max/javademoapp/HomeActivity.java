@@ -2,7 +2,6 @@ package com.applovin.apps.max.javademoapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.applovin.apps.max.javademoapp.ads.BannerAdActivity;
 import com.applovin.apps.max.javademoapp.ads.InterstitialAdActivity;
@@ -56,7 +55,7 @@ public class HomeActivity
         final List<ListItem> items = new ArrayList<>();
 
         items.add( new SectionHeader( "MAX Ads" ) );
-        items.add( new AdType( "Interstital", InterstitialAdActivity.class ) );
+        items.add( new AdType( "Interstitial", InterstitialAdActivity.class ) );
         items.add( new AdType( "Rewarded", RewardedAdActivity.class ) );
         items.add( new AdType( "Banners / Leaders", BannerAdActivity.class ) );
 
@@ -64,7 +63,7 @@ public class HomeActivity
     }
 
     @Override
-    public void onItemClicked(final View view, final ListItem item)
+    public void onItemClicked(final ListItem item)
     {
         if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {

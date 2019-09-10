@@ -28,7 +28,7 @@ public class HomeRecyclerViewAdapter
 {
     public interface OnHomeListItemClickListener
     {
-        void onItemClicked(final View view, final ListItem item);
+        void onItemClicked(final ListItem item);
     }
 
     private final List<ListItem>              listItems;
@@ -108,7 +108,7 @@ public class HomeRecyclerViewAdapter
                     public void onClick(final View view)
                     {
                         final ListItem item = listItems.get( getAdapterPosition() );
-                        clickListener.onItemClicked( view, item );
+                        clickListener.onItemClicked( item );
                     }
                 } );
             }
