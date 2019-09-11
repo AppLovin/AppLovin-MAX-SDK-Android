@@ -1,15 +1,15 @@
-package com.applovin.apps.max.javademoapp;
+package com.applovin.enterprise.apps.demoapp;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.applovin.apps.max.javademoapp.ads.BannerAdActivity;
-import com.applovin.apps.max.javademoapp.ads.InterstitialAdActivity;
-import com.applovin.apps.max.javademoapp.ads.RewardedAdActivity;
-import com.applovin.apps.max.javademoapp.data.home.AdType;
-import com.applovin.apps.max.javademoapp.data.home.ListItem;
-import com.applovin.apps.max.javademoapp.data.home.SectionHeader;
-import com.applovin.apps.max.javademoapp.ui.HomeRecyclerViewAdapter;
+import com.applovin.enterprise.apps.demoapp.ads.BannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
+import com.applovin.enterprise.apps.demoapp.data.home.AdType;
+import com.applovin.enterprise.apps.demoapp.data.home.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader;
+import com.applovin.enterprise.apps.demoapp.ui.HomeRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

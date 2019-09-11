@@ -1,4 +1,4 @@
-package com.applovin.apps.max.javademoapp.data.home;
+package com.applovin.enterprise.apps.demoapp.data.home;
 
 /**
  * All the list items on home screen should confirm to this interface.

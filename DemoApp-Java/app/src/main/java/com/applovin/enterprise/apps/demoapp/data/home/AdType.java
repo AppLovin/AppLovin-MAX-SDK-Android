@@ -1,6 +1,5 @@
-package com.applovin.apps.max.javademoapp.data.home;
+package com.applovin.enterprise.apps.demoapp.data.home;
 
-import android.app.Activity;
 import android.content.Intent;
 
 /**

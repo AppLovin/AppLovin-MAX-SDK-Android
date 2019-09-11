@@ -1,4 +1,4 @@
-package com.applovin.apps.max.javademoapp.ui;
+package com.applovin.enterprise.apps.demoapp.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.applovin.apps.max.javademoapp.R;
-import com.applovin.apps.max.javademoapp.data.home.AdType;
-import com.applovin.apps.max.javademoapp.data.home.ListItem;
-import com.applovin.apps.max.javademoapp.data.home.SectionHeader;
+import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.data.home.AdType;
+import com.applovin.enterprise.apps.demoapp.data.home.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader;
 
 import java.util.List;
 

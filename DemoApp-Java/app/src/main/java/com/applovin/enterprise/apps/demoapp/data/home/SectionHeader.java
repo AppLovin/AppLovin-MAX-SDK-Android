@@ -1,4 +1,4 @@
-package com.applovin.apps.max.javademoapp.data.home;
+package com.applovin.enterprise.apps.demoapp.data.home;
 
 /**
  * A {@link ListItem} representing a section header on the home screen

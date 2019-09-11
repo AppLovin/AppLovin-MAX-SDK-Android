@@ -1,8 +1,8 @@
-package com.applovin.apps.max.kotlindemoapp
+package com.applovin.enterprise.apps.demoapp
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import com.applovin.enterprise.apps.demoapp.kotlin.R
 
 import kotlinx.android.synthetic.main.activity_home.*
 
