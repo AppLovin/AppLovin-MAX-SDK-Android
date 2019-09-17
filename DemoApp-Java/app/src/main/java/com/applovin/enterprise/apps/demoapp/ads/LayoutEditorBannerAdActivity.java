@@ -16,9 +16,9 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX banner ads.
  * <p>
- * Created by santoshbagadi on 2019-09-10.
+ * Created by Harry Arakkal on 2019-09-17.
  */
-public class BannerAdActivity
+public class LayoutEditorBannerAdActivity
         extends AppCompatActivity
         implements MaxAdViewAdListener
 {
@@ -28,20 +28,10 @@ public class BannerAdActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_banner_ad );
+        setContentView( R.layout.activity_layout_editor_banner_ad );
 
-        adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
+        adView = findViewById( R.id.bannerAdView );
         adView.setListener( this );
-
-        final boolean isTablet = AppLovinSdkUtils.isTablet( this );
-        final int heightPx = AppLovinSdkUtils.dpToPx( this, isTablet ? 90 : 50 );
-
-        adView.setLayoutParams( new FrameLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, heightPx ) );
-
-        adView.setBackgroundColor( Color.BLACK );
-
-        final ViewGroup rootView = (ViewGroup) findViewById( android.R.id.content );
-        rootView.addView( adView );
 
         adView.loadAd();
     }

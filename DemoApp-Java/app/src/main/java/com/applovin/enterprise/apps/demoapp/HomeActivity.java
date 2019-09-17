@@ -5,11 +5,15 @@ import android.os.Bundle;
 
 import com.applovin.enterprise.apps.demoapp.ads.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.home.AdType;
 import com.applovin.enterprise.apps.demoapp.data.home.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader;
 import com.applovin.enterprise.apps.demoapp.ui.HomeRecyclerViewAdapter;
+import com.applovin.sdk.AppLovinMediationProvider;
+import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,17 @@ public class HomeActivity
         recyclerView.addItemDecoration( decoration );
         recyclerView.setItemAnimator( new DefaultItemAnimator() );
         recyclerView.setAdapter( adapter );
+
+        // Initialize the AppLovin SDK
+        AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
+        AppLovinSdk.initializeSdk( this, new AppLovinSdk.SdkInitializationListener()
+        {
+            @Override
+            public void onSdkInitialized(final AppLovinSdkConfiguration config)
+            {
+                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+            }
+        } );
     }
 
     private List<ListItem> generateHomeListItems()
@@ -58,6 +73,7 @@ public class HomeActivity
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Banners / Leaders", new Intent( this, BannerAdActivity.class ) ) );
+        items.add( new AdType( "Layout Editor Banners / Leaders", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
 
         return items;
     }
