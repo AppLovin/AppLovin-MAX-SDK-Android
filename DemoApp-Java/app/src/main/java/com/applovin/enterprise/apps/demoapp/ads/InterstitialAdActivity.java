@@ -35,7 +35,7 @@ public class InterstitialAdActivity
         interstitialAd.loadAd();
     }
 
-    public void showAd(View view)
+    public void onShowAdClicked(View view)
     {
         if ( interstitialAd.isReady() )
         {
@@ -77,15 +77,14 @@ public class InterstitialAdActivity
     }
 
     @Override
+    public void onAdClicked(final MaxAd ad) { }
+
+    @Override
     public void onAdHidden(final MaxAd ad)
     {
         // Interstitial Ad is hidden. Pre-load the next ad
         interstitialAd.loadAd();
     }
-
-    @Override
-    public void onAdClicked(final MaxAd ad) { }
-
 
     //endregion
 }

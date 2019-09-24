@@ -34,9 +34,15 @@
             android:name=".ads.InterstitialAdActivity"
             android:parentActivityName=".HomeActivity" />
 
+        <!-- AppLovin -->
         <meta-data
             android:name="applovin.sdk.key"
             android:value="SDK_KEY_HERE" />
+
+        <!-- Google Ads for Google Advertising ID -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="GOOGLE_APP_ID"/>
     </application>
 
 </manifest>

@@ -8,7 +8,7 @@
 
     <com.applovin.mediation.ads.MaxAdView xmlns:maxads="http://schemas.applovin.com/android/1.0"
         maxads:adUnitId="YOUR_AD_UNIT_ID"
-        android:id="@+id/bannerAdView"
+        android:id="@+id/banner_ad_view"
         android:background="@android:color/black"
         android:layout_width="match_parent"
         android:layout_height="@dimen/banner_height"

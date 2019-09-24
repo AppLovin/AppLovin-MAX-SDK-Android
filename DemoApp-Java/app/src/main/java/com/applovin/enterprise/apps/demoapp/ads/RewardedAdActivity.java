@@ -32,10 +32,11 @@ public class RewardedAdActivity
         rewardedAd = MaxRewardedAd.getInstance( "YOUR_AD_UNIT_ID", this );
         rewardedAd.setListener( this );
 
+        // Load the first ad.
         rewardedAd.loadAd();
     }
 
-    public void showAd(View view)
+    public void onShowAdClicked(View view)
     {
         if ( rewardedAd.isReady() )
         {
@@ -89,10 +90,10 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { }
+    public void onAdClicked(final MaxAd ad) { }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { }
+    public void onAdHidden(final MaxAd ad) { }
 
     //endregion
 }

@@ -33,16 +33,19 @@ public class BannerAdActivity
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
         adView.setListener( this );
 
+        // Set the height of the banner ad based on the device type.
         final boolean isTablet = AppLovinSdkUtils.isTablet( this );
         final int heightPx = AppLovinSdkUtils.dpToPx( this, isTablet ? 90 : 50 );
-
+        // Banner width must match the screen to be fully functional.
         adView.setLayoutParams( new FrameLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, heightPx ) );
 
+        // Need to set the background or background color for banners to be fully functional.
         adView.setBackgroundColor( Color.BLACK );
 
         final ViewGroup rootView = (ViewGroup) findViewById( android.R.id.content );
         rootView.addView( adView );
 
+        // Load the first ad.
         adView.loadAd();
     }
 

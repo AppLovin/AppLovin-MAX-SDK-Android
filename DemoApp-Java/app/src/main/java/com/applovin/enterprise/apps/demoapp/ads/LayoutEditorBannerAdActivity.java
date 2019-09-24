@@ -14,7 +14,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * An {@link android.app.Activity} used to show AppLovin MAX banner ads.
+ * An {@link android.app.Activity} used to show AppLovin MAX banner ads created in the Layout Editor.
  * <p>
  * Created by Harry Arakkal on 2019-09-17.
  */
@@ -30,9 +30,10 @@ public class LayoutEditorBannerAdActivity
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_layout_editor_banner_ad );
 
-        adView = findViewById( R.id.bannerAdView );
+        adView = findViewById( R.id.banner_ad_view );
         adView.setListener( this );
 
+        // Load the first ad.
         adView.loadAd();
     }
 

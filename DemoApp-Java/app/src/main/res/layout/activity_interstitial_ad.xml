@@ -7,11 +7,11 @@
     tools:context=".ads.InterstitialAdActivity">
 
     <TextView
-        android:id="@+id/showAdButton"
+        android:id="@+id/show_ad_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:onClick="showAd"
+        android:onClick="onShowAdClicked"
         android:text="Show Ad"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
