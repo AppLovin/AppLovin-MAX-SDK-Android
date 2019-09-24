@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:maxads="http://schemas.applovin.com/android/1.0"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ads.LayoutEditorBannerAdActivity">
 
-    <com.applovin.mediation.ads.MaxAdView xmlns:maxads="http://schemas.applovin.com/android/1.0"
+    <com.applovin.mediation.ads.MaxAdView
         maxads:adUnitId="YOUR_AD_UNIT_ID"
         android:id="@+id/banner_ad_view"
         android:background="@android:color/black"
