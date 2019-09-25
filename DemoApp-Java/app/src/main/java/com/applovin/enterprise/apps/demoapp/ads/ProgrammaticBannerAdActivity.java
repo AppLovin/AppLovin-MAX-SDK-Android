@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * <p>
  * Created by santoshbagadi on 2019-09-10.
  */
-public class BannerAdActivity
+public class ProgrammaticBannerAdActivity
         extends AppCompatActivity
         implements MaxAdViewAdListener
 {
@@ -28,7 +28,7 @@ public class BannerAdActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_banner_ad );
+        setContentView( R.layout.activity_programmatic_banner_ad );
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
         adView.setListener( this );

@@ -26,7 +26,7 @@
         </activity>
 
         <activity
-            android:name=".ads.BannerAdActivity"
+            android:name=".ads.ProgrammaticBannerAdActivity"
             android:parentActivityName=".HomeActivity" />
         <activity
             android:name=".ads.LayoutEditorBannerAdActivity"

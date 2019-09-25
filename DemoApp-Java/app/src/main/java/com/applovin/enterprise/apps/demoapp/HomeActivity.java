@@ -3,7 +3,7 @@ package com.applovin.enterprise.apps.demoapp;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.applovin.enterprise.apps.demoapp.ads.BannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
@@ -72,7 +72,7 @@ public class HomeActivity
         items.add( new SectionHeader( "MAX Ads" ) );
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Banners / Leaders", new Intent( this, BannerAdActivity.class ) ) );
+        items.add( new AdType( "Programmatic Banners / Leaders", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
         items.add( new AdType( "Layout Editor Banners / Leaders", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
 
         return items;
