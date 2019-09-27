@@ -52,28 +52,28 @@ public class ProgrammaticBannerAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdExpanded(final MaxAd ad) { }
-
-    @Override
-    public void onAdCollapsed(final MaxAd ad) { }
-
-    @Override
     public void onAdLoaded(final MaxAd ad) { }
 
     @Override
     public void onAdLoadFailed(final String adUnitId, final int errorCode) { }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
+    public void onAdHidden(final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { }
+    public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { }
+
+    @Override
+    public void onAdDisplayed(final MaxAd ad) { }
 
     @Override
     public void onAdClicked(final MaxAd ad) { }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { }
+    public void onAdExpanded(final MaxAd ad) { }
+
+    @Override
+    public void onAdCollapsed(final MaxAd ad) { }
 
     //endregion
 }

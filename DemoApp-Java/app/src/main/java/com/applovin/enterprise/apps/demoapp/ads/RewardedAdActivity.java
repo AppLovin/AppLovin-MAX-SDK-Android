@@ -47,18 +47,6 @@ public class RewardedAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onRewardedVideoStarted(final MaxAd ad) { }
-
-    @Override
-    public void onRewardedVideoCompleted(final MaxAd ad) { }
-
-    @Override
-    public void onUserRewarded(final MaxAd ad, final MaxReward reward)
-    {
-        // Rewarded ad was displayed and user should receive the reward.
-    }
-
-    @Override
     public void onAdLoaded(final MaxAd ad)
     {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
@@ -80,9 +68,6 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
-
-    @Override
     public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
     {
         // Rewarded ad failed to display. We recommend loading the next ad.
@@ -90,10 +75,29 @@ public class RewardedAdActivity
     }
 
     @Override
+    public void onAdDisplayed(final MaxAd ad) { }
+
+    @Override
     public void onAdClicked(final MaxAd ad) { }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { }
+    public void onAdHidden(final MaxAd ad)
+    {
+        // Rewarded ad is hidden. Pre-load the the next ad
+        rewardedAd.loadAd();
+    }
+
+    @Override
+    public void onRewardedVideoStarted(final MaxAd ad) { }
+
+    @Override
+    public void onRewardedVideoCompleted(final MaxAd ad) { }
+
+    @Override
+    public void onUserRewarded(final MaxAd ad, final MaxReward reward)
+    {
+        // Rewarded ad was displayed and user should receive the reward.
+    }
 
     //endregion
 }

@@ -67,14 +67,14 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
-
-    @Override
     public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
     {
         // Interstitial ad failed to display. We recommend loading the next ad.
         interstitialAd.loadAd();
     }
+
+    @Override
+    public void onAdDisplayed(final MaxAd ad) { }
 
     @Override
     public void onAdClicked(final MaxAd ad) { }
