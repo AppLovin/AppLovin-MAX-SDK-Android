@@ -55,7 +55,7 @@ public class HomeActivity
 
         // Initialize the AppLovin SDK
         AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
-        AppLovinSdk.initializeSdk( this, new AppLovinSdk.SdkInitializationListener()
+        AppLovinSdk.getInstance( this ).initializeSdk( new AppLovinSdk.SdkInitializationListener()
         {
             @Override
             public void onSdkInitialized(final AppLovinSdkConfiguration config)
