@@ -27,4 +27,5 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
     implementation 'com.applovin:applovin-sdk:+'
+    implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
 }

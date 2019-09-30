@@ -15,7 +15,7 @@
             android:value="SDK_KEY_HERE" />
 
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.HomeActivity"
+            android:name=".HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -24,14 +24,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.BannerAdActivity"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+            android:name=".ads.ProgrammaticBannerAdActivity"
+            android:parentActivityName=".HomeActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+            android:name=".ads.LayoutEditorBannerAdActivity"
+            android:parentActivityName=".HomeActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+            android:name=".ads.RewardedAdActivity"
+            android:parentActivityName=".HomeActivity" />
+        <activity
+            android:name=".ads.InterstitialAdActivity"
+            android:parentActivityName=".HomeActivity" />
     </application>
+
 </manifest>
