@@ -24,5 +24,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.HomeActivity" />
     </application>
 </manifest>

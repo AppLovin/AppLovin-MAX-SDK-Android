@@ -28,5 +28,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.1.0'
 
     implementation 'com.applovin:applovin-sdk:+'
+    implementation 'com.google.android.gms:play-services-ads-identifier:+'
     implementation 'com.google.android.material:material:1.0.0'
 }
