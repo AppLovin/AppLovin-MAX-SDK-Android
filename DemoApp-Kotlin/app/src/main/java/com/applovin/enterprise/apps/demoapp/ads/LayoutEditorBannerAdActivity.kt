@@ -15,7 +15,6 @@ import kotlinx.android.synthetic.main.activity_layout_editor_banner_ad.*
 class LayoutEditorBannerAdActivity : AppCompatActivity(),
     MaxAdViewAdListener
 {
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
