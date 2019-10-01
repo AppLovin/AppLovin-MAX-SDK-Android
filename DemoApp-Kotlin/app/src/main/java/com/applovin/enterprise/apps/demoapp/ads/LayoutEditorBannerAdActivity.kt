@@ -22,7 +22,6 @@ class LayoutEditorBannerAdActivity : AppCompatActivity(),
         setTitle(R.string.activity_layout_editor_banners)
 
         bannerAdView.setListener(this)
-
         bannerAdView.loadAd()
     }
 

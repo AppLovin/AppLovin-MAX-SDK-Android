@@ -19,7 +19,7 @@ import com.applovin.sdk.AppLovinSdkUtils
 class ProgrammaticBannerAdActivity : AppCompatActivity(),
         MaxAdViewAdListener
 {
-    private var adView: MaxAdView? = null
+    private lateinit var adView: MaxAdView
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -28,18 +28,18 @@ class ProgrammaticBannerAdActivity : AppCompatActivity(),
         setTitle(R.string.activity_programmatic_banners)
 
         adView = MaxAdView("YOUR_AD_UNIT_ID", this)
-        adView!!.setListener(this)
+        adView.setListener(this)
 
         val isTablet = AppLovinSdkUtils.isTablet(this)
         val heightPx = AppLovinSdkUtils.dpToPx(this, if (isTablet) 90 else 50)
 
-        adView!!.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx)
-        adView!!.setBackgroundColor(Color.BLACK)
+        adView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx)
+        adView.setBackgroundColor(Color.BLACK)
 
         val rootView = findViewById<ViewGroup>(android.R.id.content)
         rootView.addView(adView)
 
-        adView!!.loadAd()
+        adView.loadAd()
     }
 
     //region MAX Ad Listener

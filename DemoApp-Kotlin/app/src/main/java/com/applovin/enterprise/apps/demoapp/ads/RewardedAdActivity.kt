@@ -18,7 +18,7 @@ import com.applovin.mediation.ads.MaxRewardedAd
 class RewardedAdActivity : AppCompatActivity(),
     MaxRewardedAdListener
 {
-    private var rewardedAd: MaxRewardedAd? = null
+    private lateinit var rewardedAd: MaxRewardedAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -27,16 +27,16 @@ class RewardedAdActivity : AppCompatActivity(),
         setTitle(R.string.activity_rewarded)
 
         rewardedAd = MaxRewardedAd.getInstance("YOUR_AD_UNIT_ID", this)
-        rewardedAd!!.setListener(this)
+        rewardedAd.setListener(this)
 
-        rewardedAd!!.loadAd()
+        rewardedAd.loadAd()
     }
 
     fun showAd(view: View)
     {
-        if (rewardedAd!!.isReady)
+        if (rewardedAd.isReady)
         {
-            rewardedAd!!.showAd()
+            rewardedAd.showAd()
         }
     }
 
@@ -50,13 +50,13 @@ class RewardedAdActivity : AppCompatActivity(),
     override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
     {
         // Rewarded ad failed to load. We recommend retrying in 3 seconds.
-        Handler().postDelayed({ rewardedAd!!.loadAd() }, 3000)
+        Handler().postDelayed({ rewardedAd.loadAd() }, 3000)
     }
 
     override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
     {
         // Rewarded ad failed to display. We recommend loading the next ad.
-        rewardedAd!!.loadAd()
+        rewardedAd.loadAd()
     }
 
     override fun onAdDisplayed(ad: MaxAd?) {}
@@ -66,7 +66,7 @@ class RewardedAdActivity : AppCompatActivity(),
     override fun onAdHidden(ad: MaxAd?)
     {
         // Rewarded ad is hidden. Pre-load the next ad.
-        rewardedAd!!.loadAd()
+        rewardedAd.loadAd()
     }
 
     override fun onRewardedVideoStarted(ad: MaxAd?) {}

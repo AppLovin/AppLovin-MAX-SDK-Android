@@ -17,7 +17,7 @@ import com.applovin.mediation.ads.MaxInterstitialAd
 class InterstitialAdActivity : AppCompatActivity(),
         MaxAdListener
 {
-    private var interstitialAd: MaxInterstitialAd? = null
+    private lateinit var interstitialAd: MaxInterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -26,17 +26,17 @@ class InterstitialAdActivity : AppCompatActivity(),
         setTitle(R.string.activity_interstitial)
 
         interstitialAd = MaxInterstitialAd("YOUR_AD_UNIT_AD", this)
-        interstitialAd!!.setListener(this)
+        interstitialAd.setListener(this)
 
         // Load the first ad.
-        interstitialAd!!.loadAd()
+        interstitialAd.loadAd()
     }
 
     fun showAd(view: View)
     {
-        if (interstitialAd!!.isReady)
+        if (interstitialAd.isReady)
         {
-            interstitialAd!!.showAd()
+            interstitialAd.showAd()
         }
     }
 
@@ -50,13 +50,13 @@ class InterstitialAdActivity : AppCompatActivity(),
     override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
     {
         // Interstitial ad failed to load. We recommend retrying in 3 seconds.
-        Handler().postDelayed({ interstitialAd!!.loadAd() }, 3000)
+        Handler().postDelayed({ interstitialAd.loadAd() }, 3000)
     }
 
     override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
     {
         // Interstitial ad failed to display. We recommend loading the next ad.
-        interstitialAd!!.loadAd()
+        interstitialAd.loadAd()
     }
 
     override fun onAdDisplayed(ad: MaxAd?) {}
@@ -66,7 +66,7 @@ class InterstitialAdActivity : AppCompatActivity(),
     override fun onAdHidden(ad: MaxAd?)
     {
         // Interstitial Ad is hidden. Pre-load the next ad
-        interstitialAd!!.loadAd()
+        interstitialAd.loadAd()
     }
 
     //endregion

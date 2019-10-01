@@ -3,6 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity" />
