@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.applovin.enterprise.apps.demoapp.data.home.AdType
-import com.applovin.enterprise.apps.demoapp.data.home.ListItem
-import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader
+import com.applovin.enterprise.apps.demoapp.data.main.AdType
+import com.applovin.enterprise.apps.demoapp.data.main.ListItem
+import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 import com.applovin.enterprise.apps.demoapp.kotlin.R
 
 /**
- * [RecyclerView.Adapter] used to show list of items on the home screen.
+ * [RecyclerView.Adapter] used to show list of items on the main screen.
  * <p>
  * Created by Harry Arakkal on 9/17/2019
  */
-class HomeRecyclerViewAdapter(private val listItems: List<ListItem>,
-                              private val listener: OnHomeListItemClickListener,
+class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
+                              private val listener: OnMainListItemClickListener,
                               context: Context)
-    : RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder>()
+    : RecyclerView.Adapter<MainRecyclerViewAdapter.ViewHolder>()
 {
-    interface OnHomeListItemClickListener
+    interface OnMainListItemClickListener
     {
         fun onItemClicked(item: ListItem)
     }

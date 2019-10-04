@@ -10,20 +10,20 @@ import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
-import com.applovin.enterprise.apps.demoapp.data.home.AdType
-import com.applovin.enterprise.apps.demoapp.data.home.ListItem
-import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader
+import com.applovin.enterprise.apps.demoapp.data.main.AdType
+import com.applovin.enterprise.apps.demoapp.data.main.ListItem
+import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 import com.applovin.enterprise.apps.demoapp.kotlin.R
-import com.applovin.enterprise.apps.demoapp.ui.HomeRecyclerViewAdapter
+import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
-import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.content_home.*
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
-class HomeActivity : AppCompatActivity(),
-    HomeRecyclerViewAdapter.OnHomeListItemClickListener
+class MainActivity : AppCompatActivity(),
+    MainRecyclerViewAdapter.OnMainListItemClickListener
 {
-    private val homeListItems: List<ListItem> by lazy {
+    private val mainListItems: List<ListItem> by lazy {
         listOf(
             SectionHeader("MAX Ads"),
             AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
@@ -36,14 +36,14 @@ class HomeActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val recyclerViewAdapter = HomeRecyclerViewAdapter(homeListItems, this, this)
+        val recyclerViewAdapter = MainRecyclerViewAdapter(mainListItems, this, this)
         val manager = LinearLayoutManager(this)
         val decoration = DividerItemDecoration(this, manager.orientation)
 
-        homeRecyclerView.apply {
+        mainRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = manager
             addItemDecoration(decoration)

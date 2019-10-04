@@ -1,9 +1,9 @@
-package com.applovin.enterprise.apps.demoapp.data.home
+package com.applovin.enterprise.apps.demoapp.data.main
 
 import android.content.Intent
 
 /**
- * A [ListItem] representing an ad type on the home screen.
+ * A [ListItem] representing an ad type on the main screen.
  * <p>
  * Created by Harry Arakkal on 09/17/2019.
  */
