@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.applovin.enterprise.apps.demoapp.R;
-import com.applovin.enterprise.apps.demoapp.data.home.AdType;
-import com.applovin.enterprise.apps.demoapp.data.home.ListItem;
-import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader;
+import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 
 import java.util.List;
 
@@ -19,23 +19,23 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * A {@link RecyclerView.Adapter} used to show a list of items on the home screen.
+ * A {@link RecyclerView.Adapter} used to show a list of items on the main screen.
  * <p>
  * Created by santoshbagadi on 2019-09-10.
  */
-public class HomeRecyclerViewAdapter
-        extends RecyclerView.Adapter<HomeRecyclerViewAdapter.ViewHolder>
+public class MainRecyclerViewAdapter
+        extends RecyclerView.Adapter<MainRecyclerViewAdapter.ViewHolder>
 {
-    public interface OnHomeListItemClickListener
+    public interface OnMainListItemClickListener
     {
         void onItemClicked(final ListItem item);
     }
 
     private final List<ListItem>              listItems;
-    private final OnHomeListItemClickListener clickListener;
+    private final OnMainListItemClickListener clickListener;
     private final LayoutInflater              inflater;
 
-    public HomeRecyclerViewAdapter(final List<ListItem> listItems, final OnHomeListItemClickListener clickListener, final Context context)
+    public MainRecyclerViewAdapter(final List<ListItem> listItems, final OnMainListItemClickListener clickListener, final Context context)
     {
         this.listItems = listItems;
         this.clickListener = clickListener;

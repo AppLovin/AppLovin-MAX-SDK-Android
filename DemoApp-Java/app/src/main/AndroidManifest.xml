@@ -15,7 +15,7 @@
             android:value="SDK_KEY_HERE" />
 
         <activity
-            android:name=".HomeActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,16 +27,16 @@
 
         <activity
             android:name=".ads.ProgrammaticBannerAdActivity"
-            android:parentActivityName=".HomeActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.LayoutEditorBannerAdActivity"
-            android:parentActivityName=".HomeActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.RewardedAdActivity"
-            android:parentActivityName=".HomeActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.InterstitialAdActivity"
-            android:parentActivityName=".HomeActivity" />
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

@@ -7,10 +7,10 @@ import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
-import com.applovin.enterprise.apps.demoapp.data.home.AdType;
-import com.applovin.enterprise.apps.demoapp.data.home.ListItem;
-import com.applovin.enterprise.apps.demoapp.data.home.SectionHeader;
-import com.applovin.enterprise.apps.demoapp.ui.HomeRecyclerViewAdapter;
+import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
+import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
@@ -26,27 +26,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
- * The home {@link android.app.Activity} of this app.
+ * The main {@link android.app.Activity} of this app.
  * <p>
  * Created by santoshbagadi on 2019-09-10.
  */
-public class HomeActivity
+public class MainActivity
         extends AppCompatActivity
-        implements HomeRecyclerViewAdapter.OnHomeListItemClickListener
+        implements MainRecyclerViewAdapter.OnMainListItemClickListener
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_home );
+        setContentView( R.layout.activity_main );
         Toolbar toolbar = findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );
 
-        final HomeRecyclerViewAdapter adapter = new HomeRecyclerViewAdapter( generateHomeListItems(), this, this );
+        final MainRecyclerViewAdapter adapter = new MainRecyclerViewAdapter( generateMainListItems(), this, this );
         final LinearLayoutManager manager = new LinearLayoutManager( this );
         final DividerItemDecoration decoration = new DividerItemDecoration( this, manager.getOrientation() );
 
-        final RecyclerView recyclerView = findViewById( R.id.home_recycler_view );
+        final RecyclerView recyclerView = findViewById( R.id.main_recycler_view );
         recyclerView.setHasFixedSize( true );
         recyclerView.setLayoutManager( manager );
         recyclerView.addItemDecoration( decoration );
@@ -65,7 +65,7 @@ public class HomeActivity
         } );
     }
 
-    private List<ListItem> generateHomeListItems()
+    private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
 

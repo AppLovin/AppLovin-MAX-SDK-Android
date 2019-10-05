@@ -1,7 +1,7 @@
-package com.applovin.enterprise.apps.demoapp.data.home;
+package com.applovin.enterprise.apps.demoapp.data.main;
 
 /**
- * All the list items on home screen should confirm to this interface.
+ * All the list items on main screen should confirm to this interface.
  * <p>
  * Created by santoshbagadi on 2019-09-10.
  */
