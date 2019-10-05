@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(),
         // Initialize the AppLovin SDK
         AppLovinSdk.getInstance(this).mediationProvider = AppLovinMediationProvider.MAX
         AppLovinSdk.getInstance(this).initializeSdk {
-            // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+        // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
         }
     }
 
