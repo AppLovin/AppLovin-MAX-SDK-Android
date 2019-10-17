@@ -2,13 +2,14 @@ package com.applovin.enterprise.apps.demoapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity(),
         // Initialize the AppLovin SDK
         AppLovinSdk.getInstance(this).mediationProvider = AppLovinMediationProvider.MAX
         AppLovinSdk.getInstance(this).initializeSdk {
-        // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+            // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
         }
     }
 
@@ -64,5 +65,21 @@ class MainActivity : AppCompatActivity(),
         {
             startActivity(item.intent)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean
+    {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean
+    {
+        if (item.itemId == R.id.action_mediation_debugger)
+        {
+            AppLovinSdk.getInstance(this).showMediationDebugger()
+        }
+
+        return true
     }
 }
