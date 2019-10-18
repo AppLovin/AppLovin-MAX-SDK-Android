@@ -3,10 +3,8 @@ package com.applovin.enterprise.apps.demoapp
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.HtmlCompat
 import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.sdk.AppLovinSdkUtils
-import kotlinx.android.synthetic.main.activity_splash.*
 import java.util.concurrent.TimeUnit
 
 class SplashActivity : AppCompatActivity()
@@ -15,8 +13,6 @@ class SplashActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
-        logoTextView.text = HtmlCompat.fromHtml("<b>App</b>Lovin", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
         AppLovinSdkUtils.runOnUiThreadDelayed({
             val intent = Intent(this, MainActivity::class.java)

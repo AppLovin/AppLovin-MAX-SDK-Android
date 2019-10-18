@@ -2,8 +2,6 @@ package com.applovin.enterprise.apps.demoapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.widget.TextView;
 
 import com.applovin.sdk.AppLovinSdkUtils;
 
@@ -19,9 +17,6 @@ public class SplashActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_splash );
-
-        TextView logoTextView = findViewById( R.id.logoTextView );
-        logoTextView.setText( Html.fromHtml( "<b>App</b>Lovin" ) );
 
         AppLovinSdkUtils.runOnUiThreadDelayed( () -> {
             Intent intent = new Intent( SplashActivity.this, MainActivity.class );
