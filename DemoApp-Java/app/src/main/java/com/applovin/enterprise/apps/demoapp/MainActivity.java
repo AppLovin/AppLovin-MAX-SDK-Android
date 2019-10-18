@@ -3,6 +3,7 @@ package com.applovin.enterprise.apps.demoapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
@@ -97,13 +98,14 @@ public class MainActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(android.view.MenuItem item)
+    public boolean onOptionsItemSelected(final MenuItem item)
     {
         if ( item.getItemId() == R.id.action_mediation_debugger )
         {
             AppLovinSdk.getInstance( this ).showMediationDebugger();
+            return true;
         }
 
-        return true;
+        return super.onOptionsItemSelected( item );
     }
 }

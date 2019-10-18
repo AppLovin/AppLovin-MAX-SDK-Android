@@ -22,15 +22,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(),
-    MainRecyclerViewAdapter.OnMainListItemClickListener
+        MainRecyclerViewAdapter.OnMainListItemClickListener
 {
     private val mainListItems: List<ListItem> by lazy {
         listOf(
-            SectionHeader("MAX Ads"),
-            AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
-            AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
-            AdType("Programmatic Banners / Leaders", Intent(this, ProgrammaticBannerAdActivity::class.java)),
-            AdType("Layout Editor Banners / Leaders", Intent(this, LayoutEditorBannerAdActivity::class.java))
+                SectionHeader("MAX Ads"),
+                AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
+                AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
+                AdType("Programmatic Banners / Leaders", Intent(this, ProgrammaticBannerAdActivity::class.java)),
+                AdType("Layout Editor Banners / Leaders", Intent(this, LayoutEditorBannerAdActivity::class.java))
         )
     }
 
@@ -78,8 +78,9 @@ class MainActivity : AppCompatActivity(),
         if (item.itemId == R.id.action_mediation_debugger)
         {
             AppLovinSdk.getInstance(this).showMediationDebugger()
+            return true
         }
 
-        return true
+        return super.onOptionsItemSelected(item)
     }
 }
