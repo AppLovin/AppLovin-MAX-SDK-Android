@@ -18,11 +18,10 @@ class SplashActivity : AppCompatActivity()
 
         logoTextView.text = HtmlCompat.fromHtml("<b>App</b>Lovin", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        AppLovinSdkUtils.runOnUiThreadDelayed(
-                {
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                    startActivity(intent)
-                }, TimeUnit.SECONDS.toMillis(2))
+        AppLovinSdkUtils.runOnUiThreadDelayed({
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+        }, TimeUnit.SECONDS.toMillis(2))
     }
 }

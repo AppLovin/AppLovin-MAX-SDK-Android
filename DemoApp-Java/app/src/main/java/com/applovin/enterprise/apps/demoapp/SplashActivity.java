@@ -24,7 +24,6 @@ public class SplashActivity
         logoTextView.setText( Html.fromHtml( "<b>App</b>Lovin" ) );
 
         AppLovinSdkUtils.runOnUiThreadDelayed( () -> {
-
             Intent intent = new Intent( SplashActivity.this, MainActivity.class );
             intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION );
             startActivity( intent );
