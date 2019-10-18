@@ -3,6 +3,7 @@ package com.applovin.enterprise.apps.demoapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
-    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         if (item.itemId == R.id.action_mediation_debugger)
         {
