@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_mediation_debugger"
-        android:icon="@drawable/bug"
+        android:icon="@drawable/ic_bug"
         android:title="Mediation Debugger"
         app:showAsAction="always" />
 </menu>
