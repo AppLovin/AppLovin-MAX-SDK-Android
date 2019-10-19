@@ -4,8 +4,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import com.applovin.enterprise.apps.demoapp.kotlin.R
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.ads.MaxAdView
@@ -16,7 +16,7 @@ import com.applovin.sdk.AppLovinSdkUtils
  * <p>
  * Created by Harry Arakkal on 9/17/2019
  */
-class ProgrammaticBannerAdActivity : AppCompatActivity(),
+class ProgrammaticBannerAdActivity : BaseAdActivity(),
         MaxAdViewAdListener
 {
     private lateinit var adView: MaxAdView
@@ -26,6 +26,8 @@ class ProgrammaticBannerAdActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_programmatic_banner_ad)
         setTitle(R.string.activity_programmatic_banners)
+
+        setupCallbacksRecyclerView()
 
         adView = MaxAdView("YOUR_AD_UNIT_ID", this)
         adView.setListener(this)
@@ -44,21 +46,21 @@ class ProgrammaticBannerAdActivity : AppCompatActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) {}
+    override fun onAdLoaded(ad: MaxAd?) { logCallback() }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int) {}
+    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd?) {}
+    override fun onAdHidden(ad: MaxAd?) { logCallback() }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int) {}
+    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int) { logCallback() }
 
-    override fun onAdDisplayed(ad: MaxAd?) {}
+    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
 
-    override fun onAdClicked(ad: MaxAd?) {}
+    override fun onAdClicked(ad: MaxAd?) { logCallback() }
 
-    override fun onAdExpanded(ad: MaxAd?) {}
+    override fun onAdExpanded(ad: MaxAd?) { logCallback() }
 
-    override fun onAdCollapsed(ad: MaxAd?) {}
+    override fun onAdCollapsed(ad: MaxAd?) { logCallback() }
 
     //endregion
 }
