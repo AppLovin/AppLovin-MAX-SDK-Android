@@ -15,6 +15,9 @@ abstract class BaseAdActivity : AppCompatActivity()
     private lateinit var callbacksAdapter: CallbacksRecyclerViewAdapter
     private val callbacks: MutableList<String> = mutableListOf()
 
+    /**
+     * Setup callbacks RecyclerView adapter and appearance.
+     */
     protected fun setupCallbacksRecyclerView()
     {
         callbacksAdapter = CallbacksRecyclerViewAdapter(callbacks, this)
@@ -29,6 +32,9 @@ abstract class BaseAdActivity : AppCompatActivity()
         }
     }
 
+    /**
+     * Log ad callbacks in the RecyclerView.
+     */
     protected fun logCallback()
     {
         val callbackName = Throwable().stackTrace[1].methodName

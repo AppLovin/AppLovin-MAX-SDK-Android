@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.applovin.enterprise.apps.demoapp.kotlin.R
 
 /**
- * [RecyclerView.Adapter] for callback RecyclerViews in ad activities.
+ * [RecyclerView.Adapter] for the callback RecyclerView in ad activities.
  * <p>
  * Created by Harry Arakkal on 2019-10-18.
  */

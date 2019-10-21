@@ -12,19 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Base for activities showing ads.
- *
+ * <p>
  * Created by Harry Arakkal on 2019-10-21.
  */
 public abstract class BaseAdActivity
         extends AppCompatActivity
 {
     private CallbacksRecyclerViewAdapter callbacksAdapter;
-    private List<String> callbacks = new ArrayList<>();
+    private List<String>                 callbacks = new ArrayList<>();
 
+    /**
+     * Setup callbacks RecyclerView adapter and appearance.
+     */
     protected void setupCallbacksRecyclerView()
     {
-        callbacksAdapter = new CallbacksRecyclerViewAdapter(callbacks, this);
-        LinearLayoutManager manager = new LinearLayoutManager( this);
+        callbacksAdapter = new CallbacksRecyclerViewAdapter( callbacks, this );
+        LinearLayoutManager manager = new LinearLayoutManager( this );
         DividerItemDecoration decoration = new DividerItemDecoration( this, manager.getOrientation() );
 
         RecyclerView callbacksRecyclerView = findViewById( R.id.callbacks_recycler_view );
@@ -34,6 +37,9 @@ public abstract class BaseAdActivity
         callbacksRecyclerView.addItemDecoration( decoration );
     }
 
+    /**
+     * Log ad callbacks in the RecyclerView.
+     */
     protected void logCallback()
     {
         String callbackName = new Throwable().getStackTrace()[1].getMethodName();

@@ -13,6 +13,11 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * {@link RecyclerView.Adapter} for the callback RecyclerView in ad activities.
+ * <p>
+ * Created by Harry Arakkal on 2019-10-21.
+ */
 public class CallbacksRecyclerViewAdapter
         extends RecyclerView.Adapter
 {
