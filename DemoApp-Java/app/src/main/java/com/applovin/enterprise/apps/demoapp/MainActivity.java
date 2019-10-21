@@ -2,10 +2,12 @@ package com.applovin.enterprise.apps.demoapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
@@ -86,5 +88,24 @@ public class MainActivity
             final AdType adType = (AdType) item;
             startActivity( adType.getIntent() );
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu)
+    {
+        getMenuInflater().inflate( R.menu.menu_main, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item)
+    {
+        if ( item.getItemId() == R.id.action_mediation_debugger )
+        {
+            AppLovinSdk.getInstance( this ).showMediationDebugger();
+            return true;
+        }
+
+        return super.onOptionsItemSelected( item );
     }
 }
