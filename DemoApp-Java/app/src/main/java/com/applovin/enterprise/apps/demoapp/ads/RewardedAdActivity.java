@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.View;
 
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
@@ -18,7 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * Created by santoshbagadi on 2019-09-10.
  */
 public class RewardedAdActivity
-        extends AppCompatActivity
+        extends BaseAdActivity
         implements MaxRewardedAdListener
 {
     private MaxRewardedAd rewardedAd;
@@ -28,6 +29,8 @@ public class RewardedAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_rewarded_ad );
+
+        setupCallbacksRecyclerView();
 
         rewardedAd = MaxRewardedAd.getInstance( "YOUR_AD_UNIT_ID", this );
         rewardedAd.setListener( this );
@@ -50,11 +53,14 @@ public class RewardedAdActivity
     public void onAdLoaded(final MaxAd ad)
     {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
+        logCallback();
     }
 
     @Override
     public void onAdLoadFailed(final String adUnitId, final int errorCode)
     {
+        logCallback();
+
         // Rewarded ad failed to load. We recommend retrying in 3 seconds.
         final Handler handler = new Handler();
         handler.postDelayed( new Runnable()
@@ -70,33 +76,38 @@ public class RewardedAdActivity
     @Override
     public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
     {
+        logCallback();
+
         // Rewarded ad failed to display. We recommend loading the next ad.
         rewardedAd.loadAd();
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { }
+    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { }
+    public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdHidden(final MaxAd ad)
     {
+        logCallback();
+
         // Rewarded ad is hidden. Pre-load the the next ad
         rewardedAd.loadAd();
     }
 
     @Override
-    public void onRewardedVideoStarted(final MaxAd ad) { }
+    public void onRewardedVideoStarted(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onRewardedVideoCompleted(final MaxAd ad) { }
+    public void onRewardedVideoCompleted(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onUserRewarded(final MaxAd ad, final MaxReward reward)
     {
         // Rewarded ad was displayed and user should receive the reward.
+        logCallback();
     }
 
     //endregion
