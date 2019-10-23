@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public abstract class BaseAdActivity
         extends AppCompatActivity
 {
-    private CallbacksRecyclerViewAdapter callbacksAdapter;
-    private List<String>                 callbacks = new ArrayList<>();
+    private       CallbacksRecyclerViewAdapter callbacksAdapter;
+    private final List<String>                 callbacks = new ArrayList<>();
 
     /**
      * Setup callbacks RecyclerView adapter and appearance.
@@ -39,6 +39,7 @@ public abstract class BaseAdActivity
 
     /**
      * Log ad callbacks in the RecyclerView.
+     * Uses the name of the function that calls this one in the log.
      */
     protected void logCallback()
     {

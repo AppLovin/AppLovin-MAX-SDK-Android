@@ -13,8 +13,7 @@ import com.applovin.enterprise.apps.demoapp.kotlin.R
  * <p>
  * Created by Harry Arakkal on 2019-10-18.
  */
-class CallbacksRecyclerViewAdapter(private val callbacks: List<String>,
-                                   context: Context)
+class CallbacksRecyclerViewAdapter(private val callbacks: List<String>, context: Context)
     : RecyclerView.Adapter<CallbacksRecyclerViewAdapter.ViewHolder>()
 {
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)

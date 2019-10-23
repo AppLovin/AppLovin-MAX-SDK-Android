@@ -34,6 +34,7 @@ abstract class BaseAdActivity : AppCompatActivity()
 
     /**
      * Log ad callbacks in the RecyclerView.
+     * Uses the name of the function that calls this one in the log.
      */
     protected fun logCallback()
     {

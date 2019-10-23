@@ -19,12 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
  * Created by Harry Arakkal on 2019-10-21.
  */
 public class CallbacksRecyclerViewAdapter
-        extends RecyclerView.Adapter
+        extends RecyclerView.Adapter<CallbacksRecyclerViewAdapter.ViewHolder>
 {
-    private List<String>   callbacks;
-    private LayoutInflater layoutInflater;
+    private final List<String>   callbacks;
+    private final LayoutInflater layoutInflater;
 
-    CallbacksRecyclerViewAdapter(List<String> callbacks, Context context)
+    CallbacksRecyclerViewAdapter(final List<String> callbacks, final Context context)
     {
         this.callbacks = callbacks;
         this.layoutInflater = LayoutInflater.from( context );
@@ -38,10 +38,9 @@ public class CallbacksRecyclerViewAdapter
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position)
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position)
     {
-        TextView textView = holder.itemView.findViewById( R.id.callbackName );
-        textView.setText( callbacks.get( position ) );
+        holder.callbackName.setText( callbacks.get( position ) );
     }
 
     @Override
@@ -53,7 +52,7 @@ public class CallbacksRecyclerViewAdapter
     class ViewHolder
             extends RecyclerView.ViewHolder
     {
-        TextView callbackName;
+        private final TextView callbackName;
 
         ViewHolder(View view)
         {
