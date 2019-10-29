@@ -71,7 +71,7 @@ public class MainActivity
     {
         final List<ListItem> items = new ArrayList<>();
 
-        items.add( new SectionHeader( "MAX Ads" ) );
+        items.add( new SectionHeader( "Ad Examples" ) );
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Programmatic Banners / Leaders", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
