@@ -30,6 +30,7 @@ public class ProgrammaticBannerAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_programmatic_banner_ad );
+        setTitle( R.string.activity_programmatic_banners );
 
         setupCallbacksRecyclerView();
 

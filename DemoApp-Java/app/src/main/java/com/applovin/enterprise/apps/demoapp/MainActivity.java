@@ -74,8 +74,8 @@ public class MainActivity
         items.add( new SectionHeader( "Ad Examples" ) );
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Programmatic Banners / Leaders", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
-        items.add( new AdType( "Layout Editor Banners / Leaders", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
+        items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
+        items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
 
         return items;
     }

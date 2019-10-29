@@ -26,6 +26,7 @@ public class InterstitialAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_interstitial_ad );
+        setTitle( R.string.activity_interstitial );
 
         setupCallbacksRecyclerView();
 
