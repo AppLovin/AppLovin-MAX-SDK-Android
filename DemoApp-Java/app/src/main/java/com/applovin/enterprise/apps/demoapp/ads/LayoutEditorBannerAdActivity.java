@@ -26,6 +26,7 @@ public class LayoutEditorBannerAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_layout_editor_banner_ad );
+        setTitle( R.string.activity_layout_editor_banners );
 
         setupCallbacksRecyclerView();
 

@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity(),
 {
     private val mainListItems: List<ListItem> by lazy {
         listOf(
-                SectionHeader("MAX Ads"),
+                SectionHeader("Ad Examples"),
                 AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
-                AdType("Programmatic Banners / Leaders", Intent(this, ProgrammaticBannerAdActivity::class.java)),
-                AdType("Layout Editor Banners / Leaders", Intent(this, LayoutEditorBannerAdActivity::class.java))
+                AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
+                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java))
         )
     }
 

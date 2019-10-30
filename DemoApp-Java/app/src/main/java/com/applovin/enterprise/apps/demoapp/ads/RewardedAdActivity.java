@@ -29,6 +29,7 @@ public class RewardedAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_rewarded_ad );
+        setTitle( R.string.activity_rewarded );
 
         setupCallbacksRecyclerView();
 
