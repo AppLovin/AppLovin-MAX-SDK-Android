@@ -3,9 +3,11 @@
     <string name="action_settings">Settings</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
-    <string name="activity_rewarded">Rewarded Ads</string>
-    <string name="activity_programmatic_banners">Programmatic Banner Ads</string>
     <string name="activity_layout_editor_banners">Layout Editor Banner Ads</string>
+    <string name="activity_layout_editor_mrecs">Layout Editor MRec Ads</string>
+    <string name="activity_programmatic_banners">Programmatic Banner Ads</string>
+    <string name="activity_programmatic_mrecs">Programmatic MRec Ads</string>
+    <string name="activity_rewarded">Rewarded Ads</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
 </resources>
