@@ -23,8 +23,8 @@ class LayoutEditorMRecAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        mrec_ad_view.setListener(this)
-        mrec_ad_view.loadAd()
+        mrecAdView.setListener(this)
+        mrecAdView.loadAd()
     }
 
     //region MAX Ad Listener

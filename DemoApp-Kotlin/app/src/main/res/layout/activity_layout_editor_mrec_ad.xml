@@ -7,7 +7,7 @@
     tools:context="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMRecAdActivity">
 
     <com.applovin.mediation.ads.MaxAdView xmlns:maxads="http://schemas.applovin.com/android/1.0"
-        android:id="@+id/mrec_ad_view"
+        android:id="@+id/mrecAdView"
         android:layout_width="@dimen/mrec_width"
         android:layout_height="@dimen/mrec_height"
         android:background="@android:color/black"
@@ -18,13 +18,13 @@
         maxads:adUnitId="YOUR_AD_UNIT_ID" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/callbacks_recycler_view"
+        android:id="@+id/callbacksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mrec_ad_view" />
+        app:layout_constraintTop_toBottomOf="@id/mrecAdView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
