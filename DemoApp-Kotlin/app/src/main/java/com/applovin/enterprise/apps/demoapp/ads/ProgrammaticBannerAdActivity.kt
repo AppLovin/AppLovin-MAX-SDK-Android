@@ -14,7 +14,7 @@ import com.applovin.sdk.AppLovinSdkUtils
 /**
  * A [android.app.Activity] to show AppLovin MAX banner ads.
  * <p>
- * Created by Harry Arakkal on 9/17/2019
+ * Created by Harry Arakkal on 2019-09-17.
  */
 class ProgrammaticBannerAdActivity : BaseAdActivity(),
         MaxAdViewAdListener
