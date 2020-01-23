@@ -38,12 +38,14 @@ public class ProgrammaticMRecAdActivity
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
         adView.setListener( this );
+        adView.setId( ViewCompat.generateViewId() );
 
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
         final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
         adView.setLayoutParams( new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
-        adView.setId( ViewCompat.generateViewId() );
+
+        // Need to set the background or background color for banners to be fully functional.
         adView.setBackgroundColor( Color.BLACK );
 
         // Set up constraints
