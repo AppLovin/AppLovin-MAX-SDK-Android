@@ -1,8 +1,7 @@
 package com.applovin.enterprise.apps.demoapp.ads;
 
+import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
@@ -13,6 +12,9 @@ import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.sdk.AppLovinSdkUtils;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX medium rectangle ads.
@@ -40,10 +42,24 @@ public class ProgrammaticMRecAdActivity
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
         final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
-        adView.setLayoutParams( new FrameLayout.LayoutParams( widthPx, heightPx ) );
+        adView.setLayoutParams( new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
+        adView.setId( ViewCompat.generateViewId() );
+        adView.setBackgroundColor( Color.BLACK );
 
-        final ViewGroup rootView = findViewById( android.R.id.content );
-        rootView.addView( adView );
+        // Set up constraints
+        final ConstraintLayout constraintLayout = findViewById( R.id.main_constraint_layout );
+        constraintLayout.setId( ViewCompat.generateViewId() );
+        constraintLayout.addView( adView );
+
+        final ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone( constraintLayout );
+        constraintSet.constrainHeight( adView.getId(), heightPx );
+        constraintSet.constrainWidth( adView.getId(), widthPx );
+
+        constraintSet.connect( adView.getId(), ConstraintSet.LEFT, constraintLayout.getId(), ConstraintSet.LEFT );
+        constraintSet.connect( adView.getId(), ConstraintSet.RIGHT, constraintLayout.getId(), ConstraintSet.RIGHT );
+        constraintSet.connect( adView.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP );
+        constraintSet.applyTo( constraintLayout );
 
         // Load the first ad.
         adView.loadAd();
