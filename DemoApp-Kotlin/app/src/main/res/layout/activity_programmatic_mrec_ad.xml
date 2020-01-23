@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/mainConstraintLayout"
     tools:context="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMRecAdActivity">
 
     <androidx.recyclerview.widget.RecyclerView
