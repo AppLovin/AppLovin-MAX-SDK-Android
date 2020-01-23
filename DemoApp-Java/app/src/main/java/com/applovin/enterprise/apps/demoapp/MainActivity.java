@@ -7,7 +7,9 @@ import android.view.MenuItem;
 
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMRecAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMRecAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
@@ -76,7 +78,8 @@ public class MainActivity
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
         items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
-
+        items.add( new AdType( "Programmatic MRecs", new Intent( this, ProgrammaticMRecAdActivity.class ) ) );
+        items.add( new AdType( "Layout Editor MRecs", new Intent( this, LayoutEditorMRecAdActivity.class ) ) );
         return items;
     }
 
