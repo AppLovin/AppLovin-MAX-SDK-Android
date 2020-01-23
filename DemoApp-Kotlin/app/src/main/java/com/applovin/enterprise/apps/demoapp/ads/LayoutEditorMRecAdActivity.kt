@@ -24,6 +24,8 @@ class LayoutEditorMRecAdActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         mrecAdView.setListener(this)
+
+        // Load the first ad.
         mrecAdView.loadAd()
     }
 
