@@ -15,12 +15,12 @@ import com.applovin.sdk.AppLovinSdkUtils
 import kotlinx.android.synthetic.main.activity_programmatic_mrec_ad.*
 
 /**
- * A [android.app.Activity] to show AppLovin MAX medium rectangle ads.
+ * A [android.app.Activity] to show AppLovin MAX MREC ads.
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
 
-class ProgrammaticMRecAdActivity : BaseAdActivity(),
+class ProgrammaticMrecAdActivity : BaseAdActivity(),
     MaxAdViewAdListener
 {
     private lateinit var adView: MaxAdView

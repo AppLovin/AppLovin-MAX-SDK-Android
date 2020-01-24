@@ -8,11 +8,11 @@ import com.applovin.mediation.MaxAdViewAdListener
 import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
 
 /**
- * [android.app.Activity] used to show AppLovin MAX medium rectangle ads created in the Layout Editor.
+ * [android.app.Activity] used to show AppLovin MAX MREC ads created in the Layout Editor.
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
-class LayoutEditorMRecAdActivity : BaseAdActivity(),
+class LayoutEditorMrecAdActivity : BaseAdActivity(),
     MaxAdViewAdListener
 {
     override fun onCreate(savedInstanceState: Bundle?)
