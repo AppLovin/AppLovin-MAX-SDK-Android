@@ -42,7 +42,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(),
 
         adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
 
-        // Need to set the background or background color for banners to be fully functional.
+        // Need to set the background or background color for MRECs to be fully functional.
         adView.setBackgroundColor(Color.BLACK)
 
         // Set up constraints
