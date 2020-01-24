@@ -35,10 +35,10 @@
             android:name=".ads.LayoutEditorBannerAdActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".ads.LayoutEditorMRecAdActivity"
+            android:name=".ads.LayoutEditorMrecAdActivity"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".ads.ProgrammaticMRecAdActivity"
+            android:name=".ads.ProgrammaticMrecAdActivity"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.ProgrammaticBannerAdActivity"

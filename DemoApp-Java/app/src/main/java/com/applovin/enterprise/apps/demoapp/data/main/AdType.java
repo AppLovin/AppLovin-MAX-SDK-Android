@@ -10,7 +10,7 @@ import android.content.Intent;
 public class AdType
         implements ListItem
 {
-    private final String                    adType;
+    private final String adType;
     private final Intent intent;
 
     public AdType(final String adType, final Intent intent)

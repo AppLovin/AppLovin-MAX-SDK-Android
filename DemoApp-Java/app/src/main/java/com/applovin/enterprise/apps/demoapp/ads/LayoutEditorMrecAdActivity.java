@@ -11,11 +11,11 @@ import com.applovin.mediation.ads.MaxAdView;
 import androidx.annotation.Nullable;
 
 /**
- * An {@link android.app.Activity} used to show AppLovin MAX medium rectangle ads created in the Layout Editor.
+ * An {@link android.app.Activity} used to show AppLovin MAX MREC ads created in the Layout Editor.
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
-public class LayoutEditorMRecAdActivity
+public class LayoutEditorMrecAdActivity
         extends BaseAdActivity
         implements MaxAdViewAdListener
 {
