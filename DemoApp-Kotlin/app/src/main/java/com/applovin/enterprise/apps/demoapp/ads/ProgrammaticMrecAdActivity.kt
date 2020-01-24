@@ -34,6 +34,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
+        adView = MaxAdView("6a228c67f34d476c", MaxAdFormat.MREC, this)
         adView.setListener(this)
         adView.id = ViewCompat.generateViewId()
 
