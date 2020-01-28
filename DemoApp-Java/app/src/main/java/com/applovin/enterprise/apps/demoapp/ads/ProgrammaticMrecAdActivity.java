@@ -36,8 +36,7 @@ public class ProgrammaticMrecAdActivity
 
         setupCallbacksRecyclerView();
 
-        // NOTE: MRECs will be supported in Android SDK 9.12.0 & iOS SDK 6.12.0
-        // adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
+        adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
         adView.setListener( this );
         adView.setId( ViewCompat.generateViewId() );
 
