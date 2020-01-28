@@ -19,6 +19,7 @@ public class LayoutEditorMrecAdActivity
         extends BaseAdActivity
         implements MaxAdViewAdListener
 {
+    // NOTE: MRECs will be supported in Android SDK 9.12.0 & iOS SDK 6.12.0
     private MaxAdView adView;
 
     @Override

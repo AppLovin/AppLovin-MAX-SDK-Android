@@ -2,7 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads
 
 import android.graphics.Color
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import com.applovin.enterprise.apps.demoapp.kotlin.R
@@ -33,14 +33,15 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
+        // NOTE: MRECs will be supported in Android SDK 9.12.0 & iOS SDK 6.12.0
+        // adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
         adView.setListener(this)
         adView.id = ViewCompat.generateViewId()
 
         val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
 
-        adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
+        adView.layoutParams = ViewGroup.LayoutParams(widthPx, heightPx)
 
         // Need to set the background or background color for MRECs to be fully functional.
         adView.setBackgroundColor(Color.BLACK)

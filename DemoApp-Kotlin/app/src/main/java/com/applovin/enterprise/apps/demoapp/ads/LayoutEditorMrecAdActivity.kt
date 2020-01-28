@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
 class LayoutEditorMrecAdActivity : BaseAdActivity(),
     MaxAdViewAdListener
 {
+    // NOTE: MRECs will be supported in Android SDK 9.12.0 & iOS SDK 6.12.0
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
