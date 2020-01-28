@@ -46,7 +46,7 @@ public class ProgrammaticBannerAdActivity
         // Need to set the background or background color for banners to be fully functional.
         adView.setBackgroundColor( Color.BLACK );
 
-        final ViewGroup rootView = findViewById( android.R.id.content );
+        final ViewGroup rootView = (ViewGroup) findViewById( android.R.id.content );
         rootView.addView( adView );
 
         // Load the first ad.
