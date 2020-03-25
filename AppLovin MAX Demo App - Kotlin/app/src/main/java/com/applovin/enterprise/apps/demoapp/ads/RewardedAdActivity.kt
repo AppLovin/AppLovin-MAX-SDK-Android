@@ -50,6 +50,9 @@ class RewardedAdActivity : BaseAdActivity(),
     {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
         logCallback()
+
+        // Reset retry attempt
+        retryAttempt = 0.0
     }
 
     override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)

@@ -55,6 +55,9 @@ public class InterstitialAdActivity
     {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback();
+
+        // Reset retry attempt
+        retryAttempt = 0;
     }
 
     @Override
