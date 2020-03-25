@@ -10,6 +10,8 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdListener;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX interstitial ads.
  * <p>
@@ -20,6 +22,7 @@ public class InterstitialAdActivity
         implements MaxAdListener
 {
     private MaxInterstitialAd interstitialAd;
+    private int retryAttempt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -52,6 +55,9 @@ public class InterstitialAdActivity
     {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback();
+
+        // Reset retry attempt
+        retryAttempt = 0;
     }
 
     @Override
@@ -59,16 +65,19 @@ public class InterstitialAdActivity
     {
         logCallback();
 
-        // Interstitial ad failed to load. We recommend retrying in 3 seconds.
-        final Handler handler = new Handler();
-        handler.postDelayed( new Runnable()
+        // Interstitial ad failed to load. We recommend retrying with exponentially higher delays.
+
+        retryAttempt++;
+        long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, retryAttempt ) );
+
+        new Handler().postDelayed( new Runnable()
         {
             @Override
             public void run()
             {
                 interstitialAd.loadAd();
             }
-        }, 3000 );
+        }, delayMillis );
     }
 
     @Override
