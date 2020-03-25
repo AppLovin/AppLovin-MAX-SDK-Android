@@ -11,7 +11,7 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
 
-import androidx.appcompat.app.AppCompatActivity;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX rewarded ads.
@@ -23,6 +23,7 @@ public class RewardedAdActivity
         implements MaxRewardedAdListener
 {
     private MaxRewardedAd rewardedAd;
+    private int           retryAttempt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,16 +63,19 @@ public class RewardedAdActivity
     {
         logCallback();
 
-        // Rewarded ad failed to load. We recommend retrying in 3 seconds.
-        final Handler handler = new Handler();
-        handler.postDelayed( new Runnable()
+        // Rewarded ad failed to load. We recommend retrying with exponentially higher delays.
+
+        retryAttempt++;
+        long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, retryAttempt ) );
+
+        new Handler().postDelayed( new Runnable()
         {
             @Override
             public void run()
             {
                 rewardedAd.loadAd();
             }
-        }, 3000 );
+        }, delayMillis );
     }
 
     @Override
