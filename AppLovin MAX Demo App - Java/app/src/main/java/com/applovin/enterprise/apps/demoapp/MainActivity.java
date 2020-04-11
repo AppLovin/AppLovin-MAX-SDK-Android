@@ -5,10 +5,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.LayoutEditorBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.ProgrammaticBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -70,8 +71,13 @@ public class MainActivity
     private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
+        items.add( new SectionHeader( "APPLOVIN" ) );
+        items.add( new AdType( "Banner", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Interstitials", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Rewarded", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "MRECs", new Intent( this, BannerDemoMenuActivity.class ) ) );
 
-        items.add( new SectionHeader( "Ad Examples" ) );
+        items.add( new SectionHeader( "MAX" ) );
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
