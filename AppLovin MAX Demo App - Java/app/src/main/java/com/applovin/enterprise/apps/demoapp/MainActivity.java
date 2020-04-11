@@ -1,15 +1,14 @@
 package com.applovin.enterprise.apps.demoapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.LayoutEditorBannerAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.banners.MaxBannerDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -72,18 +71,34 @@ public class MainActivity
     {
         final List<ListItem> items = new ArrayList<>();
         items.add( new SectionHeader( "APPLOVIN" ) );
-        items.add( new AdType( "Banner", new Intent( this, BannerDemoMenuActivity.class ) ) );
         items.add( new AdType( "Interstitials", new Intent( this, BannerDemoMenuActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Banner", new Intent( this, BannerDemoMenuActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Native Ads", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Event Tracking", new Intent( this, BannerDemoMenuActivity.class ) ) );
 
         items.add( new SectionHeader( "MAX" ) );
         items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
-        items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
+        items.add( new AdType( "Banners", new Intent( this, MaxBannerDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Launch Mediation Debugger", new Intent( this, MaxBannerDemoMenuActivity.class ) ) );
+
+        items.add( new SectionHeader( "SUPPORT" ) );
+        items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
+        items.add( new AdType( "Contact", getContactIntent() ) );
 
         return items;
+    }
+
+    private Intent getContactIntent()
+    {
+        Intent intent = new Intent( Intent.ACTION_SENDTO );
+        intent.setType( "text/plain" );
+        intent.setData( Uri.parse( "mailto:" + "support@applovin.com" ) );
+        intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
+        intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
+        return intent;
     }
 
     @Override
@@ -96,12 +111,12 @@ public class MainActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(final Menu menu)
-    {
-        getMenuInflater().inflate( R.menu.menu_main, menu );
-        return true;
-    }
+    //    @Override
+    //    public boolean onCreateOptionsMenu(final Menu menu)
+    //    {
+    //        getMenuInflater().inflate( R.menu.menu_main, menu );
+    //        return true;
+    //    }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item)

@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads.max;
+package com.applovin.enterprise.apps.demoapp.ads.max.banners;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,8 +11,6 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.sdk.AppLovinSdkUtils;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX banner ads.

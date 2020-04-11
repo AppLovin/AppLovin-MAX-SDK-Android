@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ads.max.ProgrammaticBannerAdActivity">
+    tools:context=".ads.max.banners.ProgrammaticBannerAdActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/callbacks_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="10dp"
         android:layout_marginTop="@dimen/banner_height"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
