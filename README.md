@@ -7,7 +7,7 @@ Move beyond the traditional monetization solution and integrate MAX. MAX is a si
 
 To request an invite for MAX, apply [here](https://try.applovin.com/applovin-max-application).
 
-Please check out our [documentation](https://dash.applovin.com/documentation/mediation/unity/getting-started) to get started on integrating and enabling mediated networks using our guides.
+Please check out our [documentation](https://dash.applovin.com/documentation/mediation/android/getting-started) to get started on integrating and enabling mediated networks using our guides.
 
 ## Demo Apps
 To get started with the demo apps, follow the instructions below:
