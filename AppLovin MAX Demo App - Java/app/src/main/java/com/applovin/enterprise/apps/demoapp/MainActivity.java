@@ -7,7 +7,9 @@ import android.view.MenuItem;
 
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMrecAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMrecAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
@@ -57,13 +59,8 @@ public class MainActivity
 
         // Initialize the AppLovin SDK
         AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
-        AppLovinSdk.getInstance( this ).initializeSdk( new AppLovinSdk.SdkInitializationListener()
-        {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration config)
-            {
-                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
-            }
+        AppLovinSdk.getInstance( this ).initializeSdk( config -> {
+            // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
         } );
     }
 
@@ -76,6 +73,8 @@ public class MainActivity
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
         items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
+        items.add( new AdType( "Programmatic MRECs", new Intent( this, ProgrammaticMrecAdActivity.class ) ) );
+        items.add( new AdType( "Layout Editor MRECs", new Intent( this, LayoutEditorMrecAdActivity.class ) ) );
 
         return items;
     }

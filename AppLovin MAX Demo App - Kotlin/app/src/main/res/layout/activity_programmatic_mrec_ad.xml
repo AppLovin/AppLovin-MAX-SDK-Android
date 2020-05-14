@@ -4,26 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity">
-
-    <com.applovin.mediation.ads.MaxAdView xmlns:maxads="http://schemas.applovin.com/android/1.0"
-        android:id="@+id/bannerAdView"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/banner_height"
-        android:background="@android:color/black"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        maxads:adUnitId="YOUR_AD_UNIT_ID" />
+    android:id="@+id/mainConstraintLayout"
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMrecAdActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/callbacksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="10dp"
+        android:layout_marginTop="@dimen/mrec_height"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bannerAdView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
