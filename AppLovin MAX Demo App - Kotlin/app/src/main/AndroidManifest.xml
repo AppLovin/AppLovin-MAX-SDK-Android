@@ -36,13 +36,13 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMrecAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMRecAdActivity"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMrecAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMRecAdActivity"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"

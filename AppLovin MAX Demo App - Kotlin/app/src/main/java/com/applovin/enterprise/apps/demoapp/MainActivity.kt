@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity(),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
                 AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
                 AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java)),
-                AdType("Programmatic MRECs", Intent(this, ProgrammaticMrecAdActivity::class.java)),
-                AdType("Layout Editor MRECs", Intent(this, LayoutEditorMrecAdActivity::class.java))
+                AdType("Programmatic MRECs", Intent(this, ProgrammaticMRecAdActivity::class.java)),
+                AdType("Layout Editor MRECs", Intent(this, LayoutEditorMRecAdActivity::class.java))
         )
     }
 

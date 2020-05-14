@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
-public class LayoutEditorMrecAdActivity
+public class LayoutEditorMRecAdActivity
         extends BaseAdActivity
         implements MaxAdViewAdListener
 {

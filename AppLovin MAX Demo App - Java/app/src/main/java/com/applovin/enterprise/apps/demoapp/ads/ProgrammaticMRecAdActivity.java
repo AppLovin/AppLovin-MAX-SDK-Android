@@ -21,7 +21,7 @@ import androidx.core.view.ViewCompat;
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
-public class ProgrammaticMrecAdActivity
+public class ProgrammaticMRecAdActivity
         extends BaseAdActivity
         implements MaxAdViewAdListener
 {

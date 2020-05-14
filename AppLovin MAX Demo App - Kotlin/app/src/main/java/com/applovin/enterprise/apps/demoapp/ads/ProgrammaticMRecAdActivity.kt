@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_programmatic_mrec_ad.*
  * Created by Andrew Tian on 2020-01-14.
  */
 
-class ProgrammaticMrecAdActivity : BaseAdActivity(),
+class ProgrammaticMRecAdActivity : BaseAdActivity(),
     MaxAdViewAdListener
 {
     private lateinit var adView: MaxAdView

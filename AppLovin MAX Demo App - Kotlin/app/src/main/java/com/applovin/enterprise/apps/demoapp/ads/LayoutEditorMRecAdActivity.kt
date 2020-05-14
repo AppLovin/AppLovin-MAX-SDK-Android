@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
  * <p>
  * Created by Andrew Tian on 2020-01-14.
  */
-class LayoutEditorMrecAdActivity : BaseAdActivity(),
+class LayoutEditorMRecAdActivity : BaseAdActivity(),
     MaxAdViewAdListener
 {
     override fun onCreate(savedInstanceState: Bundle?)
