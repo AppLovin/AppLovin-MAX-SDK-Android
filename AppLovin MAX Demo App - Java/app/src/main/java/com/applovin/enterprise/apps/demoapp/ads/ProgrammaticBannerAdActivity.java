@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX banner ads.
  * <p>
- * Created by santoshbagadi on 9/17/2019
+ * Created by santoshbagadi on 2019-09-10.
  */
 public class ProgrammaticBannerAdActivity
         extends BaseAdActivity
