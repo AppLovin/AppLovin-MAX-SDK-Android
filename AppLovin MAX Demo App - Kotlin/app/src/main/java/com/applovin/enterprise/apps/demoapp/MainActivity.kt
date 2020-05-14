@@ -8,10 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.*
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -31,7 +28,9 @@ class MainActivity : AppCompatActivity(),
                 AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
                 AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
-                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java))
+                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java)),
+                AdType("Programmatic MRECs", Intent(this, ProgrammaticMRecAdActivity::class.java)),
+                AdType("Layout Editor MRECs", Intent(this, LayoutEditorMRecAdActivity::class.java))
         )
     }
 

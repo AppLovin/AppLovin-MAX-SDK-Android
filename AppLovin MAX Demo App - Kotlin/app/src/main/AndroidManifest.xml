@@ -29,16 +29,20 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorMRecAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticMRecAdActivity"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"

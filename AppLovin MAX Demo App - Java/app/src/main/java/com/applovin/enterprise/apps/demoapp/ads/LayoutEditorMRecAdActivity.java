@@ -1,53 +1,37 @@
 package com.applovin.enterprise.apps.demoapp.ads;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.ads.MaxAdView;
-import com.applovin.sdk.AppLovinSdkUtils;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 
 /**
- * An {@link android.app.Activity} used to show AppLovin MAX banner ads.
+ * An {@link android.app.Activity} used to show AppLovin MAX MREC ads created in the Layout Editor.
  * <p>
- * Created by santoshbagadi on 2019-09-10.
+ * Created by Andrew Tian on 2020-01-14.
  */
-public class ProgrammaticBannerAdActivity
+public class LayoutEditorMRecAdActivity
         extends BaseAdActivity
         implements MaxAdViewAdListener
 {
     private MaxAdView adView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    protected void onCreate(@Nullable final Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_programmatic_banner_ad );
-        setTitle( R.string.activity_programmatic_banners );
+        setContentView( R.layout.activity_layout_editor_mrec_ad );
+        setTitle( R.string.activity_layout_editor_mrecs );
 
         setupCallbacksRecyclerView();
 
-        adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
+        adView = findViewById( R.id.mrec_ad_view );
         adView.setListener( this );
-
-        // Set the height of the banner ad based on the device type.
-        final boolean isTablet = AppLovinSdkUtils.isTablet( this );
-        final int heightPx = AppLovinSdkUtils.dpToPx( this, isTablet ? 90 : 50 );
-        // Banner width must match the screen to be fully functional.
-        adView.setLayoutParams( new FrameLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, heightPx ) );
-
-        // Need to set the background or background color for banners to be fully functional.
-        adView.setBackgroundColor( Color.BLACK );
-
-        final ViewGroup rootView = findViewById( android.R.id.content );
-        rootView.addView( adView );
 
         // Load the first ad.
         adView.loadAd();

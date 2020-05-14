@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.enterprise.apps.demoapp">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="applovin.sdk.key"
+            android:value="SDK_KEY_HERE" />
+
+        <activity
+            android:name=".SplashActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ads.InterstitialAdActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ads.LayoutEditorBannerAdActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ads.LayoutEditorMrecAdActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ads.ProgrammaticMrecAdActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ads.ProgrammaticBannerAdActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ads.RewardedAdActivity"
+            android:parentActivityName=".MainActivity" />
+    </application>
+</manifest>
