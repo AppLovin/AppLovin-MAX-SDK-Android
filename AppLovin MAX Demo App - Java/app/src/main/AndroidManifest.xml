@@ -29,20 +29,82 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.ProgrammaticBannerAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.LayoutEditorBannerAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+        <activity
+            android:name=".ads.applovin.interstitials.InterstitialBasicIntegrationActivity"
+            android:label="@string/title_activity_interstitial_basic_integration" />
+        <activity
+            android:name=".ads.applovin.interstitials.InterstitialManualLoadingActivity"
+            android:label="@string/title_activity_interstitial_manual_loading" />
+        <activity
+            android:name=".ads.applovin.interstitials.InterstitialZoneActivity"
+            android:label="@string/title_activity_interstitial_zone_integration" />
+        <activity
+            android:name=".ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
+            android:label="@string/title_activity_rewarded_videos_list" />
+        <activity
+            android:name=".ads.applovin.rewarded.RewardedVideosActivity"
+            android:label="@string/title_activity_rewarded_videos_basic_integration" />
+        <activity
+            android:name=".ads.applovin.rewarded.RewardedVideosZoneActivity"
+            android:label="@string/title_activity_rewarded_videos_zone_integration" />
+        <activity
+            android:name=".ads.applovin.nativeads.NativeAdDemoMenuActivity"
+            android:label="@string/title_activity_native_ad_list" />
+        <activity
+            android:name=".ads.applovin.nativeads.NativeAdCarouselUIActivity"
+            android:label="@string/title_activity_native_ad_carousel_ui"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ads.applovin.nativeads.NativeAdRecyclerViewActivity"
+            android:label="@string/title_activity_native_ad_recycler_view" />
+        <activity
+            android:name=".ads.applovin.banner.BannerDemoMenuActivity"
+            android:label="@string/title_activity_banner_list" />
+        <activity
+            android:name=".ads.applovin.banner.BannerProgrammaticActivity"
+            android:label="@string/title_activity_banner_programmatic" />
+        <activity
+            android:name=".ads.applovin.banner.BannerLayoutEditorActivity"
+            android:label="@string/title_activity_banner_layout_editor" />
+        <activity
+            android:name=".ads.applovin.banner.BannerZoneActivity"
+            android:label="@string/title_activity_banner_zone_integration" />
+        <activity
+            android:name=".ads.applovin.mrecs.MRecDemoMenuActivity"
+            android:label="@string/title_activity_mrec_list" />
+        <activity
+            android:name=".ads.applovin.mrecs.MRecProgrammaticActivity"
+            android:label="@string/title_activity_mrec_programmatic" />
+        <activity
+            android:name=".ads.applovin.mrecs.MRecLayoutEditorActivity"
+            android:label="@string/title_activity_mrec_layout_editor" />
+        <activity
+            android:name=".ads.applovin.leaders.LeaderDemoMenuActivity"
+            android:label="@string/title_activity_leader_list" />
+        <activity
+            android:name=".ads.applovin.leaders.LeaderProgrammaticActivity"
+            android:label="@string/title_activity_leader_programmatic" />
+        <activity
+            android:name=".ads.applovin.leaders.LeaderLayoutEditorActivity"
+            android:label="@string/title_activity_leader_layout_editor" />
+        <activity
+            android:name="ads.applovin.eventtracking.EventTrackingActivity"
+            android:label="@string/title_activity_event_tracking" />
     </application>
 </manifest>
