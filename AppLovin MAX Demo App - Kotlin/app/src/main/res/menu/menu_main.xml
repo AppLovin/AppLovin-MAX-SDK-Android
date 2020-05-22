@@ -6,4 +6,8 @@
         android:icon="@drawable/ic_bug"
         android:title="Mediation Debugger"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_toggle_mute"
+        android:icon="@drawable/mute"
+        app:showAsAction="always" />
 </menu>
