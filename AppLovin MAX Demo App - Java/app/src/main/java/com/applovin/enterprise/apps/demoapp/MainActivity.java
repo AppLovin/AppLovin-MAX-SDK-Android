@@ -96,8 +96,8 @@ public class MainActivity
     private Intent getContactIntent()
     {
         Intent intent = new Intent( Intent.ACTION_SENDTO );
-        intent.setType( "text/plain" );
-        intent.setData( Uri.parse( "mailto:" + "support@applovin.com" ) );
+        intent.setType( "text/plain" );;
+        intent.putExtra(Intent.EXTRA_EMAIL, "support@applovin.com");
         intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
         intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
         return intent;
@@ -130,7 +130,6 @@ public class MainActivity
         }
     }
 
-
     private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
@@ -149,7 +148,7 @@ public class MainActivity
         items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
-        //items.add( new AdType( "AL Contact", new Intent( this, getContactIntent() ) ) );
+        items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
 
         return items;
     }
@@ -182,6 +181,4 @@ public class MainActivity
 
         return super.onOptionsItemSelected( item );
     }
-
-
 }

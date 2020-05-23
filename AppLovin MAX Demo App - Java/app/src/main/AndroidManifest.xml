@@ -45,68 +45,68 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name=".ads.applovin.interstitials.InterstitialDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity"
             android:label="@string/title_activity_interstitial_list" />
         <activity
-            android:name=".ads.applovin.interstitials.InterstitialBasicIntegrationActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialBasicIntegrationActivity"
             android:label="@string/title_activity_interstitial_basic_integration" />
         <activity
-            android:name=".ads.applovin.interstitials.InterstitialManualLoadingActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialManualLoadingActivity"
             android:label="@string/title_activity_interstitial_manual_loading" />
         <activity
-            android:name=".ads.applovin.interstitials.InterstitialZoneActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialZoneActivity"
             android:label="@string/title_activity_interstitial_zone_integration" />
         <activity
-            android:name=".ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
             android:label="@string/title_activity_rewarded_videos_list" />
         <activity
-            android:name=".ads.applovin.rewarded.RewardedVideosActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosActivity"
             android:label="@string/title_activity_rewarded_videos_basic_integration" />
         <activity
-            android:name=".ads.applovin.rewarded.RewardedVideosZoneActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosZoneActivity"
             android:label="@string/title_activity_rewarded_videos_zone_integration" />
         <activity
-            android:name=".ads.applovin.nativeads.NativeAdDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity"
             android:label="@string/title_activity_native_ad_list" />
         <activity
-            android:name=".ads.applovin.nativeads.NativeAdCarouselUIActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdCarouselUIActivity"
             android:label="@string/title_activity_native_ad_carousel_ui"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ads.applovin.nativeads.NativeAdRecyclerViewActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdRecyclerViewActivity"
             android:label="@string/title_activity_native_ad_recycler_view" />
         <activity
-            android:name=".ads.applovin.banner.BannerDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity"
             android:label="@string/title_activity_banner_list" />
         <activity
-            android:name=".ads.applovin.banner.BannerProgrammaticActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerProgrammaticActivity"
             android:label="@string/title_activity_banner_programmatic" />
         <activity
-            android:name=".ads.applovin.banner.BannerLayoutEditorActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerLayoutEditorActivity"
             android:label="@string/title_activity_banner_layout_editor" />
         <activity
-            android:name=".ads.applovin.banner.BannerZoneActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerZoneActivity"
             android:label="@string/title_activity_banner_zone_integration" />
         <activity
-            android:name=".ads.applovin.mrecs.MRecDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity"
             android:label="@string/title_activity_mrec_list" />
         <activity
-            android:name=".ads.applovin.mrecs.MRecProgrammaticActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity"
             android:label="@string/title_activity_mrec_programmatic" />
         <activity
-            android:name=".ads.applovin.mrecs.MRecLayoutEditorActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
             android:label="@string/title_activity_mrec_layout_editor" />
         <activity
-            android:name=".ads.applovin.leaders.LeaderDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity"
             android:label="@string/title_activity_leader_list" />
         <activity
-            android:name=".ads.applovin.leaders.LeaderProgrammaticActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderProgrammaticActivity"
             android:label="@string/title_activity_leader_programmatic" />
         <activity
-            android:name=".ads.applovin.leaders.LeaderLayoutEditorActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderLayoutEditorActivity"
             android:label="@string/title_activity_leader_layout_editor" />
         <activity
-            android:name="ads.applovin.eventtracking.EventTrackingActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
             android:label="@string/title_activity_event_tracking" />
     </application>
 </manifest>

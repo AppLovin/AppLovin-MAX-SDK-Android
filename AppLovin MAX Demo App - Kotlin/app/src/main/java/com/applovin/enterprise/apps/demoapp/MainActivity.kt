@@ -56,7 +56,11 @@ class MainActivity : AppCompatActivity(),
                 AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
                 AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
-                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java))
+                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java)),
+                SectionHeader("SUPPORT"),
+                AdType("Resources", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))),
+                AdType("Contact", Intent(makeContactIntent()))
+
         )
     }
 

@@ -29,13 +29,8 @@ public abstract class DemoMenuActivity
 
         listView = (ListView) findViewById( R.id.listView );
 
-        setupListViewFooter();
+
         setupListViewContents( getListViewContents() );
-    }
-
-    protected void setupListViewFooter()
-    {
-
     }
 
     protected abstract DemoMenuItem[] getListViewContents();
