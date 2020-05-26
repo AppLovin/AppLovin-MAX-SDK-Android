@@ -13,7 +13,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_list.*
 import com.applovin.enterprise.apps.demoapp.kotlin.R
 
-data class DemoMenuItem(val title: String, val subtitle: String, val intent: Intent? = null)
+data class DemoMenuItem(val title: String, val intent: Intent? = null)
 abstract class DemoMenuActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
@@ -44,8 +44,6 @@ abstract class DemoMenuActivity : AppCompatActivity()
 
                 val title: TextView = row.findViewById(android.R.id.text1)
                 title.text = item.title
-                val subtitle: TextView = row.findViewById(android.R.id.text2)
-                subtitle.text = item.subtitle
 
                 return row
             }

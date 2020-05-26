@@ -16,8 +16,8 @@ public class MRecDemoMenuActivity
     protected DemoMenuItem[] getListViewContents()
     {
         DemoMenuItem[] result = {
-                new DemoMenuItem( "Programmatic", "Programmatically creating an instance of it", new Intent( this, MRecProgrammaticActivity.class ) ),
-                new DemoMenuItem( "Layout Editor", "Create an MRec from the layout editor", new Intent( this, MRecLayoutEditorActivity.class ) ),
+                new DemoMenuItem( "Programmatic", new Intent( this, MRecProgrammaticActivity.class ) ),
+                new DemoMenuItem( "Layout Editor", new Intent( this, MRecLayoutEditorActivity.class ) ),
         };
         return result;
     }

@@ -12,8 +12,8 @@ public class RewardedVideosDemoMenuActivity
     protected DemoMenuItem[] getListViewContents()
     {
         DemoMenuItem[] result = {
-                new DemoMenuItem( "Basic Integration", "Quick rewarded video integration", new Intent( this, RewardedVideosActivity.class ) ),
-                new DemoMenuItem( "Zone Integration", "Create different user experiences of the same ad type", new Intent( this, RewardedVideosZoneActivity.class ) )
+                new DemoMenuItem( "Basic Integration", new Intent( this, RewardedVideosActivity.class ) ),
+                new DemoMenuItem( "Zone Integration", new Intent( this, RewardedVideosZoneActivity.class ) )
         };
         return result;
     }

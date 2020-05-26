@@ -7,7 +7,7 @@ import com.applovin.enterprise.apps.demoapp.ads.DemoMenuItem
 class LeaderDemoMenuActivity : DemoMenuActivity()
 {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
-            DemoMenuItem("Programmatic", "Programmatically create an instance of it", Intent(this, LeaderProgrammaticActivity::class.java)),
-            DemoMenuItem("Layout Editor", "Create a Leader from the layout editor", Intent(this, LeaderLayoutEditorActivity::class.java))
+            DemoMenuItem("Programmatic", Intent(this, LeaderProgrammaticActivity::class.java)),
+            DemoMenuItem("Layout Editor",  Intent(this, LeaderLayoutEditorActivity::class.java))
     )
 }

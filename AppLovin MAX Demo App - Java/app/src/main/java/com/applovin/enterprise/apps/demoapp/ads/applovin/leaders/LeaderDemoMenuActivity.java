@@ -12,8 +12,8 @@ public class LeaderDemoMenuActivity
     protected DemoMenuItem[] getListViewContents()
     {
         DemoMenuItem[] result = {
-                new DemoMenuItem( "Programmatic", "Programmatically create an instance of it", new Intent( this, LeaderProgrammaticActivity.class ) ),
-                new DemoMenuItem( "Layout Editor", "Create a Leader from the layout editor", new Intent( this, LeaderLayoutEditorActivity.class ) ),
+                new DemoMenuItem( "Programmatic", new Intent( this, LeaderProgrammaticActivity.class ) ),
+                new DemoMenuItem( "Layout Editor", new Intent( this, LeaderLayoutEditorActivity.class ) ),
         };
         return result;
     }

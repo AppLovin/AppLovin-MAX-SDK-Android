@@ -53,8 +53,6 @@ public abstract class DemoMenuActivity
 
                 TextView title = (TextView) row.findViewById( android.R.id.text1 );
                 title.setText( item.getTitle() );
-                TextView subtitle = (TextView) row.findViewById( android.R.id.text2 );
-                subtitle.setText( item.getSubtitle() );
 
                 return row;
             }
