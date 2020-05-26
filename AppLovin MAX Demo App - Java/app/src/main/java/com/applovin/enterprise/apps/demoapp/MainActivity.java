@@ -97,7 +97,7 @@ public class MainActivity
     {
         Intent intent = new Intent( Intent.ACTION_SENDTO );
         intent.setType( "text/plain" );;
-        intent.putExtra(Intent.EXTRA_EMAIL, "support@applovin.com");
+        intent.putExtra( Intent.EXTRA_EMAIL, "support@applovin.com" );
         intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
         intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
         return intent;
