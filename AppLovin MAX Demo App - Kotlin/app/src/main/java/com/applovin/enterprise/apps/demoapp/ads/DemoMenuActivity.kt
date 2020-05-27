@@ -33,12 +33,12 @@ abstract class DemoMenuActivity : AppCompatActivity()
 
     private fun setupListViewContents(items: Array<DemoMenuItem>)
     {
-        val listAdapter = object : ArrayAdapter<DemoMenuItem>(this, android.R.layout.simple_list_item_2, items)
+        val listAdapter = object : ArrayAdapter<DemoMenuItem>(this, android.R.layout.simple_list_item_1, items)
         {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
             {
                 val inflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                val row = convertView ?: inflater.inflate(android.R.layout.simple_list_item_2, parent, false)
+                val row = convertView ?: inflater.inflate(android.R.layout.simple_list_item_1, parent, false)
 
                 val item = items[position]
 

@@ -37,7 +37,7 @@ public abstract class DemoMenuActivity
 
     private void setupListViewContents(final DemoMenuItem[] items)
     {
-        ArrayAdapter<DemoMenuItem> listAdapter = new ArrayAdapter<DemoMenuItem>( this, android.R.layout.simple_list_item_2, items )
+        ArrayAdapter<DemoMenuItem> listAdapter = new ArrayAdapter<DemoMenuItem>( this, android.R.layout.simple_list_item_1, items )
         {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
@@ -46,7 +46,7 @@ public abstract class DemoMenuActivity
                 if ( row == null )
                 {
                     LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-                    row = inflater.inflate( android.R.layout.simple_list_item_2, parent, false );
+                    row = inflater.inflate( android.R.layout.simple_list_item_1, parent, false );
                 }
 
                 DemoMenuItem item = items[position];
