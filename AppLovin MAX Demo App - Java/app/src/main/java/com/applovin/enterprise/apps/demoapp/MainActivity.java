@@ -77,6 +77,9 @@ public class MainActivity
                 // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
             }
         } );
+
+        // Check that SDK key is present in Android Manifest
+        checkSdkKey();
     }
 
     private void checkSdkKey()

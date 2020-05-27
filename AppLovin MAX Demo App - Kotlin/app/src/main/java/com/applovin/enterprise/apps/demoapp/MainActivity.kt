@@ -2,16 +2,12 @@ package com.applovin.enterprise.apps.demoapp
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -20,12 +16,12 @@ import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity
+import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity
+import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -35,7 +31,6 @@ import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.android.synthetic.main.activity_list.*
 
 class MainActivity : AppCompatActivity(),
         MainRecyclerViewAdapter.OnMainListItemClickListener
@@ -87,6 +82,9 @@ class MainActivity : AppCompatActivity(),
         AppLovinSdk.getInstance(this).initializeSdk {
             // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
         }
+
+        // Check that SDK key is present in Android Manifest
+        checkSdkKey()
     }
 
     private fun makeContactIntent(): Intent
