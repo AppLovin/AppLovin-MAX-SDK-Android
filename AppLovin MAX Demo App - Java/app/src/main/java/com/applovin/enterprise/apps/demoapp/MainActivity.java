@@ -138,21 +138,20 @@ public class MainActivity
         final List<ListItem> items = new ArrayList<>();
 
         items.add( new SectionHeader( "APPLOVIN" ) );
-        items.add( new AdType( "Interstitial", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Rewarded Videos", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Native Ads", new Intent( this, NativeAdDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
         items.add( new AdType( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
+        items.add( new AdType( "Native Ads", new Intent( this, NativeAdDemoMenuActivity.class ) ) );
         items.add( new AdType( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
-        items.add( new AdType( "Interstitial", new Intent( this, InterstitialAdActivity.class ) ) );
+        items.add( new AdType( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
         items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
         items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
-
         return items;
     }
 
@@ -176,12 +175,11 @@ public class MainActivity
     @Override
     public boolean onOptionsItemSelected(final MenuItem item)
     {
-        if ( item.getItemId() == R.id.action_mediation_debugger )
+        if ( item.getItemId() == R.id.action_toggle_mute )
         {
-            AppLovinSdk.getInstance( this ).showMediationDebugger();
-            return true;
+            toggleMute();
         }
 
-        return super.onOptionsItemSelected( item );
+        return true;
     }
 }

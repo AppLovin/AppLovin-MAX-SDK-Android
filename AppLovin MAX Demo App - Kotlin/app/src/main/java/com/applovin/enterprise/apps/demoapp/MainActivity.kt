@@ -41,14 +41,14 @@ class MainActivity : AppCompatActivity(),
     private val mainListItems: List<ListItem> by lazy {
         listOf(
                 SectionHeader("APPLOVIN"),
-                AdType("Interstitial", Intent(this, InterstitialDemoMenuActivity::class.java)),
-                AdType("Rewarded Videos", Intent(this, RewardedVideosDemoMenuActivity::class.java)),
-                AdType("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)),
+                AdType("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)),
+                AdType("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)),
                 AdType("Banners", Intent(this, BannerDemoMenuActivity::class.java)),
                 AdType("MRECs", Intent(this, MRecDemoMenuActivity::class.java)),
+                AdType("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)),
                 AdType("Event Tracking", Intent(this, EventTrackingActivity::class.java)),
                 SectionHeader("MAX"),
-                AdType("Interstitial", Intent(this, InterstitialAdActivity::class.java)),
+                AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
                 AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
                 AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java)),
@@ -165,12 +165,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
-        if (item.itemId == R.id.action_mediation_debugger)
+        if (item.itemId == R.id.action_toggle_mute)
         {
-            AppLovinSdk.getInstance(this).showMediationDebugger()
-            return true
+            toggleMute()
         }
 
-        return super.onOptionsItemSelected(item)
+        return true
     }
 }
