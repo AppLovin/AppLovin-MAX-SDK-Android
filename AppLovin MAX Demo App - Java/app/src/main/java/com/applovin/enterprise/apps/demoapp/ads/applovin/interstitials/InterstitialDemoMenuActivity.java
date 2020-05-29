@@ -13,7 +13,7 @@ public class InterstitialDemoMenuActivity
     {
         DemoMenuItem[] result = {
                 new DemoMenuItem( "Basic Integration", new Intent( this, InterstitialBasicIntegrationActivity.class ) ),
-                new DemoMenuItem( "Manually loading ad", new Intent( this, InterstitialManualLoadingActivity.class ) ),
+                new DemoMenuItem( "Manually Loading Ad", new Intent( this, InterstitialManualLoadingActivity.class ) ),
                 new DemoMenuItem( "Zone Integration", new Intent( this, InterstitialZoneActivity.class ) )
         };
         return result;
