@@ -2,12 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_mediation_debugger"
-        android:icon="@drawable/ic_bug"
-        android:title="Mediation Debugger"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/action_toggle_mute"
         android:icon="@drawable/mute"
+        android:title="action toggle mute"
         app:showAsAction="always" />
 </menu>
