@@ -181,20 +181,18 @@ class EventTrackingActivity : AppCompatActivity()
                 )
         )
 
-        list_view.adapter = object : ArrayAdapter<EventItem>(this, android.R.layout.simple_list_item_2, events)
+        list_view.adapter = object : ArrayAdapter<EventItem>(this, android.R.layout.simple_list_item_1, events)
         {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
             {
                 val inflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-                val row = convertView ?: inflater.inflate(android.R.layout.simple_list_item_2, parent, false)!!
+                val row = convertView ?: inflater.inflate(android.R.layout.simple_list_item_1, parent, false)!!
 
                 val item = events[position]
 
                 val title: TextView = row.findViewById(android.R.id.text1)
                 title.text = item.name
-                val subtitle: TextView = row.findViewById(android.R.id.text2)
-                subtitle.text = item.description
 
                 return row
             }

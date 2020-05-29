@@ -235,7 +235,7 @@ public class EventTrackingActivity
         };
 
         ListView listView = (ListView) findViewById( R.id.listView );
-        ArrayAdapter<EventItem> listAdapter = new ArrayAdapter<EventItem>( this, android.R.layout.simple_list_item_2, events )
+        ArrayAdapter<EventItem> listAdapter = new ArrayAdapter<EventItem>( this, android.R.layout.simple_list_item_1, events )
         {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
@@ -244,15 +244,13 @@ public class EventTrackingActivity
                 if ( row == null )
                 {
                     LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-                    row = inflater.inflate( android.R.layout.simple_list_item_2, parent, false );
+                    row = inflater.inflate( android.R.layout.simple_list_item_1, parent, false );
                 }
 
                 EventItem item = events[position];
 
                 TextView title = (TextView) row.findViewById( android.R.id.text1 );
                 title.setText( item.getName() );
-                TextView subtitle = (TextView) row.findViewById( android.R.id.text2 );
-                subtitle.setText( item.getDescription() );
 
                 return row;
             }
