@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ads.max.banner
 
 import android.os.Bundle
 import com.applovin.enterprise.apps.demoapp.kotlin.R

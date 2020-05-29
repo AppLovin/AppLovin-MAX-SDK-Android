@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.LayoutEditorBannerAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.ProgrammaticBannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity
@@ -22,6 +20,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.Interstit
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -50,8 +49,7 @@ class MainActivity : AppCompatActivity(),
                 SectionHeader("MAX"),
                 AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
-                AdType("Programmatic Banners", Intent(this, ProgrammaticBannerAdActivity::class.java)),
-                AdType("Layout Editor Banners", Intent(this, LayoutEditorBannerAdActivity::class.java)),
+                AdType("Banners", Intent(this, BannerAdActivity::class.java)),
                 SectionHeader("SUPPORT"),
                 AdType("Resources", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))),
                 AdType("Contact", Intent(makeContactIntent()))
@@ -91,7 +89,9 @@ class MainActivity : AppCompatActivity(),
     {
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.type = "text/plain"
-        intent.data = Uri.parse("mailto:" + "support@applovin.com")
+        intent.data = Uri.parse("mailto:")
+        val to = arrayOf("support@applovin.com")
+        intent.putExtra(Intent.EXTRA_EMAIL, to)
         intent.putExtra(Intent.EXTRA_SUBJECT, "Android SDK support")
         intent.putExtra(Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: ${AppLovinSdk.VERSION}")
         return Intent.createChooser(intent, "Send Email")

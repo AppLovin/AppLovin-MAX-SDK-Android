@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ads.max.banner
 
 import android.graphics.Color
 import android.os.Bundle

@@ -23,9 +23,8 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActiv
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.LayoutEditorBannerAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.ProgrammaticBannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -99,8 +98,10 @@ public class MainActivity
     private Intent getContactIntent()
     {
         Intent intent = new Intent( Intent.ACTION_SENDTO );
-        intent.setType( "text/plain" );;
-        intent.putExtra( Intent.EXTRA_EMAIL, "support@applovin.com" );
+        intent.setType( "text/plain" );
+        intent.setData(Uri.parse("mailto:"));
+        String[] to = {"support@applovin.com"};
+        intent.putExtra( Intent.EXTRA_EMAIL, to);
         intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
         intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
         return intent;
@@ -147,8 +148,7 @@ public class MainActivity
         items.add( new SectionHeader( "MAX" ) );
         items.add( new AdType( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Programmatic Banners", new Intent( this, ProgrammaticBannerAdActivity.class ) ) );
-        items.add( new AdType( "Layout Editor Banners", new Intent( this, LayoutEditorBannerAdActivity.class ) ) );
+        items.add( new AdType( "Banner", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
         items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
