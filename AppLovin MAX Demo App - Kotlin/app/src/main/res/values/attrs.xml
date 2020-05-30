@@ -2,4 +2,6 @@
 <resources>
     <dimen name="banner_height">50dp</dimen>
     <bool name="is_tablet">false</bool>
+    <dimen name="mrec_height">250dp</dimen>
+    <dimen name="mrec_width">300dp</dimen>
 </resources>

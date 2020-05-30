@@ -25,6 +25,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideos
 import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -149,6 +150,7 @@ public class MainActivity
         items.add( new AdType( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Banner", new Intent( this, BannerAdActivity.class ) ) );
+        items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
         items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );

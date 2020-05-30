@@ -21,6 +21,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActiv
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity(),
                 AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)),
                 AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
                 AdType("Banners", Intent(this, BannerAdActivity::class.java)),
+                AdType("MRECs", Intent(this, MrecAdActivity::class.java)),
                 SectionHeader("SUPPORT"),
                 AdType("Resources", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))),
                 AdType("Contact", Intent(makeContactIntent()))
