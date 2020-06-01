@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/banner_programmatic_layout"
-    tools:context=".banners.BannerProgrammaticActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerProgrammaticActivity">
 
     <TextView
         android:id="@+id/status_label"

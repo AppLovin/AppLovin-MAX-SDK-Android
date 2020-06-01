@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/mrec_programmatic_constraint_layout"
-    tools:context="com.applovin.apps.demoapp.mrecs.MRecProgrammaticActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity">
 
     <!-- To automatically load an ad, add the next the next two lines into the <com.applovin.adview.AppLovinAdView> element -->
     <!--xmlns:demo="http://schemas.applovin.com/android/1.0"-->

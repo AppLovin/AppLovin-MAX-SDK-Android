@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".rewarded.RewardedVideosActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosActivity">
 
     <TextView
         android:id="@+id/status_label"

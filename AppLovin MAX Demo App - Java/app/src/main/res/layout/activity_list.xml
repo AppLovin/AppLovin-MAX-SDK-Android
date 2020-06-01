@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".eventtracking.EventTrackingActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity">
 
     <ListView
         android:id="@+id/listView"

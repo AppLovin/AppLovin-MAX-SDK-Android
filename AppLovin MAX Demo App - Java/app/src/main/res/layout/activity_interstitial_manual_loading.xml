@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".interstitials.InterstitialManualLoadingActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialManualLoadingActivity">
 
     <TextView
         android:id="@+id/status_label"
