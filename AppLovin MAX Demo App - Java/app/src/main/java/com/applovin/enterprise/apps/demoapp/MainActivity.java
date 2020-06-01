@@ -175,6 +175,15 @@ public class MainActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        muteToggleMenuItem = menu.findItem( R.id.action_toggle_mute );
+        muteToggleMenuItem.setIcon( getMuteIconForCurrentSdkMuteSetting() );
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(final MenuItem item)
     {
         if ( item.getItemId() == R.id.action_toggle_mute )
