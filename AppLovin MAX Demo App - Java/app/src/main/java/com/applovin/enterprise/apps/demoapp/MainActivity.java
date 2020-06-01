@@ -149,7 +149,7 @@ public class MainActivity
         items.add( new SectionHeader( "MAX" ) );
         items.add( new AdType( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Banner", new Intent( this, BannerAdActivity.class ) ) );
+        items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
