@@ -33,7 +33,7 @@ public class InterstitialAdActivity
 
         setupCallbacksRecyclerView();
 
-        interstitialAd = new MaxInterstitialAd( "YOUR_AD_UNIT_ID", this );
+        interstitialAd = new MaxInterstitialAd( "INTER_AD_UNT_ID", this );
         interstitialAd.setListener( this );
 
         // Load the first ad.
