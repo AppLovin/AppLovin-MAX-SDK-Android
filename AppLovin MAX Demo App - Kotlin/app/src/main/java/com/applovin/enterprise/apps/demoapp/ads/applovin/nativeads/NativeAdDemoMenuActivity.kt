@@ -7,7 +7,7 @@ import com.applovin.enterprise.apps.demoapp.ads.DemoMenuItem
 class NativeAdDemoMenuActivity : DemoMenuActivity()
 {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
-            DemoMenuItem("Single ad", Intent(this, NativeAdCarouselUIActivity::class.java)),
-            DemoMenuItem("Multiple ads", Intent(this, NativeAdRecyclerViewActivity::class.java))
+            DemoMenuItem("Single Ad", Intent(this, NativeAdCarouselUIActivity::class.java)),
+            DemoMenuItem("Multiple Ads", Intent(this, NativeAdRecyclerViewActivity::class.java))
     )
 }
