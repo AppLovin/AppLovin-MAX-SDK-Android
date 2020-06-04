@@ -32,7 +32,7 @@ public class ProgrammaticBannerAdActivity
 
         setupCallbacksRecyclerView();
 
-        adView = new MaxAdView( "BANNER_AD_UNIT_ID", this );
+        adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
         adView.setListener( this );
 
         // Set the height of the banner ad based on the device type.

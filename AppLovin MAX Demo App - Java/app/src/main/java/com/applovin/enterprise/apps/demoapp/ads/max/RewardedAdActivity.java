@@ -34,7 +34,7 @@ public class RewardedAdActivity
 
         setupCallbacksRecyclerView();
 
-        rewardedAd = MaxRewardedAd.getInstance( "ca944dbf3364acd6", this );
+        rewardedAd = MaxRewardedAd.getInstance( "YOUR_AD_UNIT_ID", this );
         rewardedAd.setListener( this );
 
         // Load the first ad.
