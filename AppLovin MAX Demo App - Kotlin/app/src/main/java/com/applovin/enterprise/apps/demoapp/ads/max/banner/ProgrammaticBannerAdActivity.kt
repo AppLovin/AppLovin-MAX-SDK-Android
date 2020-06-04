@@ -29,7 +29,7 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        adView = MaxAdView("YOUR_AD_UNIT_ID", this)
+        adView = MaxAdView("BANNER_AD_UNIT_ID", this)
         adView.setListener(this)
 
         val isTablet = AppLovinSdkUtils.isTablet(this)
