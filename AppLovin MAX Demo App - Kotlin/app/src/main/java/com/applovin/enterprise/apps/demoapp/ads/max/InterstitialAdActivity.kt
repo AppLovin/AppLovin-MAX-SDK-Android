@@ -29,7 +29,7 @@ class InterstitialAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        interstitialAd = MaxInterstitialAd("INTER_AD_UNT_ID", this)
+        interstitialAd = MaxInterstitialAd("YOUR_AD_UNIT_ID", this)
         interstitialAd.setListener(this)
 
         // Load the first ad.

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="16dp"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.InterstitialBasicIntegrationActivity">
+    tools:context="com.applovin.apps.kotlindemoapp.interstitials.InterstitialBasicIntegrationActivity">
 
     <TextView
         android:id="@+id/status_label"
