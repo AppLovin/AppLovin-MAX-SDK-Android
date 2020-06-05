@@ -29,6 +29,14 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="Banners"
@@ -45,21 +53,13 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="MRECs"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.LayoutEditorMrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.ProgrammaticMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.ProgrammaticMrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
@@ -84,16 +84,6 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosZoneActivity"
             android:label="@string/title_activity_rewarded_videos_zone_integration" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity"
-            android:label="@string/title_activity_native_ad_list" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdCarouselUIActivity"
-            android:label="@string/title_activity_native_ad_carousel_ui"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdRecyclerViewActivity"
-            android:label="@string/title_activity_native_ad_recycler_view" />
-        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity"
             android:label="@string/title_activity_banner_list" />
         <activity
@@ -114,6 +104,16 @@
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
             android:label="@string/title_activity_mrec_layout_editor" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity"
+            android:label="@string/title_activity_native_ad_list" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdCarouselUIActivity"
+            android:label="@string/title_activity_native_ad_carousel_ui"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdRecyclerViewActivity"
+            android:label="@string/title_activity_native_ad_recycler_view" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity"
             android:label="@string/title_activity_leader_list" />
