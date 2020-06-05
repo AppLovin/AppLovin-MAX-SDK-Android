@@ -17,6 +17,7 @@ import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity
+import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
@@ -31,6 +32,7 @@ import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity(),
         MainRecyclerViewAdapter.OnMainListItemClickListener
@@ -38,25 +40,41 @@ class MainActivity : AppCompatActivity(),
 
     private lateinit var muteToggleMenuItem: MenuItem
 
-    private val mainListItems: List<ListItem> by lazy {
-        listOf(
-                SectionHeader("APPLOVIN"),
-                AdType("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)),
-                AdType("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)),
-                AdType("Banners", Intent(this, BannerDemoMenuActivity::class.java)),
-                AdType("MRECs", Intent(this, MRecDemoMenuActivity::class.java)),
-                AdType("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)),
-                AdType("Event Tracking", Intent(this, EventTrackingActivity::class.java)),
-                SectionHeader("MAX"),
-                AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)),
-                AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)),
-                AdType("Banners", Intent(this, BannerAdActivity::class.java)),
-                AdType("MRECs", Intent(this, MrecAdActivity::class.java)),
-                SectionHeader("SUPPORT"),
-                AdType("Resources", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))),
-                AdType("Contact", Intent(makeContactIntent()))
-
+    private fun generateMainListItems(): List<ListItem> {
+        val items: MutableList<ListItem> =
+            ArrayList()
+        items.add(SectionHeader("APPLOVIN"))
+        items.add(AdType("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)))
+        items.add(AdType("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)))
+        items.add(AdType("Banners", Intent(this, BannerDemoMenuActivity::class.java)))
+        items.add(AdType("MRECs", Intent(this, MRecDemoMenuActivity::class.java)))
+        items.add(AdType("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)))
+        items.add(AdType("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
+        items.add(SectionHeader("MAX"))
+        items.add(AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
+        items.add(AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)))
+        items.add(AdType("Banners", Intent(this, BannerAdActivity::class.java)))
+        items.add(AdType("MRECs", Intent(this, MrecAdActivity::class.java)))
+        items.add(SectionHeader("SUPPORT"))
+        items.add(
+            AdType(
+                "Resources",
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://support.applovin.com/support/home")
+                )
+            )
         )
+        items.add(AdType("Contact", Intent(makeContactIntent())))
+        val isTablet = resources.getBoolean(R.bool.is_tablet)
+        if (isTablet) {
+            val menuItems =
+                ArrayList<ListItem>(items.size + 1)
+            menuItems.addAll(items)
+            // Add Leaders menu item below MRECs.
+            items.add(AdType("Leaders", Intent(this, LeaderDemoMenuActivity::class.java)))
+        }
+        return items
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -65,7 +83,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val recyclerViewAdapter = MainRecyclerViewAdapter(mainListItems, this, this)
+        val recyclerViewAdapter = MainRecyclerViewAdapter(generateMainListItems(), this, this)
         val manager = LinearLayoutManager(this)
         val decoration = DividerItemDecoration(this, manager.orientation)
 
