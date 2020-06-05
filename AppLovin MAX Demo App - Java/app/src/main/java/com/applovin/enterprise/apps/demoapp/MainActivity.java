@@ -9,13 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity;
@@ -34,9 +27,17 @@ import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * The main {@link android.app.Activity} of this app.
@@ -101,9 +102,9 @@ public class MainActivity
     {
         Intent intent = new Intent( Intent.ACTION_SENDTO );
         intent.setType( "text/plain" );
-        intent.setData(Uri.parse("mailto:"));
-        String[] to = {"support@applovin.com"};
-        intent.putExtra( Intent.EXTRA_EMAIL, to);
+        intent.setData( Uri.parse( "mailto:" ) );
+        String[] to = { "support@applovin.com" };
+        intent.putExtra( Intent.EXTRA_EMAIL, to );
         intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
         intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
         return intent;
@@ -143,7 +144,18 @@ public class MainActivity
         items.add( new SectionHeader( "APPLOVIN" ) );
         items.add( new AdType( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
         items.add( new AdType( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
+
+        // Add "Leaders" menu item for tablets
+        if ( AppLovinSdkUtils.isTablet( this ) )
+        {
+            items.add( new AdType( "Leaders", new Intent( this, LeaderDemoMenuActivity.class ) ) );
+        }
+        // Add "Banners" menu item for phones
+        else
+        {
+            items.add( new AdType( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
+        }
+
         items.add( new AdType( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
         items.add( new AdType( "Native Ads", new Intent( this, NativeAdDemoMenuActivity.class ) ) );
         items.add( new AdType( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
@@ -153,16 +165,9 @@ public class MainActivity
         items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
-        items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
+        items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
         items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
-        boolean isTablet = getResources().getBoolean( R.bool.is_tablet );
-        if (isTablet)
-        {
-            ArrayList<ListItem> menuItems = new ArrayList<>( items.size() + 1 );
-            menuItems.addAll(items);
-            // Add Leaders menu item below MRECs.
-            items.add( new AdType("Leaders", new Intent(this, LeaderDemoMenuActivity.class)));
-        }
+
         return items;
     }
 
