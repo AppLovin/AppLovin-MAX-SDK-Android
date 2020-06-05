@@ -1,23 +1,20 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.leaders;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.sdk.AppLovinAd;
-import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 
 public class LeaderLayoutEditorActivity
         extends AdStatusActivity
 {
-
     @Override
     protected void onCreate(final Bundle savedInstanceState)
     {
@@ -26,17 +23,12 @@ public class LeaderLayoutEditorActivity
 
         adStatusTextView = findViewById( R.id.status_label );
 
-        final AppLovinAdView adView = findViewById( R.id.ad_view );
+        AppLovinAdView adView = findViewById( R.id.ad_view );
 
-        final Button loadButton = findViewById( R.id.load_button );
-        loadButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(final View view)
-            {
-                log( "Loading ad..." );
-                adView.loadNextAd();
-            }
+        Button loadButton = findViewById( R.id.load_button );
+        loadButton.setOnClickListener( view -> {
+            log( "Loading ad..." );
+            adView.loadNextAd();
         } );
 
         //
@@ -73,14 +65,7 @@ public class LeaderLayoutEditorActivity
             }
         } );
 
-        adView.setAdClickListener( new AppLovinAdClickListener()
-        {
-            @Override
-            public void adClicked(final AppLovinAd ad)
-            {
-                log( "Leader clicked" );
-            }
-        } );
+        adView.setAdClickListener( ad -> log( "Leader clicked" ) );
 
         adView.setAdViewEventListener( new AppLovinAdViewEventListener()
         {

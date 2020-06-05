@@ -11,10 +11,9 @@ public class LeaderDemoMenuActivity
     @Override
     protected DemoMenuItem[] getListViewContents()
     {
-        DemoMenuItem[] result = {
+        return new DemoMenuItem[] {
                 new DemoMenuItem( "Programmatic", new Intent( this, LeaderProgrammaticActivity.class ) ),
                 new DemoMenuItem( "Layout Editor", new Intent( this, LeaderLayoutEditorActivity.class ) ),
         };
-        return result;
     }
 }

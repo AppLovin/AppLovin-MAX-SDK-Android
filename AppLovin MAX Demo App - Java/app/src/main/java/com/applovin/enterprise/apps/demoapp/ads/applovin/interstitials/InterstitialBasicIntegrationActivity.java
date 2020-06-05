@@ -19,7 +19,6 @@ import com.applovin.sdk.AppLovinSdk;
 /**
  * Created by thomasso on 10/5/15.
  */
-
 public class InterstitialBasicIntegrationActivity
         extends AdStatusActivity
         implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
@@ -33,30 +32,25 @@ public class InterstitialBasicIntegrationActivity
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_interstitial_basic_integration );
 
-        adStatusTextView = (TextView) findViewById( R.id.status_label );
+        adStatusTextView = findViewById( R.id.status_label );
 
         interstitialAd = AppLovinInterstitialAd.create( AppLovinSdk.getInstance( this ), this );
 
-        showButton = (Button) findViewById( R.id.showButton );
-        showButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                showButton.setEnabled( false );
+        showButton = findViewById( R.id.showButton );
+        showButton.setOnClickListener( v -> {
+            showButton.setEnabled( false );
 
-                log( "Showing..." );
+            log( "Showing..." );
 
-                //
-                // Optional: Set ad load, ad display, ad click, and ad video playback callback listeners
-                //
-                interstitialAd.setAdLoadListener( InterstitialBasicIntegrationActivity.this );
-                interstitialAd.setAdDisplayListener( InterstitialBasicIntegrationActivity.this );
-                interstitialAd.setAdClickListener( InterstitialBasicIntegrationActivity.this );
-                interstitialAd.setAdVideoPlaybackListener( InterstitialBasicIntegrationActivity.this ); // This will only ever be used if you have video ads enabled.
+            //
+            // Optional: Set ad load, ad display, ad click, and ad video playback callback listeners
+            //
+            interstitialAd.setAdLoadListener( InterstitialBasicIntegrationActivity.this );
+            interstitialAd.setAdDisplayListener( InterstitialBasicIntegrationActivity.this );
+            interstitialAd.setAdClickListener( InterstitialBasicIntegrationActivity.this );
+            interstitialAd.setAdVideoPlaybackListener( InterstitialBasicIntegrationActivity.this ); // This will only ever be used if you have video ads enabled.
 
-                interstitialAd.show();
-            }
+            interstitialAd.show();
         } );
     }
 

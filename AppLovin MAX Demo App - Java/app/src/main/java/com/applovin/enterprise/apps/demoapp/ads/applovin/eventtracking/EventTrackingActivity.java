@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.sdk.AppLovinEventParameters;
@@ -22,10 +19,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * Created by Monica Ong on 6/8/17.
  */
-
 public class EventTrackingActivity
         extends AppCompatActivity
 {
@@ -234,8 +232,8 @@ public class EventTrackingActivity
                                } )
         };
 
-        ListView listView = (ListView) findViewById( R.id.listView );
-        ArrayAdapter<EventItem> listAdapter = new ArrayAdapter<EventItem>( this, android.R.layout.simple_list_item_1, events )
+        ListView listView = findViewById( R.id.listView );
+        listView.setAdapter( new ArrayAdapter<EventItem>( this, android.R.layout.simple_list_item_1, events )
         {
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
@@ -249,27 +247,19 @@ public class EventTrackingActivity
 
                 EventItem item = events[position];
 
-                TextView title = (TextView) row.findViewById( android.R.id.text1 );
+                TextView title = row.findViewById( android.R.id.text1 );
                 title.setText( item.getName() );
 
                 return row;
             }
-        };
-        listView.setAdapter( listAdapter );
+        } );
 
-        AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener()
-        {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                EventItem event = events[position];
-                event.trackEvent( eventService );
+        listView.setOnItemClickListener( (parent, view, position, id) -> {
+            EventItem event = events[position];
+            event.trackEvent( eventService );
 
-                String eventName = event.getName();
-                setTitle( eventName );
-            }
-        };
-        listView.setOnItemClickListener( itemClickListener );
-
+            String eventName = event.getName();
+            setTitle( eventName );
+        } );
     }
 }

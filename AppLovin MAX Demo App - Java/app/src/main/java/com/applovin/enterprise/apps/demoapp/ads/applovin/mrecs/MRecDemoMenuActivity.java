@@ -15,10 +15,9 @@ public class MRecDemoMenuActivity
     @Override
     protected DemoMenuItem[] getListViewContents()
     {
-        DemoMenuItem[] result = {
+        return new DemoMenuItem[] {
                 new DemoMenuItem( "Programmatic", new Intent( this, MRecProgrammaticActivity.class ) ),
                 new DemoMenuItem( "Layout Editor", new Intent( this, MRecLayoutEditorActivity.class ) ),
         };
-        return result;
     }
 }

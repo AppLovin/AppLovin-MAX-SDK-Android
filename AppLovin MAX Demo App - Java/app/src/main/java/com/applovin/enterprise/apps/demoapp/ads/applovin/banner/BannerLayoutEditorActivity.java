@@ -1,24 +1,21 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banner;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.sdk.AppLovinAd;
-import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 
 /**
  * Created by thomasso on 3/6/17.
  */
-
-public final class BannerLayoutEditorActivity
+public class BannerLayoutEditorActivity
         extends AdStatusActivity
 {
     @Override
@@ -30,17 +27,12 @@ public final class BannerLayoutEditorActivity
         adStatusTextView = findViewById( R.id.status_label );
 
         // Retrieve banner from layout editor
-        final AppLovinAdView adView = findViewById( R.id.ad_view );
+        AppLovinAdView adView = findViewById( R.id.ad_view );
 
-        final Button loadButton = findViewById( R.id.load_button );
-        loadButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                log( "Loading ad..." );
-                adView.loadNextAd();
-            }
+        Button loadButton = findViewById( R.id.load_button );
+        loadButton.setOnClickListener( v -> {
+            log( "Loading ad..." );
+            adView.loadNextAd();
         } );
 
         //
@@ -77,14 +69,7 @@ public final class BannerLayoutEditorActivity
             }
         } );
 
-        adView.setAdClickListener( new AppLovinAdClickListener()
-        {
-            @Override
-            public void adClicked(final AppLovinAd ad)
-            {
-                log( "Banner Clicked" );
-            }
-        } );
+        adView.setAdClickListener( ad -> log( "Banner Clicked" ) );
 
         adView.setAdViewEventListener( new AppLovinAdViewEventListener()
         {

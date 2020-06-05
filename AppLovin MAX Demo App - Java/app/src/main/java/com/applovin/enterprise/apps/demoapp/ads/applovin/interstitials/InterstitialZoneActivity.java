@@ -1,15 +1,13 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.applovin.adview.AppLovinInterstitialAd;
 import com.applovin.adview.AppLovinInterstitialAdDialog;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.sdk.AppLovinAd;
-import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdVideoPlaybackListener;
@@ -18,7 +16,6 @@ import com.applovin.sdk.AppLovinSdk;
 /**
  * Created by suyashsaxena on 06/20/18.
  */
-
 public class InterstitialZoneActivity
         extends AdStatusActivity
 {
@@ -38,52 +35,42 @@ public class InterstitialZoneActivity
         final Button loadButton = findViewById( R.id.loadButton );
         final Button showButton = findViewById( R.id.showButton );
 
-        loadButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
+        loadButton.setOnClickListener( v -> {
+            log( "Interstitial loading..." );
+            showButton.setEnabled( false );
+
+            AppLovinSdk.getInstance( getApplicationContext() ).getAdService().loadNextAdForZoneId( "YOUR_ZONE_ID ", new AppLovinAdLoadListener()
             {
-                log( "Interstitial loading..." );
-                showButton.setEnabled( false );
-
-                AppLovinSdk.getInstance( getApplicationContext() ).getAdService().loadNextAdForZoneId( "YOUR_ZONE_ID ", new AppLovinAdLoadListener()
+                @Override
+                public void adReceived(AppLovinAd ad)
                 {
-                    @Override
-                    public void adReceived(AppLovinAd ad)
+                    log( "Interstitial Loaded" );
+
+                    currentAd = ad;
+
+                    runOnUiThread( new Runnable()
                     {
-                        log( "Interstitial Loaded" );
-
-                        currentAd = ad;
-
-                        runOnUiThread( new Runnable()
+                        @Override
+                        public void run()
                         {
-                            @Override
-                            public void run()
-                            {
-                                showButton.setEnabled( true );
-                            }
-                        } );
-                    }
+                            showButton.setEnabled( true );
+                        }
+                    } );
+                }
 
-                    @Override
-                    public void failedToReceiveAd(int errorCode)
-                    {
-                        // Look at AppLovinErrorCodes.java for list of error codes
-                        log( "Interstitial failed to load with error code " + errorCode );
-                    }
-                } );
-            }
+                @Override
+                public void failedToReceiveAd(int errorCode)
+                {
+                    // Look at AppLovinErrorCodes.java for list of error codes
+                    log( "Interstitial failed to load with error code " + errorCode );
+                }
+            } );
         } );
 
-        showButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
+        showButton.setOnClickListener( v -> {
+            if ( currentAd != null )
             {
-                if ( currentAd != null )
-                {
-                    interstitialAd.showAndRender( currentAd );
-                }
+                interstitialAd.showAndRender( currentAd );
             }
         } );
 
@@ -105,14 +92,7 @@ public class InterstitialZoneActivity
             }
         } );
 
-        interstitialAd.setAdClickListener( new AppLovinAdClickListener()
-        {
-            @Override
-            public void adClicked(AppLovinAd appLovinAd)
-            {
-                log( "Interstitial Clicked" );
-            }
-        } );
+        interstitialAd.setAdClickListener( appLovinAd -> log( "Interstitial Clicked" ) );
 
         // This will only ever be used if you have video ads enabled.
         interstitialAd.setAdVideoPlaybackListener( new AppLovinAdVideoPlaybackListener()

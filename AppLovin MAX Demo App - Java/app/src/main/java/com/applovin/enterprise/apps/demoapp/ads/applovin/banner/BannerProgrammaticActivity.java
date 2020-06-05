@@ -1,30 +1,27 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banner;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.view.ViewCompat;
 
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
 import com.applovin.sdk.AppLovinAd;
-import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdkUtils;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
+
 /**
  * Created by thomasso on 3/6/17.
  */
-
 public final class BannerProgrammaticActivity
         extends AdStatusActivity
 {
@@ -36,21 +33,16 @@ public final class BannerProgrammaticActivity
 
         adStatusTextView = findViewById( R.id.status_label );
 
-        final boolean isTablet = AppLovinSdkUtils.isTablet( this );
-        final AppLovinAdSize adSize = isTablet ? AppLovinAdSize.LEADER : AppLovinAdSize.BANNER;
-        final AppLovinAdView adView = new AppLovinAdView( adSize, this );
+        boolean isTablet = AppLovinSdkUtils.isTablet( this );
+        AppLovinAdSize adSize = isTablet ? AppLovinAdSize.LEADER : AppLovinAdSize.BANNER;
+        AppLovinAdView adView = new AppLovinAdView( adSize, this );
 
         adView.setId( ViewCompat.generateViewId() );
 
-        final Button loadButton = findViewById( R.id.load_button );
-        loadButton.setOnClickListener( new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                log( "Loading ad..." );
-                adView.loadNextAd();
-            }
+        Button loadButton = findViewById( R.id.load_button );
+        loadButton.setOnClickListener( v -> {
+            log( "Loading ad..." );
+            adView.loadNextAd();
         } );
 
         //
@@ -87,14 +79,7 @@ public final class BannerProgrammaticActivity
             }
         } );
 
-        adView.setAdClickListener( new AppLovinAdClickListener()
-        {
-            @Override
-            public void adClicked(final AppLovinAd ad)
-            {
-                log( "Banner Clicked" );
-            }
-        } );
+        adView.setAdClickListener( ad -> log( "Banner Clicked" ) );
 
         adView.setAdViewEventListener( new AppLovinAdViewEventListener()
         {
@@ -124,11 +109,11 @@ public final class BannerProgrammaticActivity
         } );
 
         // Add programmatically created banner into our container
-        final ConstraintLayout bannerProgrammaticContentLayout = findViewById( R.id.banner_programmatic_layout );
+        ConstraintLayout bannerProgrammaticContentLayout = findViewById( R.id.banner_programmatic_layout );
 
         bannerProgrammaticContentLayout.addView( adView, new ConstraintLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx( this, 50 ) ) );
 
-        final ConstraintSet constraintSet = new ConstraintSet();
+        ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone( bannerProgrammaticContentLayout );
         constraintSet.connect( adView.getId(), ConstraintSet.BOTTOM, R.id.banner_programmatic_layout, ConstraintSet.BOTTOM, 0 );
         constraintSet.applyTo( bannerProgrammaticContentLayout );

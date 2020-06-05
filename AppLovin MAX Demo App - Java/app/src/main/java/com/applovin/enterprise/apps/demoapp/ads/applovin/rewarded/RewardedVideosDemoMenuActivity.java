@@ -11,10 +11,9 @@ public class RewardedVideosDemoMenuActivity
     @Override
     protected DemoMenuItem[] getListViewContents()
     {
-        DemoMenuItem[] result = {
+        return new DemoMenuItem[] {
                 new DemoMenuItem( "Basic Integration", new Intent( this, RewardedVideosActivity.class ) ),
                 new DemoMenuItem( "Zone Integration", new Intent( this, RewardedVideosZoneActivity.class ) )
         };
-        return result;
     }
 }

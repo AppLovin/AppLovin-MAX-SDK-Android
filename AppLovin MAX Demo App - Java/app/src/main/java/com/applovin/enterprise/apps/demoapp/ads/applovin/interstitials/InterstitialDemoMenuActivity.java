@@ -11,11 +11,10 @@ public class InterstitialDemoMenuActivity
     @Override
     protected DemoMenuItem[] getListViewContents()
     {
-        DemoMenuItem[] result = {
+        return new DemoMenuItem[] {
                 new DemoMenuItem( "Basic Integration", new Intent( this, InterstitialBasicIntegrationActivity.class ) ),
                 new DemoMenuItem( "Manually Loading Ad", new Intent( this, InterstitialManualLoadingActivity.class ) ),
                 new DemoMenuItem( "Zone Integration", new Intent( this, InterstitialZoneActivity.class ) )
         };
-        return result;
     }
 }

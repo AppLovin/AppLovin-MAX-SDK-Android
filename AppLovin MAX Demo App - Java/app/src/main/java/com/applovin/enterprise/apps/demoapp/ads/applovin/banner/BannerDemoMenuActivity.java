@@ -11,11 +11,10 @@ public class BannerDemoMenuActivity
     @Override
     protected DemoMenuItem[] getListViewContents()
     {
-        DemoMenuItem[] result = {
+        return new DemoMenuItem[] {
                 new DemoMenuItem( "Programmatic", new Intent( this, BannerProgrammaticActivity.class ) ),
                 new DemoMenuItem( "Layout Editor", new Intent( this, BannerLayoutEditorActivity.class ) ),
                 new DemoMenuItem( "Zone Integration", new Intent( this, BannerZoneActivity.class ) ),
         };
-        return result;
     }
 }
