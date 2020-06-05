@@ -109,8 +109,7 @@
             android:label="@string/title_activity_native_ad_list" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdCarouselUIActivity"
-            android:label="@string/title_activity_native_ad_carousel_ui"
-            android:screenOrientation="portrait" />
+            android:label="@string/title_activity_native_ad_carousel_ui" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdRecyclerViewActivity"
             android:label="@string/title_activity_native_ad_recycler_view" />
