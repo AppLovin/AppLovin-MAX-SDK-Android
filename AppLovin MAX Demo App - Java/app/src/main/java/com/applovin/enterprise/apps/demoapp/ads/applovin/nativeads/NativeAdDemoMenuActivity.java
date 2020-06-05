@@ -12,8 +12,8 @@ public class NativeAdDemoMenuActivity
     protected DemoMenuItem[] getListViewContents()
     {
         DemoMenuItem[] result = {
-                new DemoMenuItem( "Single ad", new Intent( this, NativeAdCarouselUIActivity.class ) ),
-                new DemoMenuItem( "Multiple ads", new Intent( this, NativeAdRecyclerViewActivity.class ) )
+                new DemoMenuItem( "Single Ad", new Intent( this, NativeAdCarouselUIActivity.class ) ),
+                new DemoMenuItem( "Multiple Ads", new Intent( this, NativeAdRecyclerViewActivity.class ) )
         };
         return result;
     }
