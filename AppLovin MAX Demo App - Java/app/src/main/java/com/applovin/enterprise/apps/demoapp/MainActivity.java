@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity;
@@ -154,6 +155,14 @@ public class MainActivity
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ));
         items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
+        boolean isTablet = getResources().getBoolean( R.bool.is_tablet );
+        if (isTablet)
+        {
+            ArrayList<ListItem> menuItems = new ArrayList<>( items.size() + 1 );
+            menuItems.addAll(items);
+            // Add Leaders menu item below MRECs.
+            items.add( new AdType("Leaders", new Intent(this, LeaderDemoMenuActivity.class)));
+        }
         return items;
     }
 
