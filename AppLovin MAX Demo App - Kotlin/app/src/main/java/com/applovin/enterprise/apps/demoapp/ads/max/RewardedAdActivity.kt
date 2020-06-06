@@ -3,7 +3,8 @@ package com.applovin.enterprise.apps.demoapp.ads
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+import com.applovin.enterprise.apps.demoapp.R
+
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxReward

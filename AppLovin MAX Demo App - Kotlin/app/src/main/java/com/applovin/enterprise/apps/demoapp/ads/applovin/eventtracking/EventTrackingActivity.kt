@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+
 import com.applovin.sdk.AppLovinEventParameters
 import com.applovin.sdk.AppLovinEventService
 import com.applovin.sdk.AppLovinEventTypes
@@ -17,9 +17,10 @@ import com.applovin.sdk.AppLovinSdk
 import kotlinx.android.synthetic.main.activity_list.*
 import java.lang.Long
 
+import com.applovin.enterprise.apps.demoapp.R
+
 class EventTrackingActivity : AppCompatActivity()
 {
-
     private data class EventItem(val name: String,
                                  val description: String,
                                  val eventType: String,

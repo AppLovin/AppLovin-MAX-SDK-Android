@@ -1,17 +1,17 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banners
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
-import android.view.ViewGroup
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.sdk.*
 import kotlinx.android.synthetic.main.activity_banner_programmatic.*
+import com.applovin.enterprise.apps.demoapp.R
 
 class BannerProgrammaticActivity : AdStatusActivity()
 {

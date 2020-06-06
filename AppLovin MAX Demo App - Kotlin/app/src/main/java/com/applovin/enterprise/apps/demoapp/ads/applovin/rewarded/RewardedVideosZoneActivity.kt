@@ -2,8 +2,8 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded
 
 import android.os.Bundle
 import com.applovin.adview.AppLovinIncentivizedInterstitial
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.sdk.*
 import kotlinx.android.synthetic.main.activity_rewarded_videos.*
 

@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 
 /**
  * [RecyclerView.Adapter] used to show list of items on the main screen.

@@ -10,8 +10,9 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import com.applovin.enterprise.apps.demoapp.R
 import kotlinx.android.synthetic.main.activity_list.*
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+
 
 data class DemoMenuItem(val title: String, val intent: Intent? = null)
 abstract class DemoMenuActivity : AppCompatActivity()

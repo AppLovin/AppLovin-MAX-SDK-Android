@@ -3,13 +3,14 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials
 import android.os.Bundle
 import com.applovin.adview.AppLovinInterstitialAd
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+
 import com.applovin.sdk.AppLovinAd
 import com.applovin.sdk.AppLovinAdDisplayListener
 import com.applovin.sdk.AppLovinAdLoadListener
 import com.applovin.sdk.AppLovinAdVideoPlaybackListener
 import com.applovin.sdk.AppLovinSdk
 import kotlinx.android.synthetic.main.activity_interstitial_manual_loading.*
+import com.applovin.enterprise.apps.demoapp.R
 
 class InterstitialZoneActivity : AdStatusActivity()
 {

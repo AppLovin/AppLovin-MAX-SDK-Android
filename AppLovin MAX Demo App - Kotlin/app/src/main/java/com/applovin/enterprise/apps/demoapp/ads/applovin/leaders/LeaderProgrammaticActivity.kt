@@ -1,14 +1,14 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.leaders
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import android.view.ViewGroup
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.sdk.*
 import kotlinx.android.synthetic.main.activity_leader_programmatic.*
 

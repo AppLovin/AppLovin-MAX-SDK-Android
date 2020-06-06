@@ -2,16 +2,16 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads
 
 import android.net.Uri
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.nativeAds.AppLovinNativeAd
 import com.applovin.nativeAds.AppLovinNativeAdLoadListener
 import com.applovin.nativeAds.AppLovinNativeAdPrecacheListener

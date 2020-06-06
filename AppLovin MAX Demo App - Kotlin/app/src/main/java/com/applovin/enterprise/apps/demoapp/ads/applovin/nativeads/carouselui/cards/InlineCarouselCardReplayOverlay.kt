@@ -7,13 +7,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.applovin.enterprise.apps.demoapp.R
 
-import com.applovin.enterprise.apps.demoapp.kotlin.R
-
-
-/**
- * Created by mszaro on 4/21/15.
- */
 class InlineCarouselCardReplayOverlay : LinearLayout
 {
     var replayClickListener: View.OnClickListener? = null

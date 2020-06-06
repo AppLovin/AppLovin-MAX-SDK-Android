@@ -4,7 +4,8 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+import com.applovin.enterprise.apps.demoapp.R
+
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdViewAdListener

@@ -26,7 +26,6 @@ import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk

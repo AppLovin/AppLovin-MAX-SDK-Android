@@ -6,8 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.AppLovinCarouselViewSettings
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.cards.InlineCarouselCardMediaView
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.cards.InlineCarouselCardState

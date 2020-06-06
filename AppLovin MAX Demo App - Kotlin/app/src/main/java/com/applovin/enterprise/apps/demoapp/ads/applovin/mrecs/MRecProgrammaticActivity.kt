@@ -2,16 +2,16 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs
 
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
-import android.widget.Button
-import android.widget.TextView
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
+import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.sdk.*
 
 /**

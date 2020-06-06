@@ -13,10 +13,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
-import com.applovin.enterprise.apps.demoapp.kotlin.R
 import com.applovin.apps.kotlindemoapp.nativeads.carouselui.cards.InlineCarouselCardCallbacks
-import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.AppLovinCarouselViewSettings
 import com.applovin.apps.kotlindemoapp.nativeads.carouselui.support.AppLovinTouchToClickListener
+import com.applovin.enterprise.apps.demoapp.R
+import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.AppLovinCarouselViewSettings
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.util.LayoutUtils
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.util.LayoutUtils.WRAP_CONTENT
 import com.applovin.nativeAds.AppLovinNativeAd

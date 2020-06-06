@@ -1,5 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.cards
 
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
@@ -9,19 +10,14 @@ import android.net.Uri
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.Surface
-import android.view.TextureView
-import android.view.View
+import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.ImageView
-
-import com.applovin.enterprise.apps.demoapp.kotlin.R
-import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.AppLovinCarouselViewSettings
 import com.applovin.apps.kotlindemoapp.nativeads.carouselui.support.AspectRatioTextureView
+import com.applovin.enterprise.apps.demoapp.R
+import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.AppLovinCarouselViewSettings
 import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.carouselui.util.LayoutUtils
 import com.applovin.nativeAds.AppLovinNativeAd
 import com.applovin.sdk.AppLovinSdk
