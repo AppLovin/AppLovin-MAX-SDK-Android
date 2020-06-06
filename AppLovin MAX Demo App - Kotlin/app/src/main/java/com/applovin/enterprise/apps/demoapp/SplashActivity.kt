@@ -3,7 +3,7 @@ package com.applovin.enterprise.apps.demoapp
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.applovin.enterprise.apps.demoapp.kotlin.R
+
 import com.applovin.sdk.AppLovinSdkUtils
 import java.util.concurrent.TimeUnit
 

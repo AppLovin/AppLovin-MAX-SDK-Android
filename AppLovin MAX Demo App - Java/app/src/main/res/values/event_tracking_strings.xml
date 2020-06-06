@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_name_began_checkout">Began Checkout Event</string>
+    <string name="event_description_began_checkout">Track when user begins checkout procedure
+    </string>
+
+    <string name="event_name_cart">Cart Event</string>
+    <string name="event_description_cart">Track when user adds an item to cart</string>
+
+    <string name="event_name_achievement">Completed Achievement Event</string>
+    <string name="event_description_achievement">Track when user completed an achievement</string>
+
+    <string name="event_name_completed_checkout">Completed Checkout Event</string>
+    <string name="event_description_completed_checkout">Track when user completed checkout</string>
+
+    <string name="event_name_level">Completed Level Event</string>
+    <string name="event_description_level">Track when user completed level</string>
+
+    <string name="event_name_reservation">Created Reservation Event</string>
+    <string name="event_description_reservation">Track when user created a reservation</string>
+
+    <string name="event_name_in_app_purchase">In-App Purchase Event</string>
+    <string name="event_description_in_app_purchase">Track when user makes an in-app purchase
+    </string>
+
+    <string name="event_name_login">Login Event</string>
+    <string name="event_description_login">Track when user logs in</string>
+
+    <string name="event_name_payment_info">Payment Info Event</string>
+    <string name="event_description_payment_info">Tracks when user inputs their payment
+        information
+    </string>
+
+    <string name="event_name_registration">Registration Event</string>
+    <string name="event_description_registration">Track when user registers</string>
+
+    <string name="event_name_search">Search Event</string>
+    <string name="event_description_search">Track when user makes a search</string>
+
+    <string name="event_name_invitation">Sent Invitation Event</string>
+    <string name="event_description_invitation">Track when user sends invitation</string>
+
+    <string name="event_name_shared_link">Shared Link Event</string>
+    <string name="event_description_shared_link">Track when user shares a link</string>
+
+    <string name="event_name_virt_currency">Spent Virtual Currency Event</string>
+    <string name="event_description_virt_currency">Track when users spends virtual currency</string>
+
+    <string name="event_name_tutorial">Tutorial Event</string>
+    <string name="event_description_tutorial">Track when users does a tutorial</string>
+
+    <string name="event_name_viewed_content">Viewed Content Event</string>
+    <string name="event_description_viewed_content">Track when user views content</string>
+
+    <string name="event_name_viewed_product">Viewed Product Event</string>
+    <string name="event_description_viewed_product">Track when user views product</string>
+
+    <string name="event_name_wishlist">Wishlist Event</string>
+    <string name="event_description_wishlist">Track when user adds an item to their wishlist
+    </string>
+
+    <string name="event_parameter_product_description">PRODUCT SKU OR ID</string>
+    <string name="event_parameter_price_description">PRICE OF ITEM</string>
+    <string name="event_parameter_currency_description">3-LETTER CURRENCY CODE</string>
+    <string name="event_parameter_achievement_description">ACHIEVEMENT NAME OR ID</string>
+    <string name="event_parameter_transaction_description">UNIQUE TRANSACTION ID</string>
+    <string name="event_parameter_amount_description">AMOUNT OF MONEY SPENT</string>
+    <string name="event_parameter_level_description">LEVEL NAME OR NUMBER</string>
+    <string name="event_parameter_user_description">USERNAME</string>
+    <string name="event_parameter_search_description">USER\'S SEARCH STRING</string>
+    <string name="event_parameter_content_description">SOME ID DESCRIBING CONTENT</string>
+    <string name="event_paramter_virt_currency_description">CURRENCY NAME</string>
+    <string name="event_parameter_virt_amount_description">NUMBER OF COINS SPENT</string>
+
+</resources>

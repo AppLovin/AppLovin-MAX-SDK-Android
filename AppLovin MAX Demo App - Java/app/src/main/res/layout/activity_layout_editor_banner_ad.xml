@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ads.LayoutEditorBannerAdActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.max.banner.LayoutEditorBannerAdActivity">
 
     <com.applovin.mediation.ads.MaxAdView
         maxads:adUnitId="YOUR_AD_UNIT_ID"

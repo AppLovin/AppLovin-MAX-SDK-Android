@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="banner_height">90dp</dimen>
-    <dimen name="mrec_height">250dp</dimen>
-    <dimen name="mrec_width">300dp</dimen>
-</resources>
