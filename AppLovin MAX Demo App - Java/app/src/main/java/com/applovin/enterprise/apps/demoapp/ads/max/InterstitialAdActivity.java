@@ -65,10 +65,10 @@ public class InterstitialAdActivity
     {
         logCallback();
 
-        // Interstitial ad failed to load. We recommend retrying with exponentially higher delays.
+        // Interstitial ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay.
 
         retryAttempt++;
-        long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, retryAttempt ) );
+        long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
 
         new Handler().postDelayed( new Runnable()
         {
