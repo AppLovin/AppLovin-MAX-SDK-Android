@@ -66,7 +66,7 @@ public class RewardedAdActivity
     {
         logCallback();
 
-        // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay.
+        // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
 
         retryAttempt++;
         long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );

@@ -60,7 +60,7 @@ class RewardedAdActivity : BaseAdActivity(),
     {
         logCallback()
 
-        // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay.
+        // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
 
         retryAttempt++
         val delayMillis = TimeUnit.SECONDS.toMillis(Math.pow(2.0, Math.min(6.0, retryAttempt)).toLong())
