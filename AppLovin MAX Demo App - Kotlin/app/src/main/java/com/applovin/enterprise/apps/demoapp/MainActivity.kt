@@ -64,8 +64,7 @@ class MainActivity : AppCompatActivity(),
         items.add(AdType("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(AdType("MRECs", Intent(this, MrecAdActivity::class.java)))
         items.add(SectionHeader("SUPPORT"))
-        items.add(AdType("Resources", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
-        items.add(AdType("Contact", Intent(makeContactIntent())))
+        items.add(AdType("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
 
         return items
     }
@@ -95,17 +94,6 @@ class MainActivity : AppCompatActivity(),
 
         // Check that SDK key is present in Android Manifest
         checkSdkKey()
-    }
-
-    private fun makeContactIntent(): Intent {
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.type = "text/plain"
-        intent.data = Uri.parse("mailto:")
-        val to = arrayOf("support@applovin.com")
-        intent.putExtra(Intent.EXTRA_EMAIL, to)
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Android SDK support")
-        intent.putExtra(Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: ${AppLovinSdk.VERSION}")
-        return Intent.createChooser(intent, "Send Email")
     }
 
     override fun onItemClicked(item: ListItem) {
