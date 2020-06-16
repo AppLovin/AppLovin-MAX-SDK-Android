@@ -30,4 +30,4 @@ To get started with the demo apps, follow the instructions below:
 | -5601         | Indicates the provided `Activity` instance has been garbage collected while the AppLovin MAX SDK attempts to re-load an expired ad. |
 
 ## Support
-We recommend using GitHub to file issues. For feature requests, improvements, questions or any other integration issues using MAX Mediation by AppLovin, please reach out to your account team and copy devsupport@applovin.com.
+We recommend using GitHub to file issues. For feature requests, improvements, questions or any other integration issues using MAX Mediation by AppLovin, contact us via our support page https://monetization-support.applovin.com/hc/en-us.

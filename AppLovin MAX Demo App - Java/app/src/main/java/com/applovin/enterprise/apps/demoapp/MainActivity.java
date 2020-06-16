@@ -98,18 +98,6 @@ public class MainActivity
         }
     }
 
-    private Intent getContactIntent()
-    {
-        Intent intent = new Intent( Intent.ACTION_SENDTO );
-        intent.setType( "text/plain" );
-        intent.setData( Uri.parse( "mailto:" ) );
-        String[] to = { "support@applovin.com" };
-        intent.putExtra( Intent.EXTRA_EMAIL, to );
-        intent.putExtra( Intent.EXTRA_SUBJECT, "Android SDK support" );
-        intent.putExtra( Intent.EXTRA_TEXT, "\n\n\n---\nSDK Version: " + AppLovinSdk.VERSION );
-        return intent;
-    }
-
     // Mute Toggling
 
     /**
@@ -165,8 +153,7 @@ public class MainActivity
         items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
         items.add( new SectionHeader( "SUPPORT" ) );
-        items.add( new AdType( "Resources", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
-        items.add( new AdType( "Contact", new Intent( getContactIntent() ) ) );
+        items.add( new AdType( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
 
         return items;
     }
