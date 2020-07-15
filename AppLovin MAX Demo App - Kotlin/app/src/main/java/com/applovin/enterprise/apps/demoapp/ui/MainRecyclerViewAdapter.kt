@@ -20,15 +20,19 @@ import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
                               private val listener: OnMainListItemClickListener,
                               context: Context)
-    : RecyclerView.Adapter<MainRecyclerViewAdapter.ViewHolder>() {
-    interface OnMainListItemClickListener {
+    : RecyclerView.Adapter<MainRecyclerViewAdapter.ViewHolder>()
+{
+    interface OnMainListItemClickListener
+    {
         fun onItemClicked(item: ListItem)
     }
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val viewId = when (viewType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    {
+        val viewId = when (viewType)
+        {
             ListItem.SECTION_HEADER -> R.layout.section_header_item
             ListItem.AD_ITEM -> R.layout.ad_type_item
             ListItem.FOOTER -> R.layout.footer_item
@@ -38,8 +42,10 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         return ViewHolder(layoutInflater.inflate(viewId, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.title.text = when (val item = listItems[position]) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+    {
+        holder.title.text = when (val item = listItems[position])
+        {
             is SectionHeader -> item.title
             is AdType -> item.adType
             is Footer -> item.getFooterDetails()
@@ -47,18 +53,22 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         }
     }
 
-    override fun getItemCount(): Int {
+    override fun getItemCount(): Int
+    {
         return listItems.count()
     }
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int
+    {
         return listItems[position].type
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    {
         val title: TextView = view.findViewById(R.id.title)
 
-        init {
+        init
+        {
             title.setOnClickListener {
                 listener.onItemClicked(listItems[adapterPosition])
             }

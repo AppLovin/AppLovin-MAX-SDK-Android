@@ -5,12 +5,15 @@ import android.os.Build;
 import com.applovin.enterprise.apps.demoapp.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 
-public class FooterType implements ListItem {
+public class FooterType
+        implements ListItem
+{
 
     /**
      * @return The device details: App Version, SDK Version, OS Version
      */
-    public String getAppDetails() {
+    public String getAppDetails()
+    {
         String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
         final String versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
@@ -23,7 +26,8 @@ public class FooterType implements ListItem {
     }
 
     @Override
-    public int getType() {
+    public int getType()
+    {
         return TYPE_FOOTER;
     }
 }
