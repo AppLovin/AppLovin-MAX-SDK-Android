@@ -12,16 +12,15 @@ public class FooterType implements ListItem {
      */
     public String getAppDetails()
     {
-        String versionName = BuildConfig.VERSION_NAME;
+        String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
-        Integer deviceOs = Build.VERSION.SDK_INT;
+        final String versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+        final int apiLevel = Build.VERSION.SDK_INT;
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("Version Name: ").append(versionName).append("\n");
-        builder.append("SDK Version: ").append(sdkVersion).append(("\n"));
-        builder.append("Android Version: ").append(deviceOs);
-
-        return builder.toString();
+        final String footer = "\nApp Version: " + appVersion +
+                "\nSDK Version: " + sdkVersion +
+                "\nOS Version: " + versionName + "(API " + apiLevel + ")";
+        return footer;
     }
 
     @Override
