@@ -13,7 +13,7 @@ import com.applovin.sdk.AppLovinSdk
  */
 data class Footer(override var type: Int = ListItem.FOOTER) : ListItem
 {
-    fun getFooterDetails(): String
+    fun getAppDetails(): String
     {
         val appVersion: String = BuildConfig.VERSION_NAME
         val sdkVersion: String = AppLovinSdk.VERSION

@@ -48,7 +48,7 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         {
             is SectionHeader -> item.title
             is AdType -> item.adType
-            is Footer -> item.getFooterDetails()
+            is Footer -> item.getAppDetails()
             else -> ""
         }
     }
