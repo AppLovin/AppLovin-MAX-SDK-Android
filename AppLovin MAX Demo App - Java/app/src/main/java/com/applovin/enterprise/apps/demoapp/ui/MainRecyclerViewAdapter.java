@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 
@@ -55,6 +56,10 @@ public class MainRecyclerViewAdapter
         {
             viewId = R.layout.ad_type_item;
         }
+        else if ( viewType == ListItem.TYPE_FOOTER)
+        {
+            viewId = R.layout.recycler_view_footer_item;
+        }
         else
         {
             viewId = View.NO_ID;
@@ -74,6 +79,9 @@ public class MainRecyclerViewAdapter
         else if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
             holder.title.setText( ( (AdType) item ).getAdType() );
+        }
+        else if (item.getType() == ListItem.TYPE_FOOTER){
+            holder.title.setText(((FooterType) item).getAppDetails());
         }
     }
 
