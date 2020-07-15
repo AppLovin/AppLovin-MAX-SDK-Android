@@ -8,7 +8,7 @@ import com.applovin.sdk.AppLovinSdk;
 public class FooterType implements ListItem {
 
     /**
-     * @return The ad type that will be shown.
+     * @return The device details: App Version, SDK Version, OS Version
      */
     public String getAppDetails() {
         String appVersion = BuildConfig.VERSION_NAME;
