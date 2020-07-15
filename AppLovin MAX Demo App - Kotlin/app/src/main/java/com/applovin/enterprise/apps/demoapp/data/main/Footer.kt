@@ -11,8 +11,8 @@ import com.applovin.sdk.AppLovinSdk
  * <p>
  * Created by Jason Zheng on 7/15/2020.
  */
-data class Footer(override var type: Int = ListItem.FOOTER) : ListItem{
-    fun getFooterDetails():String{
+data class Footer(override var type: Int = ListItem.FOOTER) : ListItem {
+    fun getFooterDetails(): String {
         val appVersion: String = BuildConfig.VERSION_NAME
         val sdkVersion: String = AppLovinSdk.VERSION
         val versionName = VERSION_CODES::class.java.fields[Build.VERSION.SDK_INT].name

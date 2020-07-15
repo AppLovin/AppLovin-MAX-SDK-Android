@@ -10,8 +10,7 @@ public class FooterType implements ListItem {
     /**
      * @return The ad type that will be shown.
      */
-    public String getAppDetails()
-    {
+    public String getAppDetails() {
         String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
         final String versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
