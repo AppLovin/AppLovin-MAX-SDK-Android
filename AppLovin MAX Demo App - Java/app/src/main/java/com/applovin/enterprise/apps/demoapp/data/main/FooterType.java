@@ -9,7 +9,7 @@ import com.applovin.sdk.AppLovinSdk;
 public class FooterType
         implements ListItem
 {
-    private static final String TAG = "DemoAppFooter";
+    private static final String TAG = "Footer";
 
     /**
      * @return The device details: App Version, SDK Version, OS Version
