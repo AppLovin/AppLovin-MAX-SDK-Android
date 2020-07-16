@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
+import com.applovin.enterprise.apps.demoapp.data.main.MediationDebuggerType
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 
 /**
@@ -34,6 +35,7 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         {
             ListItem.SECTION_HEADER -> R.layout.section_header_item
             ListItem.AD_ITEM -> R.layout.ad_type_item
+            ListItem.MEDIATION_DEBUGGER -> R.layout.mediation_debugger_item
             else -> View.NO_ID
         }
 
@@ -46,6 +48,7 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         {
             is SectionHeader -> item.title
             is AdType -> item.adType
+            is MediationDebuggerType -> item.title
             else -> ""
         }
     }
