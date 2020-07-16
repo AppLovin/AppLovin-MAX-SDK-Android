@@ -19,10 +19,10 @@ data class Footer(override val type: Int = ListItem.FOOTER) : ListItem
     {
         val appVersion: String = BuildConfig.VERSION_NAME
         val sdkVersion: String = AppLovinSdk.VERSION
-        var versionName:String = ""
+        var versionName: String = ""
         try
         {
-             versionName = VERSION_CODES::class.java.fields[Build.VERSION.SDK_INT].name
+            versionName = VERSION_CODES::class.java.fields[Build.VERSION.SDK_INT].name
         }
         catch (ex: Exception)
         {
