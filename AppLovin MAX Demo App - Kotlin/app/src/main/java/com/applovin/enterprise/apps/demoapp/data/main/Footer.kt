@@ -11,7 +11,7 @@ import com.applovin.sdk.AppLovinSdk
  * <p>
  * Created by Jason Zheng on 7/15/2020.
  */
-data class Footer(override var type: Int = ListItem.FOOTER) : ListItem
+data class Footer(override val type: Int = ListItem.FOOTER) : ListItem
 {
     fun getAppDetails(): String
     {

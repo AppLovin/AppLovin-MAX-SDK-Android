@@ -14,12 +14,12 @@ public class FooterType
      */
     public String getAppDetails()
     {
-        final String appVersion = BuildConfig.VERSION_NAME;
-        final String sdkVersion = AppLovinSdk.VERSION;
-        final String versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-        final int apiLevel = Build.VERSION.SDK_INT;
+        String appVersion = BuildConfig.VERSION_NAME;
+        String sdkVersion = AppLovinSdk.VERSION;
+        String versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+        int apiLevel = Build.VERSION.SDK_INT;
 
-        final String footer = "\nApp Version: " + appVersion +
+        String footer = "\nApp Version: " + appVersion +
                 "\nSDK Version: " + sdkVersion +
                 "\nOS Version: " + versionName + "(API " + apiLevel + ")";
         return footer;
