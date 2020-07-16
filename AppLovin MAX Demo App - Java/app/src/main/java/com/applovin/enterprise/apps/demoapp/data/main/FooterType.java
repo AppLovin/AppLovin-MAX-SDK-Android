@@ -8,7 +8,6 @@ import com.applovin.sdk.AppLovinSdk;
 public class FooterType
         implements ListItem
 {
-
     /**
      * @return The device details: App Version, SDK Version, OS Version
      */
