@@ -35,7 +35,7 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         {
             ListItem.SECTION_HEADER -> R.layout.section_header_item
             ListItem.AD_ITEM -> R.layout.ad_type_item
-            ListItem.MEDIATION_DEBUGGER -> R.layout.mediation_debugger_item
+            ListItem.MEDIATION_DEBUGGER -> R.layout.ad_type_item
             else -> View.NO_ID
         }
 

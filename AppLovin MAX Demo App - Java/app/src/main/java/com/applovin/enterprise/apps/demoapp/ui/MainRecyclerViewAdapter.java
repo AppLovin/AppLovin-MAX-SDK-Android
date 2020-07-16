@@ -52,13 +52,9 @@ public class MainRecyclerViewAdapter
         {
             viewId = R.layout.section_header_item;
         }
-        else if ( viewType == ListItem.TYPE_AD_ITEM )
+        else if ( viewType == ListItem.TYPE_AD_ITEM || viewType == ListItem.TYPE_MEDIATION_DEBUGGER )
         {
             viewId = R.layout.ad_type_item;
-        }
-        else if ( viewType == ListItem.TYPE_MEDIATION_DEBUGGER )
-        {
-            viewId = R.layout.mediation_debugger_item;
         }
         else
         {
