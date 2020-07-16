@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.main.MediationDebuggerType;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 
 import java.util.List;
@@ -55,6 +56,10 @@ public class MainRecyclerViewAdapter
         {
             viewId = R.layout.ad_type_item;
         }
+        else if ( viewType == ListItem.TYPE_MEDIATION_DEBUGGER )
+        {
+            viewId = R.layout.mediation_debugger_item;
+        }
         else
         {
             viewId = View.NO_ID;
@@ -74,6 +79,10 @@ public class MainRecyclerViewAdapter
         else if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
             holder.title.setText( ( (AdType) item ).getAdType() );
+        }
+        else if ( item.getType() == ListItem.TYPE_MEDIATION_DEBUGGER )
+        {
+            holder.title.setText( ( (MediationDebuggerType) item ).getTitle() );
         }
     }
 
@@ -100,7 +109,7 @@ public class MainRecyclerViewAdapter
 
             title = itemView.findViewById( R.id.title );
 
-            if ( viewType == ListItem.TYPE_AD_ITEM )
+            if ( viewType == ListItem.TYPE_AD_ITEM || viewType == ListItem.TYPE_MEDIATION_DEBUGGER )
             {
                 itemView.setOnClickListener( new View.OnClickListener()
                 {
