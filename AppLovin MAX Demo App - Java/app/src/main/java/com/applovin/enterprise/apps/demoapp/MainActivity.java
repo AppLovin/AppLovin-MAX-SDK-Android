@@ -22,7 +22,6 @@ import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
-import com.applovin.enterprise.apps.demoapp.data.main.MediationDebuggerType;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
 import com.applovin.sdk.AppLovinMediationProvider;
@@ -153,7 +152,7 @@ public class MainActivity
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
-        items.add( new MediationDebuggerType( "Launch Mediation Debugger" ) );
+        items.add( new AdType( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
 
@@ -166,11 +165,14 @@ public class MainActivity
         if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
             final AdType adType = (AdType) item;
-            startActivity( adType.getIntent() );
-        }
-        else if ( item.getType() == ListItem.TYPE_MEDIATION_DEBUGGER )
-        {
-            AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger();
+            if ( adType.getIntent() != null )
+            {
+                startActivity( adType.getIntent() );
+            }
+            else
+            {
+                adType.onTap();
+            }
         }
     }
 

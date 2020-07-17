@@ -7,9 +7,8 @@ package com.applovin.enterprise.apps.demoapp.data.main;
  */
 public interface ListItem
 {
-    int TYPE_SECTION_HEADER     = 0;
-    int TYPE_AD_ITEM            = 1;
-    int TYPE_MEDIATION_DEBUGGER = 3;
+    int TYPE_SECTION_HEADER = 0;
+    int TYPE_AD_ITEM        = 1;
 
     /**
      * @return The type of list item.
