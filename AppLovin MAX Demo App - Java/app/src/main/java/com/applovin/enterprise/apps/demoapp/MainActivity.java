@@ -21,6 +21,7 @@ import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
@@ -155,7 +156,7 @@ public class MainActivity
         items.add( new AdType( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
-
+        items.add( new FooterType() );
         return items;
     }
 
