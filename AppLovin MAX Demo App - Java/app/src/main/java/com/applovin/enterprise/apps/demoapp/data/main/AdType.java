@@ -26,7 +26,7 @@ public class AdType
         this.onTap = null;
     }
 
-    public AdType(final String adType, final OnTap onTap)
+    public AdType(final String adType, final Runnable runnable)
     {
         this.adType = adType;
         this.intent = null;
