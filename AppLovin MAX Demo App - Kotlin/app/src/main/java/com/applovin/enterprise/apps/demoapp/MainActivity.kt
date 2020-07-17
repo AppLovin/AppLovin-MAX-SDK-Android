@@ -26,7 +26,6 @@ import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
-import com.applovin.enterprise.apps.demoapp.data.main.MediationDebuggerType
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter
 import com.applovin.sdk.AppLovinMediationProvider
@@ -69,7 +68,7 @@ class MainActivity : AppCompatActivity(),
         items.add(AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)))
         items.add(AdType("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(AdType("MRECs", Intent(this, MrecAdActivity::class.java)))
-        items.add(MediationDebuggerType("Launch Mediation Debugger"))
+        items.add(AdType("Launch Mediation Debugger") { AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })
         items.add(SectionHeader("SUPPORT"))
         items.add(AdType("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
         items.add(Footer())
@@ -106,14 +105,15 @@ class MainActivity : AppCompatActivity(),
 
     override fun onItemClicked(item: ListItem)
     {
-        if (item is AdType)
+        if (item is AdType && item.intent != null)
         {
             startActivity(item.intent)
         }
-        else if (item is MediationDebuggerType)
+        else if (item is AdType && item.f != null)
         {
-            AppLovinSdk.getInstance(applicationContext).showMediationDebugger()
+            item.onTap()
         }
+
     }
 
     private fun checkSdkKey()

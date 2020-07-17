@@ -10,7 +10,6 @@ import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.data.main.AdType
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
-import com.applovin.enterprise.apps.demoapp.data.main.MediationDebuggerType
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 
 /**
