@@ -9,6 +9,7 @@ public interface ListItem
 {
     int TYPE_SECTION_HEADER = 0;
     int TYPE_AD_ITEM        = 1;
+    int TYPE_FOOTER         = 2;
 
     /**
      * @return The type of list item.
