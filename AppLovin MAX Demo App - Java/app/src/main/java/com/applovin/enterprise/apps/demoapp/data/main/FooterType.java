@@ -20,8 +20,6 @@ public class FooterType
     {
         String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
-
-        Field[] fields = Build.VERSION_CODES.class.getFields();
         String versionName = versionName();
         int apiLevel = Build.VERSION.SDK_INT;
 
@@ -31,7 +29,8 @@ public class FooterType
         return footer;
     }
 
-    private String versionName(){
+    private String versionName()
+    {
         Field[] fields = Build.VERSION_CODES.class.getFields();
         for ( Field field : fields )
         {
