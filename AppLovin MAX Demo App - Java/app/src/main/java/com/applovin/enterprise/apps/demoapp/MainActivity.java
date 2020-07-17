@@ -170,7 +170,7 @@ public class MainActivity
             {
                 startActivity( adType.getIntent() );
             }
-            else
+            else if ( ( (AdType) item ).getRunnable() != null )
             {
                 adType.onTap();
             }

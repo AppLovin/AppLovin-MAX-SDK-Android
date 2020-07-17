@@ -10,27 +10,22 @@ import android.content.Intent;
 public class AdType
         implements ListItem
 {
-    public interface OnTap
-    {
-        public void onTap();
-    }
-
-    private final String adType;
-    private final Intent intent;
-    private final OnTap  onTap;
+    private final String   adType;
+    private final Intent   intent;
+    private final Runnable runnable;
 
     public AdType(final String adType, final Intent intent)
     {
         this.adType = adType;
         this.intent = intent;
-        this.onTap = null;
+        runnable = null;
     }
 
     public AdType(final String adType, final Runnable runnable)
     {
         this.adType = adType;
         this.intent = null;
-        this.onTap = onTap;
+        this.runnable = runnable;
     }
 
     /**
@@ -55,8 +50,10 @@ public class AdType
         return TYPE_AD_ITEM;
     }
 
+    public Runnable getRunnable() { return runnable; }
+
     public void onTap()
     {
-        this.onTap.onTap();
+        this.runnable.run();
     }
 }
