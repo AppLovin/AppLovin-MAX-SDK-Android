@@ -6,6 +6,8 @@ import android.util.Log;
 import com.applovin.enterprise.apps.demoapp.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 
+import java.lang.reflect.Field;
+
 public class FooterType
         implements ListItem
 {
@@ -18,14 +20,22 @@ public class FooterType
     {
         String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
-        String versionName = "";
-        try
+
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        String versionName = "UNKNOWN";
+        for ( Field field : fields )
         {
-            versionName = Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-        }
-        catch ( Throwable th )
-        {
-            Log.e( TAG, "Unable to get Android SDK codename", th );
+            try
+            {
+                if ( field.getInt( Build.VERSION_CODES.class ) == Build.VERSION.SDK_INT )
+                {
+                    versionName = field.getName();
+                }
+            }
+            catch ( Throwable th )
+            {
+                Log.e( TAG, "Unable to get Android SDK codename", th );
+            }
         }
         int apiLevel = Build.VERSION.SDK_INT;
 
