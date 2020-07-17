@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity(),
         {
             startActivity(item.intent)
         }
-        else if (item is AdType && item.f != null)
+        else if (item is AdType && item.onTap != null)
         {
             item.onTap()
         }
