@@ -170,7 +170,7 @@ public class MainActivity
             {
                 startActivity( adType.getIntent() );
             }
-            else if ( ( (AdType) item ).getRunnable() != null )
+            else if ( adType.getRunnable() != null )
             {
                 adType.getRunnable().run();
             }
