@@ -113,7 +113,6 @@ class MainActivity : AppCompatActivity(),
         {
             item.onTap()
         }
-
     }
 
     private fun checkSdkKey()
