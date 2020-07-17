@@ -172,7 +172,7 @@ public class MainActivity
             }
             else if ( ( (AdType) item ).getRunnable() != null )
             {
-                adType.onTap();
+                adType.getRunnable().run();
             }
         }
     }

@@ -50,10 +50,8 @@ public class AdType
         return TYPE_AD_ITEM;
     }
 
-    public Runnable getRunnable() { return runnable; }
-
-    public void onTap()
+    public Runnable getRunnable()
     {
-        this.runnable.run();
+        return runnable;
     }
 }
