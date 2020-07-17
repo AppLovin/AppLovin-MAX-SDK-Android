@@ -22,14 +22,24 @@ public class FooterType
         String sdkVersion = AppLovinSdk.VERSION;
 
         Field[] fields = Build.VERSION_CODES.class.getFields();
-        String versionName = "UNKNOWN";
+        String versionName = versionName();
+        int apiLevel = Build.VERSION.SDK_INT;
+
+        String footer = "\nApp Version: " + appVersion +
+                "\nSDK Version: " + sdkVersion +
+                "\nOS Version: " + versionName + "(API " + apiLevel + ")";
+        return footer;
+    }
+
+    private String versionName(){
+        Field[] fields = Build.VERSION_CODES.class.getFields();
         for ( Field field : fields )
         {
             try
             {
                 if ( field.getInt( Build.VERSION_CODES.class ) == Build.VERSION.SDK_INT )
                 {
-                    versionName = field.getName();
+                    return field.getName();
                 }
             }
             catch ( Throwable th )
@@ -37,12 +47,7 @@ public class FooterType
                 Log.e( TAG, "Unable to get Android SDK codename", th );
             }
         }
-        int apiLevel = Build.VERSION.SDK_INT;
-
-        String footer = "\nApp Version: " + appVersion +
-                "\nSDK Version: " + sdkVersion +
-                "\nOS Version: " + versionName + "(API " + apiLevel + ")";
-        return footer;
+        return "UNKNOWN";
     }
 
     @Override
