@@ -153,6 +153,7 @@ public class MainActivity
         items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
+        items.add( new AdType( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new AdType( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
         items.add( new FooterType() );
@@ -165,7 +166,14 @@ public class MainActivity
         if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
             final AdType adType = (AdType) item;
-            startActivity( adType.getIntent() );
+            if ( adType.getIntent() != null )
+            {
+                startActivity( adType.getIntent() );
+            }
+            else if ( adType.getRunnable() != null )
+            {
+                adType.getRunnable().run();
+            }
         }
     }
 

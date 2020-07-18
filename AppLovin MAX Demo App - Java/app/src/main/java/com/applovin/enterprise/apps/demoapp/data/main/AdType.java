@@ -10,13 +10,22 @@ import android.content.Intent;
 public class AdType
         implements ListItem
 {
-    private final String                    adType;
-    private final Intent intent;
+    private final String   adType;
+    private final Intent   intent;
+    private final Runnable runnable;
 
     public AdType(final String adType, final Intent intent)
     {
         this.adType = adType;
         this.intent = intent;
+        runnable = null;
+    }
+
+    public AdType(final String adType, final Runnable runnable)
+    {
+        this.adType = adType;
+        this.intent = null;
+        this.runnable = runnable;
     }
 
     /**
@@ -39,5 +48,10 @@ public class AdType
     public int getType()
     {
         return TYPE_AD_ITEM;
+    }
+
+    public Runnable getRunnable()
+    {
+        return runnable;
     }
 }

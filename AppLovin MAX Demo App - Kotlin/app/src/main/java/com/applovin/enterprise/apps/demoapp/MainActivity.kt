@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity(),
         items.add(AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)))
         items.add(AdType("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(AdType("MRECs", Intent(this, MrecAdActivity::class.java)))
+        items.add(AdType("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
         items.add(SectionHeader("SUPPORT"))
         items.add(AdType("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
         items.add(Footer())
@@ -106,7 +107,14 @@ class MainActivity : AppCompatActivity(),
     {
         if (item is AdType)
         {
-            startActivity(item.intent)
+            if (item.intent != null)
+            {
+                startActivity(item.intent);
+            }
+            else if (item.runnable != null)
+            {
+                item.runnable.run();
+            }
         }
     }
 
