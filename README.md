@@ -25,7 +25,7 @@ To get started with the demo apps, follow the instructions below:
 | 204           | Indicates that no ads are currently eligible for your device. |
 | -102          | Indicates that the ad request timed out (usually due to poor connectivity). |
 | -103          | Indicates that the device is not connected to the internet (e.g. airplane mode). |
-| -2051         | Indicates that the device is not connected to a VPN or the VPN connection is not working properly (Chinese Users Only). |
+| -2051         | Indicates that the device is not connected to a VPN or the VPN connection is not working properly (Users in China Only). |
 | -5001         | Indicates that the ad failed to load due to various reasons (such as no networks being able to fill). |
 | -5201         | Indicates an internal state error with the AppLovin MAX SDK. |
 | -5601         | Indicates the provided `Activity` instance has been garbage collected while the AppLovin MAX SDK attempts to re-load an expired ad. |
