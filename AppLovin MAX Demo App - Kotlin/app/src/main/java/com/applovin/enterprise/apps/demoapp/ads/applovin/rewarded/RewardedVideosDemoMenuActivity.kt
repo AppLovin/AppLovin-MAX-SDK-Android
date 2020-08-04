@@ -2,7 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded
 
 import android.content.Intent
 import com.applovin.enterprise.apps.demoapp.ads.DemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.DemoMenuItem
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 
 class RewardedVideosDemoMenuActivity : DemoMenuActivity()
 {

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.applovin.enterprise.apps.demoapp.R
-import com.applovin.enterprise.apps.demoapp.data.main.AdType
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -47,7 +47,7 @@ class MainRecyclerViewAdapter(private val listItems: List<ListItem>,
         holder.title.text = when (val item = listItems[position])
         {
             is SectionHeader -> item.title
-            is AdType -> item.adType
+            is DemoMenuItem -> item.title
             is Footer -> item.getAppDetails()
             else -> ""
         }

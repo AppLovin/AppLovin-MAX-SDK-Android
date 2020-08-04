@@ -11,10 +11,10 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.applovin.enterprise.apps.demoapp.R
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import kotlinx.android.synthetic.main.activity_list.*
 
 
-data class DemoMenuItem(val title: String, val intent: Intent? = null)
 abstract class DemoMenuActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
