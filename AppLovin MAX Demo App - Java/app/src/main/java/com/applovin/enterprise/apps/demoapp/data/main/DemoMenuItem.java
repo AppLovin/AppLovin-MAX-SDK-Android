@@ -13,8 +13,7 @@ public class DemoMenuItem
     {
         this.title = title;
         this.intent = intent;
-        runnable = null;
-
+        this.runnable = null;
     }
 
     public DemoMenuItem(final String title, final Runnable runnable)
