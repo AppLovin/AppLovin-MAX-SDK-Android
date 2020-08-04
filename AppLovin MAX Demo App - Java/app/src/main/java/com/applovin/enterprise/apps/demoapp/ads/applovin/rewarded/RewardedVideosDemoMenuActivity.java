@@ -3,7 +3,7 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded;
 import android.content.Intent;
 
 import com.applovin.enterprise.apps.demoapp.ads.applovin.DemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.DemoMenuItem;
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 
 public class RewardedVideosDemoMenuActivity
         extends DemoMenuActivity
@@ -17,3 +17,4 @@ public class RewardedVideosDemoMenuActivity
         };
     }
 }
+

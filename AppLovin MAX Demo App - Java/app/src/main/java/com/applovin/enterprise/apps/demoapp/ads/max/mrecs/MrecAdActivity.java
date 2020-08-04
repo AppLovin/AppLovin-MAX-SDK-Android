@@ -3,7 +3,7 @@ package com.applovin.enterprise.apps.demoapp.ads.max.mrecs;
 import android.content.Intent;
 
 import com.applovin.enterprise.apps.demoapp.ads.applovin.DemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.DemoMenuItem;
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 
 public class MrecAdActivity
         extends DemoMenuActivity

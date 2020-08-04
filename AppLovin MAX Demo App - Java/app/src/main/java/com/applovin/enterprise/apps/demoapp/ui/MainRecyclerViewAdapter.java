@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.applovin.enterprise.apps.demoapp.R;
-import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -78,7 +78,7 @@ public class MainRecyclerViewAdapter
         }
         else if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
-            holder.title.setText( ( (AdType) item ).getAdType() );
+            holder.title.setText( ( (DemoMenuItem) item ).getTitle() );
         }
         else if ( item.getType() == ListItem.TYPE_FOOTER )
         {
