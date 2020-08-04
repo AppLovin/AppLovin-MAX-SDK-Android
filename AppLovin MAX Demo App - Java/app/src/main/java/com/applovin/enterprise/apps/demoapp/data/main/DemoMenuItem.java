@@ -21,7 +21,6 @@ public class DemoMenuItem
         this.title = title;
         this.intent = null;
         this.runnable = runnable;
-
     }
 
     public String getTitle()
