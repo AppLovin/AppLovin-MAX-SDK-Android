@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 import com.applovin.enterprise.apps.demoapp.R;
 
 public abstract class DemoMenuActivity

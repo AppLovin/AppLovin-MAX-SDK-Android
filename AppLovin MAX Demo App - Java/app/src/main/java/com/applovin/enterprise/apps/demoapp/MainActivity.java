@@ -20,7 +20,7 @@ import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
-import com.applovin.enterprise.apps.demoapp.data.main.AdType;
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
@@ -129,33 +129,32 @@ public class MainActivity
     private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
-
         items.add( new SectionHeader( "APPLOVIN" ) );
-        items.add( new AdType( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
+        items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
+        items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
 
         // Add "Leaders" menu item for tablets
         if ( AppLovinSdkUtils.isTablet( this ) )
         {
-            items.add( new AdType( "Leaders", new Intent( this, LeaderDemoMenuActivity.class ) ) );
+            items.add( new DemoMenuItem( "Leaders", new Intent( this, LeaderDemoMenuActivity.class ) ) );
         }
         // Add "Banners" menu item for phones
         else
         {
-            items.add( new AdType( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
+            items.add( new DemoMenuItem( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
         }
 
-        items.add( new AdType( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Native Ads", new Intent( this, NativeAdDemoMenuActivity.class ) ) );
-        items.add( new AdType( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
+        items.add( new DemoMenuItem( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
+        items.add( new DemoMenuItem( "Native Ads", new Intent( this, NativeAdDemoMenuActivity.class ) ) );
+        items.add( new DemoMenuItem( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
-        items.add( new AdType( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
-        items.add( new AdType( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
-        items.add( new AdType( "Banners", new Intent( this, BannerAdActivity.class ) ) );
-        items.add( new AdType( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
-        items.add( new AdType( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
+        items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Banners", new Intent( this, BannerAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
-        items.add( new AdType( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
+        items.add( new DemoMenuItem( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
         items.add( new FooterType() );
         return items;
     }
@@ -165,14 +164,14 @@ public class MainActivity
     {
         if ( item.getType() == ListItem.TYPE_AD_ITEM )
         {
-            final AdType adType = (AdType) item;
-            if ( adType.getIntent() != null )
+            final DemoMenuItem demoMenuItem = (DemoMenuItem) item;
+            if ( demoMenuItem.getIntent() != null )
             {
-                startActivity( adType.getIntent() );
+                startActivity( demoMenuItem.getIntent() );
             }
-            else if ( adType.getRunnable() != null )
+            else if ( demoMenuItem.getRunnable() != null )
             {
-                adType.getRunnable().run();
+                demoMenuItem.getRunnable().run();
             }
         }
     }

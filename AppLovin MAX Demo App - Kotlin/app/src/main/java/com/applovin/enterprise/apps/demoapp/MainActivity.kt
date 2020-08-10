@@ -23,7 +23,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoM
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
-import com.applovin.enterprise.apps.demoapp.data.main.AdType
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
@@ -46,31 +46,31 @@ class MainActivity : AppCompatActivity(),
         val items: MutableList<ListItem> =
                 ArrayList()
         items.add(SectionHeader("APPLOVIN"))
-        items.add(AdType("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)))
-        items.add(AdType("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)))
+        items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)))
+        items.add(DemoMenuItem("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)))
 
         // Add "Leaders" menu item for tablets
         if (AppLovinSdkUtils.isTablet(this))
         {
-            items.add(AdType("Leaders", Intent(this, LeaderDemoMenuActivity::class.java)))
+            items.add(DemoMenuItem("Leaders", Intent(this, LeaderDemoMenuActivity::class.java)))
         }
         // Add "Banners" menu item for phones
         else
         {
-            items.add(AdType("Banners", Intent(this, BannerDemoMenuActivity::class.java)))
+            items.add(DemoMenuItem("Banners", Intent(this, BannerDemoMenuActivity::class.java)))
         }
 
-        items.add(AdType("MRECs", Intent(this, MRecDemoMenuActivity::class.java)))
-        items.add(AdType("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)))
-        items.add(AdType("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
+        items.add(DemoMenuItem("MRECs", Intent(this, MRecDemoMenuActivity::class.java)))
+        items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)))
+        items.add(DemoMenuItem("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
         items.add(SectionHeader("MAX"))
-        items.add(AdType("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
-        items.add(AdType("Rewarded", Intent(this, RewardedAdActivity::class.java)))
-        items.add(AdType("Banners", Intent(this, BannerAdActivity::class.java)))
-        items.add(AdType("MRECs", Intent(this, MrecAdActivity::class.java)))
-        items.add(AdType("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
+        items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
+        items.add(DemoMenuItem("Rewarded", Intent(this, RewardedAdActivity::class.java)))
+        items.add(DemoMenuItem("Banners", Intent(this, BannerAdActivity::class.java)))
+        items.add(DemoMenuItem("MRECs", Intent(this, MrecAdActivity::class.java)))
+        items.add(DemoMenuItem("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
         items.add(SectionHeader("SUPPORT"))
-        items.add(AdType("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
+        items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
         items.add(Footer())
         return items
     }
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onItemClicked(item: ListItem)
     {
-        if (item is AdType)
+        if (item is DemoMenuItem)
         {
             if (item.intent != null)
             {
