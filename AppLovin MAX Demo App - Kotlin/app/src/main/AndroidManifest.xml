@@ -84,15 +84,6 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosZoneActivity"
             android:label="@string/title_activity_rewarded_videos_zone_integration" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity"
-            android:label="@string/title_activity_native_ad_list" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdCarouselUIActivity"
-            android:label="@string/title_activity_native_ad_carousel_ui" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdRecyclerViewActivity"
-            android:label="@string/title_activity_native_ad_recycler_view" />
-        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity"
             android:label="@string/title_activity_banner_list" />
         <activity

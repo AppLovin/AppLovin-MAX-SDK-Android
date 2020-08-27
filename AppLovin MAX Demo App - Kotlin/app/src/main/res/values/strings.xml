@@ -28,10 +28,6 @@
     <string name="title_activity_mrec_programmatic">Programmatic MRECs</string>
     <string name="title_activity_mrec_layout_editor">Layout Editor MRECs</string>
 
-    <string name="title_activity_native_ad_list">Native Ads</string>
-    <string name="title_activity_native_ad_carousel_ui">Single Ad</string>
-    <string name="title_activity_native_ad_recycler_view">Multiple Ads</string>
-
     <string name="title_activity_leader_list">Leaders</string>
     <string name="title_activity_leader_programmatic">Programmatic Leaders</string>
     <string name="title_activity_leader_layout_editor">Layout Editor Leaders</string>

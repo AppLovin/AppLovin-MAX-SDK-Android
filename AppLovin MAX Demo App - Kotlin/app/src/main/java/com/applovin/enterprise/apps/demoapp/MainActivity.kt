@@ -19,7 +19,6 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrac
 import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.nativeads.NativeAdDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
@@ -61,7 +60,6 @@ class MainActivity : AppCompatActivity(),
         }
 
         items.add(DemoMenuItem("MRECs", Intent(this, MRecDemoMenuActivity::class.java)))
-        items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdDemoMenuActivity::class.java)))
         items.add(DemoMenuItem("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
         items.add(SectionHeader("MAX"))
         items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
