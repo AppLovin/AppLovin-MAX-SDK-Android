@@ -42,19 +42,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="MRECs"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.LayoutEditorMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.ProgrammaticMrecAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
-        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
@@ -95,15 +82,6 @@
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerZoneActivity"
             android:label="@string/title_activity_banner_zone_integration" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity"
-            android:label="@string/title_activity_mrec_list" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity"
-            android:label="@string/title_activity_mrec_programmatic" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
-            android:label="@string/title_activity_mrec_layout_editor" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity"
             android:label="@string/title_activity_leader_list" />
