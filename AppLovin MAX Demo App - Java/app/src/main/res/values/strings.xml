@@ -6,8 +6,6 @@
     <string name="activity_rewarded">Rewarded Ads</string>
     <string name="activity_programmatic_banners">Programmatic Banner Ads</string>
     <string name="activity_layout_editor_banners">Layout Editor Banner Ads</string>
-    <string name="activity_layout_editor_mrecs">Layout Editor MREC Ads</string>
-    <string name="activity_programmatic_mrecs">Programmatic MREC Ads</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
     
@@ -24,10 +22,6 @@
     <string name="title_activity_banner_programmatic">Programmatic Banners</string>
     <string name="title_activity_banner_layout_editor">Layout Editor Banners</string>
     <string name="title_activity_banner_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_mrec_list">MRECs</string>
-    <string name="title_activity_mrec_programmatic">Programmatic MRECs</string>
-    <string name="title_activity_mrec_layout_editor">Layout Editor MRECs</string>
 
     <string name="title_activity_leader_list">Leaders</string>
     <string name="title_activity_leader_programmatic">Programmatic Leaders</string>
