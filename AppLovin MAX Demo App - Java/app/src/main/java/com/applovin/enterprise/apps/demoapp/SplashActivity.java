@@ -3,11 +3,11 @@ package com.applovin.enterprise.apps.demoapp;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.applovin.sdk.AppLovinSdkUtils;
 
 import java.util.concurrent.TimeUnit;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity
         extends AppCompatActivity
