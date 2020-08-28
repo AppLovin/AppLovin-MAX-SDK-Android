@@ -60,13 +60,7 @@ public class ProgrammaticBannerAdActivity
     public void onAdLoadFailed(final String adUnitId, final int errorCode) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { logCallback(); }
-
-    @Override
     public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { logCallback(); }
-
-    @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdClicked(final MaxAd ad) { logCallback(); }

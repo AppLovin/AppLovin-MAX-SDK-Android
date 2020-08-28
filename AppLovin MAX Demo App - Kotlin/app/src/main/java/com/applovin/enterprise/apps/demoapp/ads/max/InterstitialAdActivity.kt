@@ -6,7 +6,7 @@ import android.view.View
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
-import com.applovin.mediation.MaxAdListener
+import com.applovin.mediation.MaxFullscreenAdListener
 import com.applovin.mediation.ads.MaxInterstitialAd
 import java.util.concurrent.TimeUnit
 
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * Created by Harry Arakkal on 2019-09-17.
  */
 class InterstitialAdActivity : BaseAdActivity(),
-        MaxAdListener
+        MaxFullscreenAdListener
 {
     private lateinit var interstitialAd: MaxInterstitialAd
     private var retryAttempt = 0.0

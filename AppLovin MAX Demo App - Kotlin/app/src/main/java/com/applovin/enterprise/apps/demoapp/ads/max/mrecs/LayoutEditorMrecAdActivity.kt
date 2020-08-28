@@ -36,15 +36,7 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
         logCallback()
     }
 
-    override fun onAdHidden(ad: MaxAd) {
-        logCallback()
-    }
-
     override fun onAdDisplayFailed(ad: MaxAd, errorCode: Int) {
-        logCallback()
-    }
-
-    override fun onAdDisplayed(ad: MaxAd) {
         logCallback()
     }
 

@@ -7,7 +7,7 @@ import android.view.View;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxFullscreenAdListener;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 
 import java.util.concurrent.TimeUnit;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class InterstitialAdActivity
         extends BaseAdActivity
-        implements MaxAdListener
+        implements MaxFullscreenAdListener
 {
     private MaxInterstitialAd interstitialAd;
     private int retryAttempt;

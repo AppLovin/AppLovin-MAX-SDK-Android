@@ -51,11 +51,7 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     override fun onAdLoadFailed(adUnitId: String?, errorCode: Int) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd?) { logCallback() }
-
     override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int) { logCallback() }
-
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
 
     override fun onAdClicked(ad: MaxAd?) { logCallback() }
 
