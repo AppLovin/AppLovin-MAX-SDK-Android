@@ -6,8 +6,9 @@ import android.widget.Button;
 import com.applovin.adview.AppLovinInterstitialAd;
 import com.applovin.adview.AppLovinInterstitialAdDialog;
 import com.applovin.enterprise.apps.demoapp.R;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.sdk.AppLovinAd;
+import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
@@ -18,10 +19,12 @@ import com.applovin.sdk.AppLovinSdk;
  * Created by thomasso on 10/5/15.
  */
 public class InterstitialManualLoadingActivity
-        extends AdStatusActivity
+        extends BaseAdActivity
+        implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
 {
     private AppLovinAd                   currentAd;
     private AppLovinInterstitialAdDialog interstitialAd;
+    private Button                       showButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,36 +32,20 @@ public class InterstitialManualLoadingActivity
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_interstitial_manual_loading );
 
-        adStatusTextView = findViewById( R.id.status_label );
+        setupCallbacksRecyclerView();
 
         interstitialAd = AppLovinInterstitialAd.create( AppLovinSdk.getInstance( this ), this );
+        interstitialAd.setAdDisplayListener( this );
+        interstitialAd.setAdClickListener( this );
+        interstitialAd.setAdVideoPlaybackListener( this ); // This will only ever be used if you have video ads enabled.
 
         final Button loadButton = findViewById( R.id.loadButton );
-        final Button showButton = findViewById( R.id.showButton );
+        showButton = findViewById( R.id.showButton );
 
         loadButton.setOnClickListener( v -> {
-            log( "Interstitial loading..." );
             showButton.setEnabled( false );
 
-            AppLovinSdk.getInstance( getApplicationContext() ).getAdService().loadNextAd( AppLovinAdSize.INTERSTITIAL, new AppLovinAdLoadListener()
-            {
-                @Override
-                public void adReceived(AppLovinAd ad)
-                {
-                    log( "Interstitial Loaded" );
-
-                    currentAd = ad;
-
-                    runOnUiThread( () -> showButton.setEnabled( true ) );
-                }
-
-                @Override
-                public void failedToReceiveAd(int errorCode)
-                {
-                    // Look at AppLovinErrorCodes.java for list of error codes
-                    log( "Interstitial failed to load with error code " + errorCode );
-                }
-            } );
+            AppLovinSdk.getInstance( getApplicationContext() ).getAdService().loadNextAd( AppLovinAdSize.INTERSTITIAL, this );
         } );
 
         showButton.setOnClickListener( v -> {
@@ -67,41 +54,44 @@ public class InterstitialManualLoadingActivity
                 interstitialAd.showAndRender( currentAd );
             }
         } );
-
-        //
-        // Optional: Set ad display, ad click, and ad video playback callback listeners
-        //
-        interstitialAd.setAdDisplayListener( new AppLovinAdDisplayListener()
-        {
-            @Override
-            public void adDisplayed(AppLovinAd appLovinAd)
-            {
-                log( "Interstitial Displayed" );
-            }
-
-            @Override
-            public void adHidden(AppLovinAd appLovinAd)
-            {
-                log( "Interstitial Hidden" );
-            }
-        } );
-
-        interstitialAd.setAdClickListener( appLovinAd -> log( "Interstitial Clicked" ) );
-
-        // This will only ever be used if you have video ads enabled.
-        interstitialAd.setAdVideoPlaybackListener( new AppLovinAdVideoPlaybackListener()
-        {
-            @Override
-            public void videoPlaybackBegan(AppLovinAd appLovinAd)
-            {
-                log( "Video Started" );
-            }
-
-            @Override
-            public void videoPlaybackEnded(AppLovinAd appLovinAd, double percentViewed, boolean wasFullyViewed)
-            {
-                log( "Video Ended" );
-            }
-        } );
     }
+
+    //region Ad Load Listener
+
+    @Override
+    public void adReceived(AppLovinAd appLovinAd)
+    {
+        logCallback();
+        currentAd = appLovinAd;
+        showButton.setEnabled( true );
+    }
+
+    @Override
+    public void failedToReceiveAd(int errorCode)
+    {
+        logCallback();
+
+        showButton.setEnabled( true );
+    }
+
+    //region Ad Display Listener
+
+    @Override
+    public void adDisplayed(AppLovinAd appLovinAd) { logCallback(); }
+
+    @Override
+    public void adHidden(AppLovinAd appLovinAd) { logCallback(); }
+
+    //region Ad Click Listener
+
+    @Override
+    public void adClicked(AppLovinAd appLovinAd) { logCallback(); }
+
+    //region Ad Video Playback Listener
+
+    @Override
+    public void videoPlaybackBegan(AppLovinAd appLovinAd) { logCallback(); }
+
+    @Override
+    public void videoPlaybackEnded(AppLovinAd appLovinAd, double percentViewed, boolean wasFullyViewed) { logCallback(); }
 }
