@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banner;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
@@ -9,7 +8,7 @@ import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
 import com.applovin.enterprise.apps.demoapp.R;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.sdk.AppLovinAd;
 import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
@@ -25,7 +24,8 @@ import androidx.core.view.ViewCompat;
  * Created by thomasso on 3/6/17.
  */
 public final class BannerZoneActivity
-        extends AdStatusActivity
+        extends BaseAdActivity
+        implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
     @Override
     protected void onCreate(final Bundle savedInstanceState)
@@ -33,78 +33,19 @@ public final class BannerZoneActivity
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_banner_programmatic );
 
-        adStatusTextView = findViewById( R.id.status_label );
+        setupCallbacksRecyclerView();
 
         AppLovinAdView adView = new AppLovinAdView( AppLovinAdSize.BANNER, "YOUR_ZONE_ID", this );
+        adView.setAdLoadListener( this );
+        adView.setAdDisplayListener( this );
+        adView.setAdViewEventListener( this );
+        adView.setAdClickListener( this );
+
         adView.setId( ViewCompat.generateViewId() );
 
         Button loadButton = findViewById( R.id.load_button );
         loadButton.setOnClickListener( v -> {
-            log( "Loading ad..." );
             adView.loadNextAd();
-        } );
-
-        //
-        // Optional: Set listeners
-        //
-        adView.setAdLoadListener( new AppLovinAdLoadListener()
-        {
-            @Override
-            public void adReceived(final AppLovinAd ad)
-            {
-                log( "Banner loaded" );
-            }
-
-            @Override
-            public void failedToReceiveAd(final int errorCode)
-            {
-                // Look at AppLovinErrorCodes.java for list of error codes
-                log( "Banner failed to load with error code " + errorCode );
-            }
-        } );
-
-        adView.setAdDisplayListener( new AppLovinAdDisplayListener()
-        {
-            @Override
-            public void adDisplayed(final AppLovinAd ad)
-            {
-                log( "Banner Displayed" );
-            }
-
-            @Override
-            public void adHidden(final AppLovinAd ad)
-            {
-                log( "Banner Hidden" );
-            }
-        } );
-
-        adView.setAdClickListener( ad -> log( "Banner Clicked" ) );
-
-        adView.setAdViewEventListener( new AppLovinAdViewEventListener()
-        {
-            @Override
-            public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Banner opened fullscreen" );
-            }
-
-            @Override
-            public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Banner closed fullscreen" );
-            }
-
-            @Override
-            public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Banner left application" );
-            }
-
-            @Override
-            public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code)
-            {
-                log( "Banner failed to display with error code " + code );
-            }
         } );
 
         // Add programmatically created banner into our container
@@ -120,4 +61,43 @@ public final class BannerZoneActivity
         // Load an ad!
         adView.loadNextAd();
     }
+
+    //region AppLovin Ad Load Listener
+
+    @Override
+    public void adReceived(final AppLovinAd ad)
+    {
+        logCallback();
+    }
+
+    @Override
+    public void failedToReceiveAd(final int errorCode) { logCallback(); }
+
+    //region AppLovin Display Load Listener
+
+    @Override
+    public void adDisplayed(final AppLovinAd ad) { logCallback(); }
+
+    @Override
+    public void adHidden(final AppLovinAd ad) { logCallback(); }
+
+    //region AppLovin AdView Event Listener
+
+    @Override
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+
+    //region AppLovin Ad Click Listener
+
+    @Override
+    public void adClicked(final AppLovinAd ad) { logCallback(); }
+
 }
