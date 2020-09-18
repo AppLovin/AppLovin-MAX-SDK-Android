@@ -62,7 +62,7 @@ public final class BannerZoneActivity
         adView.loadNextAd();
     }
 
-    //region AppLovin Ad Load Listener
+    //region Ad Load Listener
 
     @Override
     public void adReceived(final AppLovinAd ad)
@@ -73,7 +73,7 @@ public final class BannerZoneActivity
     @Override
     public void failedToReceiveAd(final int errorCode) { logCallback(); }
 
-    //region AppLovin Display Load Listener
+    //region Display Load Listener
 
     @Override
     public void adDisplayed(final AppLovinAd ad) { logCallback(); }
@@ -81,7 +81,7 @@ public final class BannerZoneActivity
     @Override
     public void adHidden(final AppLovinAd ad) { logCallback(); }
 
-    //region AppLovin AdView Event Listener
+    //region AdView Event Listener
 
     @Override
     public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
@@ -95,7 +95,7 @@ public final class BannerZoneActivity
     @Override
     public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
-    //region AppLovin Ad Click Listener
+    //region Ad Click Listener
 
     @Override
     public void adClicked(final AppLovinAd ad) { logCallback(); }
