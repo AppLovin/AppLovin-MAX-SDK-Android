@@ -68,10 +68,7 @@ public final class BannerProgrammaticActivity
     //region Ad Load Listener
 
     @Override
-    public void adReceived(final AppLovinAd ad)
-    {
-        logCallback();
-    }
+    public void adReceived(final AppLovinAd ad) { logCallback(); }
 
     @Override
     public void failedToReceiveAd(final int errorCode) { logCallback(); }
