@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.ViewCompat
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
@@ -29,6 +30,7 @@ class LeaderProgrammaticActivity : BaseAdActivity(),
         adView.setAdViewEventListener(this)
         adView.setAdClickListener(this)
 
+        adView.id = ViewCompat.generateViewId()
         load_button.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created banner into our container
