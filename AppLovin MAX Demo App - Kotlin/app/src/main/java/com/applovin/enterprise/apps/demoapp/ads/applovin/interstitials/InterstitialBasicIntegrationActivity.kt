@@ -7,7 +7,8 @@ import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
 import kotlinx.android.synthetic.main.activity_interstitial_basic_integration.*
 
-class InterstitialBasicIntegrationActivity : BaseAdActivity(), AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
+class InterstitialBasicIntegrationActivity : BaseAdActivity(),
+        AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -49,15 +50,24 @@ class InterstitialBasicIntegrationActivity : BaseAdActivity(), AppLovinAdLoadLis
 
     //region Ad Display Listener
 
-    override fun adDisplayed(appLovinAd: AppLovinAd) { logCallback() }
+    override fun adDisplayed(appLovinAd: AppLovinAd)
+    {
+        logCallback()
+    }
 
-    override fun adHidden(appLovinAd: AppLovinAd) { logCallback() }
+    override fun adHidden(appLovinAd: AppLovinAd)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region Ad Click Listener
 
-    override fun adClicked(appLovinAd: AppLovinAd) { logCallback() }
+    override fun adClicked(appLovinAd: AppLovinAd)
+    {
+        logCallback()
+    }
 
     //endregion
 

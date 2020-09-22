@@ -1,18 +1,17 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banners
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
-import android.view.ViewGroup
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
-
-import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_banner_programmatic.*
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
+import com.applovin.sdk.*
+import kotlinx.android.synthetic.main.activity_banner_programmatic.*
 
 class BannerZoneActivity : BaseAdActivity(),
         AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
@@ -48,35 +47,62 @@ class BannerZoneActivity : BaseAdActivity(),
 
     //region Ad Load Listener
 
-    override fun adReceived(ad: AppLovinAd?) { logCallback() }
+    override fun adReceived(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
-    override fun failedToReceiveAd(errorCode: Int) { logCallback() }
+    override fun failedToReceiveAd(errorCode: Int)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region Ad Display Listener
 
-    override fun adDisplayed(ad: AppLovinAd?) { logCallback() }
+    override fun adDisplayed(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
-    override fun adHidden(ad: AppLovinAd?) { logCallback() }
+    override fun adHidden(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region AdView Event Listener
 
-    override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?) { logCallback() }
+    override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region Ad Click Listener
 
-    override fun adClicked(ad: AppLovinAd?) { logCallback() }
+    override fun adClicked(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
     //endregion
 }

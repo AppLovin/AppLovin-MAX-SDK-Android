@@ -49,35 +49,62 @@ class BannerProgrammaticActivity : BaseAdActivity(),
 
     //region Ad Load Listener
 
-    override fun adReceived(ad: AppLovinAd?) { logCallback() }
+    override fun adReceived(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
-    override fun failedToReceiveAd(errorCode: Int) { logCallback() }
+    override fun failedToReceiveAd(errorCode: Int)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region Ad Display Listener
 
-    override fun adDisplayed(ad: AppLovinAd?) { logCallback() }
+    override fun adDisplayed(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
-    override fun adHidden(ad: AppLovinAd?) { logCallback() }
+    override fun adHidden(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region AdView Event Listener
 
-    override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?) { logCallback() }
+    override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
 
-    override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?) { logCallback() }
+    override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?)
+    {
+        logCallback()
+    }
 
     //endregion
 
     //region Ad Click Listener
 
-    override fun adClicked(ad: AppLovinAd?) { logCallback() }
+    override fun adClicked(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
 
     //endregion
 }

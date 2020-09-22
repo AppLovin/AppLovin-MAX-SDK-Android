@@ -8,6 +8,6 @@ class RewardedVideosDemoMenuActivity : DemoMenuActivity()
 {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
             DemoMenuItem("Basic Integration", Intent(this, RewardedVideosActivity::class.java)),
-            DemoMenuItem("Zone Integration",  Intent(this, RewardedVideosZoneActivity::class.java))
+            DemoMenuItem("Zone Integration", Intent(this, RewardedVideosZoneActivity::class.java))
     )
 }
