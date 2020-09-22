@@ -61,7 +61,11 @@ public class BannerLayoutEditorActivity
     }
 
     @Override
-    public void failedToReceiveAd(final int errorCode) { logCallback(); }
+    public void failedToReceiveAd(final int errorCode)
+    {
+        // Look at AppLovinErrorCodes.java for list of error codes
+        logCallback();
+    }
 
     //region Display Load Listener
 

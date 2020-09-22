@@ -39,6 +39,13 @@ public class LeaderLayoutEditorActivity
         // Load an ad!
         adView.loadNextAd();
 
+        //
+        // Please note that the AppLovinAdView CAN AUTOMATICALLY invoke loadNextAd() upon inflation from layout
+        // To do so, add the following attributes to the com.applovin.adview.AppLovinAdView element:
+        //
+        // xmlns:demo="http://schemas.applovin.com/android/1.0"
+        // demo:loadAdOnCreate="true"
+        //
     }
 
     //region AppLovin Ad Load Listener
@@ -50,7 +57,11 @@ public class LeaderLayoutEditorActivity
     }
 
     @Override
-    public void failedToReceiveAd(final int errorCode) { logCallback(); }
+    public void failedToReceiveAd(final int errorCode)
+    {
+        // Look at AppLovinErrorCodes.java for list of error codes
+        logCallback();
+    }
 
     //region Ad Display Load Listener
 

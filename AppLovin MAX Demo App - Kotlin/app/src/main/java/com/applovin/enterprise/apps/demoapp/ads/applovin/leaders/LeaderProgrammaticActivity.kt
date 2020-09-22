@@ -54,6 +54,7 @@ class LeaderProgrammaticActivity : BaseAdActivity(),
 
     override fun failedToReceiveAd(errorCode: Int)
     {
+        // Look at AppLovinErrorCodes.java for list of error codes
         logCallback()
     }
 

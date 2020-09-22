@@ -65,6 +65,7 @@ public class RewardedVideosZoneActivity
     @Override
     public void failedToReceiveAd(int errorCode)
     {
+        // Look at AppLovinErrorCodes.java for list of error codes
         logCallback();
 
         showButton.setEnabled( true );
