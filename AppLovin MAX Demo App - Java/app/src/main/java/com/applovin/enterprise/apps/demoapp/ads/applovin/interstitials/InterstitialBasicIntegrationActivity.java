@@ -64,6 +64,8 @@ public class InterstitialBasicIntegrationActivity
         showButton.setEnabled( true );
     }
 
+    //endregion
+
     //region Ad Display Listener
 
     @Override
@@ -72,10 +74,14 @@ public class InterstitialBasicIntegrationActivity
     @Override
     public void adHidden(AppLovinAd appLovinAd) { logCallback(); }
 
+    //endregion
+
     //region Ad Click Listener
 
     @Override
     public void adClicked(AppLovinAd appLovinAd) { logCallback(); }
+
+    //endregion
 
     //region Ad Video Playback Listener
 
@@ -84,4 +90,6 @@ public class InterstitialBasicIntegrationActivity
 
     @Override
     public void videoPlaybackEnded(AppLovinAd appLovinAd, double percentViewed, boolean wasFullyViewed) { logCallback(); }
+
+    //endregion
 }

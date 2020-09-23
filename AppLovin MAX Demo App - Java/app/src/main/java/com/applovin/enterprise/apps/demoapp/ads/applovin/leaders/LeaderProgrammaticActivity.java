@@ -73,13 +73,17 @@ public class LeaderProgrammaticActivity
         logCallback();
     }
 
-    //region Ad Display Load Listener
+    //endregion
+
+    //region Ad Display Listener
 
     @Override
     public void adDisplayed(final AppLovinAd ad) { logCallback(); }
 
     @Override
     public void adHidden(final AppLovinAd ad) { logCallback(); }
+
+    //endregion
 
     //region AdView Event Listener
 
@@ -95,8 +99,12 @@ public class LeaderProgrammaticActivity
     @Override
     public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
+    //endregion
+
     //region Ad Click Listener
 
     @Override
     public void adClicked(final AppLovinAd ad) { logCallback(); }
+
+    //endregion
 }
