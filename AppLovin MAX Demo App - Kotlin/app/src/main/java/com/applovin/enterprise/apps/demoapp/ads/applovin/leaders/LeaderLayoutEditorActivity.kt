@@ -2,86 +2,36 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.leaders
 
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.R
-import com.applovin.enterprise.apps.demoapp.ads.AdStatusActivity
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.AppLovinAd
+import com.applovin.sdk.AppLovinAdClickListener
 import com.applovin.sdk.AppLovinAdDisplayListener
 import com.applovin.sdk.AppLovinAdLoadListener
 
-class LeaderLayoutEditorActivity : AdStatusActivity()
+class LeaderLayoutEditorActivity : BaseAdActivity(),
+        AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
 
-    protected override fun onCreate(savedInstanceState: Bundle?)
+    override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leader_layout_editor)
 
-        adStatusTextView = findViewById(R.id.status_label) as TextView
+        setupCallbacksRecyclerView()
 
-        val adView = findViewById(R.id.ad_view) as AppLovinAdView
+        val adView = findViewById<AppLovinAdView>(R.id.ad_view)
+        adView.setAdLoadListener(this)
+        adView.setAdDisplayListener(this)
+        adView.setAdViewEventListener(this)
+        adView.setAdClickListener(this)
 
-        val loadButton = findViewById(R.id.load_button) as Button
+        val loadButton = findViewById<Button>(R.id.load_button)
 
         loadButton.setOnClickListener { adView.loadNextAd() }
-
-        //
-        // Optional: Set listeners
-        //
-        adView.setAdLoadListener(object : AppLovinAdLoadListener
-                                 {
-                                     override fun adReceived(ad: AppLovinAd)
-                                     {
-                                         log("Leader loaded")
-                                     }
-
-                                     override fun failedToReceiveAd(errorCode: Int)
-                                     {
-                                         // Look at AppLovinErrorCodes.java for list of error codes.
-                                         log("Leader failed to load with error code $errorCode")
-                                     }
-                                 })
-
-        adView.setAdDisplayListener(object : AppLovinAdDisplayListener
-                                    {
-                                        override fun adDisplayed(ad: AppLovinAd)
-                                        {
-                                            log("Leader displayed")
-                                        }
-
-                                        override fun adHidden(ad: AppLovinAd)
-                                        {
-                                            log("Leader hidden")
-                                        }
-                                    })
-
-        adView.setAdClickListener { log("Leader clicked") }
-
-        adView.setAdViewEventListener(object : AppLovinAdViewEventListener
-                                      {
-                                          override fun adOpenedFullscreen(ad: AppLovinAd, adView: AppLovinAdView)
-                                          {
-                                              log("Leader opened fullscreen")
-                                          }
-
-                                          override fun adClosedFullscreen(ad: AppLovinAd, adView: AppLovinAdView)
-                                          {
-                                              log("Leader closed fullscreen")
-                                          }
-
-                                          override fun adLeftApplication(ad: AppLovinAd, adView: AppLovinAdView)
-                                          {
-                                              log("Leader left application")
-                                          }
-
-                                          override fun adFailedToDisplay(ad: AppLovinAd, adView: AppLovinAdView, code: AppLovinAdViewDisplayErrorCode)
-                                          {
-                                              log("Leader failed to display with error code $code")
-                                          }
-                                      })
 
         // Load an ad!
         adView.loadNextAd()
@@ -94,4 +44,66 @@ class LeaderLayoutEditorActivity : AdStatusActivity()
         // demo:loadAdOnCreate="true"
         //
     }
+
+    //region Ad Load Listener
+
+    override fun adReceived(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
+
+    override fun failedToReceiveAd(errorCode: Int)
+    {
+        // Look at AppLovinErrorCodes.java for list of error codes
+        logCallback()
+    }
+
+    //endregion
+
+    //region Ad Display Listener
+
+    override fun adDisplayed(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
+
+    override fun adHidden(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
+
+    //endregion
+
+    //region AdView Event Listener
+
+    override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
+
+    override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
+
+    override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?)
+    {
+        logCallback()
+    }
+
+    override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?)
+    {
+        logCallback()
+    }
+
+    //endregion
+
+    //region Ad Click Listener
+
+    override fun adClicked(ad: AppLovinAd?)
+    {
+        logCallback()
+    }
+
+    //endregion
 }

@@ -8,8 +8,9 @@ import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode;
 import com.applovin.adview.AppLovinAdViewEventListener;
 import com.applovin.enterprise.apps.demoapp.R;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.AdStatusActivity;
+import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.sdk.AppLovinAd;
+import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
@@ -20,7 +21,8 @@ import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
 
 public class LeaderProgrammaticActivity
-        extends AdStatusActivity
+        extends BaseAdActivity
+        implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
     @Override
     protected void onCreate(final Bundle savedInstanceState)
@@ -28,78 +30,19 @@ public class LeaderProgrammaticActivity
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_leader_programmatic );
 
-        adStatusTextView = findViewById( R.id.status_label );
+        setupCallbacksRecyclerView();
 
         AppLovinAdView adView = new AppLovinAdView( AppLovinAdSize.LEADER, this );
+        adView.setAdLoadListener( this );
+        adView.setAdDisplayListener( this );
+        adView.setAdViewEventListener( this );
+        adView.setAdClickListener( this );
+
         adView.setId( ViewCompat.generateViewId() );
 
         final Button loadButton = findViewById( R.id.load_button );
         loadButton.setOnClickListener( v -> {
-            log( "Loading ad..." );
             adView.loadNextAd();
-        } );
-
-        //
-        // Optional: Set listeners
-        //
-        adView.setAdLoadListener( new AppLovinAdLoadListener()
-        {
-            @Override
-            public void adReceived(final AppLovinAd ad)
-            {
-                log( "Leader loaded" );
-            }
-
-            @Override
-            public void failedToReceiveAd(final int errorCode)
-            {
-                // Look at AppLovinErrorCodes.java for list of error codes
-                log( "Leader failed to load with error code " + errorCode );
-            }
-        } );
-
-        adView.setAdDisplayListener( new AppLovinAdDisplayListener()
-        {
-            @Override
-            public void adDisplayed(final AppLovinAd ad)
-            {
-                log( "Leader Displayed" );
-            }
-
-            @Override
-            public void adHidden(final AppLovinAd ad)
-            {
-                log( "Leader Hidden" );
-            }
-        } );
-
-        adView.setAdClickListener( ad -> log( "Leader Clicked" ) );
-
-        adView.setAdViewEventListener( new AppLovinAdViewEventListener()
-        {
-            @Override
-            public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Leader opened fullscreen" );
-            }
-
-            @Override
-            public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Leader closed fullscreen" );
-            }
-
-            @Override
-            public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView)
-            {
-                log( "Leader left application" );
-            }
-
-            @Override
-            public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code)
-            {
-                log( "Leader failed to display with error code " + code );
-            }
         } );
 
         // Add programmatically created leader into our container
@@ -114,4 +57,54 @@ public class LeaderProgrammaticActivity
         // Load an ad!
         adView.loadNextAd();
     }
+
+    //region AppLovin Ad Load Listener
+
+    @Override
+    public void adReceived(final AppLovinAd ad)
+    {
+        logCallback();
+    }
+
+    @Override
+    public void failedToReceiveAd(final int errorCode)
+    {
+        // Look at AppLovinErrorCodes.java for list of error codes
+        logCallback();
+    }
+
+    //endregion
+
+    //region Ad Display Listener
+
+    @Override
+    public void adDisplayed(final AppLovinAd ad) { logCallback(); }
+
+    @Override
+    public void adHidden(final AppLovinAd ad) { logCallback(); }
+
+    //endregion
+
+    //region AdView Event Listener
+
+    @Override
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+
+    @Override
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+
+    //endregion
+
+    //region Ad Click Listener
+
+    @Override
+    public void adClicked(final AppLovinAd ad) { logCallback(); }
+
+    //endregion
 }
