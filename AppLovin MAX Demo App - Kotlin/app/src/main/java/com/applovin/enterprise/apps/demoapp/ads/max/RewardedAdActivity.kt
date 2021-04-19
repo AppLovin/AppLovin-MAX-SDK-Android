@@ -47,7 +47,7 @@ class RewardedAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?)
+    override fun onAdLoaded(ad: MaxAd)
     {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
         logCallback()
@@ -56,7 +56,7 @@ class RewardedAdActivity : BaseAdActivity(),
         retryAttempt = 0.0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
+    override fun onAdLoadFailed(adUnitId: String, errorCode: Int)
     {
         logCallback()
 
@@ -68,7 +68,7 @@ class RewardedAdActivity : BaseAdActivity(),
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
+    override fun onAdDisplayFailed(ad: MaxAd, errorCode: Int)
     {
         logCallback()
 
@@ -76,11 +76,11 @@ class RewardedAdActivity : BaseAdActivity(),
         rewardedAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
 
-    override fun onAdClicked(ad: MaxAd?) { logCallback() }
+    override fun onAdClicked(ad: MaxAd) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd?)
+    override fun onAdHidden(ad: MaxAd)
     {
         logCallback()
 
@@ -88,11 +88,11 @@ class RewardedAdActivity : BaseAdActivity(),
         rewardedAd.loadAd()
     }
 
-    override fun onRewardedVideoStarted(ad: MaxAd?) { logCallback() }
+    override fun onRewardedVideoStarted(ad: MaxAd) { logCallback() }
 
-    override fun onRewardedVideoCompleted(ad: MaxAd?) { logCallback() }
+    override fun onRewardedVideoCompleted(ad: MaxAd) { logCallback() }
 
-    override fun onUserRewarded(ad: MaxAd?, reward: MaxReward?)
+    override fun onUserRewarded(ad: MaxAd, reward: MaxReward?)
     {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()

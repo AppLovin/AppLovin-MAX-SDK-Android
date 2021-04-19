@@ -12,6 +12,8 @@ import com.applovin.mediation.ads.MaxInterstitialAd;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX interstitial ads.
  * <p>
@@ -51,7 +53,7 @@ public class InterstitialAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad)
+    public void onAdLoaded(@NonNull final MaxAd ad)
     {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback();
@@ -61,7 +63,7 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode)
+    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode)
     {
         logCallback();
 
@@ -81,7 +83,7 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode)
     {
         logCallback();
 
@@ -90,13 +92,13 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad)
+    public void onAdHidden(@NonNull final MaxAd ad)
     {
         logCallback();
 

@@ -2,6 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.max.mrecs;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.applovin.enterprise.apps.demoapp.R;
@@ -40,22 +41,22 @@ public class LayoutEditorMrecAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad) { logCallback(); }
+    public void onAdLoaded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode) { logCallback(); }
+    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { logCallback(); }
+    public void onAdHidden(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { logCallback(); }
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode) { logCallback(); }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }

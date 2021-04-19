@@ -8,6 +8,8 @@ import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.ads.MaxAdView;
 
+import androidx.annotation.NonNull;
+
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX banner ads created in the Layout Editor.
  * <p>
@@ -38,22 +40,22 @@ public class LayoutEditorBannerAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad) { logCallback(); }
+    public void onAdLoaded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode) { logCallback(); }
+    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { logCallback(); }
+    public void onAdHidden(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { logCallback(); }
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode) { logCallback(); }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }

@@ -46,7 +46,7 @@ class InterstitialAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?)
+    override fun onAdLoaded(ad: MaxAd)
     {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback()
@@ -55,7 +55,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         retryAttempt = 0.0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
+    override fun onAdLoadFailed(adUnitId: String, errorCode: Int)
     {
         logCallback()
 
@@ -67,7 +67,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
+    override fun onAdDisplayFailed(ad: MaxAd, errorCode: Int)
     {
         logCallback()
 
@@ -75,11 +75,11 @@ class InterstitialAdActivity : BaseAdActivity(),
         interstitialAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
 
-    override fun onAdClicked(ad: MaxAd?) { logCallback() }
+    override fun onAdClicked(ad: MaxAd) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd?)
+    override fun onAdHidden(ad: MaxAd)
     {
         logCallback()
 

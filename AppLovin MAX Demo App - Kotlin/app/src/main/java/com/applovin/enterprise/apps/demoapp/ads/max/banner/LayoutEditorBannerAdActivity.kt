@@ -30,21 +30,21 @@ class LayoutEditorBannerAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) { logCallback() }
+    override fun onAdLoaded(ad: MaxAd) { logCallback() }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int) { logCallback() }
+    override fun onAdLoadFailed(adUnitId: String, errorCode: Int) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd?) { logCallback() }
+    override fun onAdHidden(ad: MaxAd) { logCallback() }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int) { logCallback() }
+    override fun onAdDisplayFailed(ad: MaxAd, errorCode: Int) { logCallback() }
 
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
 
-    override fun onAdClicked(ad: MaxAd?) { logCallback() }
+    override fun onAdClicked(ad: MaxAd) { logCallback() }
 
-    override fun onAdExpanded(ad: MaxAd?) { logCallback() }
+    override fun onAdExpanded(ad: MaxAd) { logCallback() }
 
-    override fun onAdCollapsed(ad: MaxAd?) { logCallback() }
+    override fun onAdCollapsed(ad: MaxAd) { logCallback() }
 
     //endregion
 }

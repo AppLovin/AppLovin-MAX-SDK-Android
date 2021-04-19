@@ -13,6 +13,8 @@ import com.applovin.mediation.ads.MaxRewardedAd;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX rewarded ads.
  * <p>
@@ -52,7 +54,7 @@ public class RewardedAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad)
+    public void onAdLoaded(@NonNull final MaxAd ad)
     {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
         logCallback();
@@ -62,7 +64,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode)
+    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode)
     {
         logCallback();
 
@@ -82,7 +84,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode)
     {
         logCallback();
 
@@ -91,13 +93,13 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad)
+    public void onAdHidden(@NonNull final MaxAd ad)
     {
         logCallback();
 
