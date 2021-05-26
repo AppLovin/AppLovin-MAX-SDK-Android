@@ -9,6 +9,7 @@ import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdViewAdListener
+import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxAdView
 import com.applovin.sdk.AppLovinSdkUtils
 
@@ -49,11 +50,11 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     override fun onAdLoaded(ad: MaxAd?) { logCallback() }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int) { logCallback() }
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
 
     override fun onAdHidden(ad: MaxAd?) { logCallback() }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int) { logCallback() }
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) { logCallback() }
 
     override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
 
@@ -62,6 +63,8 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
     override fun onAdExpanded(ad: MaxAd?) { logCallback() }
 
     override fun onAdCollapsed(ad: MaxAd?) { logCallback() }
+
+    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
 
     //endregion
 }

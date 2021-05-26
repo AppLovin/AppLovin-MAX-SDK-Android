@@ -10,6 +10,7 @@ import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdFormat
 import com.applovin.mediation.MaxAdViewAdListener
+import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxAdView
 import com.applovin.sdk.AppLovinSdkUtils
 
@@ -70,35 +71,22 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
     }
 
     //region MAX Ad Listener
-    override fun onAdLoaded(ad: MaxAd) {
-        logCallback()
-    }
+    override fun onAdLoaded(ad: MaxAd) { logCallback() }
 
-    override fun onAdLoadFailed(adUnitId: String, errorCode: Int) {
-        logCallback()
-    }
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
 
-    override fun onAdHidden(ad: MaxAd) {
-        logCallback()
-    }
+    override fun onAdHidden(ad: MaxAd) { logCallback() }
 
-    override fun onAdDisplayFailed(ad: MaxAd, errorCode: Int) {
-        logCallback()
-    }
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) { logCallback() }
 
-    override fun onAdDisplayed(ad: MaxAd) {
-        logCallback()
-    }
+    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
 
-    override fun onAdClicked(ad: MaxAd) {
-        logCallback()
-    }
+    override fun onAdClicked(ad: MaxAd) { logCallback() }
 
-    override fun onAdExpanded(ad: MaxAd) {
-        logCallback()
-    }
+    override fun onAdExpanded(ad: MaxAd) { logCallback() }
 
-    override fun onAdCollapsed(ad: MaxAd) {
-        logCallback()
-    } //endregion
+    override fun onAdCollapsed(ad: MaxAd) { logCallback() }
+
+    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+    //endregion
 }

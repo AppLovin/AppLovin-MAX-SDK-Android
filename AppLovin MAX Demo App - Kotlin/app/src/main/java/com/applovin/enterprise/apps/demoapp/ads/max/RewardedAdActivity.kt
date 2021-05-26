@@ -7,6 +7,7 @@ import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
+import com.applovin.mediation.MaxError
 import com.applovin.mediation.MaxReward
 import com.applovin.mediation.MaxRewardedAdListener
 import com.applovin.mediation.ads.MaxRewardedAd
@@ -56,7 +57,7 @@ class RewardedAdActivity : BaseAdActivity(),
         retryAttempt = 0.0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?)
     {
         logCallback()
 
@@ -68,7 +69,7 @@ class RewardedAdActivity : BaseAdActivity(),
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?)
     {
         logCallback()
 
@@ -97,6 +98,8 @@ class RewardedAdActivity : BaseAdActivity(),
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()
     }
+
+    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
 
     //endregion
 }

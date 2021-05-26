@@ -7,6 +7,7 @@ import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
+import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
 import java.util.concurrent.TimeUnit
 
@@ -16,13 +17,11 @@ import java.util.concurrent.TimeUnit
  * Created by Harry Arakkal on 2019-09-17.
  */
 class InterstitialAdActivity : BaseAdActivity(),
-        MaxAdListener
-{
+        MaxAdListener {
     private lateinit var interstitialAd: MaxInterstitialAd
     private var retryAttempt = 0.0
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_interstitial_ad)
         setTitle(R.string.activity_interstitial)
@@ -36,18 +35,15 @@ class InterstitialAdActivity : BaseAdActivity(),
         interstitialAd.loadAd()
     }
 
-    fun showAd(view: View)
-    {
-        if (interstitialAd.isReady)
-        {
+    fun showAd(view: View) {
+        if (interstitialAd.isReady) {
             interstitialAd.showAd()
         }
     }
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?)
-    {
+    override fun onAdLoaded(ad: MaxAd?) {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback()
 
@@ -55,8 +51,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         retryAttempt = 0.0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, errorCode: Int)
-    {
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
         logCallback()
 
         // Interstitial ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
@@ -67,24 +62,30 @@ class InterstitialAdActivity : BaseAdActivity(),
         Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, errorCode: Int)
-    {
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
         logCallback()
 
         // Interstitial ad failed to display. We recommend loading the next ad.
         interstitialAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onAdClicked(ad: MaxAd?) { logCallback() }
+    override fun onAdClicked(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onAdHidden(ad: MaxAd?)
-    {
+    override fun onAdHidden(ad: MaxAd?) {
         logCallback()
 
         // Interstitial Ad is hidden. Pre-load the next ad
         interstitialAd.loadAd()
+    }
+
+    override fun onAdRevenuePaid(ad: MaxAd?) {
+        logCallback()
     }
 
     //endregion
