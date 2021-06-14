@@ -7,6 +7,7 @@ import android.view.View;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
@@ -62,7 +63,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode)
+    public void onAdLoadFailed(final String adUnitId, final MaxError maxError)
     {
         logCallback();
 
@@ -82,7 +83,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode)
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError)
     {
         logCallback();
 
@@ -95,6 +96,9 @@ public class RewardedAdActivity
 
     @Override
     public void onAdClicked(final MaxAd ad) { logCallback(); }
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     @Override
     public void onAdHidden(final MaxAd ad)

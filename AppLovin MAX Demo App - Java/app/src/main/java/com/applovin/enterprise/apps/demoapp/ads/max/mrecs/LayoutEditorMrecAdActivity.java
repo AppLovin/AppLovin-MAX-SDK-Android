@@ -8,6 +8,7 @@ import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 
 /**
@@ -43,19 +44,22 @@ public class LayoutEditorMrecAdActivity
     public void onAdLoaded(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final int errorCode) { logCallback(); }
+    public void onAdLoadFailed(final String adUnitId, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdHidden(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final int errorCode) { logCallback(); }
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdDisplayed(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdClicked(final MaxAd ad) { logCallback(); }
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }
