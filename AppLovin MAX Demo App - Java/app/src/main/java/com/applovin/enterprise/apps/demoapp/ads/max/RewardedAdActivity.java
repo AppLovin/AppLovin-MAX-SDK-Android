@@ -7,6 +7,7 @@ import android.view.View;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RewardedAdActivity
         extends BaseAdActivity
-        implements MaxRewardedAdListener
+        implements MaxRewardedAdListener, MaxAdRevenueListener
 {
     private MaxRewardedAd rewardedAd;
     private int           retryAttempt;
@@ -36,7 +37,9 @@ public class RewardedAdActivity
         setupCallbacksRecyclerView();
 
         rewardedAd = MaxRewardedAd.getInstance( "YOUR_AD_UNIT_ID", this );
+
         rewardedAd.setListener( this );
+        rewardedAd.setRevenueListener( this );
 
         // Load the first ad.
         rewardedAd.loadAd();
@@ -98,9 +101,6 @@ public class RewardedAdActivity
     public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
-
-    @Override
     public void onAdHidden(final MaxAd ad)
     {
         logCallback();
@@ -121,6 +121,13 @@ public class RewardedAdActivity
         // Rewarded ad was displayed and user should receive the reward.
         logCallback();
     }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     //endregion
 }

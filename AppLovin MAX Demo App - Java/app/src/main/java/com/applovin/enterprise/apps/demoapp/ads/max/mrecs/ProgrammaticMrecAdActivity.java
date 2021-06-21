@@ -12,6 +12,7 @@ import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
@@ -24,7 +25,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
  */
 public class ProgrammaticMrecAdActivity
         extends BaseAdActivity
-        implements MaxAdViewAdListener
+        implements MaxAdViewAdListener, MaxAdRevenueListener
 {
     private MaxAdView adView;
 
@@ -38,7 +39,10 @@ public class ProgrammaticMrecAdActivity
         setupCallbacksRecyclerView();
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
+
         adView.setListener( this );
+        adView.setRevenueListener( this );
+
         adView.setId( ViewCompat.generateViewId() );
 
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
@@ -89,13 +93,17 @@ public class ProgrammaticMrecAdActivity
     public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
-
-    @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     //endregion
 }

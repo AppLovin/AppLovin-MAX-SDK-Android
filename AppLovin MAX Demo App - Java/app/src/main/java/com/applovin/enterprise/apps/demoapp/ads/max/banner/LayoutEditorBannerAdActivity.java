@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
@@ -16,7 +17,7 @@ import com.applovin.mediation.ads.MaxAdView;
  */
 public class LayoutEditorBannerAdActivity
         extends BaseAdActivity
-        implements MaxAdViewAdListener
+        implements MaxAdViewAdListener, MaxAdRevenueListener
 {
     private MaxAdView adView;
 
@@ -30,7 +31,9 @@ public class LayoutEditorBannerAdActivity
         setupCallbacksRecyclerView();
 
         adView = findViewById( R.id.banner_ad_view );
+
         adView.setListener( this );
+        adView.setRevenueListener( this );
 
         // Load the first ad.
         adView.loadAd();
@@ -57,13 +60,17 @@ public class LayoutEditorBannerAdActivity
     public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
-
-    @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     //endregion
 }

@@ -8,6 +8,7 @@ import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxInterstitialAd;
 
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class InterstitialAdActivity
         extends BaseAdActivity
-        implements MaxAdListener
+        implements MaxAdListener, MaxAdRevenueListener
 {
     private MaxInterstitialAd interstitialAd;
     private int retryAttempt;
@@ -35,7 +36,9 @@ public class InterstitialAdActivity
         setupCallbacksRecyclerView();
 
         interstitialAd = new MaxInterstitialAd( "YOUR_AD_UNIT_ID", this );
+
         interstitialAd.setListener( this );
+        interstitialAd.setRevenueListener( this );
 
         // Load the first ad.
         interstitialAd.loadAd();
@@ -97,9 +100,6 @@ public class InterstitialAdActivity
     public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
-
-    @Override
     public void onAdHidden(final MaxAd ad)
     {
         logCallback();
@@ -107,6 +107,13 @@ public class InterstitialAdActivity
         // Interstitial Ad is hidden. Pre-load the next ad
         interstitialAd.loadAd();
     }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     //endregion
 }
