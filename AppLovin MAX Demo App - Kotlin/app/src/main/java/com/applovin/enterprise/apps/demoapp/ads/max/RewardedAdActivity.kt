@@ -6,10 +6,7 @@ import android.view.View
 import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
-import com.applovin.mediation.MaxAd
-import com.applovin.mediation.MaxError
-import com.applovin.mediation.MaxReward
-import com.applovin.mediation.MaxRewardedAdListener
+import com.applovin.mediation.*
 import com.applovin.mediation.ads.MaxRewardedAd
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * Created by Harry Arakkal on 2019-09-17.
  */
 class RewardedAdActivity : BaseAdActivity(),
-    MaxRewardedAdListener
+    MaxRewardedAdListener, MaxAdRevenueListener
 {
     private lateinit var rewardedAd: MaxRewardedAd
     private var retryAttempt = 0.0
@@ -33,7 +30,9 @@ class RewardedAdActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         rewardedAd = MaxRewardedAd.getInstance("YOUR_AD_UNIT_ID", this)
+
         rewardedAd.setListener(this)
+        rewardedAd.setRevenueListener(this)
 
         rewardedAd.loadAd()
     }
@@ -98,6 +97,10 @@ class RewardedAdActivity : BaseAdActivity(),
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()
     }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
 
     override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
 

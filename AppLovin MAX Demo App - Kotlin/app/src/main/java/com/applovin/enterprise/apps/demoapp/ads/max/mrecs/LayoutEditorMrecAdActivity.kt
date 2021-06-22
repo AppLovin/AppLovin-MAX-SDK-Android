@@ -5,6 +5,7 @@ import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
+import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
 import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
@@ -15,20 +16,23 @@ import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
  *
  * Created by Andrew Tian on 2020-01-14.
  */
-class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
+class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdRevenueListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_layout_editor_mrec_ad)
         setTitle(R.string.activity_layout_editor_mrecs)
         setupCallbacksRecyclerView()
+
         mrec_ad_view.setListener(this)
+        mrec_ad_view.setRevenueListener(this)
 
         // Load the first ad.
         mrec_ad_view.loadAd()
     }
 
     //region MAX Ad Listener
+
     override fun onAdLoaded(ad: MaxAd) { logCallback() }
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
@@ -45,6 +49,11 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
 
     override fun onAdCollapsed(ad: MaxAd) { logCallback() }
 
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
     override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+
     //endregion
 }

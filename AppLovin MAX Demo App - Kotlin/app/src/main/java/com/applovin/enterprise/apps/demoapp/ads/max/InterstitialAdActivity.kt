@@ -7,6 +7,7 @@ import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdListener
+import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
 import java.util.concurrent.TimeUnit
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
  * Created by Harry Arakkal on 2019-09-17.
  */
 class InterstitialAdActivity : BaseAdActivity(),
-        MaxAdListener {
+        MaxAdListener, MaxAdRevenueListener {
     private lateinit var interstitialAd: MaxInterstitialAd
     private var retryAttempt = 0.0
 
@@ -29,7 +30,9 @@ class InterstitialAdActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         interstitialAd = MaxInterstitialAd("YOUR_AD_UNIT_ID", this)
+
         interstitialAd.setListener(this)
+        interstitialAd.setRevenueListener(this)
 
         // Load the first ad.
         interstitialAd.loadAd()
@@ -84,9 +87,11 @@ class InterstitialAdActivity : BaseAdActivity(),
         interstitialAd.loadAd()
     }
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
-        logCallback()
-    }
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
 
     //endregion
 }
