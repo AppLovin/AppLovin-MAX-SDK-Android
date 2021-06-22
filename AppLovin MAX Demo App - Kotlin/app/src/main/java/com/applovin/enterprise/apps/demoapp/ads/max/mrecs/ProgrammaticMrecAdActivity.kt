@@ -7,10 +7,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
-import com.applovin.mediation.MaxAd
-import com.applovin.mediation.MaxAdFormat
-import com.applovin.mediation.MaxAdViewAdListener
-import com.applovin.mediation.MaxError
+import com.applovin.mediation.*
 import com.applovin.mediation.ads.MaxAdView
 import com.applovin.sdk.AppLovinSdkUtils
 
@@ -20,7 +17,7 @@ import com.applovin.sdk.AppLovinSdkUtils
  *
  * Created by Andrew Tian on 2020-01-14.
  */
-class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
+class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdRevenueListener {
     private var adView: MaxAdView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +25,10 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
         setTitle(R.string.activity_programmatic_mrecs)
         setupCallbacksRecyclerView()
         adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
+
         adView!!.setListener(this)
+        adView!!.setRevenueListener(this)
+
         adView!!.id = ViewCompat.generateViewId()
         val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
@@ -71,6 +71,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
     }
 
     //region MAX Ad Listener
+
     override fun onAdLoaded(ad: MaxAd) { logCallback() }
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
@@ -87,6 +88,11 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener {
 
     override fun onAdCollapsed(ad: MaxAd) { logCallback() }
 
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
     override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+
     //endregion
 }

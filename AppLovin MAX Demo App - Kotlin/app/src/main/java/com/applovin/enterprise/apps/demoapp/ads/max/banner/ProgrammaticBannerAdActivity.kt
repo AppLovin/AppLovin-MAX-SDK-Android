@@ -8,6 +8,7 @@ import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
+import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxAdView
@@ -19,7 +20,7 @@ import com.applovin.sdk.AppLovinSdkUtils
  * Created by Harry Arakkal on 9/17/2019
  */
 class ProgrammaticBannerAdActivity : BaseAdActivity(),
-        MaxAdViewAdListener
+        MaxAdViewAdListener, MaxAdRevenueListener
 {
     private lateinit var adView: MaxAdView
 
@@ -32,7 +33,9 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         adView = MaxAdView("YOUR_AD_UNIT_ID", this)
+
         adView.setListener(this)
+        adView.setRevenueListener(this)
 
         val isTablet = AppLovinSdkUtils.isTablet(this)
         val heightPx = AppLovinSdkUtils.dpToPx(this, if (isTablet) 90 else 50)
@@ -63,6 +66,10 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
     override fun onAdExpanded(ad: MaxAd?) { logCallback() }
 
     override fun onAdCollapsed(ad: MaxAd?) { logCallback() }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
 
     override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
 
