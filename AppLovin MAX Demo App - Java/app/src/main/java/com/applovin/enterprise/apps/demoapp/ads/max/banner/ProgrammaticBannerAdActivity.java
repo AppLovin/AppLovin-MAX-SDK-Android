@@ -8,6 +8,7 @@ import android.widget.FrameLayout;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
@@ -20,7 +21,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
  */
 public class ProgrammaticBannerAdActivity
         extends BaseAdActivity
-        implements MaxAdViewAdListener
+        implements MaxAdViewAdListener, MaxAdRevenueListener
 {
     private MaxAdView adView;
 
@@ -34,7 +35,9 @@ public class ProgrammaticBannerAdActivity
         setupCallbacksRecyclerView();
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
+
         adView.setListener( this );
+        adView.setRevenueListener( this );
 
         // Set the height of the banner ad based on the device type.
         final boolean isTablet = AppLovinSdkUtils.isTablet( this );
@@ -73,13 +76,17 @@ public class ProgrammaticBannerAdActivity
     public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
-
-    @Override
     public void onAdExpanded(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
 
     //endregion
 }
