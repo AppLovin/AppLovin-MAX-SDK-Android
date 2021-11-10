@@ -18,13 +18,11 @@ public class FooterType
      */
     public String getAppDetails()
     {
-        String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
         String versionName = versionName();
         int apiLevel = Build.VERSION.SDK_INT;
 
-        String footer = "\nApp Version: " + appVersion +
-                "\nSDK Version: " + sdkVersion +
+        String footer = "\nSDK Version: " + sdkVersion +
                 "\nOS Version: " + versionName + "(API " + apiLevel + ")";
         return footer;
     }

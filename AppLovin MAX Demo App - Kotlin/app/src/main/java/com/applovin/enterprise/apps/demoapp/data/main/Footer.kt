@@ -14,7 +14,6 @@ data class Footer(override val type: Int = ListItem.FOOTER) : ListItem
 {
     fun getAppDetails(): String
     {
-        val appVersion: String = BuildConfig.VERSION_NAME
         val sdkVersion: String = AppLovinSdk.VERSION
         val fields = Build.VERSION_CODES::class.java.fields
         var versionName = "UNKNOWN"
@@ -23,7 +22,6 @@ data class Footer(override val type: Int = ListItem.FOOTER) : ListItem
         val apiLevel = Build.VERSION.SDK_INT
 
         return """
-            App Version: $appVersion
             SDK Version: $sdkVersion
             OS Version: $versionName(API $apiLevel)
             """.trimIndent()
