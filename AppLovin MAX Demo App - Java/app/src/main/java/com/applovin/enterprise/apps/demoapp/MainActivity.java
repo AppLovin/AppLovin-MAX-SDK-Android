@@ -142,6 +142,7 @@ public class MainActivity
             items.add( new DemoMenuItem( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
         }
 
+        items.add( new DemoMenuItem( "MRECs", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new DemoMenuItem( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
         items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
