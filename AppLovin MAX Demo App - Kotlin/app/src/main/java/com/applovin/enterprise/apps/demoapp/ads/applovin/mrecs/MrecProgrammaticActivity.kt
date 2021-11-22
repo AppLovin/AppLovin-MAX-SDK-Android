@@ -11,7 +11,6 @@ import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_banner_programmatic.banner_programmatic_content_layout
 import kotlinx.android.synthetic.main.activity_mrec_programmatic.*
 
 class MrecProgrammaticActivity : BaseAdActivity(),
@@ -40,6 +39,7 @@ class MrecProgrammaticActivity : BaseAdActivity(),
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(mrec_programmatic_content_layout)
+        constraintSet.centerHorizontally(adView.id, R.id.mrec_programmatic_content_layout)
         constraintSet.connect(adView.id, ConstraintSet.TOP, R.id.mrec_programmatic_content_layout, ConstraintSet.TOP, 0)
         constraintSet.applyTo(mrec_programmatic_content_layout)
 
