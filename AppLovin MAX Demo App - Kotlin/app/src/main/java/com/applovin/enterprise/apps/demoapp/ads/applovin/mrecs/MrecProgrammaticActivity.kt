@@ -32,15 +32,22 @@ class MrecProgrammaticActivity : BaseAdActivity(),
         adView.setAdClickListener(this)
 
         adView.id = ViewCompat.generateViewId()
+        val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
+        val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
+        adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
         mrec_load_button.setOnClickListener { adView.loadNextAd() }
 
-        // Add programmatically created banner into our container
-        mrec_programmatic_content_layout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 300)))
+        // Add programmatically created MREC into our container and center
+        mrec_programmatic_content_layout.addView(adView)
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(mrec_programmatic_content_layout)
-        constraintSet.centerHorizontally(adView.id, R.id.mrec_programmatic_content_layout)
+        constraintSet.constrainHeight(adView.id, heightPx)
+        constraintSet.constrainWidth(adView.id, widthPx)
+        constraintSet.connect(adView.id, ConstraintSet.LEFT, R.id.mrec_programmatic_content_layout, ConstraintSet.LEFT, 0)
+        constraintSet.connect(adView.id, ConstraintSet.RIGHT, R.id.mrec_programmatic_content_layout, ConstraintSet.RIGHT, 0)
         constraintSet.connect(adView.id, ConstraintSet.TOP, R.id.mrec_programmatic_content_layout, ConstraintSet.TOP, 0)
+
         constraintSet.applyTo(mrec_programmatic_content_layout)
 
         // Load an ad!
