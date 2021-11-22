@@ -34,7 +34,7 @@ class MrecZoneActivity : BaseAdActivity(),
         mrec_load_button.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created banner into our container
-        mrec_programmatic_content_layout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 300)))
+        mrec_programmatic_content_layout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 250)))
 
         val constraintSet = ConstraintSet()
         constraintSet.clone(mrec_programmatic_content_layout)
