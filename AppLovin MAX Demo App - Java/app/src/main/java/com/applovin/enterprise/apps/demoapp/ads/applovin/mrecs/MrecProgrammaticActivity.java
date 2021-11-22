@@ -47,14 +47,22 @@ public final class MrecProgrammaticActivity
             mrecAdView.loadNextAd();
         } );
 
-        // Add programmatically created MREC into our container
+        // Add programmatically created MREC into our container and center it.
+        final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
+        final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
+
         ConstraintLayout MRECProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
 
-        MRECProgrammaticContentLayout.addView( mrecAdView, new ConstraintLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx( this, 250 ) ) );
+        MRECProgrammaticContentLayout.addView( mrecAdView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
 
-        ConstraintSet constraintSet = new ConstraintSet();
+        final ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone( MRECProgrammaticContentLayout );
-        constraintSet.connect( mrecAdView.getId(), ConstraintSet.TOP, R.id.mrec_programmatic_layout, ConstraintSet.TOP, 0 );
+        constraintSet.constrainHeight( mrecAdView.getId(), heightPx );
+        constraintSet.constrainWidth( mrecAdView.getId(), widthPx );
+
+        constraintSet.connect( mrecAdView.getId(), ConstraintSet.LEFT, MRECProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
+        constraintSet.connect( mrecAdView.getId(), ConstraintSet.RIGHT, MRECProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
+        constraintSet.connect( mrecAdView.getId(), ConstraintSet.TOP, MRECProgrammaticContentLayout.getId(), ConstraintSet.TOP );
         constraintSet.applyTo( MRECProgrammaticContentLayout );
 
         // Load an ad!
