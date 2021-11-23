@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.applovin.adview.AppLovinAdView;
@@ -39,6 +38,8 @@ public final class MrecZoneActivity
         mrecAdView.setAdClickListener( this );
 
         mrecAdView.setId( ViewCompat.generateViewId() );
+        final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
+        final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
         Button loadButton = findViewById( R.id.MREC_load_button );
         loadButton.setOnClickListener( v -> {
@@ -47,11 +48,7 @@ public final class MrecZoneActivity
 
 
         // Add programmatically created MREC into our container and center it.
-        final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
-        final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
-
         ConstraintLayout MRECProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
-
         MRECProgrammaticContentLayout.addView( mrecAdView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
 
         final ConstraintSet constraintSet = new ConstraintSet();

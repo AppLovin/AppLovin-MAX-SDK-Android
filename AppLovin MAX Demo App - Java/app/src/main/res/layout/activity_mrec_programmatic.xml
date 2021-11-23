@@ -24,7 +24,7 @@
         android:id="@+id/callbacks_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="250dp"
         android:padding="10dp"
         app:layout_constraintBottom_toTopOf="@+id/MREC_load_button"
         app:layout_constraintHorizontal_bias="0.0"

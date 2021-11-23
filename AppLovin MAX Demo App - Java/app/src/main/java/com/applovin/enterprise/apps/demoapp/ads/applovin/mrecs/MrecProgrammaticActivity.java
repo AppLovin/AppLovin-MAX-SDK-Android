@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.applovin.adview.AppLovinAdView;
@@ -52,7 +51,6 @@ public final class MrecProgrammaticActivity
         final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
         ConstraintLayout MRECProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
-
         MRECProgrammaticContentLayout.addView( mrecAdView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
 
         final ConstraintSet constraintSet = new ConstraintSet();
@@ -96,16 +94,16 @@ public final class MrecProgrammaticActivity
     //region AdView Event Listener
 
     @Override
-    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView mrecAdView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
     //endregion
 

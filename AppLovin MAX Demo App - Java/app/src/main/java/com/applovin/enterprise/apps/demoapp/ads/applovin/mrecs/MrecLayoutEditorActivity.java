@@ -79,16 +79,16 @@ public class MrecLayoutEditorActivity
     //region AdView Event Listener
 
     @Override
-    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
 
     @Override
-    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView mrecAdView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
     //endregion
 
