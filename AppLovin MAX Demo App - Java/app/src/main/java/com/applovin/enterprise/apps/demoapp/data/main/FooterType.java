@@ -3,7 +3,6 @@ package com.applovin.enterprise.apps.demoapp.data.main;
 import android.os.Build;
 import android.util.Log;
 
-import com.applovin.enterprise.apps.demoapp.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 
 import java.lang.reflect.Field;
