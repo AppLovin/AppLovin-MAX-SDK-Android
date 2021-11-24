@@ -105,6 +105,18 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderLayoutEditorActivity"
             android:label="@string/title_activity_leader_layout_editor" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecDemoMenuActivity"
+            android:label="@string/title_activity_mrec_list" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecProgrammaticActivity"
+            android:label="@string/title_activity_mrec_programmatic" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecLayoutEditorActivity"
+            android:label="@string/title_activity_mrec_layout_editor" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecZoneActivity"
+            android:label="@string/title_activity_mrec_zone_integration" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
             android:label="@string/title_activity_event_tracking" />
     </application>
