@@ -34,9 +34,10 @@ class MrecProgrammaticActivity : BaseAdActivity(),
         val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
         adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
+
         mrec_load_button.setOnClickListener { adView.loadNextAd() }
 
-        // Add programmatically created MREC into our container and center
+        // Add programmatically created MREC into our container and center.
         mrec_programmatic_content_layout.addView(adView)
 
         val constraintSet = ConstraintSet()

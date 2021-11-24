@@ -23,15 +23,15 @@ class MrecZoneActivity : BaseAdActivity(),
         setupCallbacksRecyclerView()
 
         val adView = AppLovinAdView(AppLovinAdSize.MREC, "YOUR_ZONE_ID", this)
-        adView.id = ViewCompat.generateViewId()
-        val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
-        val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
-        adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
-
         adView.setAdLoadListener(this)
         adView.setAdDisplayListener(this)
         adView.setAdViewEventListener(this)
         adView.setAdClickListener(this)
+
+        adView.id = ViewCompat.generateViewId()
+        val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
+        val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
+        adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
 
         mrec_load_button.setOnClickListener { adView.loadNextAd() }
 
