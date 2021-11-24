@@ -26,19 +26,19 @@ public class MrecLayoutEditorActivity
         setupCallbacksRecyclerView();
 
         // Retrieve MREC from layout editor
-        AppLovinAdView mrecAdView = findViewById( R.id.ad_view );
-        mrecAdView.setAdLoadListener( this );
-        mrecAdView.setAdDisplayListener( this );
-        mrecAdView.setAdViewEventListener( this );
-        mrecAdView.setAdClickListener( this );
+        AppLovinAdView adView = findViewById( R.id.ad_view );
+        adView.setAdLoadListener( this );
+        adView.setAdDisplayListener( this );
+        adView.setAdViewEventListener( this );
+        adView.setAdClickListener( this );
 
         Button loadButton = findViewById( R.id.mrec_load_button );
         loadButton.setOnClickListener( v -> {
-            mrecAdView.loadNextAd();
+            adView.loadNextAd();
         } );
 
         // Load an ad!
-        mrecAdView.loadNextAd();
+        adView.loadNextAd();
 
         //
         // Please note that the AppLovinAdView CAN AUTOMATICALLY invoke loadNextAd() upon inflation from layout
@@ -79,16 +79,16 @@ public class MrecLayoutEditorActivity
     //region AdView Event Listener
 
     @Override
-    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView mrecAdView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
     //endregion
 
