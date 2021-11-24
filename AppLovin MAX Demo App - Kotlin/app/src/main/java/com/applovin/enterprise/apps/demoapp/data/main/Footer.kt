@@ -24,6 +24,8 @@ data class Footer(override val type: Int = ListItem.FOOTER) : ListItem
         return """
             SDK Version: $sdkVersion
             OS Version: $versionName(API $apiLevel)
+            
+            Language: Kotlin
             """.trimIndent()
     }
 }

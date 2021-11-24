@@ -22,7 +22,9 @@ public class FooterType
         int apiLevel = Build.VERSION.SDK_INT;
 
         String footer = "\nSDK Version: " + sdkVersion +
-                "\nOS Version: " + versionName + "(API " + apiLevel + ")";
+                "\nOS Version: " + versionName + "(API " + apiLevel + ")" +
+                "\n " +
+                "\nLanguage:  Java";
         return footer;
     }
 

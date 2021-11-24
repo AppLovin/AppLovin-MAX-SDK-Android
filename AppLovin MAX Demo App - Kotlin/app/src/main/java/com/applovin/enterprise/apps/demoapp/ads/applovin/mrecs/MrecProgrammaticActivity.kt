@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs
 
 import android.os.Bundle
-import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat

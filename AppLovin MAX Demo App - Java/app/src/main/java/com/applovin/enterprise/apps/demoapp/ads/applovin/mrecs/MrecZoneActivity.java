@@ -31,38 +31,38 @@ public final class MrecZoneActivity
 
         setupCallbacksRecyclerView();
 
-        AppLovinAdView mrecAdView = new AppLovinAdView( AppLovinAdSize.MREC, "YOUR_ZONE_ID", this );
-        mrecAdView.setAdLoadListener( this );
-        mrecAdView.setAdDisplayListener( this );
-        mrecAdView.setAdViewEventListener( this );
-        mrecAdView.setAdClickListener( this );
-
-        mrecAdView.setId( ViewCompat.generateViewId() );
+        AppLovinAdView adView = new AppLovinAdView( AppLovinAdSize.MREC, "YOUR_ZONE_ID", this );
+        adView.setId( ViewCompat.generateViewId() );
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
         final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
+        adView.setAdLoadListener( this );
+        adView.setAdDisplayListener( this );
+        adView.setAdViewEventListener( this );
+        adView.setAdClickListener( this );
+
         Button loadButton = findViewById( R.id.MREC_load_button );
         loadButton.setOnClickListener( v -> {
-            mrecAdView.loadNextAd();
+            adView.loadNextAd();
         } );
 
 
         // Add programmatically created MREC into our container and center it.
         ConstraintLayout MRECProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
-        MRECProgrammaticContentLayout.addView( mrecAdView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
+        MRECProgrammaticContentLayout.addView( adView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
 
         final ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone( MRECProgrammaticContentLayout );
-        constraintSet.constrainHeight( mrecAdView.getId(), heightPx );
-        constraintSet.constrainWidth( mrecAdView.getId(), widthPx );
+        constraintSet.constrainHeight( adView.getId(), heightPx );
+        constraintSet.constrainWidth( adView.getId(), widthPx );
 
-        constraintSet.connect( mrecAdView.getId(), ConstraintSet.LEFT, MRECProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
-        constraintSet.connect( mrecAdView.getId(), ConstraintSet.RIGHT, MRECProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
-        constraintSet.connect( mrecAdView.getId(), ConstraintSet.TOP, MRECProgrammaticContentLayout.getId(), ConstraintSet.TOP );
+        constraintSet.connect( adView.getId(), ConstraintSet.LEFT, MRECProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
+        constraintSet.connect( adView.getId(), ConstraintSet.RIGHT, MRECProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
+        constraintSet.connect( adView.getId(), ConstraintSet.TOP, MRECProgrammaticContentLayout.getId(), ConstraintSet.TOP );
         constraintSet.applyTo( MRECProgrammaticContentLayout );
 
         // Load an ad!
-        mrecAdView.loadNextAd();
+        adView.loadNextAd();
     }
 
     //region Ad Load Listener
@@ -95,16 +95,16 @@ public final class MrecZoneActivity
     //region AdView Event Listener
 
     @Override
-    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adOpenedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adClosedFullscreen(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView mrecAdView) { logCallback(); }
+    public void adLeftApplication(final AppLovinAd ad, final AppLovinAdView adView) { logCallback(); }
 
     @Override
-    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView mrecAdView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
+    public void adFailedToDisplay(final AppLovinAd ad, final AppLovinAdView adView, final AppLovinAdViewDisplayErrorCode code) { logCallback(); }
 
     //endregion
 

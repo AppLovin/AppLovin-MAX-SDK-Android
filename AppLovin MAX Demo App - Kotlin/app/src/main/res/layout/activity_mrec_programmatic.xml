@@ -22,7 +22,7 @@
         android:id="@+id/callbacksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="250dp"
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

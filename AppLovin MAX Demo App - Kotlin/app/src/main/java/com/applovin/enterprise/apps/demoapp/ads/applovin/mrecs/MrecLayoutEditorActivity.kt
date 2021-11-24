@@ -10,7 +10,6 @@ import com.applovin.sdk.AppLovinAd
 import com.applovin.sdk.AppLovinAdClickListener
 import com.applovin.sdk.AppLovinAdDisplayListener
 import com.applovin.sdk.AppLovinAdLoadListener
-import kotlinx.android.synthetic.main.activity_banner_layout_editor.ad_view
 import kotlinx.android.synthetic.main.activity_mrec_layout_editor.*
 
 class MrecLayoutEditorActivity : BaseAdActivity(),
