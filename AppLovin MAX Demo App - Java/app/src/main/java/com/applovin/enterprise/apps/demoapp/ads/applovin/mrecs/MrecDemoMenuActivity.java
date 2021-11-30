@@ -14,7 +14,6 @@ public class MrecDemoMenuActivity
         return new DemoMenuItem[] {
                 new DemoMenuItem( "Programmatic", new Intent( this, MrecProgrammaticActivity.class ) ),
                 new DemoMenuItem( "Layout Editor", new Intent( this, MrecLayoutEditorActivity.class ) ),
-                new DemoMenuItem( "Zone Integration", new Intent( this, MrecZoneActivity.class ) ),
         };
     }
 }
