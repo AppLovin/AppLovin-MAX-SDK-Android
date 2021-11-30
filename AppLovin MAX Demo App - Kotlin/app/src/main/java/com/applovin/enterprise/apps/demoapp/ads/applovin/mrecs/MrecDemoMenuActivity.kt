@@ -8,7 +8,6 @@ class MrecDemoMenuActivity : DemoMenuActivity()
 {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
         DemoMenuItem("Programmatic", Intent(this, MrecProgrammaticActivity::class.java)),
-        DemoMenuItem("Layout Editor", Intent(this, MrecLayoutEditorActivity::class.java)),
-        DemoMenuItem("Zone Integration", Intent(this, MrecZoneActivity::class.java))
+        DemoMenuItem("Layout Editor", Intent(this, MrecLayoutEditorActivity::class.java))
     )
 }
