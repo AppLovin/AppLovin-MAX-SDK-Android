@@ -3,6 +3,7 @@
     package="com.applovin.enterprise.apps.demoapp">
 
     <application
+        android:name=".GlobalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,7 +13,7 @@
 
         <meta-data
             android:name="applovin.sdk.key"
-            android:value="SDK_KEY_HERE" />
+            android:value="hBDh6tzZrp-fWye63N4nhbgw8umnTzD99QsGIpq8bpo7lRDppHZVuEQ17Bpa80lIRaTlONt-Af6v5JiubGOUVp" />
 
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.SplashActivity"
