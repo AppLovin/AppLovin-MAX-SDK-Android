@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
+import com.adjust.sdk.LogLevel
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 
@@ -23,6 +24,7 @@ class GlobalApplication : Application() {
             val appToken = "{YourAppToken}"
             val environment = AdjustConfig.ENVIRONMENT_SANDBOX
             val config = AdjustConfig(this, appToken, environment)
+            config.setLogLevel(LogLevel.VERBOSE)
             Adjust.onCreate(config)
 
             registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())

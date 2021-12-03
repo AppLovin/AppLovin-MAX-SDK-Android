@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.LogLevel;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
 
@@ -29,6 +30,7 @@ public class GlobalApplication
             String appToken = "{YourAppToken}";
             String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
             AdjustConfig adjustConfig = new AdjustConfig( getApplicationContext(), appToken, environment );
+            adjustConfig.setLogLevel( LogLevel.VERBOSE );
             Adjust.onCreate( adjustConfig );
 
             registerActivityLifecycleCallbacks( new AdjustLifecycleCallbacks() );
