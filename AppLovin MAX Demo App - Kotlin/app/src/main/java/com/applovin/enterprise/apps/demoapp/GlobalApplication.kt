@@ -18,6 +18,7 @@ class GlobalApplication : Application() {
         AppLovinSdk.getInstance(this).mediationProvider = AppLovinMediationProvider.MAX
         AppLovinSdk.getInstance(this).initializeSdk {
             // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+
             // set up Adjust SDK
             val appToken = "{YourAppToken}"
             val environment = AdjustConfig.ENVIRONMENT_SANDBOX
@@ -29,22 +30,22 @@ class GlobalApplication : Application() {
     }
 
     private class AdjustLifecycleCallbacks : ActivityLifecycleCallbacks {
-        override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
+        override fun onActivityCreated(activity: Activity, bundle: Bundle?) {}
 
-        override fun onActivityStarted(p0: Activity) {}
+        override fun onActivityStarted(activity: Activity) {}
 
-        override fun onActivityResumed(p0: Activity) {
+        override fun onActivityResumed(activity: Activity) {
             Adjust.onResume()
         }
 
-        override fun onActivityPaused(p0: Activity) {
+        override fun onActivityPaused(activity: Activity) {
             Adjust.onPause()
         }
 
-        override fun onActivityStopped(p0: Activity) {}
+        override fun onActivityStopped(activity: Activity) {}
 
-        override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
+        override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {}
 
-        override fun onActivityDestroyed(p0: Activity) {}
+        override fun onActivityDestroyed(activity: Activity) {}
     }
 }
