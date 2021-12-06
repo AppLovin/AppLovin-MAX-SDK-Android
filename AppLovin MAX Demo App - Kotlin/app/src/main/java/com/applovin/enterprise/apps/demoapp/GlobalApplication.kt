@@ -21,10 +21,7 @@ class GlobalApplication : Application() {
             // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
 
             // set up Adjust SDK
-            val appToken = "{YourAppToken}"
-            val environment = AdjustConfig.ENVIRONMENT_SANDBOX
-            val config = AdjustConfig(this, appToken, environment)
-            config.setLogLevel(LogLevel.VERBOSE)
+            val config = AdjustConfig(this, "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX)
             Adjust.onCreate(config)
 
             registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
