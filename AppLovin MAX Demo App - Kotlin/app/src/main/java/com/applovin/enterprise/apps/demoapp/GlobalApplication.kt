@@ -20,7 +20,7 @@ class GlobalApplication : Application() {
         AppLovinSdk.getInstance(this).initializeSdk {
             // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
 
-            // set up Adjust SDK
+            // Initialize Adjust SDK
             val config = AdjustConfig(this, "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX)
             Adjust.onCreate(config)
 
