@@ -26,7 +26,7 @@ public class GlobalApplication
         AppLovinSdk.getInstance( this ).initializeSdk( config -> {
             // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
 
-            // set up Adjust SDK
+            // Initialize Adjust SDK
             AdjustConfig adjustConfig = new AdjustConfig( getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX );
             Adjust.onCreate( adjustConfig );
 
