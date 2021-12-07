@@ -2,8 +2,9 @@ package com.applovin.enterprise.apps.demoapp.ads.max.mrecs;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
-
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
+import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
@@ -11,6 +12,8 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
+
+import androidx.annotation.Nullable;
 
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX MREC ads created in the Layout Editor.
@@ -72,7 +75,18 @@ public class LayoutEditorMrecAdActivity
     //region MAX Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
+    public void onAdRevenuePaid(final MaxAd maxAd)
+    {
+        logCallback();
+
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+        adjustAdRevenue.setRevenue( maxAd.getRevenue(), "USD" );
+        adjustAdRevenue.setAdRevenueNetwork( maxAd.getNetworkName() );
+        adjustAdRevenue.setAdRevenueUnit( maxAd.getAdUnitId() );
+        adjustAdRevenue.setAdRevenuePlacement( maxAd.getPlacement() );
+
+        Adjust.trackAdRevenue( adjustAdRevenue );
+    }
 
     //endregion
 }

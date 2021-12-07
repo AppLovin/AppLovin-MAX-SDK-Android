@@ -5,6 +5,9 @@ import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustAdRevenue
+import com.adjust.sdk.AdjustConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.*
@@ -39,7 +42,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
         // Set up constraints
         val constraintLayout =
-            findViewById<ConstraintLayout>(R.id.main_constraint_layout)
+                findViewById<ConstraintLayout>(R.id.main_constraint_layout)
         constraintLayout.id = ViewCompat.generateViewId()
         constraintLayout.addView(adView)
         val constraintSet = ConstraintSet()
@@ -47,22 +50,22 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         constraintSet.constrainHeight(adView!!.id, heightPx)
         constraintSet.constrainWidth(adView!!.id, widthPx)
         constraintSet.connect(
-            adView!!.id,
-            ConstraintSet.LEFT,
-            constraintLayout.id,
-            ConstraintSet.LEFT
+                adView!!.id,
+                ConstraintSet.LEFT,
+                constraintLayout.id,
+                ConstraintSet.LEFT
         )
         constraintSet.connect(
-            adView!!.id,
-            ConstraintSet.RIGHT,
-            constraintLayout.id,
-            ConstraintSet.RIGHT
+                adView!!.id,
+                ConstraintSet.RIGHT,
+                constraintLayout.id,
+                ConstraintSet.RIGHT
         )
         constraintSet.connect(
-            adView!!.id,
-            ConstraintSet.TOP,
-            constraintLayout.id,
-            ConstraintSet.TOP
+                adView!!.id,
+                ConstraintSet.TOP,
+                constraintLayout.id,
+                ConstraintSet.TOP
         )
         constraintSet.applyTo(constraintLayout)
 
@@ -72,27 +75,53 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd) { logCallback() }
+    override fun onAdLoaded(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+        logCallback()
+    }
 
-    override fun onAdHidden(ad: MaxAd) { logCallback() }
+    override fun onAdHidden(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) { logCallback() }
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+        logCallback()
+    }
 
-    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdClicked(ad: MaxAd) { logCallback() }
+    override fun onAdClicked(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdExpanded(ad: MaxAd) { logCallback() }
+    override fun onAdExpanded(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdCollapsed(ad: MaxAd) { logCallback() }
+    override fun onAdCollapsed(ad: MaxAd) {
+        logCallback()
+    }
 
     //endregion
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+    override fun onAdRevenuePaid(ad: MaxAd?) {
+        logCallback()
+
+        val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+
+        Adjust.trackAdRevenue(adjustAdRevenue)
+    }
 
     //endregion
 }
