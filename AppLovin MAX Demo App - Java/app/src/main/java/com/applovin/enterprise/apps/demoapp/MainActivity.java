@@ -13,7 +13,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuAc
 import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecDemoMenuActivity;
+import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
@@ -143,7 +143,7 @@ public class MainActivity
             items.add( new DemoMenuItem( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
         }
 
-        items.add( new DemoMenuItem( "MRECs", new Intent( this, MrecDemoMenuActivity.class ) ) );
+        items.add( new DemoMenuItem( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
         items.add( new DemoMenuItem( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
         items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );

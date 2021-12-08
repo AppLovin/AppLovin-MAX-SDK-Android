@@ -12,8 +12,14 @@ import com.applovin.sdk.AppLovinAd;
 import com.applovin.sdk.AppLovinAdClickListener;
 import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
+import com.applovin.sdk.AppLovinAdSize;
+import com.applovin.sdk.AppLovinSdkUtils;
 
-public class MrecLayoutEditorActivity
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
+
+public final class MRecProgrammaticActivity
         extends BaseAdActivity
         implements AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
@@ -21,41 +27,49 @@ public class MrecLayoutEditorActivity
     protected void onCreate(final Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_mrec_layout_editor );
+        setContentView( R.layout.activity_mrec_programmatic );
 
         setupCallbacksRecyclerView();
 
-        // Retrieve MREC from layout editor
-        AppLovinAdView adView = findViewById( R.id.ad_view );
+        AppLovinAdSize adSize = AppLovinAdSize.MREC;
+
+        AppLovinAdView adView = new AppLovinAdView( adSize, this );
         adView.setAdLoadListener( this );
         adView.setAdDisplayListener( this );
         adView.setAdViewEventListener( this );
         adView.setAdClickListener( this );
 
-        Button loadButton = findViewById( R.id.mrec_load_button );
+        adView.setId( ViewCompat.generateViewId() );
+        final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
+        final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
+
+        Button loadButton = findViewById( R.id.MREC_load_button );
         loadButton.setOnClickListener( v -> {
             adView.loadNextAd();
         } );
 
+        // Add programmatically created MRec into our container and center it.
+        ConstraintLayout MRecProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
+        MRecProgrammaticContentLayout.addView( adView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
+
+        final ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone( MRecProgrammaticContentLayout );
+        constraintSet.constrainHeight( adView.getId(), heightPx );
+        constraintSet.constrainWidth( adView.getId(), widthPx );
+
+        constraintSet.connect( adView.getId(), ConstraintSet.LEFT, MRecProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
+        constraintSet.connect( adView.getId(), ConstraintSet.RIGHT, MRecProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
+        constraintSet.connect( adView.getId(), ConstraintSet.TOP, MRecProgrammaticContentLayout.getId(), ConstraintSet.TOP );
+        constraintSet.applyTo( MRecProgrammaticContentLayout );
+
         // Load an ad!
         adView.loadNextAd();
-
-        //
-        // Please note that the AppLovinAdView CAN AUTOMATICALLY invoke loadNextAd() upon inflation from layout
-        // To do so, add the following attributes to the com.applovin.adview.AppLovinAdView element:
-        //
-        // xmlns:demo="http://schemas.applovin.com/android/1.0"
-        // demo:loadAdOnCreate="true"
-        //
     }
 
     //region Ad Load Listener
 
     @Override
-    public void adReceived(final AppLovinAd ad)
-    {
-        logCallback();
-    }
+    public void adReceived(final AppLovinAd ad) { logCallback(); }
 
     @Override
     public void failedToReceiveAd(final int errorCode)
@@ -99,3 +113,4 @@ public class MrecLayoutEditorActivity
 
     //endregion
 }
+

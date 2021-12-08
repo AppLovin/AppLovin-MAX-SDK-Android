@@ -5,7 +5,7 @@
     android:id="@+id/mrec_programmatic_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecProgrammaticActivity">
+    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity">
 
     <Button
         android:id="@+id/MREC_load_button"

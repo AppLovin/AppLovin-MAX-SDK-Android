@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecLayoutEditorActivity">
+        tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/callbacks_recycler_view"
