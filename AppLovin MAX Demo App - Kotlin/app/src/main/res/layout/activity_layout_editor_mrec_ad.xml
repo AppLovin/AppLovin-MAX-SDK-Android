@@ -19,7 +19,7 @@
         maxads:adUnitId="YOUR_AD_UNIT_ID" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/callbacks_recycler_view"
+        android:id="@+id/callbacksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="10dp"
