@@ -43,24 +43,24 @@ public final class MRecProgrammaticActivity
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
         final int heightPx = AppLovinSdkUtils.dpToPx( this, 250 );
 
-        Button loadButton = findViewById( R.id.MREC_load_button );
+        Button loadButton = findViewById( R.id.ad_load_button );
         loadButton.setOnClickListener( v -> {
             adView.loadNextAd();
         } );
 
         // Add programmatically created MRec into our container and center it.
-        ConstraintLayout MRecProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
-        MRecProgrammaticContentLayout.addView( adView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
+        ConstraintLayout mrecProgrammaticContentLayout = findViewById( R.id.mrec_programmatic_layout );
+        mrecProgrammaticContentLayout.addView( adView, new ConstraintLayout.LayoutParams( widthPx, heightPx ) );
 
         final ConstraintSet constraintSet = new ConstraintSet();
-        constraintSet.clone( MRecProgrammaticContentLayout );
+        constraintSet.clone( mrecProgrammaticContentLayout );
         constraintSet.constrainHeight( adView.getId(), heightPx );
         constraintSet.constrainWidth( adView.getId(), widthPx );
 
-        constraintSet.connect( adView.getId(), ConstraintSet.LEFT, MRecProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
-        constraintSet.connect( adView.getId(), ConstraintSet.RIGHT, MRecProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
-        constraintSet.connect( adView.getId(), ConstraintSet.TOP, MRecProgrammaticContentLayout.getId(), ConstraintSet.TOP );
-        constraintSet.applyTo( MRecProgrammaticContentLayout );
+        constraintSet.connect( adView.getId(), ConstraintSet.LEFT, mrecProgrammaticContentLayout.getId(), ConstraintSet.LEFT );
+        constraintSet.connect( adView.getId(), ConstraintSet.RIGHT, mrecProgrammaticContentLayout.getId(), ConstraintSet.RIGHT );
+        constraintSet.connect( adView.getId(), ConstraintSet.TOP, mrecProgrammaticContentLayout.getId(), ConstraintSet.TOP );
+        constraintSet.applyTo( mrecProgrammaticContentLayout );
 
         // Load an ad!
         adView.loadNextAd();

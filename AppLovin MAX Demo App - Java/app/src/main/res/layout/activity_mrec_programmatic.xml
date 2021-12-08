@@ -8,7 +8,7 @@
     tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity">
 
     <Button
-        android:id="@+id/MREC_load_button"
+        android:id="@+id/ad_load_button"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:background="@android:color/transparent"
@@ -26,7 +26,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="250dp"
         android:padding="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/MREC_load_button"
+        app:layout_constraintBottom_toTopOf="@+id/ad_load_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
