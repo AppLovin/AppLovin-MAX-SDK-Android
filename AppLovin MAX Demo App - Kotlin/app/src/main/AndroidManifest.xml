@@ -12,7 +12,7 @@
 
         <meta-data
             android:name="applovin.sdk.key"
-            android:value="SDK_KEY_HERE" />
+            android:value="hBDh6tzZrp-fWye63N4nhbgw8umnTzD99QsGIpq8bpo7lRDppHZVuEQ17Bpa80lIRaTlONt-Af6v5JiubGOUVp" />
 
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.SplashActivity"
@@ -105,13 +105,13 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderLayoutEditorActivity"
             android:label="@string/title_activity_leader_layout_editor" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecDemoMenuActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity"
             android:label="@string/title_activity_mrec_list" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecProgrammaticActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecProgrammaticActivity"
             android:label="@string/title_activity_mrec_programmatic" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MrecLayoutEditorActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
             android:label="@string/title_activity_mrec_layout_editor" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ads.applovin.mrecs.MrecLayoutEditorActivity">
+    tools:context=".ads.applovin.mrecs.MRecLayoutEditorActivity">
 
     <com.applovin.adview.AppLovinAdView xmlns:demo="http://schemas.applovin.com/android/1.0"
         android:id="@+id/ad_view"

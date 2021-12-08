@@ -12,7 +12,7 @@ import com.applovin.sdk.AppLovinAdDisplayListener
 import com.applovin.sdk.AppLovinAdLoadListener
 import kotlinx.android.synthetic.main.activity_mrec_layout_editor.*
 
-class MrecLayoutEditorActivity : BaseAdActivity(),
+class MRecLayoutEditorActivity : BaseAdActivity(),
     AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
     override fun onCreate(savedInstanceState: Bundle?)

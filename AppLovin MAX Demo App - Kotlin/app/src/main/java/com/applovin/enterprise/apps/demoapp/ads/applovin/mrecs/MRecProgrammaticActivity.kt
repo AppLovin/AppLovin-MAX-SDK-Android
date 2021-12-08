@@ -12,7 +12,7 @@ import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
 import kotlinx.android.synthetic.main.activity_mrec_programmatic.*
 
-class MrecProgrammaticActivity : BaseAdActivity(),
+class MRecProgrammaticActivity : BaseAdActivity(),
     AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
 {
     override fun onCreate(savedInstanceState: Bundle?)
