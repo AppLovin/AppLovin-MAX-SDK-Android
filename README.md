@@ -34,5 +34,3 @@ To get started with the demo apps, follow the instructions below:
 
 ## Support
 We recommend using GitHub to file issues. For feature requests, improvements, questions or any other integration issues using MAX Mediation by AppLovin, contact us via our support page https://monetization-support.applovin.com/hc/en-us.
-
-MRECs and native ads have been deprecated and will be removed in a future SDK release.
