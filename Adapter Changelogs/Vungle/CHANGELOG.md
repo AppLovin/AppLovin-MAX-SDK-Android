@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.10.3.0
+* Certified with Vungle SDK 6.10.3.
+
+## 6.10.2.1
+* Fix centering of banner ads. 
+* Remove `checkExistence()` call from adapter.
+
 ## 6.10.2.0
 * Certified with Vungle SDK 6.10.2.
 * Re-add code changes from 6.10.1.0.
