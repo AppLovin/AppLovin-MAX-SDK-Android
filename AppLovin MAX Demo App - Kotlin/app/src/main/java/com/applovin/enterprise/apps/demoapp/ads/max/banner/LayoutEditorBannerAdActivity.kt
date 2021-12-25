@@ -33,6 +33,12 @@ class LayoutEditorBannerAdActivity : BaseAdActivity(),
         bannerAdView.loadAd()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        bannerAdView.destroy()
+    }
+
     //region MAX Ad Listener
 
     override fun onAdLoaded(ad: MaxAd?) {

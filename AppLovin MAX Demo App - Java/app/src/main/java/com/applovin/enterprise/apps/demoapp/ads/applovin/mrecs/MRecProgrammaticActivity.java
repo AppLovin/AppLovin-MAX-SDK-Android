@@ -31,9 +31,7 @@ public final class MRecProgrammaticActivity
 
         setupCallbacksRecyclerView();
 
-        AppLovinAdSize adSize = AppLovinAdSize.MREC;
-
-        AppLovinAdView adView = new AppLovinAdView( adSize, this );
+        AppLovinAdView adView = new AppLovinAdView( AppLovinAdSize.MREC, this );
         adView.setAdLoadListener( this );
         adView.setAdDisplayListener( this );
         adView.setAdViewEventListener( this );

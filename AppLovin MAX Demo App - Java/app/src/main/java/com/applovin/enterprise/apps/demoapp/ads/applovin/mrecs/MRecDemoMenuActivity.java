@@ -6,7 +6,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.DemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 
 public class MRecDemoMenuActivity
-    extends DemoMenuActivity
+        extends DemoMenuActivity
 {
     @Override
     protected DemoMenuItem[] getListViewContents()

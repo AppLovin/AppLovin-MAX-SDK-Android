@@ -22,9 +22,7 @@ class MRecProgrammaticActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        val adSize = AppLovinAdSize.MREC
-
-        val adView = AppLovinAdView(adSize, this)
+        val adView = AppLovinAdView(AppLovinAdSize.MREC, this)
         adView.setAdLoadListener(this)
         adView.setAdDisplayListener(this)
         adView.setAdViewEventListener(this)
