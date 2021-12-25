@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 1
+        targetSdkVersion 31
+        versionCode 10000
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
