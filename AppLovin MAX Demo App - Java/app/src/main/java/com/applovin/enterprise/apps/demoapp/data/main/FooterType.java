@@ -3,7 +3,6 @@ package com.applovin.enterprise.apps.demoapp.data.main;
 import android.os.Build;
 import android.util.Log;
 
-import com.applovin.enterprise.apps.demoapp.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 
 import java.lang.reflect.Field;
@@ -18,14 +17,14 @@ public class FooterType
      */
     public String getAppDetails()
     {
-        String appVersion = BuildConfig.VERSION_NAME;
         String sdkVersion = AppLovinSdk.VERSION;
         String versionName = versionName();
         int apiLevel = Build.VERSION.SDK_INT;
 
-        String footer = "\nApp Version: " + appVersion +
-                "\nSDK Version: " + sdkVersion +
-                "\nOS Version: " + versionName + "(API " + apiLevel + ")";
+        String footer = "\nSDK Version: " + sdkVersion +
+                "\nOS Version: " + versionName + "(API " + apiLevel + ")" +
+                "\n " +
+                "\nLanguage:  Java";
         return footer;
     }
 

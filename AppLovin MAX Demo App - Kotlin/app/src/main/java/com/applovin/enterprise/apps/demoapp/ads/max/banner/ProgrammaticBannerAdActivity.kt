@@ -16,6 +16,7 @@ import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxAdView
 import com.applovin.sdk.AppLovinSdkUtils
+import kotlinx.android.synthetic.main.activity_layout_editor_banner_ad.*
 
 /**
  * A [android.app.Activity] to show AppLovin MAX banner ads.
@@ -48,6 +49,12 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
         rootView.addView(adView)
 
         adView.loadAd()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        bannerAdView.destroy()
     }
 
     //region MAX Ad Listener
@@ -88,7 +95,8 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd?)
+    {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)

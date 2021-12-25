@@ -42,6 +42,14 @@ public class LayoutEditorBannerAdActivity
         adView.loadAd();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        adView.destroy();
+    }
+
     //region MAX Ad Listener
 
     @Override
