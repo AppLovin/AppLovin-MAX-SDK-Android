@@ -30,9 +30,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
-    implementation 'com.applovin:applovin-sdk:10.3.1'
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
-
     implementation 'com.adjust.sdk:adjust-android:4.28.7'
     implementation 'com.android.installreferrer:installreferrer:2.2'
+
+    if (file("../../../Android-SDK/build.gradle.kts").exists()) {
+        implementation(project(":Android-SDK"))
+    } else {
+        implementation("com.applovin:applovin-sdk:+@aar")
+        implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+    }
 }
