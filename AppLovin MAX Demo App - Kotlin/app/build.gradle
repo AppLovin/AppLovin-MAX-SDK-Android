@@ -46,10 +46,11 @@ dependencies {
     implementation 'com.adjust.sdk:adjust-android:4.28.7'
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+    
     if (isLocalAppLovinWorkspace) {
         implementation(project(":Android-SDK"))
     } else {
         implementation("com.applovin:applovin-sdk:+@aar")
-        implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     }
 }
