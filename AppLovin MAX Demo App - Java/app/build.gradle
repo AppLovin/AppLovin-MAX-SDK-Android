@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+
 android {
     compileSdkVersion 31
     defaultConfig {
@@ -21,6 +23,15 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    if (isLocalAppLovinWorkspace) {
+        flavorDimensions "default"
+        productFlavors {
+            // There is only one flavor for running SDK in
+            app {
+                matchingFallbacks = ['app', 'standalone']
+            }
+        }
+    }
 }
 
 dependencies {
@@ -33,7 +44,7 @@ dependencies {
     implementation 'com.adjust.sdk:adjust-android:4.28.7'
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
-    if (file("../../../Android-SDK/build.gradle.kts").exists()) {
+    if (isLocalAppLovinWorkspace) {
         implementation(project(":Android-SDK"))
     } else {
         implementation("com.applovin:applovin-sdk:+@aar")
