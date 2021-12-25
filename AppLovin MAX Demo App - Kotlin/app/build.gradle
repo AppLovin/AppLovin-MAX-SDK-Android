@@ -2,13 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 1
+        targetSdkVersion 31
+        versionCode 10000
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -16,6 +18,19 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    if (isLocalAppLovinWorkspace) {
+        flavorDimensions "default"
+        productFlavors {
+            // There is only one flavor for running SDK in
+            app {
+                matchingFallbacks = ['app', 'standalone']
+            }
         }
     }
 }
@@ -28,6 +43,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.core:core-ktx:1.3.0'
 
-    implementation 'com.applovin:applovin-sdk:10.3.1'
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+    implementation 'com.adjust.sdk:adjust-android:4.28.7'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+
+    if (isLocalAppLovinWorkspace) {
+        implementation(project(":Android-SDK"))
+    } else {
+        implementation("com.applovin:applovin-sdk:+@aar")
+        implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+    }
 }

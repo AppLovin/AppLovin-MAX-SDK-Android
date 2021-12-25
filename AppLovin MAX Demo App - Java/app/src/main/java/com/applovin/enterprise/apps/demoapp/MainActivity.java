@@ -69,17 +69,6 @@ public class MainActivity
         recyclerView.setItemAnimator( new DefaultItemAnimator() );
         recyclerView.setAdapter( adapter );
 
-        // Initialize the AppLovin SDK
-        AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
-        AppLovinSdk.getInstance( this ).initializeSdk( new AppLovinSdk.SdkInitializationListener()
-        {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration config)
-            {
-                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
-            }
-        } );
-
         // Check that SDK key is present in Android Manifest
         checkSdkKey();
     }

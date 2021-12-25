@@ -3,6 +3,9 @@ package com.applovin.enterprise.apps.demoapp.ads
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustAdRevenue
+import com.adjust.sdk.AdjustConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
@@ -91,7 +94,17 @@ class InterstitialAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+    override fun onAdRevenuePaid(ad: MaxAd?) {
+        logCallback()
+
+        val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+
+        Adjust.trackAdRevenue(adjustAdRevenue)
+    }
 
     //endregion
 }

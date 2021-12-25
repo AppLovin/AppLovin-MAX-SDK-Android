@@ -2,6 +2,9 @@ package com.applovin.enterprise.apps.demoapp.ads.max.banner;
 
 import android.os.Bundle;
 
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
+import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
@@ -70,7 +73,18 @@ public class LayoutEditorBannerAdActivity
     //region MAX Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd) { logCallback(); }
+    public void onAdRevenuePaid(final MaxAd maxAd)
+    {
+        logCallback();
+
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+        adjustAdRevenue.setRevenue( maxAd.getRevenue(), "USD" );
+        adjustAdRevenue.setAdRevenueNetwork( maxAd.getNetworkName() );
+        adjustAdRevenue.setAdRevenueUnit( maxAd.getAdUnitId() );
+        adjustAdRevenue.setAdRevenuePlacement( maxAd.getPlacement() );
+
+        Adjust.trackAdRevenue( adjustAdRevenue );
+    }
 
     //endregion
 }

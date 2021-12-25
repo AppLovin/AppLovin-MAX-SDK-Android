@@ -1,6 +1,9 @@
 package com.applovin.enterprise.apps.demoapp.ads.max.mrecs
 
 import android.os.Bundle
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustAdRevenue
+import com.adjust.sdk.AdjustConfig
 import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
@@ -33,27 +36,53 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd) { logCallback() }
+    override fun onAdLoaded(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) { logCallback() }
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+        logCallback()
+    }
 
-    override fun onAdHidden(ad: MaxAd) { logCallback() }
+    override fun onAdHidden(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) { logCallback() }
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+        logCallback()
+    }
 
-    override fun onAdDisplayed(ad: MaxAd) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdClicked(ad: MaxAd) { logCallback() }
+    override fun onAdClicked(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdExpanded(ad: MaxAd) { logCallback() }
+    override fun onAdExpanded(ad: MaxAd) {
+        logCallback()
+    }
 
-    override fun onAdCollapsed(ad: MaxAd) { logCallback() }
+    override fun onAdCollapsed(ad: MaxAd) {
+        logCallback()
+    }
 
     //endregion
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+    override fun onAdRevenuePaid(ad: MaxAd?) {
+        logCallback()
+
+        val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+
+        Adjust.trackAdRevenue(adjustAdRevenue)
+    }
 
     //endregion
 }

@@ -91,12 +91,6 @@ class MainActivity : AppCompatActivity(),
             adapter = recyclerViewAdapter
         }
 
-        // Initialize the AppLovin SDK
-        AppLovinSdk.getInstance(this).mediationProvider = AppLovinMediationProvider.MAX
-        AppLovinSdk.getInstance(this).initializeSdk {
-            // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
-        }
-
         // Check that SDK key is present in Android Manifest
         checkSdkKey()
     }

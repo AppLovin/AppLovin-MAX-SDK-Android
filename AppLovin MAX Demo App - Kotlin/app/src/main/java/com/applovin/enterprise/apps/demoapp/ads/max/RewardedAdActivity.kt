@@ -3,6 +3,9 @@ package com.applovin.enterprise.apps.demoapp.ads
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustAdRevenue
+import com.adjust.sdk.AdjustConfig
 import com.applovin.enterprise.apps.demoapp.R
 
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
@@ -16,13 +19,11 @@ import java.util.concurrent.TimeUnit
  * Created by Harry Arakkal on 2019-09-17.
  */
 class RewardedAdActivity : BaseAdActivity(),
-    MaxRewardedAdListener, MaxAdRevenueListener
-{
+        MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
     private var retryAttempt = 0.0
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rewarded_ad)
         setTitle(R.string.activity_rewarded)
@@ -37,18 +38,15 @@ class RewardedAdActivity : BaseAdActivity(),
         rewardedAd.loadAd()
     }
 
-    fun showAd(view: View)
-    {
-        if (rewardedAd.isReady)
-        {
+    fun showAd(view: View) {
+        if (rewardedAd.isReady) {
             rewardedAd.showAd()
         }
     }
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?)
-    {
+    override fun onAdLoaded(ad: MaxAd?) {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
         logCallback()
 
@@ -56,8 +54,7 @@ class RewardedAdActivity : BaseAdActivity(),
         retryAttempt = 0.0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?)
-    {
+    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
         logCallback()
 
         // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
@@ -68,32 +65,37 @@ class RewardedAdActivity : BaseAdActivity(),
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?)
-    {
+    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
         logCallback()
 
         // Rewarded ad failed to display. We recommend loading the next ad.
         rewardedAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) { logCallback() }
+    override fun onAdDisplayed(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onAdClicked(ad: MaxAd?) { logCallback() }
+    override fun onAdClicked(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onAdHidden(ad: MaxAd?)
-    {
+    override fun onAdHidden(ad: MaxAd?) {
         logCallback()
 
         // Rewarded ad is hidden. Pre-load the next ad.
         rewardedAd.loadAd()
     }
 
-    override fun onRewardedVideoStarted(ad: MaxAd?) { logCallback() }
+    override fun onRewardedVideoStarted(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onRewardedVideoCompleted(ad: MaxAd?) { logCallback() }
+    override fun onRewardedVideoCompleted(ad: MaxAd?) {
+        logCallback()
+    }
 
-    override fun onUserRewarded(ad: MaxAd?, reward: MaxReward?)
-    {
+    override fun onUserRewarded(ad: MaxAd?, reward: MaxReward?) {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()
     }
@@ -102,7 +104,17 @@ class RewardedAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) { logCallback() }
+    override fun onAdRevenuePaid(ad: MaxAd?) {
+        logCallback()
+
+        val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+
+        Adjust.trackAdRevenue(adjustAdRevenue)
+    }
 
     //endregion
 }
