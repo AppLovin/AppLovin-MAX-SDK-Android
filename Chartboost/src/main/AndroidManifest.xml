@@ -1,0 +1,3 @@
+<manifest package="com.applovin.mediation.adapters.chartboost">
+    <!--Note: We don't need to add the permissions and activities for this adapter. Chartboost's AAR declares them.-->
+</manifest>

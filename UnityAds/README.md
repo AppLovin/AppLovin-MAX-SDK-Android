@@ -1,0 +1,1 @@
+# UnityAds Adapter

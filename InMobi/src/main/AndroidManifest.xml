@@ -1,0 +1,13 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.mediation.adapters.inmobi">
+
+    <!-- Optionally used by InMobi -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application />
+
+    <!--Note: We don't need to add the permissions and activities for this adapter.
+              InMobi SDK 800 and above has switched to the aar format bundle so we do not need InMobiAdActivity in the application manifest.
+              InMobi SDK 900 and above automatically includes the mandatory permissions in the application manifest.-->
+</manifest>

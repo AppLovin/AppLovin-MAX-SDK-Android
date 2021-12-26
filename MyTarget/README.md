@@ -1,0 +1,1 @@
+# MyTarget Adapter
