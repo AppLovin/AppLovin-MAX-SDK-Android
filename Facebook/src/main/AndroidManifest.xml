@@ -1,0 +1,6 @@
+<manifest
+    package="com.applovin.mediation.adapters.facebook">
+    <application />
+
+    <!--Note: We don't need to add the permissions and activities for this adapter. Facebook Audience Network SDK's AndroidManifest adds the required permissions and activities.-->
+</manifest>
