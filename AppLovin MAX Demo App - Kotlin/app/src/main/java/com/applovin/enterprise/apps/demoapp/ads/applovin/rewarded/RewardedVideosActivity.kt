@@ -146,13 +146,5 @@ class RewardedVideosActivity : BaseAdActivity(),
         logCallback()
     }
 
-    override fun userDeclinedToViewAd(appLovinAd: AppLovinAd)
-    {
-        // This method will be invoked if the user selected "no" when asked if they want to view an ad.
-        // If you've disabled the pre-video prompt in the "Manage Apps" UI on our website, then this method won't be called.
-
-        logCallback()
-    }
-
     //endregion
 }
