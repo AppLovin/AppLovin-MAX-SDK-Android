@@ -104,9 +104,7 @@ public class GoogleAdManagerMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        /* com.google.android.gms:play-services-ads (AdMob) does not have an API to get the compiled version */
-        String adapterVersion = getAdapterVersion();
-        return adapterVersion.substring( 0, adapterVersion.lastIndexOf( '.' ) );
+        return MobileAds.getVersionString();
     }
 
     @Override

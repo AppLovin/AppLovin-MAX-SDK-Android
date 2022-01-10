@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.2
+* Return the true version of the Google Mobile Ads SDK integrated.
+
 ## 20.5.0.1
 * Add support for native custom ads and updated native template ad support.
 * Remove bidding and signal collection logic from adapter.
