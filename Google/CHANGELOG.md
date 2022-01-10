@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.4
+* Return the true version of the Google Mobile Ads SDK integrated.
+
 ## 20.5.0.3
 * Add support for using initialize method without callback.
 
