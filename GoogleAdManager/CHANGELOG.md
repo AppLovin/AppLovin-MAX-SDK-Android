@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.3
+* Fall back to the former approach for getting the SDK version string.
+
 ## 20.5.0.2
 * Return the true version of the Google Mobile Ads SDK integrated.
 

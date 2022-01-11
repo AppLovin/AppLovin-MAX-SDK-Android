@@ -104,7 +104,7 @@ public class GoogleAdManagerMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return MobileAds.getVersionString();
+        return getAdapterVersion().substring( 0, getAdapterVersion().lastIndexOf( '.' ) );
     }
 
     @Override
