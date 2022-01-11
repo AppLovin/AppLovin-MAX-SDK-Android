@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.5
+* Check for Google Mobile Ads SDK initialization status before returning the version string.
+
 ## 20.5.0.4
 * Return the true version of the Google Mobile Ads SDK integrated.
 
