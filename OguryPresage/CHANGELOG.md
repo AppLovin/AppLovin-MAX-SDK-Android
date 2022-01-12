@@ -1,6 +1,7 @@
 # Changelog
 
-## x.x.x.x
+## 5.0.10.0
+* Certified with OguryPresage SDK 5.0.10.
 * Remove `checkExistence()` call from adapter.
 
 ## 5.0.9.2
