@@ -43,7 +43,6 @@ import com.my.target.nativeads.AdChoicesPlacement;
 import com.my.target.nativeads.NativeAd;
 import com.my.target.nativeads.banners.NativePromoBanner;
 import com.my.target.nativeads.factories.NativeViewsFactory;
-import com.my.target.nativeads.views.IconAdView;
 import com.my.target.nativeads.views.MediaAdView;
 import com.my.target.nativeads.views.NativeAdView;
 
@@ -51,6 +50,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 
@@ -61,6 +61,8 @@ public class MyTargetMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
+    private static final AtomicBoolean initialized = new AtomicBoolean();
+
     private InterstitialAd interstitialAd;
     private RewardedAd     rewardedAd;
     private MyTargetView   adView;
@@ -115,12 +117,17 @@ public class MyTargetMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( parameters.isTesting() )
+        if ( initialized.compareAndSet( false, true ) )
         {
-            MyTargetManager.setDebugMode( true );
+            if ( parameters.isTesting() )
+            {
+                MyTargetManager.setDebugMode( true );
+            }
+
+            log( "Initializing myTarget SDK... " );
+            MyTargetManager.initSdk( activity.getApplicationContext() );
         }
 
-        // myTarget SDK does not have any API for initialization.
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
 

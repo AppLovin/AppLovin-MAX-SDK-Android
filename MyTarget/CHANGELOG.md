@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.14.4.3
+* Add SDK initialization code: `MyTargetManager.initSdk()`.
+
 ## 5.14.4.2
 * Fix icon view never getting registered for interaction.
 
