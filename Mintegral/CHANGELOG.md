@@ -1,5 +1,8 @@
 # Changelog
 
+## 15.8.1.3
+* Fix multiple callbacks getting triggered.
+
 ## 15.8.1.2
 * Properly destroy native ad.
 
