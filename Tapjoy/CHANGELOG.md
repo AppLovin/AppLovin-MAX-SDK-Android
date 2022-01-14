@@ -1,6 +1,7 @@
 # Changelog
 
-## x.x.x.x
+## 12.9.0.0
+* Certified with Tapjoy SDK 12.9.0.
 * Remove `checkExistence()` call from adapter.
 
 ## 12.8.1.1
