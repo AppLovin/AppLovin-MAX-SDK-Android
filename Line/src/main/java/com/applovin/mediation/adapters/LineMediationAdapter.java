@@ -202,7 +202,7 @@ public class LineMediationAdapter
         }
         else
         {
-            adView = new FiveAdCustomLayout( activity, slotId, new DisplayMetrics().widthPixels );
+            adView = new FiveAdCustomLayout(activity, slotId, AppLovinSdkUtils.dpToPx(activity, adFormat.getSize().getWidth()));
             adView.setListener( new AdViewListener( listener, adFormat ) );
 
             // We always want to mute banners and MRECs
