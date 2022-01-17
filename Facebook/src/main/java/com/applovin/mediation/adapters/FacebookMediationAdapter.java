@@ -2,6 +2,7 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -1044,8 +1045,25 @@ public class FacebookMediationAdapter
                 {
                     MediaView mediaView = new MediaView( activity );
 
-                    Drawable drawable = nativeAd.getPreloadedIconViewDrawable();
-                    MaxNativeAd.MaxNativeAdImage iconImage = new MaxNativeAd.MaxNativeAdImage( drawable );
+                    MaxNativeAd.MaxNativeAdImage iconImage = null;
+
+                    if ( nativeAd.getPreloadedIconViewDrawable() != null )
+                    {
+                        Drawable iconDrawable = nativeAd.getPreloadedIconViewDrawable();
+                        iconImage = new MaxNativeAd.MaxNativeAdImage( iconDrawable );
+                    }
+                    else if ( nativeAd.getAdIcon() != null )
+                    {
+                        try
+                        {
+                            Uri iconUri = Uri.parse( nativeAd.getAdIcon().getUrl() );
+                            iconImage = new MaxNativeAd.MaxNativeAdImage( iconUri );
+                        }
+                        catch ( Throwable th )
+                        {
+                            e( "Failed to parse native ad icon", th );
+                        }
+                    }
 
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
