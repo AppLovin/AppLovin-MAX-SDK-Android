@@ -48,4 +48,15 @@ public abstract class BaseAdActivity
 
         callbacksAdapter.notifyItemInserted( callbacks.size() - 1 );
     }
+
+    /**
+     * Log native ad callbacks in the RecyclerView.
+     */
+    protected void logCallback(int index)
+    {
+        String callbackName = new Throwable().getStackTrace()[index].getMethodName();
+        callbacks.add( callbackName );
+
+        callbacksAdapter.notifyItemInserted( callbacks.size() - 1 );
+    }
 }
