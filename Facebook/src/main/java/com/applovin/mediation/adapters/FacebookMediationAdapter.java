@@ -2,7 +2,6 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -55,8 +54,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.applovin.sdk.AppLovinSdkUtils.isValidString;
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 
 /**
@@ -1043,39 +1045,55 @@ public class FacebookMediationAdapter
                 @Override
                 public void run()
                 {
-                    MediaView mediaView = new MediaView( activity );
+                    final MediaView mediaView = new MediaView( activity );
+                    final Drawable iconDrawable = nativeAd.getPreloadedIconViewDrawable();
+                    final NativeAdBase.Image icon = nativeAd.getAdIcon();
 
-                    MaxNativeAd.MaxNativeAdImage iconImage = null;
-
-                    if ( nativeAd.getPreloadedIconViewDrawable() != null )
+                    if ( iconDrawable != null )
                     {
-                        Drawable iconDrawable = nativeAd.getPreloadedIconViewDrawable();
-                        iconImage = new MaxNativeAd.MaxNativeAdImage( iconDrawable );
+                        handleNativeAdLoaded( nativeAd, iconDrawable, mediaView, activity );
                     }
-                    else if ( nativeAd.getAdIcon() != null )
+                    else if ( icon != null )
                     {
-                        try
+                        // Meta Audience Network's icon image resource might be a URL that needs to be fetched async on a background thread
+                        getCachingExecutorService().execute( new Runnable()
                         {
-                            Uri iconUri = Uri.parse( nativeAd.getAdIcon().getUrl() );
-                            iconImage = new MaxNativeAd.MaxNativeAdImage( iconUri );
-                        }
-                        catch ( Throwable th )
-                        {
-                            e( "Failed to parse native ad icon", th );
-                        }
+                            @Override
+                            public void run()
+                            {
+                                Drawable iconDrawable = null;
+
+                                if ( isValidString( icon.getUrl() ) )
+                                {
+                                    log( "Adding native ad icon (" + icon.getUrl() + ") to queue to be fetched" );
+
+                                    final Future<Drawable> iconDrawableFuture = createDrawableFuture( icon.getUrl(), activity.getResources() );
+                                    final int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", 10, serverParameters );
+
+                                    try
+                                    {
+                                        if ( iconDrawableFuture != null )
+                                        {
+                                            iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
+                                        }
+                                    }
+                                    catch ( Throwable th )
+                                    {
+                                        e( "Image fetching tasks failed", th );
+                                    }
+                                }
+
+                                handleNativeAdLoaded( nativeAd, iconDrawable, mediaView, activity );
+                            }
+                        } );
                     }
-
-                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                            .setAdFormat( MaxAdFormat.NATIVE )
-                            .setTitle( nativeAd.getAdvertiserName() )
-                            .setBody( nativeAd.getAdBodyText() )
-                            .setCallToAction( nativeAd.getAdCallToAction() )
-                            .setIcon( iconImage )
-                            .setMediaView( mediaView )
-                            .setOptionsView( new AdOptionsView( activity, nativeAd, null ) );
-                    MaxNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
-
-                    listener.onNativeAdLoaded( maxNativeAd, null );
+                    else
+                    {
+                        // No ad icon available. Not a failure because it's not a required ad asset for Meta Audience Network:
+                        // https://developers.facebook.com/docs/audience-network/reference/android/com/facebook/ads/nativead.html/?version=v6.2.0
+                        log( "No native ad icon (optional) available for the current creative." );
+                        handleNativeAdLoaded( nativeAd, null, mediaView, activity );
+                    }
                 }
             } );
         }
@@ -1106,6 +1124,19 @@ public class FacebookMediationAdapter
         {
             log( "Native clicked: " + ad.getPlacementId() );
             listener.onNativeAdClicked();
+        }
+
+        private void handleNativeAdLoaded(final NativeAd nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Activity activity)
+        {
+            final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( new MaxNativeAd.Builder()
+                                                                                     .setAdFormat( MaxAdFormat.NATIVE )
+                                                                                     .setTitle( nativeAd.getAdvertiserName() )
+                                                                                     .setBody( nativeAd.getAdBodyText() )
+                                                                                     .setCallToAction( nativeAd.getAdCallToAction() )
+                                                                                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
+                                                                                     .setMediaView( mediaView )
+                                                                                     .setOptionsView( new AdOptionsView( activity, nativeAd, null ) ) );
+            listener.onNativeAdLoaded( maxNativeAd, null );
         }
 
         private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)

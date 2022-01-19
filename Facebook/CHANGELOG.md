@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.5
+* Fix native ad icon not rendering.
+
 ## 6.8.0.4
 * Fix native ad icon not rendering.
 
