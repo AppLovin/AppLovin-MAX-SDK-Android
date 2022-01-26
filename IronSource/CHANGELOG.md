@@ -1,6 +1,10 @@
 # Changelog
 
-## x.x.x.x.x
+## 7.1.14.0.1
+* Fix rewarded ad listener not being correctly cleared.
+
+## 7.1.14.0.0
+* Certified with IronSource SDK 7.1.14.
 * Remove `checkExistence()` call from adapter.
 
 ## 7.1.10.1.0
