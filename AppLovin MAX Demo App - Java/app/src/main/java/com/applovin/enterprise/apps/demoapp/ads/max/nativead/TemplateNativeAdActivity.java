@@ -16,16 +16,13 @@ import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class TemplateNativeAdActivity
         extends BaseAdActivity
         implements MaxAdRevenueListener
 {
     // Map of ad unit IDs to native ad loaders
-    private final Map<String, MaxNativeAdLoader> nativeAdLoaders = new HashMap<>( 2 );
-    private       MaxAd                          nativeAd;
+    private MaxNativeAdLoader nativeAdLoader;
+    private MaxAd             nativeAd;
 
     private FrameLayout nativeAdLayout;
 
@@ -38,16 +35,55 @@ public class TemplateNativeAdActivity
 
         nativeAdLayout = findViewById( R.id.native_ad_layout );
         setupCallbacksRecyclerView();
+
+        String adUnitId = "YOUR_AD_UNIT_ID";
+
+        nativeAdLoader = new MaxNativeAdLoader( adUnitId, this );
+        nativeAdLoader.setPlacement( "Native Custom Test Placement" );
+        nativeAdLoader.setExtraParameter( "test_extra_key", "test_extra_value" );
+        nativeAdLoader.setRevenueListener( this );
+        nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
+        {
+            @Override
+            public void onNativeAdLoaded(final MaxNativeAdView nativeAdView, final MaxAd ad)
+            {
+                logCallback( 2 );
+
+                // Cleanup any pre-existing native ad to prevent memory leaks.
+                if ( nativeAd != null )
+                {
+                    nativeAdLoader.destroy( nativeAd );
+                }
+
+                // Save ad for cleanup.
+                nativeAd = ad;
+
+                // Add ad view to view.
+                nativeAdLayout.removeAllViews();
+                nativeAdLayout.addView( nativeAdView );
+            }
+
+            @Override
+            public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
+            {
+                logCallback( 2 );
+            }
+
+            @Override
+            public void onNativeAdClicked(final MaxAd ad)
+            {
+                logCallback( 2 );
+            }
+        } );
     }
 
     @Override
     protected void onDestroy()
     {
         // Must destroy native ad or else there will be memory leaks.
-        if ( !nativeAdLoaders.isEmpty() )
+        if ( nativeAd != null )
         {
             // Call destroy on the native ad from any native ad loader.
-            MaxNativeAdLoader nativeAdLoader = nativeAdLoaders.entrySet().iterator().next().getValue();
             nativeAdLoader.destroy( nativeAd );
         }
 
@@ -56,57 +92,6 @@ public class TemplateNativeAdActivity
 
     public void onShowAdClicked(View view)
     {
-        MaxNativeAdLoader nativeAdLoader;
-
-        String adUnitId = "YOUR_AD_UNIT_ID";
-        if ( nativeAdLoaders.containsKey( adUnitId ) )
-        {
-            nativeAdLoader = nativeAdLoaders.get( adUnitId );
-        }
-        else
-        {
-            nativeAdLoader = new MaxNativeAdLoader( adUnitId, this );
-            nativeAdLoader.setPlacement( "Native Template Test Placement" );
-            nativeAdLoader.setExtraParameter( "test_extra_key", "test_extra_value" );
-            nativeAdLoader.setRevenueListener( this );
-            nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
-            {
-                @Override
-                public void onNativeAdLoaded(final MaxNativeAdView nativeAdView, final MaxAd ad)
-                {
-                    // Cleanup any pre-existing native ad to prevent memory leaks.
-                    if ( nativeAd != null )
-                    {
-                        nativeAdLoader.destroy( nativeAd );
-                    }
-
-                    // Save ad for cleanup.
-                    nativeAd = ad;
-
-                    // Add ad view to view.
-                    nativeAdLayout.removeAllViews();
-                    nativeAdLayout.addView( nativeAdView );
-
-                    logCallback( 2 );
-                }
-
-                @Override
-                public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
-                {
-                    logCallback( 2 );
-                }
-
-                @Override
-                public void onNativeAdClicked(final MaxAd ad)
-                {
-                    logCallback( 2 );
-                }
-            } );
-
-            // Save the loader so we don't need to recreate more than once.
-            nativeAdLoaders.put( adUnitId, nativeAdLoader );
-        }
-
         nativeAdLoader.loadAd();
     }
 
