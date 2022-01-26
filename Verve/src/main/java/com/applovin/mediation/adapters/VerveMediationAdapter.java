@@ -200,9 +200,12 @@ public class VerveMediationAdapter
         if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
         {
             Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
+            if ( hasUserConsent != null && HyBid.getUserDataManager() != null )
             {
-                HyBid.getUserDataManager().setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
+                if (TextUtils.isEmpty(HyBid.getUserDataManager().getIABGDPRConsentString()))
+                {
+                    HyBid.getUserDataManager().setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
+                }
             }
             else { /* Don't do anything if huc value not set */ }
         }
@@ -215,14 +218,16 @@ public class VerveMediationAdapter
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
         {
-            Boolean isDoNotSell = parameters.isDoNotSell();
-            if ( isDoNotSell != null && isDoNotSell )
+            if (HyBid.getUserDataManager() != null
+                    && TextUtils.isEmpty(HyBid.getUserDataManager().getIABUSPrivacyString()))
             {
-                HyBid.getUserDataManager().setIABUSPrivacyString( "1NYN" );
-            }
-            else
-            {
-                HyBid.getUserDataManager().removeIABUSPrivacyString();
+                Boolean isDoNotSell = parameters.isDoNotSell();
+                if (isDoNotSell != null && isDoNotSell)
+                {
+                    HyBid.getUserDataManager().setIABUSPrivacyString("1NYN");
+                } else {
+                    HyBid.getUserDataManager().removeIABUSPrivacyString();
+                }
             }
         }
     }
