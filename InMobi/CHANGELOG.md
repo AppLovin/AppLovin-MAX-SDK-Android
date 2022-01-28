@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.3.0
+* Certified with InMobi SDK 10.0.3.
+
 ## 10.0.2.0
 * Certified with InMobi SDK 10.0.2.
 * Remove `checkExistence()` call from adapter.
