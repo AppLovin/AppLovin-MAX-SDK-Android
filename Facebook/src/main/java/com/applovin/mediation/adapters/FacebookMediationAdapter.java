@@ -903,7 +903,8 @@ public class FacebookMediationAdapter
 
                     final MaxNativeAd maxNativeAd = new MaxNativeAd.Builder()
                             .setAdFormat( adFormat )
-                            .setTitle( mNativeAdViewAd.getAdvertiserName() )
+                            .setTitle( mNativeAdViewAd.getAdHeadline() )
+                            .setAdvertiser( mNativeAdViewAd.getAdvertiserName() )
                             .setBody( mNativeAdViewAd.getAdBodyText() )
                             .setCallToAction( mNativeAdViewAd.getAdCallToAction() )
                             .setIconView( iconView )
@@ -958,6 +959,10 @@ public class FacebookMediationAdapter
                     if ( AppLovinSdkUtils.isValidString( maxNativeAd.getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
                     {
                         clickableViews.add( maxNativeAdView.getCallToActionButton() );
+                    }
+                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+                    {
+                        clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
                     }
                     if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
                     {
@@ -1130,7 +1135,8 @@ public class FacebookMediationAdapter
         {
             final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( new MaxNativeAd.Builder()
                                                                                      .setAdFormat( MaxAdFormat.NATIVE )
-                                                                                     .setTitle( nativeAd.getAdvertiserName() )
+                                                                                     .setTitle( nativeAd.getAdHeadline() )
+                                                                                     .setAdvertiser( nativeAd.getAdvertiserName() )
                                                                                      .setBody( nativeAd.getAdBodyText() )
                                                                                      .setCallToAction( nativeAd.getAdCallToAction() )
                                                                                      .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
@@ -1143,12 +1149,12 @@ public class FacebookMediationAdapter
         {
             if ( isTemplateAd )
             {
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdvertiserName() );
+                return AppLovinSdkUtils.isValidString( nativeAd.getAdHeadline() );
             }
             else
             {
                 // NOTE: media view is created and will always be non-null
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdvertiserName() )
+                return AppLovinSdkUtils.isValidString( nativeAd.getAdHeadline() )
                         && AppLovinSdkUtils.isValidString( nativeAd.getAdCallToAction() );
             }
         }
@@ -1176,6 +1182,10 @@ public class FacebookMediationAdapter
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
+            }
+            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+            {
+                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
             if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
             {
