@@ -578,6 +578,18 @@ public class FacebookMediationAdapter
         return "APPLOVIN_" + AppLovinSdk.VERSION + ":" + getAdapterVersion();
     }
 
+    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+        {
+            return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+        }
+        else
+        {
+            return new MaxNativeAdView( maxNativeAd, templateName, activity );
+        }
+    }
+
     private class InterstitialAdListener
             implements InterstitialAdExtendedListener
     {
@@ -925,20 +937,24 @@ public class FacebookMediationAdapter
                         if ( templateName.equals( "vertical" ) )
                         {
                             String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
-                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, activity );
+                            maxNativeAdView = createMaxNativeAdView( maxNativeAd, verticalTemplateName, activity );
                         }
                         else
                         {
-                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                            maxNativeAdView = createMaxNativeAdView( maxNativeAd, templateName, activity );
                         }
                     }
                     else if ( AppLovinSdk.VERSION_CODE < 9140500 )
                     {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, AppLovinSdkUtils.isValidString( templateName ) ? templateName : "no_body_banner_template", activity );
+                        maxNativeAdView = createMaxNativeAdView( maxNativeAd,
+                                                                 AppLovinSdkUtils.isValidString( templateName ) ? templateName : "no_body_banner_template",
+                                                                 activity );
                     }
                     else
                     {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, AppLovinSdkUtils.isValidString( templateName ) ? templateName : "media_banner_template", activity );
+                        maxNativeAdView = createMaxNativeAdView( maxNativeAd,
+                                                                 AppLovinSdkUtils.isValidString( templateName ) ? templateName : "media_banner_template",
+                                                                 activity );
                     }
 
                     final List<View> clickableViews = new ArrayList<>();

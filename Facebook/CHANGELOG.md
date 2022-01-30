@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.7
+* Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
+  
 ## 6.8.0.6
 * Fix headline and advertiser views in native ads.
 
