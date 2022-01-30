@@ -917,7 +917,15 @@ public class ByteDanceMediationAdapter
                                 log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default horizontal native template will be used." );
                             }
 
-                            MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                            MaxNativeAdView maxNativeAdView;
+                            if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                            {
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                            }
+                            else
+                            {
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                            }
 
                             List<View> clickableViews = new ArrayList<>();
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )

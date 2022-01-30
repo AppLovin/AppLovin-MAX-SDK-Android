@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.1.1.9.2
+* Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
+
 ## 4.1.1.9.1
 * Add non-bidding support for native ads.
 
