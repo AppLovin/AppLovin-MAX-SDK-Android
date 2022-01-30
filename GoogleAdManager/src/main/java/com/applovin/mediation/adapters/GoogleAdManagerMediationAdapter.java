@@ -973,7 +973,14 @@ public class GoogleAdManagerMediationAdapter
                     }
                     else
                     {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                        if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                        {
+                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                        }
+                        else
+                        {
+                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                        }
                     }
 
                     nativeAdView = new NativeAdView( activity );
