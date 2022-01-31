@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.0.0
+* Certified with MyTarget SDK 5.15.0.
+
 ## 5.14.4.3
 * Add SDK initialization code: `MyTargetManager.initSdk()`.
 
