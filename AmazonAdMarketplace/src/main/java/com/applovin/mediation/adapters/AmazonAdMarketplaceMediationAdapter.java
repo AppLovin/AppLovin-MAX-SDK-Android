@@ -96,73 +96,93 @@ public class AmazonAdMarketplaceMediationAdapter
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
         final MaxAdFormat adFormat = parameters.getAdFormat();
+        final Object adResponseObj = parameters.getLocalExtraParameters().get( "amazon_ad_response" );
+        final Object adErrorObj = parameters.getLocalExtraParameters().get( "amazon_ad_error" );
 
-        //
-        // See if ad loader for this ad format exists or not
-        //
-        DTBAdLoader adLoader = adLoaders.get( adFormat );
-        if ( adLoader != null )
-        {
-            d( "Found existing ad loader for format: " + adFormat );
-
-            adLoader.loadAd( new DTBAdCallback()
-            {
-                @Override
-                public void onSuccess(final DTBAdResponse dtbAdResponse)
-                {
-                    // Store ad loader for future ad refresh token collection
-                    adLoaders.put( adFormat, dtbAdResponse.getAdLoader() );
-
-                    processAdResponse( parameters, dtbAdResponse, callback );
-                }
-
-                @Override
-                public void onFailure(final AdError adError)
-                {
-                    // Store ad loader for future ad refresh token collection
-                    adLoaders.put( adFormat, adError.getAdLoader() );
-
-                    failSignalCollection( adError, callback );
-                }
-            } );
-
-            return;
-        }
-
-        //
-        // This is the initial ad load for this particular ad format
-        //
-
-        d( "Collecting initial signal for format: " + adFormat );
-
-        Object adResponseObj = parameters.getLocalExtraParameters().get( "amazon_ad_response" );
-        Object adErrorObj = parameters.getLocalExtraParameters().get( "amazon_ad_error" );
-
+        // There may be cases where pubs pass in info from integration (e.g. CCPA) directly into a _new_ ad loader - check (and update) for that
+        DTBAdLoader adLoader = null;
         if ( adResponseObj instanceof DTBAdResponse )
         {
-            DTBAdResponse adResponse = (DTBAdResponse) adResponseObj;
-
-            // Store ad loader for future ad refresh token collection
-            adLoaders.put( adFormat, adResponse.getAdLoader() );
-
-            processAdResponse( parameters, adResponse, callback );
+            adLoader = ( (DTBAdResponse) adResponseObj ).getAdLoader();
         }
         else if ( adErrorObj instanceof AdError )
         {
-            AdError adError = (AdError) adErrorObj;
+            adLoader = ( (AdError) adErrorObj ).getAdLoader();
+        }
 
-            // Store ad loader for future ad refresh token collection
-            adLoaders.put( adFormat, adError.getAdLoader() );
+        DTBAdLoader currentAdLoader = adLoaders.get( adFormat );
 
-            failSignalCollection( adError, callback );
+        if ( adLoader != null )
+        {
+            // We already have this ad loader - load _new_ signal
+            if ( adLoader == currentAdLoader )
+            {
+                loadSubsequentSignal( adLoader, parameters, adFormat, callback );
+            }
+            // If new ad loader - update for ad format and proceed to initial signal collection logic
+            else
+            {
+                d( "New loader passed in: " + adLoader + ", replacing current ad loader: " + currentAdLoader );
+
+                adLoaders.put( adFormat, adLoader );
+
+                if ( adResponseObj instanceof DTBAdResponse )
+                {
+                    processAdResponse( parameters, (DTBAdResponse) adResponseObj, callback );
+                }
+                else // AdError
+                {
+                    failSignalCollection( (AdError) adErrorObj, callback );
+                }
+            }
         }
         else
         {
-            failSignalCollection( "DTBAdResponse or AdError not passed in ad load API", callback );
+            // Use cached ad loader
+            if ( currentAdLoader != null )
+            {
+                loadSubsequentSignal( currentAdLoader, parameters, adFormat, callback );
+            }
+            // No ad loader passed in, and no ad loaders cached - fail signal collection
+            else
+            {
+                failSignalCollection( "DTBAdResponse or AdError not passed in ad load API", callback );
+            }
         }
     }
 
-    private void processAdResponse(final MaxAdapterSignalCollectionParameters parameters, final DTBAdResponse adResponse, final MaxSignalCollectionListener callback)
+    private void loadSubsequentSignal(final DTBAdLoader adLoader,
+                                      final MaxAdapterSignalCollectionParameters parameters,
+                                      final MaxAdFormat adFormat,
+                                      final MaxSignalCollectionListener callback)
+    {
+        d( "Found existing ad loader for format: " + adFormat );
+
+        adLoader.loadAd( new DTBAdCallback()
+        {
+            @Override
+            public void onSuccess(final DTBAdResponse dtbAdResponse)
+            {
+                // Store ad loader for future ad refresh token collection
+                adLoaders.put( adFormat, dtbAdResponse.getAdLoader() );
+
+                processAdResponse( parameters, dtbAdResponse, callback );
+            }
+
+            @Override
+            public void onFailure(final AdError adError)
+            {
+                // Store ad loader for future ad refresh token collection
+                adLoaders.put( adFormat, adError.getAdLoader() );
+
+                failSignalCollection( adError, callback );
+            }
+        } );
+    }
+
+    private void processAdResponse(final MaxAdapterSignalCollectionParameters parameters,
+                                   final DTBAdResponse adResponse,
+                                   final MaxSignalCollectionListener callback)
     {
         d( "Processing ad response..." );
 
