@@ -682,8 +682,6 @@ public class MyTargetMediationAdapter
             }
 
             nativeAd.registerView( maxNativeAdView, clickableViews );
-
-            maxNativeAdView.addView( nativeAdView );
         }
     }
 
