@@ -1,5 +1,8 @@
 # Changelog
 
+## 2021.5.11.10
+* Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
+
 ## 2021.5.11.9
 * Use new `getMediaContentViewGroup` APIs on newer AppLovin SDK versions.
 * Fix icon view never getting registered for interaction.

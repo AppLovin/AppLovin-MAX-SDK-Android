@@ -66,6 +66,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 
@@ -393,7 +394,7 @@ public class GoogleAdManagerMediationAdapter
         if ( isNative )
         {
             NativeAdOptions.Builder optionsBuilder = new NativeAdOptions.Builder();
-            optionsBuilder.setAdChoicesPlacement( NativeAdOptions.ADCHOICES_TOP_RIGHT );
+            optionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters.getLocalExtraParameters() ) );
             optionsBuilder.setRequestMultipleImages( adFormat == MaxAdFormat.MREC ); // MRECs can handle multiple images via AdMob's media view
 
             NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, activity, listener );
@@ -431,7 +432,7 @@ public class GoogleAdManagerMediationAdapter
         AdRequest adRequest = createAdRequestWithParameters( parameters, activity );
 
         NativeAdOptions.Builder nativeAdOptionsBuilder = new NativeAdOptions.Builder();
-        nativeAdOptionsBuilder.setAdChoicesPlacement( NativeAdOptions.ADCHOICES_TOP_RIGHT );
+        nativeAdOptionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters.getLocalExtraParameters() ) );
 
         // Medium templates can handle multiple images via AdMob's media view
         String template = BundleUtils.getString( "template", "", parameters.getServerParameters() );
@@ -638,6 +639,22 @@ public class GoogleAdManagerMediationAdapter
     private boolean isValidUnifiedNativeAd(final NativeAd nativeAd)
     {
         return nativeAd.getHeadline() != null;
+    }
+
+    private int getAdChoicesPlacement(Map<String, Object> localExtraParams)
+    {
+        // Publishers can set via nativeAdLoader.setLocalExtraParameter( "gam_ad_choices_placement", ADCHOICES_BOTTOM_LEFT );
+        final Object adChoicesPlacementObj = localExtraParams.get( "gam_ad_choices_placement" );
+        return isValidAdChoicesPlacement( adChoicesPlacementObj ) ? (Integer) adChoicesPlacementObj : NativeAdOptions.ADCHOICES_TOP_RIGHT;
+    }
+
+    private boolean isValidAdChoicesPlacement(Object placementObj)
+    {
+        return ( placementObj instanceof Integer ) &&
+                ( (Integer) placementObj == NativeAdOptions.ADCHOICES_TOP_LEFT ||
+                        (Integer) placementObj == NativeAdOptions.ADCHOICES_TOP_RIGHT ||
+                        (Integer) placementObj == NativeAdOptions.ADCHOICES_BOTTOM_LEFT ||
+                        (Integer) placementObj == NativeAdOptions.ADCHOICES_BOTTOM_RIGHT );
     }
 
     //endregion
@@ -956,7 +973,14 @@ public class GoogleAdManagerMediationAdapter
                     }
                     else
                     {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                        if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                        {
+                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                        }
+                        else
+                        {
+                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                        }
                     }
 
                     nativeAdView = new NativeAdView( activity );

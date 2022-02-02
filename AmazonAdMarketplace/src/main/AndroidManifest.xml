@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.mediation.adapters.amazonadmarketplace">
+
+    <!-- NOTE: Amazon's SDK declares permissions in the AAR, but not Activities -->
+    <application>
+        <activity android:name="com.amazon.device.ads.DTBInterstitialActivity" />
+        <activity android:name="com.amazon.device.ads.DTBAdActivity" />
+    </application>
+</manifest>

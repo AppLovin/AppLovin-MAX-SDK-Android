@@ -109,6 +109,9 @@ public class MintegralMediationAdapter
     private static final Map<String, MBRewardVideoHandler>          mbRewardVideoHandlers          = new HashMap<>();
     private static final Map<String, MBBidRewardVideoHandler>       mbBidRewardVideoHandlers       = new HashMap<>();
 
+    // Used by the mediation adapter router
+    private String mbUnitId;
+
     // Supports video, interactive, and banner ad formats
     private MBInterstitialVideoHandler    mbInterstitialVideoHandler;
     private MBBidInterstitialVideoHandler mbBidInterstitialVideoHandler;
@@ -228,6 +231,8 @@ public class MintegralMediationAdapter
         }
 
         nativeAdCampaign = null;
+
+        router.removeAdapter( this, mbUnitId );
     }
 
     @Override
@@ -246,23 +251,23 @@ public class MintegralMediationAdapter
         final boolean shouldUpdateMuteState = parameters.getServerParameters().containsKey( "is_muted" ); // Introduced in 9.10.0
         final int muteState = parameters.getServerParameters().getBoolean( "is_muted" ) ? MBridgeConstans.REWARD_VIDEO_PLAY_MUTE : MBridgeConstans.INTER_ACTIVE_VIDEO_PLAY_NOT_MUTE;
 
-        final String unitId = parameters.getThirdPartyAdPlacementId();
+        mbUnitId = parameters.getThirdPartyAdPlacementId();
         final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
 
-        router.addInterstitialAdapter( this, listener, unitId );
+        router.addInterstitialAdapter( this, listener, mbUnitId );
 
         if ( !TextUtils.isEmpty( parameters.getBidResponse() ) )
         {
-            log( "Loading bidding interstitial ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading bidding interstitial ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
 
-            if ( mbBidInterstitialVideoHandlers.containsKey( unitId ) )
+            if ( mbBidInterstitialVideoHandlers.containsKey( mbUnitId ) )
             {
-                mbBidInterstitialVideoHandler = mbBidInterstitialVideoHandlers.get( unitId );
+                mbBidInterstitialVideoHandler = mbBidInterstitialVideoHandlers.get( mbUnitId );
             }
             else
             {
-                mbBidInterstitialVideoHandler = new MBBidInterstitialVideoHandler( activity, placementId, unitId );
-                mbBidInterstitialVideoHandlers.put( unitId, mbBidInterstitialVideoHandler );
+                mbBidInterstitialVideoHandler = new MBBidInterstitialVideoHandler( activity, placementId, mbUnitId );
+                mbBidInterstitialVideoHandlers.put( mbUnitId, mbBidInterstitialVideoHandler );
             }
 
             mbBidInterstitialVideoHandler.setInterstitialVideoListener( router.getInterstitialListener() );
@@ -277,11 +282,11 @@ public class MintegralMediationAdapter
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", mbBidInterstitialVideoHandler.getRequestId() );
 
-                    router.onAdLoaded( unitId, extraInfo );
+                    router.onAdLoaded( mbUnitId, extraInfo );
                 }
                 else
                 {
-                    router.onAdLoaded( unitId );
+                    router.onAdLoaded( mbUnitId );
                 }
             }
             else
@@ -294,16 +299,16 @@ public class MintegralMediationAdapter
         }
         else
         {
-            log( "Loading mediated interstitial ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading mediated interstitial ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
 
-            if ( mbInterstitialVideoHandlers.containsKey( unitId ) )
+            if ( mbInterstitialVideoHandlers.containsKey( mbUnitId ) )
             {
-                mbInterstitialVideoHandler = mbInterstitialVideoHandlers.get( unitId );
+                mbInterstitialVideoHandler = mbInterstitialVideoHandlers.get( mbUnitId );
             }
             else
             {
-                mbInterstitialVideoHandler = new MBInterstitialVideoHandler( activity, placementId, unitId );
-                mbInterstitialVideoHandlers.put( unitId, mbInterstitialVideoHandler );
+                mbInterstitialVideoHandler = new MBInterstitialVideoHandler( activity, placementId, mbUnitId );
+                mbInterstitialVideoHandlers.put( mbUnitId, mbInterstitialVideoHandler );
             }
 
             mbInterstitialVideoHandler.setInterstitialVideoListener( router.getInterstitialListener() );
@@ -318,11 +323,11 @@ public class MintegralMediationAdapter
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", mbInterstitialVideoHandler.getRequestId() );
 
-                    router.onAdLoaded( unitId, extraInfo );
+                    router.onAdLoaded( mbUnitId, extraInfo );
                 }
                 else
                 {
-                    router.onAdLoaded( unitId );
+                    router.onAdLoaded( mbUnitId );
                 }
             }
             else
@@ -355,7 +360,7 @@ public class MintegralMediationAdapter
             log( "Unable to show interstitial - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( parameters.getThirdPartyAdPlacementId(), MaxAdapterError.AD_NOT_READY );
+            router.onAdDisplayFailed( mbUnitId, MaxAdapterError.AD_NOT_READY );
         }
     }
 
@@ -366,23 +371,23 @@ public class MintegralMediationAdapter
         final boolean shouldUpdateMuteState = parameters.getServerParameters().containsKey( "is_muted" ); // Introduced in 9.10.0
         final int muteState = parameters.getServerParameters().getBoolean( "is_muted" ) ? MBridgeConstans.REWARD_VIDEO_PLAY_MUTE : MBridgeConstans.INTER_ACTIVE_VIDEO_PLAY_NOT_MUTE;
 
-        final String unitId = parameters.getThirdPartyAdPlacementId();
+        mbUnitId = parameters.getThirdPartyAdPlacementId();
         final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
 
-        router.addRewardedAdapter( this, listener, unitId );
+        router.addRewardedAdapter( this, listener, mbUnitId );
 
         if ( !TextUtils.isEmpty( parameters.getBidResponse() ) )
         {
-            log( "Loading bidding rewarded ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading bidding rewarded ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
 
-            if ( mbBidRewardVideoHandlers.containsKey( unitId ) )
+            if ( mbBidRewardVideoHandlers.containsKey( mbUnitId ) )
             {
-                mbBidRewardVideoHandler = mbBidRewardVideoHandlers.get( unitId );
+                mbBidRewardVideoHandler = mbBidRewardVideoHandlers.get( mbUnitId );
             }
             else
             {
-                mbBidRewardVideoHandler = new MBBidRewardVideoHandler( activity, placementId, unitId );
-                mbBidRewardVideoHandlers.put( unitId, mbBidRewardVideoHandler );
+                mbBidRewardVideoHandler = new MBBidRewardVideoHandler( activity, placementId, mbUnitId );
+                mbBidRewardVideoHandlers.put( mbUnitId, mbBidRewardVideoHandler );
             }
 
             mbBidRewardVideoHandler.setRewardVideoListener( router.getRewardedListener() );
@@ -397,11 +402,11 @@ public class MintegralMediationAdapter
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", mbBidRewardVideoHandler.getRequestId() );
 
-                    router.onAdLoaded( unitId, extraInfo );
+                    router.onAdLoaded( mbUnitId, extraInfo );
                 }
                 else
                 {
-                    router.onAdLoaded( unitId );
+                    router.onAdLoaded( mbUnitId );
                 }
             }
             else
@@ -414,16 +419,16 @@ public class MintegralMediationAdapter
         }
         else
         {
-            log( "Loading mediated rewarded ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading mediated rewarded ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
 
-            if ( mbRewardVideoHandlers.containsKey( unitId ) )
+            if ( mbRewardVideoHandlers.containsKey( mbUnitId ) )
             {
-                mbRewardVideoHandler = mbRewardVideoHandlers.get( unitId );
+                mbRewardVideoHandler = mbRewardVideoHandlers.get( mbUnitId );
             }
             else
             {
-                mbRewardVideoHandler = new MBRewardVideoHandler( activity, placementId, unitId );
-                mbRewardVideoHandlers.put( unitId, mbRewardVideoHandler );
+                mbRewardVideoHandler = new MBRewardVideoHandler( activity, placementId, mbUnitId );
+                mbRewardVideoHandlers.put( mbUnitId, mbRewardVideoHandler );
             }
 
             mbRewardVideoHandler.setRewardVideoListener( router.getRewardedListener() );
@@ -438,11 +443,11 @@ public class MintegralMediationAdapter
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", mbRewardVideoHandler.getRequestId() );
 
-                    router.onAdLoaded( unitId, extraInfo );
+                    router.onAdLoaded( mbUnitId, extraInfo );
                 }
                 else
                 {
-                    router.onAdLoaded( unitId );
+                    router.onAdLoaded( mbUnitId );
                 }
             }
             else
@@ -482,7 +487,7 @@ public class MintegralMediationAdapter
             log( "Unable to show rewarded ad - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( parameters.getThirdPartyAdPlacementId(), MaxAdapterError.AD_NOT_READY );
+            router.onAdDisplayFailed( mbUnitId, MaxAdapterError.AD_NOT_READY );
         }
     }
 
@@ -491,11 +496,11 @@ public class MintegralMediationAdapter
     {
         BannerSize size = toBannerSize( adFormat );
 
-        final String unitId = parameters.getThirdPartyAdPlacementId();
+        mbUnitId = parameters.getThirdPartyAdPlacementId();
         final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
 
         mbBannerView = new MBBannerView( activity );
-        mbBannerView.init( size, placementId, unitId );
+        mbBannerView.init( size, placementId, mbUnitId );
         mbBannerView.setAllowShowCloseBtn( false );
         mbBannerView.setRefreshTime( 0 );
 
@@ -570,12 +575,12 @@ public class MintegralMediationAdapter
 
         if ( !TextUtils.isEmpty( parameters.getBidResponse() ) )
         {
-            log( "Loading bidding banner ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading bidding banner ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
             mbBannerView.loadFromBid( parameters.getBidResponse() );
         }
         else
         {
-            log( "Loading mediated banner ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+            log( "Loading mediated banner ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
             mbBannerView.load();
         }
     }
@@ -583,12 +588,12 @@ public class MintegralMediationAdapter
     @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
-        final String unitId = parameters.getThirdPartyAdPlacementId();
+        mbUnitId = parameters.getThirdPartyAdPlacementId();
         final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
 
-        log( "Loading bidding native ad for unit id: " + unitId + " and placement id: " + placementId + "..." );
+        log( "Loading bidding native ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
 
-        Map<String, Object> properties = MBBidNativeHandler.getNativeProperties( placementId, unitId );
+        Map<String, Object> properties = MBBidNativeHandler.getNativeProperties( placementId, mbUnitId );
         properties.put( MBridgeConstans.PROPERTIES_AD_NUM, 1 ); // Only load one ad.
         properties.put( MBridgeConstans.NATIVE_VIDEO_SUPPORT, true );
 

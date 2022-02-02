@@ -392,19 +392,24 @@ public class ByteDanceMediationAdapter
     // @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
+        String bidResponse = parameters.getBidResponse();
+        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         String codeId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading bidding native ad for code id \"" + codeId + "\"..." );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for code id \"" + codeId + "\"..." );
 
-        AdSlot adSlot = new AdSlot.Builder()
+        AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
                 .setCodeId( codeId )
                 .setImageAcceptedSize( 640, 320 )
                 .setSupportDeepLink( true )
-                .withBid( parameters.getBidResponse() )
-                .setAdCount( 1 )
-                .build();
+                .setAdCount( 1 );
+
+        if ( isBiddingAd )
+        {
+            adSlotBuilder.withBid( bidResponse );
+        }
 
         nativeAdListener = new NativeAdListener( parameters, activity, listener );
-        TTAdSdk.getAdManager().createAdNative( activity ).loadFeedAd( adSlot, nativeAdListener );
+        TTAdSdk.getAdManager().createAdNative( activity ).loadFeedAd( adSlotBuilder.build(), nativeAdListener );
     }
 
     //endregion
@@ -912,7 +917,15 @@ public class ByteDanceMediationAdapter
                                 log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default horizontal native template will be used." );
                             }
 
-                            MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                            MaxNativeAdView maxNativeAdView;
+                            if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                            {
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                            }
+                            else
+                            {
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                            }
 
                             List<View> clickableViews = new ArrayList<>();
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )

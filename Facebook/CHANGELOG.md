@@ -1,5 +1,17 @@
 # Changelog
 
+## 6.8.0.7
+* Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
+  
+## 6.8.0.6
+* Fix headline and advertiser views in native ads.
+
+## 6.8.0.5
+* Fix native ad icon not rendering.
+
+## 6.8.0.4
+* Fix native ad icon not rendering.
+
 ## 6.8.0.3
 * Use new `getMediaContentViewGroup` APIs on newer AppLovin SDK versions.
 * Fix icon view never getting registered for interaction.

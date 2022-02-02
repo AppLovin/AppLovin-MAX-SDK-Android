@@ -3,15 +3,15 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 12
-private val versionMinor = 9
+private val versionMajor = 9
+private val versionMinor = 3
 private val versionPatch = 0
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
 
-val libraryArtifactId by extra("tapjoy-adapter")
+val libraryArtifactId by extra("amazon-tam-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
@@ -20,11 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.tapjoy:tapjoy-android-sdk:${libraryVersions["tapjoy"]}@aar")
-}
-
-repositories {
-    maven { url = uri("https://sdk.tapjoy.com/") }
+    api("com.amazon.android:aps-sdk:${libraryVersions["amazon"]}")
 }
 
 publishing {
@@ -34,32 +30,24 @@ publishing {
             pom.withXml {
                 asNode().apply {
                     appendNode("name", libraryArtifactId)
-                    appendNode("description", "Tapjoy adapter for AppLovin MAX mediation")
+                    appendNode("description", "Amazon TAM adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
-                            .appendNode("license").apply {
-                                appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
-                                appendNode("url", "https://www.applovin.com/eula")
-                            }
+                        .appendNode("license").apply {
+                            appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
+                            appendNode("url", "https://www.applovin.com/eula")
+                        }
                     appendNode("scm").apply {
                         appendNode("connection", "scm:git:github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("developerConnection", "scm:git:ssh://github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("url", "https://github.com/AppLovin/AppLovin-MAX-SDK-Android")
                     }
                     appendNode("developers")
-                            .appendNode("developer").apply {
-                                appendNode("name", "AppLovin")
-                                appendNode("url", "https://www.applovin.com")
-                            }
-                    // Add Tapjoy to list of dependencies.
-                    appendNode("dependencies")
-                            .appendNode("dependency").apply {
-
-                                appendNode("groupId", "com.tapjoy")
-                                appendNode("artifactId", "tapjoy-android-sdk")
-                                appendNode("version", libraryVersions["tapjoy"])
-                                appendNode("scope", "compile")
-                            }
+                        .appendNode("developer").apply {
+                            appendNode("name", "AppLovin")
+                            appendNode("url", "https://www.applovin.com")
+                        }
+                    // NOTE: Amazon requested us to not add them to the list of transitive dependencies. External pubs have to manually integrate their SDK.
                 }
             }
         }

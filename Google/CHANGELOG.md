@@ -1,5 +1,11 @@
 # Changelog
 
+## 20.5.0.7
+* Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
+
+## 20.5.0.6
+* Add support for custom [AdChoices placements](https://developers.google.com/android/reference/com/google/android/gms/ads/formats/NativeAdOptions.Builder#setAdChoicesPlacement(int)), which publishers can set by calling `setLocalExtraParameter("admob_ad_choices_placement", int)` on the `MaxNativeAdLoader` instance.
+
 ## 20.5.0.5
 * Check for Google Mobile Ads SDK initialization status before returning the version string.
 

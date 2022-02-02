@@ -198,13 +198,13 @@ public class IronSourceMediationAdapter
         log( "Loading ironSource rewarded for instance ID: " + instanceId );
 
         // Create a format specific router identifier to ensure that the router can distinguish between them.
-        final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
-        ROUTER.addRewardedAdapter( this, listener, routerPlacementId );
+        mRouterPlacementIdentifier = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
+        ROUTER.addRewardedAdapter( this, listener, mRouterPlacementIdentifier );
 
         if ( IronSource.isISDemandOnlyRewardedVideoAvailable( instanceId ) )
         {
             log( "Ad is available already for instance ID: " + instanceId );
-            ROUTER.onAdLoaded( routerPlacementId );
+            ROUTER.onAdLoaded( mRouterPlacementIdentifier );
         }
         else
         {
@@ -476,7 +476,6 @@ public class IronSourceMediationAdapter
                     break;
                 case IronSourceError.ERROR_BN_INSTANCE_LOAD_TIMEOUT:
                 case IronSourceError.ERROR_BN_INSTANCE_RELOAD_TIMEOUT:
-                case IronSourceError.ERROR_RV_LOAD_FAILED_TIMEOUT:
                 case IronSourceError.ERROR_RV_INIT_FAILED_TIMEOUT:
                 case IronSourceError.ERROR_RV_LOAD_FAIL_DUE_TO_INIT:
                 case IronSourceError.ERROR_DO_IS_LOAD_TIMED_OUT:

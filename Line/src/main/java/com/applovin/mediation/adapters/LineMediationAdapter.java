@@ -759,11 +759,26 @@ public class LineMediationAdapter
                             else if ( templateName.equals( "vertical" ) )
                             {
                                 String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, activity );
+
+                                if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                                {
+                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, getApplicationContext() );
+                                }
+                                else
+                                {
+                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, activity );
+                                }
                             }
                             else
                             {
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                                if ( AppLovinSdk.VERSION_CODE >= 11010000 )
+                                {
+                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                                }
+                                else
+                                {
+                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
+                                }
                             }
 
                             final List<View> clickableViews = new ArrayList<>();
