@@ -138,7 +138,7 @@ public class MainActivity
         items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new DemoMenuItem( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
-        items.add( new DemoMenuItem( "Natives", new Intent( this, NativeAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Native Ads", new Intent( this, NativeAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new DemoMenuItem( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );

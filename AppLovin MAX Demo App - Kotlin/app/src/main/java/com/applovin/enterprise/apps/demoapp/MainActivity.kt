@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Rewarded", Intent(this, RewardedAdActivity::class.java)))
         items.add(DemoMenuItem("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(DemoMenuItem("MRECs", Intent(this, MrecAdActivity::class.java)))
-        items.add(DemoMenuItem("Natives", Intent(this, NativeAdActivity::class.java)))
+        items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdActivity::class.java)))
         items.add(DemoMenuItem("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
         items.add(SectionHeader("SUPPORT"))
         items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
