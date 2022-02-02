@@ -30,15 +30,11 @@ class TemplateNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
         nativeAdLayout = findViewById(R.id.native_ad_layout)
         setupCallbacksRecyclerView()
 
-        val adUnitId = "YOUR_AD_UNIT_ID"
-
-        nativeAdLoader = MaxNativeAdLoader(adUnitId, this)
-        nativeAdLoader.placement = "Native Custom Test Placement"
-        nativeAdLoader.setExtraParameter("test_extra_key", "test_extra_value")
+        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
         nativeAdLoader.setRevenueListener(this)
         nativeAdLoader.setNativeAdListener(object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView, ad: MaxAd) {
-                logCallback()
+                logAnonymousCallback()
 
                 // Cleanup any pre-existing native ad to prevent memory leaks.
                 if (nativeAd != null) {
@@ -54,11 +50,11 @@ class TemplateNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
-                logCallback()
+                logAnonymousCallback()
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
-                logCallback()
+                logAnonymousCallback()
             }
         })
     }

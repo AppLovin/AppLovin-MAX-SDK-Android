@@ -36,9 +36,17 @@ abstract class BaseAdActivity : AppCompatActivity()
      * Log ad callbacks in the RecyclerView.
      * Uses the name of the function that calls this one in the log.
      */
-    protected fun logCallback(index: Int = 2)
+    protected fun logCallback()
     {
-        val callbackName = Throwable().stackTrace[index].methodName
+        val callbackName = Throwable().stackTrace[1].methodName
+        callbacks.add(callbackName)
+
+        callbacksAdapter.notifyItemInserted(callbacks.lastIndex)
+    }
+
+    protected fun logAnonymousCallback()
+    {
+        val callbackName = Throwable().stackTrace[2].methodName
         callbacks.add(callbackName)
 
         callbacksAdapter.notifyItemInserted(callbacks.lastIndex)

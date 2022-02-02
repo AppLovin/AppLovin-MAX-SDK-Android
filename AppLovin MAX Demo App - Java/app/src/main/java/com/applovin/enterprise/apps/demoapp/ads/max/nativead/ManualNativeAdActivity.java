@@ -48,18 +48,14 @@ public class ManualNativeAdActivity
                 .build();
         nativeAdView = new MaxNativeAdView( binder, this );
 
-        String adUnitId = "YOUR_AD_UNIT_ID";
-
-        nativeAdLoader = new MaxNativeAdLoader( adUnitId, this );
-        nativeAdLoader.setPlacement( "Native Custom Test Placement" );
-        nativeAdLoader.setExtraParameter( "test_extra_key", "test_extra_value" );
+        nativeAdLoader = new MaxNativeAdLoader( "YOUR_AD_UNIT_ID", this );
         nativeAdLoader.setRevenueListener( this );
         nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
         {
             @Override
             public void onNativeAdLoaded(final MaxNativeAdView nativeAdView, final MaxAd ad)
             {
-                logCallback( 2 );
+                logAnonymousCallback();
 
                 // Cleanup any pre-existing native ad to prevent memory leaks.
                 if ( nativeAd != null )
@@ -78,13 +74,13 @@ public class ManualNativeAdActivity
             @Override
             public void onNativeAdLoadFailed(final String adUnitId, final MaxError error)
             {
-                logCallback( 2 );
+                logAnonymousCallback();
             }
 
             @Override
             public void onNativeAdClicked(final MaxAd ad)
             {
-                logCallback( 2 );
+                logAnonymousCallback();
             }
         } );
     }
@@ -109,7 +105,8 @@ public class ManualNativeAdActivity
 
     //region MAX Ad Revenue Listener
 
-    @Override public void onAdRevenuePaid(final MaxAd ad)
+    @Override
+    public void onAdRevenuePaid(final MaxAd ad)
     {
         logCallback();
 

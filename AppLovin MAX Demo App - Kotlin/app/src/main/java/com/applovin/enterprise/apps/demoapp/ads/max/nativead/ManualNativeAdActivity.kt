@@ -42,15 +42,11 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
                 .build()
         nativeAdView = MaxNativeAdView(binder, this)
 
-        val adUnitId = "YOUR_AD_UNIT_ID"
-
-        nativeAdLoader = MaxNativeAdLoader(adUnitId, this)
-        nativeAdLoader.placement = "Native Custom Test Placement"
-        nativeAdLoader.setExtraParameter("test_extra_key", "test_extra_value")
+        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
         nativeAdLoader.setRevenueListener(this)
         nativeAdLoader.setNativeAdListener(object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView, ad: MaxAd) {
-                logCallback()
+                logAnonymousCallback()
 
                 // Cleanup any pre-existing native ad to prevent memory leaks.
                 if (nativeAd != null) {
@@ -66,11 +62,11 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
-                logCallback()
+                logAnonymousCallback()
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
-                logCallback()
+                logAnonymousCallback()
             }
         })
     }
@@ -91,7 +87,7 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
     //region MAX Ad Revenue Listener
 
     override fun onAdRevenuePaid(ad: MaxAd?) {
-        logCallback(2)
+        logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
         adjustAdRevenue.setRevenue(ad?.revenue, "USD")
