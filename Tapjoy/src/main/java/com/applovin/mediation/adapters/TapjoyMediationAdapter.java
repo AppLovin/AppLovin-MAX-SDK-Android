@@ -91,7 +91,7 @@ public class TapjoyMediationAdapter
             connectFlags.put( TapjoyConnectFlag.ENABLE_LOGGING, String.valueOf( parameters.isTesting() ) );
 
             // Update GDPR settings before initialization
-            updateConsent( parameters );
+            updateConsentAndActivity( parameters, activity );
 
             Tapjoy.connect( activity.getApplicationContext(), sdkKey, connectFlags, new TJConnectListener()
             {
@@ -114,7 +114,7 @@ public class TapjoyMediationAdapter
         }
         else
         {
-            updateConsent( parameters );
+            updateConsentAndActivity( parameters, activity );
 
             onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
         }
@@ -124,7 +124,7 @@ public class TapjoyMediationAdapter
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
         // Update GDPR settings
-        updateConsent( parameters );
+        updateConsentAndActivity( parameters, activity );
 
         String token = Tapjoy.getUserToken();
         callback.onSignalCollected( token );
@@ -144,7 +144,7 @@ public class TapjoyMediationAdapter
         }
 
         // Update GDPR settings
-        updateConsent( parameters );
+        updateConsentAndActivity( parameters, activity );
 
         interstitialPlacement = createPlacement( parameters, new InterstitialListener( listener ) );
 
@@ -188,7 +188,7 @@ public class TapjoyMediationAdapter
         }
 
         // Update GDPR settings
-        updateConsent( parameters );
+        updateConsentAndActivity( parameters, activity );
 
         rewardedPlacement = createPlacement( parameters, new RewardedListener( listener ) );
 
@@ -222,7 +222,7 @@ public class TapjoyMediationAdapter
     }
 
     //region Utility Methods
-    private void updateConsent(final MaxAdapterParameters parameters)
+    private void updateConsentAndActivity(final MaxAdapterParameters parameters, final Activity activity)
     {
         TJPrivacyPolicy tjPrivacyPolicy = Tapjoy.getPrivacyPolicy();
 
@@ -245,6 +245,8 @@ public class TapjoyMediationAdapter
         {
             tjPrivacyPolicy.setSubjectToGDPR( false );
         }
+
+        Tapjoy.setActivity( activity );
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
