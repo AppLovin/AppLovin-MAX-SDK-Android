@@ -16,7 +16,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
 
 class TemplateNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
-    // Map of ad unit IDs to native ad loaders
     private lateinit var nativeAdLoader: MaxNativeAdLoader
     private var nativeAd: MaxAd? = null
 

@@ -12,8 +12,8 @@ public class NativeAdActivity
     protected DemoMenuItem[] getListViewContents()
     {
         DemoMenuItem[] result = {
-                new DemoMenuItem( "Template Native Ads", new Intent( this, TemplateNativeAdActivity.class ) ),
-                new DemoMenuItem( "Manual Native Ads", new Intent( this, ManualNativeAdActivity.class ) ),
+                new DemoMenuItem( "Templates API", new Intent( this, TemplateNativeAdActivity.class ) ),
+                new DemoMenuItem( "Manual API", new Intent( this, ManualNativeAdActivity.class ) ),
         };
         return result;
     }
