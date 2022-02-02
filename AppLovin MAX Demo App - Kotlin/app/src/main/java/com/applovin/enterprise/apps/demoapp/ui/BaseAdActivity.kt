@@ -43,4 +43,12 @@ abstract class BaseAdActivity : AppCompatActivity()
 
         callbacksAdapter.notifyItemInserted(callbacks.lastIndex)
     }
+
+    protected fun logAnonymousCallback()
+    {
+        val callbackName = Throwable().stackTrace[2].methodName
+        callbacks.add(callbackName)
+
+        callbacksAdapter.notifyItemInserted(callbacks.lastIndex)
+    }
 }

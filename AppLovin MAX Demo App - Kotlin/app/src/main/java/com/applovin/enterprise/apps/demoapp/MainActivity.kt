@@ -22,6 +22,7 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActiv
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Rewarded", Intent(this, RewardedAdActivity::class.java)))
         items.add(DemoMenuItem("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(DemoMenuItem("MRECs", Intent(this, MrecAdActivity::class.java)))
+        items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdActivity::class.java)))
         items.add(DemoMenuItem("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
         items.add(SectionHeader("SUPPORT"))
         items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))

@@ -19,14 +19,13 @@ import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity;
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
 import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
-import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 
 import java.util.ArrayList;
@@ -139,6 +138,7 @@ public class MainActivity
         items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new DemoMenuItem( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Native Ads", new Intent( this, NativeAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
         items.add( new DemoMenuItem( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
