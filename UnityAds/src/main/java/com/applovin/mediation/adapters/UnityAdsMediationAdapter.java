@@ -143,6 +143,14 @@ public class UnityAdsMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement \"" + placementId + "\"..." );
 
+        if ( !UnityAds.isInitialized() )
+        {
+            log( "Unity Ads SDK is not initialized: failing interstitial ad load..." );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
         // Bidding ads need a random ID associated with each load and show
@@ -213,6 +221,14 @@ public class UnityAdsMediationAdapter
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "rewarded ad for placement \"" + placementId + "\"..." );
+
+        if ( !UnityAds.isInitialized() )
+        {
+            log( "Unity Ads SDK is not initialized: failing rewarded ad load..." );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
@@ -293,6 +309,14 @@ public class UnityAdsMediationAdapter
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading banner ad for placement \"" + placementId + "\"..." );
+
+        if ( !UnityAds.isInitialized() )
+        {
+            log( "Unity Ads SDK is not initialized: failing banner ad load..." );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 

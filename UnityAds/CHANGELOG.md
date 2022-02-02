@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0.1
+* Verify UnityAds SDK is initialized before loading ads.
+
 ## 4.0.0.0
 * Certified with UnityAds SDK 4.0.0.
 * Update to use consolidated `initialize()` API.
