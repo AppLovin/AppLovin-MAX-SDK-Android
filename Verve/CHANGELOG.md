@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.10.0.0
+* Certified with Verve SDK 2.10.0.
+
 ## 2.9.0.0
 * Certified with Verve SDK 2.9.0.
 * Remove `checkExistence()` call from adapter.
