@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.8
+* Fix `android.content.Context android.content.Context.getApplicationContext()` NPE when initializing SDK with a non-Activity context on v11.1.0.
+
 ## 6.8.0.7
 * Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
   

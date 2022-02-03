@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -57,6 +58,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import androidx.annotation.Nullable;
 
 import static com.applovin.sdk.AppLovinSdkUtils.isValidString;
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
@@ -125,7 +128,7 @@ public class FacebookMediationAdapter
 
             log( "Initializing Facebook SDK with placements: " + placementIds );
 
-            AudienceNetworkAds.buildInitSettings( activity )
+            AudienceNetworkAds.buildInitSettings( getContext( activity ) )
                     .withMediationService( getMediationIdentifier() )
                     .withPlacementIds( placementIds )
                     .withInitListener( initListener )
@@ -192,7 +195,7 @@ public class FacebookMediationAdapter
         log( "Collecting signal..." );
 
         // Must be ran on bg thread
-        String signal = BidderTokenProvider.getBidderToken( activity );
+        String signal = BidderTokenProvider.getBidderToken( getContext( activity ) );
         callback.onSignalCollected( signal );
     }
 
@@ -452,19 +455,18 @@ public class FacebookMediationAdapter
         if ( isNative )
         {
             mNativeAdViewAd = new NativeAd( activity, placementId );
-            NativeAdBase.NativeAdLoadConfigBuilder adViewLoadConfigBuilder = mNativeAdViewAd.buildLoadAdConfig()
-                    .withAdListener( new NativeAdViewListener( parameters.getServerParameters(), adFormat, activity, listener ) );
-
-            log( "Loading bidding native " + adFormat.getLabel() + " ad..." );
-            mNativeAdViewAd.loadAd( adViewLoadConfigBuilder.withBid( parameters.getBidResponse() ).build() );
+            mNativeAdViewAd.loadAd( mNativeAdViewAd.buildLoadAdConfig()
+                                            .withAdListener( new NativeAdViewListener( parameters.getServerParameters(), adFormat, activity, listener ) )
+                                            .withBid( parameters.getBidResponse() )
+                                            .build() );
         }
         else
         {
             mAdView = new AdView( activity, placementId, toAdSize( adFormat ) );
-            AdView.AdViewLoadConfigBuilder adViewLoadConfigBuilder = mAdView.buildLoadAdConfig().withAdListener( new AdViewListener( adFormat, listener ) );
-
-            log( "Loading bidding banner ad..." );
-            mAdView.loadAd( adViewLoadConfigBuilder.withBid( parameters.getBidResponse() ).build() );
+            mAdView.loadAd( mAdView.buildLoadAdConfig()
+                                    .withAdListener( new AdViewListener( adFormat, listener ) )
+                                    .withBid( parameters.getBidResponse() )
+                                    .build() );
         }
     }
 
@@ -476,7 +478,7 @@ public class FacebookMediationAdapter
 
         updateAdSettings( parameters );
 
-        mNativeAdViewAd = new NativeAd( activity, placementId );
+        mNativeAdViewAd = new NativeAd( getContext( activity ), placementId );
         mNativeAdViewAd.loadAd( mNativeAdViewAd.buildLoadAdConfig()
                                         .withAdListener( new MaxNativeAdListener( parameters.getServerParameters(), activity, listener ) )
                                         .withBid( parameters.getBidResponse() )
@@ -588,6 +590,12 @@ public class FacebookMediationAdapter
         {
             return new MaxNativeAdView( maxNativeAd, templateName, activity );
         }
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private class InterstitialAdListener
