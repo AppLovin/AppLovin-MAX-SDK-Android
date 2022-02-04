@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.8
+* Support for null `Activity` on init.
+
 ## 20.5.0.7
 * Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
 
