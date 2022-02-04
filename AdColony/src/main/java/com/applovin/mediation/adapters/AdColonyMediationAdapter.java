@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -127,7 +128,10 @@ public class AdColonyMediationAdapter
             final String[] zoneIds = getZoneIds( parameters );
             final AdColonyAppOptions options = getOptions( parameters );
 
-            final boolean initialized = AdColony.configure( activity.getApplication(), options, appId, zoneIds );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+            final boolean initialized = AdColony.configure( application, options, appId, zoneIds );
 
             status = initialized ? InitializationStatus.INITIALIZED_SUCCESS : InitializationStatus.INITIALIZED_FAILURE;
         }

@@ -1,7 +1,8 @@
 # Changelog
 
-## x.x.x.x
+## 4.6.5.1
 * Remove `checkExistence()` call from adapter.
+* Support for null `Activity` on init.
 
 ## 4.6.5.0
 * Certified with AdColony SDK 4.6.5.
