@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -75,7 +76,10 @@ public class InneractiveMediationAdapter
 
             InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
 
-            InneractiveAdManager.initialize( activity, appId, new OnFyberMarketplaceInitializedListener()
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            InneractiveAdManager.initialize( context, appId, new OnFyberMarketplaceInitializedListener()
             {
                 @Override
                 public void onFyberMarketplaceInitialized(final FyberInitStatus fyberInitStatus)

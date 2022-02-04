@@ -1,6 +1,13 @@
 # Changelog
 
-## x.x.x.x
+## 8.1.2.1
+* Support for null `Activity` on init.
+
+## 8.1.2.0
+* Certified with Fyber SDK 8.1.2.
+
+## 8.1.1.0
+* Certified with Fyber SDK 8.1.1.
 * Remove `checkExistence()` call from adapter.
 
 ## 8.1.0.0
