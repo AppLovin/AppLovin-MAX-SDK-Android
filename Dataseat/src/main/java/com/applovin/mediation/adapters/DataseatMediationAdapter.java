@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.applovin.mediation.MaxReward;
@@ -34,7 +35,11 @@ public class DataseatMediationAdapter
         if ( initialized.compareAndSet( false, true ) )
         {
             log( "Initializing Dataseat SDK..." );
-            Dataseat.getInstance( activity.getApplicationContext() ).initializeSDK();
+
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            Dataseat.getInstance( context ).initializeSDK();
         }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );

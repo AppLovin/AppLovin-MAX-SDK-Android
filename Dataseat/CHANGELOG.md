@@ -1,7 +1,8 @@
 # Changelog
 
-## x.x.x.x
+## 1.0.12.1
 * Remove `checkExistence()` call from adapter.
+* Support for null `Activity` on init.
 
 ## 1.0.12.0
 * Certified with Dataseat SDK 1.0.12.
