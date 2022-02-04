@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.2
+* Support for null `Activity` on init.
+
 ## 6.0.1.1
 * Add support for banners, leaders, MRECs.
 * Better mapping of fullscreen ad display errors.

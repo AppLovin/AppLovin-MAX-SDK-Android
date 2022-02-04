@@ -96,13 +96,16 @@ public class HyprMXMediationAdapter
     {
         if ( HyprMX.INSTANCE.getInitializationState() == HyprMXState.NOT_INITIALIZED )
         {
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
             final String distributorId = parameters.getServerParameters().getString( "distributor_id" );
 
             // HyprMX requires userId to initialize -> generate a random one
             String userId = getWrappingSdk().getUserIdentifier();
             if ( TextUtils.isEmpty( userId ) )
             {
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences( activity.getApplicationContext() );
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences( context );
                 userId = sharedPreferences.getString( KEY_RANDOM_HYPRMX_USER_ID, null );
                 if ( TextUtils.isEmpty( userId ) )
                 {
@@ -116,7 +119,7 @@ public class HyprMXMediationAdapter
             HyprMXLog.enableDebugLogs( parameters.isTesting() );
 
             // NOTE: HyprMX deals with user consent and CCPA via their UI and don't support GDPR. Backend will filter HyprMX out in EU region.
-            HyprMX.INSTANCE.initialize( activity.getApplicationContext(), distributorId, userId, new HyprMXIf.HyprMXInitializationListener()
+            HyprMX.INSTANCE.initialize( context, distributorId, userId, new HyprMXIf.HyprMXInitializationListener()
             {
                 @Override
                 public void initializationComplete()
