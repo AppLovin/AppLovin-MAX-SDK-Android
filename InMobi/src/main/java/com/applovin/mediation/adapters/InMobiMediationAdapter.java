@@ -113,10 +113,13 @@ public class InMobiMediationAdapter
             final String accountId = parameters.getServerParameters().getString( "account_id" );
             log( "Initializing InMobi SDK with account id: " + accountId + "..." );
 
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
             status = InitializationStatus.INITIALIZING;
 
             JSONObject consentObject = getConsentJSONObject( parameters );
-            InMobiSdk.init( activity, accountId, consentObject, new SdkInitializationListener()
+            InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
             {
                 @Override
                 public void onInitializationComplete(@Nullable final Error error)
