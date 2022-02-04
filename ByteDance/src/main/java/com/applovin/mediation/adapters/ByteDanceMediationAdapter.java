@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -196,7 +197,10 @@ public class ByteDanceMediationAdapter
                     .supportMultiProcess( false )
                     .build();
 
-            TTAdSdk.init( activity.getApplicationContext(), adConfig, new TTAdSdk.InitCallback()
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            TTAdSdk.init( context, adConfig, new TTAdSdk.InitCallback()
             {
                 @Override
                 public void success()
@@ -1258,7 +1262,7 @@ public class ByteDanceMediationAdapter
         @Override
         public void onProgressUpdate(final long current, final long duration)
         {
-            log( "Native ad video progress updated (" + current + ") by duration (" + duration + ")" );
+            // Don't log - too spammy as it calls every x milliseconds
         }
 
         @Override
