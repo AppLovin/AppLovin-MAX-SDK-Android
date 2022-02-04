@@ -83,16 +83,18 @@ public class ChartboostMediationAdapter
 
             ROUTER.setOnCompletionListener( onCompletionListener );
 
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
             // We must update consent _before_ calling {@link Chartboost#startWithAppId()} `startWithAppId:appSignature:delegate`
             // (https://answers.chartboost.com/en-us/child_article/android#gdpr)
-            updateConsentStatus( parameters, activity.getApplicationContext() );
-
+            updateConsentStatus( parameters, context );
 
             // NOTE: We should have autoinit server parameters AND ad response server parameters return credentials due to race condition
             String appSignature = serverParameters.getString( "app_signature" );
 
             // NOTE: Unlike iOS, Chartboost will call `didInitialize()` in the event of a failure.
-            Chartboost.startWithAppId( activity.getApplicationContext(), appId, appSignature );
+            Chartboost.startWithAppId( context, appId, appSignature );
             Chartboost.setDelegate( ROUTER.getDelegate() );
 
             Chartboost.setMediation( Chartboost.CBMediation.CBMediationOther, AppLovinSdk.VERSION, getAdapterVersion() );

@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.1.1
+* Support for null `Activity` on init.
+
 ## 8.3.1.0
 * Certified with Chartboost SDK 8.3.1.
 
