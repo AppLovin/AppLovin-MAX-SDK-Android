@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.2.0.1
+* Support for null `Activity` on init.
+
 ## 2.3.2.0.0
 * Certified with Snap SDK 2.3.2.
 
