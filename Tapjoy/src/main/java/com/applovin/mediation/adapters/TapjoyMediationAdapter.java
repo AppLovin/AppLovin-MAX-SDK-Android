@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.applovin.mediation.MaxReward;
@@ -93,7 +94,10 @@ public class TapjoyMediationAdapter
             // Update GDPR settings before initialization
             updateConsentAndActivity( parameters, activity );
 
-            Tapjoy.connect( activity.getApplicationContext(), sdkKey, connectFlags, new TJConnectListener()
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            Tapjoy.connect( context, sdkKey, connectFlags, new TJConnectListener()
             {
                 @Override
                 public void onConnectSuccess()

@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.9.0.2
+* Support for null `Activity` on init.
+
 ## 12.9.0.1
 * Re-add setting of activity before ad loads, which was removed in 12.8.1.1.
 
