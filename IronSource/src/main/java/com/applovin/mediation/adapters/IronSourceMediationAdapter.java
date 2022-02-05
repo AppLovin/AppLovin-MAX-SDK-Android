@@ -20,8 +20,6 @@ import com.ironsource.mediationsdk.IronSource;
 import com.ironsource.mediationsdk.logger.IronSourceError;
 import com.ironsource.mediationsdk.sdk.ISDemandOnlyInterstitialListener;
 import com.ironsource.mediationsdk.sdk.ISDemandOnlyRewardedVideoListener;
-import com.ironsource.mediationsdk.sdk.InterstitialListener;
-import com.ironsource.mediationsdk.sdk.RewardedVideoListener;
 import com.ironsource.mediationsdk.utils.IronSourceUtils;
 
 import java.lang.reflect.Method;
@@ -113,14 +111,12 @@ public class IronSourceMediationAdapter
             IronSource.setISDemandOnlyInterstitialListener( ROUTER );
             IronSource.setISDemandOnlyRewardedVideoListener( ROUTER );
 
-            final boolean shouldTrackNetworkState = parameters.getServerParameters().getBoolean( "should_track_network_state", false );
-            if ( shouldTrackNetworkState )
-            {
-                IronSource.shouldTrackNetworkState( activity, true );
-            }
-            IronSource.initISDemandOnly( activity.getApplicationContext(), appKey, getAdFormatsToInitialize( parameters ) );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
 
-            activity.getApplication().registerActivityLifecycleCallbacks( activityLifecycleCallbacks );
+            IronSource.initISDemandOnly( application, appKey, getAdFormatsToInitialize( parameters ) );
+
+            application.registerActivityLifecycleCallbacks( activityLifecycleCallbacks );
         }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );

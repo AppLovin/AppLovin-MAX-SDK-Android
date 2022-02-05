@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.1.14.0.2
+* Support for null `Activity` on init.
+
 ## 7.1.14.0.1
 * Fix rewarded ad listener not being correctly cleared.
 
