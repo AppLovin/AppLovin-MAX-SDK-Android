@@ -61,7 +61,10 @@ public class UnityAdsMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+        updatePrivacyConsent( parameters, context );
 
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -72,7 +75,7 @@ public class UnityAdsMediationAdapter
 
             if ( serverParameters.getBoolean( KEY_SET_MEDIATION_IDENTIFIER ) )
             {
-                MediationMetaData mediationMetaData = new MediationMetaData( activity );
+                MediationMetaData mediationMetaData = new MediationMetaData( context );
                 mediationMetaData.setName( UnityAdsMediationAdapter.mediationTag() );
                 mediationMetaData.setVersion( AppLovinSdk.VERSION );
                 mediationMetaData.commit();
@@ -80,7 +83,7 @@ public class UnityAdsMediationAdapter
 
             UnityAds.setDebugMode( parameters.isTesting() );
 
-            UnityAds.initialize( activity.getApplicationContext(), gameId, parameters.isTesting(), new IUnityAdsInitializationListener()
+            UnityAds.initialize( context, gameId, parameters.isTesting(), new IUnityAdsInitializationListener()
             {
                 @Override
                 public void onInitializationComplete()

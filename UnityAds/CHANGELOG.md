@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0.2
+* Support for null `Activity` on init.
+
 ## 4.0.0.1
 * Verify UnityAds SDK is initialized before loading ads.
 
