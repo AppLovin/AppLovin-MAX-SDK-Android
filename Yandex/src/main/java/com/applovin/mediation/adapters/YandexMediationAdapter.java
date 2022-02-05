@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -114,7 +115,10 @@ public class YandexMediationAdapter
                 MobileAds.enableLogging( true );
             }
 
-            MobileAds.initialize( activity.getApplicationContext(), new InitializationListener()
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            MobileAds.initialize( context, new InitializationListener()
             {
                 @Override
                 public void onInitializationCompleted()

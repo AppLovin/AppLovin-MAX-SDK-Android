@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.5.0.2
+* Support for null `Activity` on init.
+
 ## 4.5.0.1
 * Add bidding support.
 * Pass Application context instead of Activity context into fullscreen ad APIs.
