@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.0.2
+* Support for null `Activity` on init.
+
 ## 5.15.0.1
 * Fix a bug where certain native ad assets (icon, MediaView) are obstructed by others.
 
