@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdapterError;
@@ -14,7 +15,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.ogurypresage.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.applovin.sdk.AppLovinSdkUtils;
 import com.ogury.cm.OguryChoiceManagerExternal;
 import com.ogury.core.OguryError;
 import com.ogury.ed.OguryAdFormatErrorCode;
@@ -62,7 +62,10 @@ public class OguryPresageMediationAdapter
             // Pass the user consent before initializing SDK for personalized ads
             updateUserConsent( parameters );
 
-            OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( activity.getApplicationContext(), assetKey );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( context, assetKey );
             Ogury.start( oguryConfigurationBuilder.build() );
         }
 

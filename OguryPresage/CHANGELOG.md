@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.10.1
+* Support for null `Activity` on init.
+
 ## 5.0.10.0
 * Certified with OguryPresage SDK 5.0.10.
 * Remove `checkExistence()` call from adapter.
