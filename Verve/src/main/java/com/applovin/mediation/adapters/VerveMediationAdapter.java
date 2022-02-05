@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 
 import com.applovin.mediation.MaxAdFormat;
@@ -73,7 +74,11 @@ public class VerveMediationAdapter
             }
 
             HyBid.setLocationUpdatesEnabled( false );
-            HyBid.initialize( appToken, activity.getApplication() );
+
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+            HyBid.initialize( appToken, application );
 
             if ( HyBid.isInitialized() )
             {

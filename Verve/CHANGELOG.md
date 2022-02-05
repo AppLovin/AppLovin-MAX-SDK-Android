@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.10.0.1
+* Support for null `Activity` on init.
+
 ## 2.10.0.0
 * Certified with Verve SDK 2.10.0.
 
