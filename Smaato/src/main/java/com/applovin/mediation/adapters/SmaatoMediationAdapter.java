@@ -1,9 +1,8 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
+import android.app.Application;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
@@ -148,7 +147,10 @@ public class SmaatoMediationAdapter
                     .setHttpsOnly( parameters.getServerParameters().getBoolean( "https_only" ) )
                     .build();
 
-            SmaatoSdk.init( activity.getApplication(), config, pubId );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+            SmaatoSdk.init( application, config, pubId );
 
             // Call all other APIs after `SmaatoSdk.init(...)`
             updateAgeRestrictedUser( parameters );

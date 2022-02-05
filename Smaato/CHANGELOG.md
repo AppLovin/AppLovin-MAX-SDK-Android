@@ -1,7 +1,8 @@
 # Changelog
 
-## x.x.x.x
+## 21.6.7.2
 * Remove code for removing legacy privacy settings `"IABConsent_SubjectToGDPR"` and `"IABConsent_ConsentString"`.
+* Support for null `Activity` on init.
 
 ## 21.6.7.1
 * Add support for native custom ads and native template ads.
