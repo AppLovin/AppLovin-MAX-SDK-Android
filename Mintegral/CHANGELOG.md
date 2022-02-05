@@ -1,5 +1,8 @@
 # Changelog
 
+## 15.8.1.4
+* Support for null `Activity` on init.
+
 ## 15.8.1.3
 * Fix multiple callbacks getting triggered.
 
