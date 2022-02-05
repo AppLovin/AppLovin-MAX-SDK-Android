@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0.4
+* Support for null `Activity` on init.
+
 ## 1.14.0.3
 * Update signal collection method.
 

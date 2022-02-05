@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -77,7 +78,6 @@ public class VerizonAdsMediationAdapter
     private InlineAdFactory       inlineAdFactory;
     private NativeAdFactory       nativeAdFactory;
 
-
     public VerizonAdsMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     //region Max Adapter Methods
@@ -90,7 +90,10 @@ public class VerizonAdsMediationAdapter
             final String siteId = serverParameters.getString( PARAMETER_SITE_ID );
             log( "Initializing Verizon Ads SDK with site id: " + siteId + "..." );
 
-            final boolean initialized = VASAds.initialize( activity.getApplication(), siteId );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+            final boolean initialized = VASAds.initialize( application, siteId );
 
             InitializationStatus status = initialized ? InitializationStatus.INITIALIZED_SUCCESS : InitializationStatus.INITIALIZED_FAILURE;
             onCompletionListener.onCompletion( status, null );
