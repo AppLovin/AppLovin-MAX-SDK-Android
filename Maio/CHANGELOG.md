@@ -1,6 +1,7 @@
 # Changelog
 
-## x.x.x.x
+## 1.1.16.1
+* Support for null `Activity` on init.
 * Remove `checkExistence()` call from adapter.
 
 ## 1.1.16.0

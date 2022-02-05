@@ -72,6 +72,13 @@ public class MaioMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
+        // NOTE: `activity` can only be null in 11.1.0+
+        if ( activity == null )
+        {
+            onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, "Activity context required to initialize" );
+            return;
+        }
+
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
             final String mediaId = parameters.getServerParameters().getString( "media_id" );
