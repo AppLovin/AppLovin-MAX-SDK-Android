@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.5.0.3
+* Add impression callback for ad view ads.
+
 ## 4.5.0.2
 * Support for null `Activity` on init.
 

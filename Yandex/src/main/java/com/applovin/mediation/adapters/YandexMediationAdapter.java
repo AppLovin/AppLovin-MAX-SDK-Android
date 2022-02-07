@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by Andrew Tian on 9/16/19.
@@ -552,6 +553,14 @@ public class YandexMediationAdapter
         public void onReturnedToApplication()
         {
             log( adFormatLabel + " ad returned to application" );
+        }
+
+        // Note: This method is generally called with a 3 second delay after the ad has been displayed.
+        //       This method is not called for test mode ads.
+        public void onImpression(@Nullable final ImpressionData impressionData)
+        {
+            log( "AdView ad impression tracked" );
+            listener.onAdViewAdDisplayed();
         }
     }
 
