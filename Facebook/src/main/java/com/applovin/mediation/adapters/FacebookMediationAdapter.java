@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -47,6 +48,7 @@ import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdBase;
 import com.facebook.ads.NativeAdListener;
 import com.facebook.ads.NativeAdView;
+import com.facebook.ads.NativeBannerAd;
 import com.facebook.ads.RewardedVideoAd;
 import com.facebook.ads.RewardedVideoAdExtendedListener;
 
@@ -76,17 +78,21 @@ public class FacebookMediationAdapter
     private static InitializationStatus sStatus;
 
     private AdView          mAdView;
-    private NativeAd        mNativeAdViewAd;
+    private NativeAd        mNativeAd;
+    private NativeBannerAd  mNativeBannerAd;
     private InterstitialAd  mInterstitialAd;
     private RewardedVideoAd mRewardedVideoAd;
     private RewardedVideoAd mRewardedInterAd;
 
-    private AtomicBoolean onInterstitialAdHiddenCalled     = new AtomicBoolean();
-    private AtomicBoolean onRewardedAdVideoCompletedCalled = new AtomicBoolean();
-    private AtomicBoolean onRewardedAdHiddenCalled         = new AtomicBoolean();
+    private final AtomicBoolean onInterstitialAdHiddenCalled     = new AtomicBoolean();
+    private final AtomicBoolean onRewardedAdVideoCompletedCalled = new AtomicBoolean();
+    private final AtomicBoolean onRewardedAdHiddenCalled         = new AtomicBoolean();
 
     // Explicit default constructor declaration
-    public FacebookMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
+    public FacebookMediationAdapter(final AppLovinSdk sdk)
+    {
+        super( sdk );
+    }
 
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
@@ -181,11 +187,18 @@ public class FacebookMediationAdapter
             mAdView = null;
         }
 
-        if ( mNativeAdViewAd != null )
+        if ( mNativeAd != null )
         {
-            mNativeAdViewAd.unregisterView();
-            mNativeAdViewAd.destroy();
-            mNativeAdViewAd = null;
+            mNativeAd.unregisterView();
+            mNativeAd.destroy();
+            mNativeAd = null;
+        }
+
+        if ( mNativeBannerAd != null )
+        {
+            mNativeBannerAd.unregisterView();
+            mNativeBannerAd.destroy();
+            mNativeBannerAd = null;
         }
     }
 
@@ -230,7 +243,8 @@ public class FacebookMediationAdapter
 
         if ( mInterstitialAd != null && mInterstitialAd.isAdLoaded() )
         {
-            // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
+            // Check if ad is already expired or invalidated, and do not show ad if that is
+            // the case. You will not get paid to show an invalidated ad.
             if ( !mInterstitialAd.isAdInvalidated() )
             {
                 mInterstitialAd.show();
@@ -454,11 +468,11 @@ public class FacebookMediationAdapter
 
         if ( isNative )
         {
-            mNativeAdViewAd = new NativeAd( activity, placementId );
-            mNativeAdViewAd.loadAd( mNativeAdViewAd.buildLoadAdConfig()
-                                            .withAdListener( new NativeAdViewListener( parameters.getServerParameters(), adFormat, activity, listener ) )
-                                            .withBid( parameters.getBidResponse() )
-                                            .build() );
+            mNativeAd = new NativeAd( getContext( activity ), placementId );
+            mNativeAd.loadAd( mNativeAd.buildLoadAdConfig()
+                                      .withAdListener( new NativeAdViewListener( parameters.getServerParameters(), adFormat, activity, listener ) )
+                                      .withBid( parameters.getBidResponse() )
+                                      .build() );
         }
         else
         {
@@ -470,19 +484,32 @@ public class FacebookMediationAdapter
         }
     }
 
-    // @Override
+    @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
+        final Bundle serverParameters = parameters.getServerParameters();
+        final boolean isNativeBanner = BundleUtils.getBoolean( "is_native_banner", serverParameters );
         final String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading native ad: " + placementId + "..." );
+        log( "Loading native " + ( isNativeBanner ? "banner " : "" ) + "ad: " + placementId + "..." );
 
         updateAdSettings( parameters );
 
-        mNativeAdViewAd = new NativeAd( getContext( activity ), placementId );
-        mNativeAdViewAd.loadAd( mNativeAdViewAd.buildLoadAdConfig()
-                                        .withAdListener( new MaxNativeAdListener( parameters.getServerParameters(), activity, listener ) )
-                                        .withBid( parameters.getBidResponse() )
-                                        .build() );
+        if ( isNativeBanner )
+        {
+            mNativeBannerAd = new NativeBannerAd( getContext( activity ), placementId );
+            mNativeBannerAd.loadAd( mNativeBannerAd.buildLoadAdConfig()
+                                            .withAdListener( new MaxNativeAdListener( parameters.getServerParameters(), activity, listener ) )
+                                            .withBid( parameters.getBidResponse() )
+                                            .build() );
+        }
+        else
+        {
+            mNativeAd = new NativeAd( getContext( activity ), placementId );
+            mNativeAd.loadAd( mNativeAd.buildLoadAdConfig()
+                                      .withAdListener( new MaxNativeAdListener( parameters.getServerParameters(), activity, listener ) )
+                                      .withBid( parameters.getBidResponse() )
+                                      .build() );
+        }
     }
 
     private AdSize toAdSize(final MaxAdFormat adFormat)
@@ -849,8 +876,8 @@ public class FacebookMediationAdapter
                 return;
             }
 
-            // `mNativeAdViewAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill for FB native ads.
-            if ( mNativeAdViewAd == null || mNativeAdViewAd != ad )
+            // `mNativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` may be null if the user cannot get fill for FB native ads.
+            if ( mNativeAd == null || mNativeAd != ad )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: no fill" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
@@ -858,7 +885,7 @@ public class FacebookMediationAdapter
                 return;
             }
 
-            if ( mNativeAdViewAd.isAdInvalidated() )
+            if ( mNativeAd.isAdInvalidated() )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: ad is no longer valid" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.AD_EXPIRED );
@@ -868,7 +895,7 @@ public class FacebookMediationAdapter
 
             if ( adFormat == MaxAdFormat.MREC )
             {
-                View mrecView = NativeAdView.render( activity, mNativeAdViewAd );
+                View mrecView = NativeAdView.render( activity, mNativeAd );
                 listener.onAdViewAdLoaded( mrecView );
             }
             else if ( AppLovinSdk.VERSION_CODE >= 9140000 ) // Native banners and leaders use APIs in newer SDKs
@@ -923,13 +950,13 @@ public class FacebookMediationAdapter
 
                     final MaxNativeAd maxNativeAd = new MaxNativeAd.Builder()
                             .setAdFormat( adFormat )
-                            .setTitle( mNativeAdViewAd.getAdHeadline() )
-                            .setAdvertiser( mNativeAdViewAd.getAdvertiserName() )
-                            .setBody( mNativeAdViewAd.getAdBodyText() )
-                            .setCallToAction( mNativeAdViewAd.getAdCallToAction() )
+                            .setTitle( mNativeAd.getAdHeadline() )
+                            .setAdvertiser( mNativeAd.getAdvertiserName() )
+                            .setBody( mNativeAd.getAdBodyText() )
+                            .setCallToAction( mNativeAd.getAdCallToAction() )
                             .setIconView( iconView )
                             .setMediaView( mediaView )
-                            .setOptionsView( new AdOptionsView( activity, mNativeAdViewAd, null ) )
+                            .setOptionsView( new AdOptionsView( activity, mNativeAd, null ) )
                             .build();
 
                     // Backend will pass down `vertical` as the template to indicate using a vertical native template
@@ -993,17 +1020,9 @@ public class FacebookMediationAdapter
                         clickableViews.add( maxNativeAdView.getBodyTextView() );
                     }
 
-                    try // Facebook's method registerViewForInteraction is causing crashes
-                    {
-                        mNativeAdViewAd.registerViewForInteraction( maxNativeAdView, mediaView, iconView, clickableViews );
+                    mNativeAd.registerViewForInteraction( maxNativeAdView, mediaView, iconView, clickableViews );
 
-                        listener.onAdViewAdLoaded( maxNativeAdView );
-                    }
-                    catch ( Throwable th )
-                    {
-                        log( "Facebook native ad registerViewForInteraction() failed with exception: " + th );
-                        listener.onAdViewAdLoadFailed( MaxAdapterError.UNSPECIFIED );
-                    }
+                    listener.onAdViewAdLoaded( maxNativeAdView );
                 }
             } );
         }
@@ -1040,8 +1059,10 @@ public class FacebookMediationAdapter
                 return;
             }
 
-            final NativeAd nativeAd = mNativeAdViewAd;
-            // `mNativeAdViewAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill for FB native ads.
+            // This listener is used for both native ads and native banner ads
+            final NativeAdBase nativeAd = mNativeAd != null ? mNativeAd : mNativeBannerAd;
+
+            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill for FB native ads.
             if ( nativeAd == null || nativeAd != ad )
             {
                 log( "Native ad failed to load: no fill" );
@@ -1155,21 +1176,34 @@ public class FacebookMediationAdapter
             listener.onNativeAdClicked();
         }
 
-        private void handleNativeAdLoaded(final NativeAd nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Activity activity)
+        private void handleNativeAdLoaded(final NativeAdBase nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Activity activity)
         {
-            final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( new MaxNativeAd.Builder()
-                                                                                     .setAdFormat( MaxAdFormat.NATIVE )
-                                                                                     .setTitle( nativeAd.getAdHeadline() )
-                                                                                     .setAdvertiser( nativeAd.getAdvertiserName() )
-                                                                                     .setBody( nativeAd.getAdBodyText() )
-                                                                                     .setCallToAction( nativeAd.getAdCallToAction() )
-                                                                                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                                                                                     .setMediaView( mediaView )
-                                                                                     .setOptionsView( new AdOptionsView( activity, nativeAd, null ) ) );
+            final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                    .setAdFormat( MaxAdFormat.NATIVE )
+                    .setTitle( nativeAd.getAdHeadline() )
+                    .setAdvertiser( nativeAd.getAdvertiserName() )
+                    .setBody( nativeAd.getAdBodyText() )
+                    .setCallToAction( nativeAd.getAdCallToAction() )
+                    .setOptionsView( new AdOptionsView( activity, nativeAd, null ) );
+
+            if ( nativeAd instanceof NativeBannerAd )
+            {
+                // Facebook true native banners do not provide media views so use icon asset in place of it
+                ImageView mediaViewImageView = new ImageView( activity );
+                mediaViewImageView.setImageDrawable( iconDrawable );
+                builder.setMediaView( mediaViewImageView );
+            }
+            else
+            {
+                builder.setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
+                        .setMediaView( mediaView );
+            }
+
+            final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
         }
 
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)
+        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAdBase nativeAd)
         {
             if ( isTemplateAd )
             {
@@ -1195,7 +1229,7 @@ public class FacebookMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            NativeAd nativeAd = mNativeAdViewAd;
+            final NativeAdBase nativeAd = mNativeAd != null ? mNativeAd : mNativeBannerAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
@@ -1228,14 +1262,21 @@ public class FacebookMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            try // `registerViewForInteraction` may throw
+            runOnUiThread( new Runnable()
             {
-                nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) getMediaView(), (MediaView) getIconView(), clickableViews );
-            }
-            catch ( Throwable th )
-            {
-                log( "Facebook native ad registerViewForInteraction() failed", th );
-            }
+                @Override
+                public void run()
+                {
+                    if ( nativeAd instanceof NativeBannerAd )
+                    {
+                        ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, (ImageView) getMediaView(), clickableViews );
+                    }
+                    else
+                    {
+                        ( (NativeAd) nativeAd ).registerViewForInteraction( maxNativeAdView, (MediaView) getMediaView(), (MediaView) getIconView(), clickableViews );
+                    }
+                }
+            } );
         }
     }
 }

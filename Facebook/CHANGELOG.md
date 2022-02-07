@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.9
+* Add support for true [native banner ads](https://developers.facebook.com/docs/audience-network/guides/ad-formats/native-banner/), which can be enabled on your MAX dashboard.
+
 ## 6.8.0.8
 * Fix `android.content.Context android.content.Context.getApplicationContext()` NPE when initializing SDK with a non-Activity context on v11.1.0.
 
