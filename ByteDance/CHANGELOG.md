@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.5.1.0
+* Certified with ByteDance SDK 4.2.5.1.
+
 ## 4.1.1.9.3
 * Support for null `Activity` on init.
 
