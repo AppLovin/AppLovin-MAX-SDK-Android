@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.0.11.0
+* Certified with Mintegral SDK 16.0.11.
+
 ## 15.8.1.4
 * Support for null `Activity` on init.
 
