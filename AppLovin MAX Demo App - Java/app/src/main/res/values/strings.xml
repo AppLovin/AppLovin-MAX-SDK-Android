@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">AppLovin Demo App</string>
-    <string name="action_settings">Settings</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
     <string name="activity_rewarded">Rewarded Ads</string>
@@ -8,8 +7,8 @@
     <string name="activity_layout_editor_banners">Layout Editor Banner Ads</string>
     <string name="activity_layout_editor_mrecs">Layout Editor MREC Ads</string>
     <string name="activity_programmatic_mrecs">Programmatic MREC Ads</string>
-    <string name="activity_template_natives">Templates API</string>
-    <string name="activity_manual_natives">Manual API</string>
+    <string name="activity_template_native_ad">Templates API</string>
+    <string name="activity_manual_native_ad">Manual API</string>
     
     <string name="applovin"><b>App</b>Lovin</string>
     

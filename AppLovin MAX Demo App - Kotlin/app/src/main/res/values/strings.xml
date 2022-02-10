@@ -7,8 +7,8 @@
     <string name="activity_layout_editor_banners">Layout Editor Banners</string>
     <string name="activity_layout_editor_mrecs">Layout Editor MRECs</string>
     <string name="activity_programmatic_mrecs">Programmatic MRECs</string>
-    <string name="activity_template_natives">Templates API</string>
-    <string name="activity_manual_natives">Manual API</string>
+    <string name="activity_template_native_ad">Templates API</string>
+    <string name="activity_manual_native_ad">Manual API</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
     

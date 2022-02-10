@@ -31,7 +31,7 @@ public class TemplateNativeAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_native_template );
-        setTitle( R.string.activity_template_natives );
+        setTitle( R.string.activity_template_native_ad );
 
         nativeAdLayout = findViewById( R.id.native_ad_layout );
         setupCallbacksRecyclerView();

@@ -32,7 +32,7 @@ public class ManualNativeAdActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_native_manual );
-        setTitle( R.string.activity_manual_natives );
+        setTitle( R.string.activity_manual_native_ad );
 
         nativeAdLayout = findViewById( R.id.native_ad_layout );
         setupCallbacksRecyclerView();

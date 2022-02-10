@@ -26,7 +26,7 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_native_manual)
-        setTitle(R.string.activity_manual_natives)
+        setTitle(R.string.activity_manual_native_ad)
 
         nativeAdLayout = findViewById(R.id.native_ad_layout)
         setupCallbacksRecyclerView()
