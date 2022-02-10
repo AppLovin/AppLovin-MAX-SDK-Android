@@ -95,6 +95,9 @@ public class ManualNativeAdActivity
             nativeAdLoader.destroy( nativeAd );
         }
 
+        // Destroy the actual loader itself
+        nativeAdLoader.destroy();
+
         super.onDestroy();
     }
 

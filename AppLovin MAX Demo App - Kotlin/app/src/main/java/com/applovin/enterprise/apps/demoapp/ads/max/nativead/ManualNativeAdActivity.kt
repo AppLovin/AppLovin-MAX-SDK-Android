@@ -77,6 +77,10 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
             // Call destroy on the native ad from any native ad loader.
             nativeAdLoader.destroy(nativeAd)
         }
+
+        // Destroy the actual loader itself
+        nativeAdLoader.destroy()
+
         super.onDestroy()
     }
 
