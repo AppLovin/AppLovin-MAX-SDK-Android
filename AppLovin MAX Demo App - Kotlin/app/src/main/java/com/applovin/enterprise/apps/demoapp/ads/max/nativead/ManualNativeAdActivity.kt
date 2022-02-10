@@ -16,7 +16,7 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 
-class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
+class ManualNativeAdActivity : BaseAdActivity() {
     private lateinit var nativeAdLoader: MaxNativeAdLoader
     private lateinit var nativeAdView: MaxNativeAdView
     private lateinit var nativeAdLayout: FrameLayout
@@ -43,7 +43,19 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
         nativeAdView = MaxNativeAdView(binder, this)
 
         nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
-        nativeAdLoader.setRevenueListener(this)
+        nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
+            override fun onAdRevenuePaid(ad: MaxAd?) {
+                logCallback()
+
+                val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
+                adjustAdRevenue.setRevenue(ad?.revenue, "USD")
+                adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
+                adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
+                adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+
+                Adjust.trackAdRevenue(adjustAdRevenue)
+            }
+        })
         nativeAdLoader.setNativeAdListener(object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(nativeAdView: MaxNativeAdView, ad: MaxAd) {
                 logAnonymousCallback()
@@ -87,20 +99,4 @@ class ManualNativeAdActivity : BaseAdActivity(), MaxAdRevenueListener {
     fun showAd(view: View) {
         nativeAdLoader.loadAd(nativeAdView)
     }
-
-    //region MAX Ad Revenue Listener
-
-    override fun onAdRevenuePaid(ad: MaxAd?) {
-        logCallback()
-
-        val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
-        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
-        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
-        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
-        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
-
-        Adjust.trackAdRevenue(adjustAdRevenue)
-    }
-
-    //endregion
 }

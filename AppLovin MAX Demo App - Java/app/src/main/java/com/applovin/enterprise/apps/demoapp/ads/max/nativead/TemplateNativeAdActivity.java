@@ -10,7 +10,6 @@ import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
-import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
@@ -18,7 +17,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 
 public class TemplateNativeAdActivity
         extends BaseAdActivity
-        implements MaxAdRevenueListener
 {
     // Map of ad unit IDs to native ad loaders
     private MaxNativeAdLoader nativeAdLoader;
@@ -37,7 +35,17 @@ public class TemplateNativeAdActivity
         setupCallbacksRecyclerView();
 
         nativeAdLoader = new MaxNativeAdLoader( "YOUR_AD_UNIT_ID", this );
-        nativeAdLoader.setRevenueListener( this );
+        nativeAdLoader.setRevenueListener( ad -> {
+            logAnonymousCallback();
+
+            AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+            adjustAdRevenue.setRevenue( ad.getRevenue(), "USD" );
+            adjustAdRevenue.setAdRevenueNetwork( ad.getNetworkName() );
+            adjustAdRevenue.setAdRevenueUnit( ad.getAdUnitId() );
+            adjustAdRevenue.setAdRevenuePlacement( ad.getPlacement() );
+
+            Adjust.trackAdRevenue( adjustAdRevenue );
+        } );
         nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
         {
             @Override
@@ -93,22 +101,4 @@ public class TemplateNativeAdActivity
     {
         nativeAdLoader.loadAd();
     }
-
-    //region MAX Ad Revenue Listener
-
-    @Override
-    public void onAdRevenuePaid(final MaxAd ad)
-    {
-        logCallback();
-
-        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
-        adjustAdRevenue.setRevenue( ad.getRevenue(), "USD" );
-        adjustAdRevenue.setAdRevenueNetwork( ad.getNetworkName() );
-        adjustAdRevenue.setAdRevenueUnit( ad.getAdUnitId() );
-        adjustAdRevenue.setAdRevenuePlacement( ad.getPlacement() );
-
-        Adjust.trackAdRevenue( adjustAdRevenue );
-    }
-
-    //endregion
 }
