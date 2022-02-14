@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.2.0.0.0
+* Certified with IronSource SDK 7.2.0.
+
 ## 7.1.14.0.2
 * Support for null `Activity` on init.
 
