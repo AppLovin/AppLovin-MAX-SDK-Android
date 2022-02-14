@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.3.0.3
+* Fix case where new ad loader might not be used when passed in.
+
 ## 9.3.0.2
 * Add support for updating cached ad loaders with new ones passed in via local parameters.
 
