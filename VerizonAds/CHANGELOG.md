@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0.5
+* Fix native ad support.
+
 ## 1.14.0.4
 * Support for null `Activity` on init.
 

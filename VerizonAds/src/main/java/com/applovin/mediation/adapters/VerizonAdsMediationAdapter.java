@@ -2,6 +2,8 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -43,15 +45,17 @@ import com.verizon.ads.interstitialplacement.InterstitialAdFactory;
 import com.verizon.ads.nativeplacement.NativeAd;
 import com.verizon.ads.nativeplacement.NativeAdFactory;
 import com.verizon.ads.verizonnativecontroller.NativeImageComponent;
-import com.verizon.ads.verizonnativecontroller.NativeTextComponent;
 import com.verizon.ads.verizonnativecontroller.NativeVideoComponent;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by santoshbagadi on 2/27/19.
@@ -60,6 +64,8 @@ public class VerizonAdsMediationAdapter
         extends MediationAdapterBase
         implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
 {
+    private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
+
     // Server parameters
     private static final String PARAMETER_SITE_ID = "site_id";
 
@@ -296,7 +302,7 @@ public class VerizonAdsMediationAdapter
 
         Bundle serverParameters = parameters.getServerParameters();
         NativeAdListener nativeAdListener = new NativeAdListener( serverParameters, activity, listener );
-        nativeAdFactory = new NativeAdFactory( activity, placementId, new String[] { "inline" }, nativeAdListener );
+        nativeAdFactory = new NativeAdFactory( activity, placementId, new String[] { "simpleImage", "simpleVideo" }, nativeAdListener );
 
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, bidResponse );
         nativeAdFactory.setRequestMetaData( requestMetadata );
@@ -815,23 +821,54 @@ public class VerizonAdsMediationAdapter
                 @Override
                 public void run()
                 {
-                    NativeTextComponent title = (NativeTextComponent) nativeAd.getComponent( "title" );
-                    NativeTextComponent body = (NativeTextComponent) nativeAd.getComponent( "body" );
-                    NativeImageComponent icon = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
-                    NativeTextComponent callToAction = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
-                    NativeImageComponent mediaImage = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
-                    NativeVideoComponent mediaVideo = (NativeVideoComponent) nativeAd.getComponent( "video" );
-                    View mediaView = mediaVideo.getView( activity ) != null ? mediaVideo.getView( activity ) : mediaImage.getView( activity );
+                    String title = null;
+                    String disclaimer = null;
+                    String body = null;
+                    String callToAction = null;
+                    try
+                    {
+                        // Verizon's `getText()` getter returns null, so we need reflection to get the text
+                        Class<?> verizonNativeTextComponentClass = Class.forName( "com.verizon.ads.verizonnativecontroller.VerizonNativeTextComponent" );
+                        Field field = verizonNativeTextComponentClass.getDeclaredField( "text" );
+                        field.setAccessible( true );
+
+                        Object titleObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "title" ) );
+                        title = (String) field.get( titleObject );
+
+                        Object disclaimerObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "disclaimer" ) );
+                        disclaimer = (String) field.get( disclaimerObject );
+
+                        Object bodyObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "body" ) );
+                        body = (String) field.get( bodyObject );
+
+                        Object callToActionObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "callToAction" ) );
+                        callToAction = (String) field.get( callToActionObject );
+                    }
+                    catch ( Exception ignored ) {}
+
+                    final NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
+                    NativeImageComponent mediaImageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
+                    NativeVideoComponent mediaVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
+
+                    View mediaView = null;
+                    if ( mediaVideoComponent != null && mediaVideoComponent.getView( activity ) != null )
+                    {
+                        mediaView = mediaVideoComponent.getView( activity );
+                    }
+                    else if ( mediaImageComponent != null && mediaImageComponent.getView( activity ) != null )
+                    {
+                        mediaView = mediaImageComponent.getView( activity );
+                    }
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
                     boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
                     boolean missingRequiredAssets = false;
-                    if ( isTemplateAd && TextUtils.isEmpty( title.getText() ) )
+                    if ( isTemplateAd && TextUtils.isEmpty( title ) )
                     {
                         missingRequiredAssets = true;
                     }
-                    else if ( TextUtils.isEmpty( title.getText() )
-                            || TextUtils.isEmpty( callToAction.getText() )
+                    else if ( TextUtils.isEmpty( title )
+                            || TextUtils.isEmpty( callToAction )
                             || mediaView == null )
                     {
                         missingRequiredAssets = true;
@@ -847,23 +884,54 @@ public class VerizonAdsMediationAdapter
 
                     VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
 
-                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                            .setAdFormat( MaxAdFormat.NATIVE )
-                            .setTitle( title.getText() )
-                            .setBody( body.getText() )
-                            .setCallToAction( callToAction.getText() )
-                            .setIconView( icon.getView( activity ) )
-                            .setMediaView( mediaView );
-                    MaxNativeAd maxNativeAd = new MaxVerizonNativeAd( builder );
-
-                    CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
-                    Bundle extraInfo = new Bundle( 1 );
-                    if ( creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
+                    final String finalTitle = title;
+                    final String finalDisclaimer = disclaimer;
+                    final String finalBody = body;
+                    final String finalCallToAction = callToAction;
+                    final View finalMediaView = mediaView;
+                    getCachingExecutorService().submit( new Runnable()
                     {
-                        extraInfo.putString( "creative_id", creativeInfo.getCreativeId() );
-                    }
+                        @Override
+                        public void run()
+                        {
+                            Uri iconUri = iconComponent.getUri();
+                            Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUri.toString(), activity.getResources() );
+                            MaxNativeAd.MaxNativeAdImage iconImage = null;
+                            try
+                            {
+                                int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
+                                Drawable iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
 
-                    listener.onNativeAdLoaded( maxNativeAd, extraInfo );
+                                if ( iconDrawable != null )
+                                {
+                                    iconImage = new MaxNativeAd.MaxNativeAdImage( iconDrawable );
+                                }
+                            }
+                            catch ( Throwable th )
+                            {
+                                log( "Failed to fetch icon image from URL: " + iconUri, th );
+                            }
+
+                            MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                                    .setAdFormat( MaxAdFormat.NATIVE )
+                                    .setTitle( finalTitle )
+                                    .setAdvertiser( finalDisclaimer )
+                                    .setBody( finalBody )
+                                    .setCallToAction( finalCallToAction )
+                                    .setIcon( iconImage )
+                                    .setMediaView( finalMediaView );
+                            MaxNativeAd maxNativeAd = new MaxVerizonNativeAd( listener, builder );
+
+                            CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
+                            Bundle extraInfo = new Bundle( 1 );
+                            if ( creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
+                            {
+                                extraInfo.putString( "creative_id", creativeInfo.getCreativeId() );
+                            }
+
+                            listener.onNativeAdLoaded( maxNativeAd, extraInfo );
+                        }
+                    } );
                 }
             } );
         }
@@ -872,7 +940,7 @@ public class VerizonAdsMediationAdapter
         public void onError(final NativeAdFactory nativeAdFactory, final ErrorInfo errorInfo)
         {
             MaxAdapterError adapterError = toMaxError( errorInfo );
-            log( "Native ad (" + nativeAdFactory.getPlacementId() + ") failed to load with error: " + adapterError );
+            log( "Native ad factory (" + nativeAdFactory.getPlacementId() + ") failed to load with error: " + adapterError );
             listener.onNativeAdLoadFailed( adapterError );
         }
 
@@ -882,12 +950,6 @@ public class VerizonAdsMediationAdapter
             MaxAdapterError adapterError = toMaxError( errorInfo );
             log( "Native ad (" + nativeAd.getPlacementId() + ") failed to load with error: " + adapterError );
             listener.onNativeAdLoadFailed( adapterError );
-        }
-
-        @Override
-        public void onClosed(final NativeAd nativeAd)
-        {
-            log( "Native ad closed" );
         }
 
         @Override
@@ -901,6 +963,12 @@ public class VerizonAdsMediationAdapter
         public void onAdLeftApplication(final NativeAd nativeAd)
         {
             log( "Native ad left application" );
+        }
+
+        @Override
+        public void onClosed(final NativeAd nativeAd)
+        {
+            log( "Native ad closed" );
         }
 
         @Override
@@ -918,7 +986,14 @@ public class VerizonAdsMediationAdapter
     private class MaxVerizonNativeAd
             extends MaxNativeAd
     {
-        private MaxVerizonNativeAd(final Builder builder) { super( builder ); }
+        private final MaxNativeAdAdapterListener listener;
+
+        private MaxVerizonNativeAd(final MaxNativeAdAdapterListener listener, final Builder builder)
+        {
+            super( builder );
+
+            this.listener = listener;
+        }
 
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView nativeAdView)
@@ -929,11 +1004,32 @@ public class VerizonAdsMediationAdapter
                 return;
             }
 
-            boolean registered = nativeAd.registerContainerView( nativeAdView );
-            if ( !registered )
+            final View.OnClickListener clickListener = new View.OnClickListener()
             {
-                e( "Failed to register native ad view for interaction." );
-            }
+                @Override
+                public void onClick(final View view)
+                {
+                    log( "Native ad clicked from click listener" );
+
+                    nativeAd.invokeDefaultAction( view.getContext() );
+                    listener.onNativeAdClicked();
+                }
+            };
+
+            // Verizon's click registration methods don't work with views when recycling is involved
+            // so they told us to manually invoke it as AdMob does
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if ( nativeAdView.getTitleTextView() != null ) nativeAdView.getTitleTextView().setOnClickListener( clickListener );
+                    if ( nativeAdView.getAdvertiserTextView() != null ) nativeAdView.getAdvertiserTextView().setOnClickListener( clickListener );
+                    if ( nativeAdView.getBodyTextView() != null ) nativeAdView.getBodyTextView().setOnClickListener( clickListener );
+                    if ( nativeAdView.getIconImageView() != null ) nativeAdView.getIconImageView().setOnClickListener( clickListener );
+                    if ( nativeAdView.getCallToActionButton() != null ) nativeAdView.getCallToActionButton().setOnClickListener( clickListener );
+                }
+            } );
         }
     }
     //endregion
