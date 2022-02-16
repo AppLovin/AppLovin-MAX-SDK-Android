@@ -7,7 +7,7 @@ private val versionMajor = 13
 private val versionMinor = 4
 private val versionPatch = 49
 private val versionBuild = 301
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000000) + (versionMinor * 10000000) + (versionPatch * 100000) + (versionBuild * 100) + versionAdapterPatch)
@@ -35,7 +35,6 @@ publishing {
             //The publication doesn't know about our dependencies, so we have to manually add them to the pom
             pom.withXml {
                 asNode().apply {
-
                     appendNode("name", libraryArtifactId)
                     appendNode("description", "Huawei adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
@@ -55,24 +54,22 @@ publishing {
                             appendNode("url", "https://www.applovin.com")
                         }
                     // Add Huawei to list of dependencies.
-                    appendNode("dependencies")
-                        .appendNode("dependency").apply {
-
+                    appendNode("dependencies").apply  {
+                        appendNode("dependency").apply {
                             appendNode("groupId", "com.huawei.hms")
                             appendNode("artifactId", "ads")
                             appendNode("version", libraryVersions["huawei"])
                             appendNode("type", "aar")
                             appendNode("scope", "compile")
                         }
-                    appendNode("dependencies")
-                        .appendNode("dependency").apply {
-
+                        appendNode("dependency").apply {
                             appendNode("groupId", "com.huawei.hms")
                             appendNode("artifactId", "ads-consent")
                             appendNode("version", libraryVersions["huawei"])
                             appendNode("type", "aar")
                             appendNode("scope", "compile")
                         }
+                    }
                 }
             }
         }

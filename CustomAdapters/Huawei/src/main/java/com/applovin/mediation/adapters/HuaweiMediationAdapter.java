@@ -72,8 +72,11 @@ public class HuaweiMediationAdapter
         {
             d( "Initializing Huawei SDK..." );
 
-            updateConsentStatus( parameters, activity.getApplicationContext() );
-            HwAds.init( activity.getApplicationContext() );
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+            updateConsentStatus( parameters, context );
+            HwAds.init( context );
         }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
