@@ -191,6 +191,15 @@ public class ByteDanceMediationAdapter
                 builder.coppa( isAgeRestrictedUser ? 1 : 0 );
             }
 
+            if ( AppLovinSdk.VERSION_CODE >= 91100 )
+            {
+                Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+                if ( isDoNotSell != null )
+                {
+                    builder.setCCPA( isDoNotSell ? 1 : 0 );
+                }
+            }
+
             TTAdConfig adConfig = builder.appId( appId )
                     .appName( serverParameters.getString( "app_name", "Default App Name" ) )
                     .debug( parameters.isTesting() )
@@ -913,6 +922,7 @@ public class ByteDanceMediationAdapter
                                     .setCallToAction( nativeAdViewAd.getButtonText() )
                                     .setIcon( icon )
                                     .setMediaView( mediaView )
+                                    .setOptionsView( nativeAd.getAdLogoView() )
                                     .build();
 
                             String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -1187,7 +1197,8 @@ public class ByteDanceMediationAdapter
                                     .setBody( nativeAd.getDescription() )
                                     .setCallToAction( nativeAd.getButtonText() )
                                     .setIcon( icon )
-                                    .setMediaView( mediaView );
+                                    .setMediaView( mediaView )
+                                    .setOptionsView( nativeAd.getAdLogoView() );
                             MaxNativeAd maxNativeAd = new MaxByteDanceNativeAd( builder );
 
                             log( "Native ad fully loaded: " + codeId );
