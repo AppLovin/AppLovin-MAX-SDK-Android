@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.10
+* Fix icon rendering for manual native banners. 
+
 ## 6.8.0.9
 * Add support for true [native banner ads](https://developers.facebook.com/docs/audience-network/guides/ad-formats/native-banner/), which can be enabled on your MAX dashboard.
 

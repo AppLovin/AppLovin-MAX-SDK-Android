@@ -1184,6 +1184,7 @@ public class FacebookMediationAdapter
                     .setAdvertiser( nativeAd.getAdvertiserName() )
                     .setBody( nativeAd.getAdBodyText() )
                     .setCallToAction( nativeAd.getAdCallToAction() )
+                    .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                     .setOptionsView( new AdOptionsView( activity, nativeAd, null ) );
 
             if ( nativeAd instanceof NativeBannerAd )
@@ -1195,8 +1196,7 @@ public class FacebookMediationAdapter
             }
             else
             {
-                builder.setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                        .setMediaView( mediaView );
+                builder.setMediaView( mediaView );
             }
 
             final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
