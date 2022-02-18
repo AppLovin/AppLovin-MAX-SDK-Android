@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.11
+* Fix icon click registration for manual native banners.
+
 ## 6.8.0.10
 * Fix icon rendering for manual native banners. 
 
