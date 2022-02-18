@@ -12,6 +12,7 @@ import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.tappx.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
@@ -28,7 +29,7 @@ import com.tappx.sdk.android.TappxRewardedVideoListener;
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 
 /**
- * This is a mediation adapterWrapper for Tappx
+ * This is a mediation adapter for Tappx
  * <p>
  * Created by Joe Chen on January 19 2022
  */
@@ -103,10 +104,8 @@ public class TappxMediationAdapter
                 interstitialAd = new TappxInterstitial( getApplicationContext(), appKey );
                 interstitialAd.setListener( new InterstitialListener( listener ) );
 
-                AdRequest adRequest = new AdRequest();
-                adRequest.useTestAds( parameters.isTesting() );
 
-                interstitialAd.loadAd( adRequest );
+                interstitialAd.loadAd( createAdRequest( parameters ) );
             }
         } );
     }
@@ -151,10 +150,8 @@ public class TappxMediationAdapter
                 rewardedAd = new TappxRewardedVideo( getApplicationContext(), appKey );
                 rewardedAd.setListener( new RewardedAdListener( listener ) );
 
-                AdRequest adRequest = new AdRequest();
-                adRequest.useTestAds( parameters.isTesting() );
 
-                rewardedAd.loadAd( adRequest );
+                rewardedAd.loadAd( createAdRequest( parameters ) );
             }
         } );
     }
@@ -205,14 +202,20 @@ public class TappxMediationAdapter
                 adView.setAdSize( toAdSize( adFormat ) );
                 adView.setEnableAutoRefresh( false );
 
-                AdRequest adRequest = new AdRequest();
-                adRequest.useTestAds( parameters.isTesting() );
-
-                adView.loadAd( adRequest );
+                adView.loadAd( createAdRequest( parameters ) );
             }
         } );
     }
     //endregion
+
+    private AdRequest createAdRequest(MaxAdapterParameters parameters)
+    {
+        AdRequest adRequest = new AdRequest();
+        adRequest.mediator( "applovin" );
+        adRequest.useTestAds( parameters.isTesting() );
+
+        return adRequest;
+    }
 
     private static MaxAdapterError toMaxError(final TappxAdError tappxAdError)
     {
