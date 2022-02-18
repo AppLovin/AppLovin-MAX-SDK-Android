@@ -104,6 +104,7 @@ public class TappxMediationAdapter
                 interstitialAd.setListener( new InterstitialListener( listener ) );
 
                 AdRequest adRequest = new AdRequest();
+                adRequest.mediator("applovin");
                 adRequest.useTestAds( parameters.isTesting() );
 
                 interstitialAd.loadAd( adRequest );
@@ -152,6 +153,7 @@ public class TappxMediationAdapter
                 rewardedAd.setListener( new RewardedAdListener( listener ) );
 
                 AdRequest adRequest = new AdRequest();
+                adRequest.mediator("applovin");
                 adRequest.useTestAds( parameters.isTesting() );
 
                 rewardedAd.loadAd( adRequest );
@@ -206,6 +208,7 @@ public class TappxMediationAdapter
                 adView.setEnableAutoRefresh( false );
 
                 AdRequest adRequest = new AdRequest();
+                adRequest.mediator("applovin");
                 adRequest.useTestAds( parameters.isTesting() );
 
                 adView.loadAd( adRequest );
