@@ -830,12 +830,23 @@ public class GoogleAdManagerMediationAdapter
         {
             log( adFormat.getLabel() + " ad loaded: " + placementId );
 
-            ResponseInfo responseInfo = adView.getResponseInfo();
-            String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( responseId ) )
+            if ( AppLovinSdk.VERSION_CODE >= 9150000 )
             {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", responseId );
+                Bundle extraInfo = new Bundle( 3 );
+
+                ResponseInfo responseInfo = adView.getResponseInfo();
+                String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
+                if ( AppLovinSdkUtils.isValidString( responseId ) )
+                {
+                    extraInfo.putString( "creative_id", responseId );
+                }
+
+                AdSize adSize = adView.getAdSize();
+                if ( adSize != null )
+                {
+                    extraInfo.putInt( "ad_width", adSize.getWidth() );
+                    extraInfo.putInt( "ad_height", adSize.getHeight() );
+                }
 
                 listener.onAdViewAdLoaded( adView, extraInfo );
             }
