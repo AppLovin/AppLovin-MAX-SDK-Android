@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -212,7 +213,15 @@ public class TappxMediationAdapter
     {
         AdRequest adRequest = new AdRequest();
         adRequest.mediator( "applovin" );
-        adRequest.useTestAds( parameters.isTesting() );
+
+        boolean isTesting = parameters.isTesting() || parameters.getCustomParameters().getBoolean( "is_testing" );
+        adRequest.useTestAds( isTesting );
+
+        String endpoint = parameters.getCustomParameters().getString( "endpoint" );
+        if ( !TextUtils.isEmpty( endpoint ) )
+        {
+            adRequest.setEndpoint( endpoint );
+        }
 
         return adRequest;
     }
