@@ -208,11 +208,19 @@ public class TappxMediationAdapter
     }
     //endregion
 
-    private AdRequest createAdRequest(MaxAdapterParameters parameters)
+    private AdRequest createAdRequest(MaxAdapterResponseParameters parameters)
     {
+        Bundle CustomData = parameters.getCustomParameters();
+
         AdRequest adRequest = new AdRequest();
-        adRequest.mediator( "applovin" );
-        adRequest.useTestAds( parameters.isTesting() );
+        adRequest.mediator( "applovin" );        
+
+        if(CustomData.getString("endpoint")!=null){
+            adRequest.setEndpoint(CustomData.getString("endpoint"));
+        }
+        if(CustomData.getInt("test")==1 || parameters.isTesting()){
+            adRequest.useTestAds(true);
+        }
 
         return adRequest;
     }
