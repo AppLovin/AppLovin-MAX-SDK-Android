@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
@@ -214,7 +215,8 @@ public class TappxMediationAdapter
         AdRequest adRequest = new AdRequest();
         adRequest.mediator( "applovin" );
 
-        boolean isTesting = parameters.isTesting() || parameters.getCustomParameters().getBoolean( "is_testing" );
+        Bundle customParameters = parameters.getCustomParameters();
+        boolean isTesting = parameters.isTesting() || customParameters.getBoolean( "is_testing" ) || customParameters.getBoolean( "test" );
         adRequest.useTestAds( isTesting );
 
         String endpoint = parameters.getCustomParameters().getString( "endpoint" );
