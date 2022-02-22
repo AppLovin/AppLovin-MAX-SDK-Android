@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.5.0.7
+* Initialize Google `MobileAds` SDK.
+
 ## 20.5.0.6
 * Add support for sending ad size information for adview ads. This value can be retrieved in the `onAdLoaded()` callback using `getSize()` from `MaxAd.java` available in MAX SDK v11.2.0.
 

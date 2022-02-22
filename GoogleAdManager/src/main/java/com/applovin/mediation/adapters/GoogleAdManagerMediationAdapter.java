@@ -67,6 +67,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 
@@ -79,6 +80,8 @@ public class GoogleAdManagerMediationAdapter
         extends MediationAdapterBase
         implements MaxInterstitialAdapter, MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
+    private static final AtomicBoolean initialized = new AtomicBoolean();
+
     private AdManagerInterstitialAd interstitialAd;
     private RewardedInterstitialAd  rewardedInterstitialAd;
     private RewardedAd              rewardedAd;
@@ -94,10 +97,18 @@ public class GoogleAdManagerMediationAdapter
 
     //region MaxAdapter methods
 
+    @SuppressLint("MissingPermission")
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
         log( "Initializing Google Ad Manager SDK..." );
+
+        if ( initialized.compareAndSet( false, true ) )
+        {
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+            MobileAds.initialize( context );
+        }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
