@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.0
+* Certified with Google SDK 20.6.0.
+
 ## 20.5.0.9
 * Add support for sending ad size information for adview ads. This value can be retrieved in the `onAdLoaded()` callback using `getSize()` from `MaxAd.java` available in MAX SDK v11.2.0.
 
