@@ -354,6 +354,19 @@ public class VerizonAdsMediationAdapter
             builder.setGdprConsent( consentString );
         }
 
+        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        {
+            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+            if ( isDoNotSell != null )
+            {
+                builder.setCcpaPrivacy( isDoNotSell ? "1YY-" : "1YN-" );
+            }
+            else
+            {
+                builder.setCcpaPrivacy( "1---" );
+            }
+        }
+
         VASAds.setDataPrivacy( builder.build() );
     }
 

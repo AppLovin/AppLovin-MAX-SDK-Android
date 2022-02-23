@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0.6
+* Add support for IAB's CCPA Privacy String.
+
 ## 1.14.0.5
 * Fix native ad support.
 
