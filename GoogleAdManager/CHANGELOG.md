@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.0
+* Certified with GoogleAdManager SDK 20.6.0.
+
 ## 20.5.0.7
 * Initialize Google `MobileAds` SDK.
 
