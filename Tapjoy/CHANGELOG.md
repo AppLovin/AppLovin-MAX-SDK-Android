@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.9.0.3
+* Add support for IAB's CCPA Privacy String.
+
 ## 12.9.0.2
 * Support for null `Activity` on init.
 

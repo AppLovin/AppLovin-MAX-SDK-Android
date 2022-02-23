@@ -250,6 +250,19 @@ public class TapjoyMediationAdapter
             tjPrivacyPolicy.setSubjectToGDPR( false );
         }
 
+        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        {
+            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+            if ( isDoNotSell != null )
+            {
+                tjPrivacyPolicy.setUSPrivacy( isDoNotSell ? "1YY-" : "1YN-" );
+            }
+            else
+            {
+                tjPrivacyPolicy.setUSPrivacy( "1---" );
+            }
+        }
+
         Tapjoy.setActivity( activity );
     }
 
