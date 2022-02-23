@@ -97,6 +97,34 @@ public class SmaatoMediationAdapter
     //region MaxAdapter
 
     @Override
+    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    {
+        if ( INITIALIZED.compareAndSet( false, true ) )
+        {
+            final String pubId = parameters.getServerParameters().getString( "pub_id", "" );
+            log( "Initializing Smaato SDK with publisher id: " + pubId + "..." );
+
+            final Config config = Config.builder()
+                    .setLogLevel( parameters.isTesting() ? LogLevel.DEBUG : LogLevel.ERROR )
+                    .setHttpsOnly( parameters.getServerParameters().getBoolean( "https_only" ) )
+                    .build();
+
+            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+            SmaatoSdk.init( application, config, pubId );
+
+            // Call all other APIs after `SmaatoSdk.init(...)`
+            updateAgeRestrictedUser( parameters );
+
+            // NOTE: This does not work atm
+            updateLocationCollectionEnabled( parameters );
+        }
+
+        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
+    }
+
+    @Override
     public String getSdkVersion()
     {
         return SmaatoSdk.getVersion();
@@ -134,31 +162,6 @@ public class SmaatoMediationAdapter
         ROUTER.removeAdapter( this, placementId );
     }
 
-    @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
-    {
-        if ( INITIALIZED.compareAndSet( false, true ) )
-        {
-            final String pubId = parameters.getServerParameters().getString( "pub_id", "" );
-            log( "Initializing Smaato SDK with publisher id: " + pubId + "..." );
-
-            final Config config = Config.builder()
-                    .setLogLevel( parameters.isTesting() ? LogLevel.DEBUG : LogLevel.ERROR )
-                    .setHttpsOnly( parameters.getServerParameters().getBoolean( "https_only" ) )
-                    .build();
-
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
-
-            SmaatoSdk.init( application, config, pubId );
-
-            // Call all other APIs after `SmaatoSdk.init(...)`
-            updateAgeRestrictedUser( parameters );
-        }
-
-        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
-    }
-
     //endregion
 
     //region MaxAdViewAdapter
@@ -171,6 +174,7 @@ public class SmaatoMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad for placement: " + placementId + "..." );
 
         updateAgeRestrictedUser( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         adView = new BannerView( activity );
         adView.setAutoReloadInterval( AutoReloadInterval.DISABLED );
@@ -257,6 +261,7 @@ public class SmaatoMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
         updateAgeRestrictedUser( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         ROUTER.addInterstitialAdapter( this, listener, placementId );
 
@@ -320,6 +325,7 @@ public class SmaatoMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
 
         updateAgeRestrictedUser( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         ROUTER.addRewardedAdapter( this, listener, placementId );
 
@@ -386,6 +392,7 @@ public class SmaatoMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
 
         updateAgeRestrictedUser( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         NativeAdRequest nativeAdRequest = NativeAdRequest.builder()
                 .adSpaceId( placementId )
@@ -398,6 +405,21 @@ public class SmaatoMediationAdapter
     //endregion
 
     //region Helper Methods
+
+    // TODO: Add local params support on init
+    private void updateLocationCollectionEnabled(final MaxAdapterParameters parameters)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+            if ( isLocationCollectionEnabledObj instanceof Boolean )
+            {
+                // NOTE: According to docs - this is disabled by default
+                SmaatoSdk.setGPSEnabled( (boolean) isLocationCollectionEnabledObj );
+            }
+        }
+    }
 
     private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
     {

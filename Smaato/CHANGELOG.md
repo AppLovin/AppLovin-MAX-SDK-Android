@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.6.7.3
+* Add support for passing local parameter "is_location_collection_enabled" to set `SmaatoSdk.setGPSEnabled(...)`.
+
 ## 21.6.7.2
 * Remove code for removing legacy privacy settings `"IABConsent_SubjectToGDPR"` and `"IABConsent_ConsentString"`.
 * Support for null `Activity` on init.
