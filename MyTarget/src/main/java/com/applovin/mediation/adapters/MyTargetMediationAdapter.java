@@ -297,6 +297,15 @@ public class MyTargetMediationAdapter
                 MyTargetPrivacy.setUserConsent( hasUserConsent );
             }
         }
+
+        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        {
+            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+            if ( isDoNotSell != null )
+            {
+                MyTargetPrivacy.setCcpaUserConsent( isDoNotSell );
+            }
+        }
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)

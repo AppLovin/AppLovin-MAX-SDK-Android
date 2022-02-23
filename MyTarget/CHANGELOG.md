@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.0.3
+* Add support for Binary CCPA.
+
 ## 5.15.0.2
 * Support for null `Activity` on init.
 
