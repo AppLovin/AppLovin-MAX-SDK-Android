@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -24,6 +25,7 @@ import com.applovin.sdk.AppLovinSdkConfiguration;
 
 import net.pubnative.lite.sdk.HyBid;
 import net.pubnative.lite.sdk.HyBidError;
+import net.pubnative.lite.sdk.UserDataManager;
 import net.pubnative.lite.sdk.interstitial.HyBidInterstitialAd;
 import net.pubnative.lite.sdk.models.AdSize;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
@@ -202,12 +204,19 @@ public class VerveMediationAdapter
 
     private void updateUserConsent(final MaxAdapterResponseParameters parameters)
     {
+        // From PubNative: "HyBid SDK is TCF v2 compliant, so any change in the IAB consent string will be picked up by the SDK."
+        // Because of this, they requested that we don't update consent values if one is already set.
+        // As a side effect, pubs that use the MAX consent flow will not be able to update consent values mid-session.
+        // Full context in this PR: https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/pull/57
+
+        UserDataManager userDataManager = HyBid.getUserDataManager();
+
         if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
         {
             Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
+            if ( hasUserConsent != null && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABGDPRConsentString() ) )
             {
-                HyBid.getUserDataManager().setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
+                userDataManager.setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
             }
             else { /* Don't do anything if huc value not set */ }
         }
@@ -218,16 +227,13 @@ public class VerveMediationAdapter
             HyBid.setCoppaEnabled( isAgeRestrictedUser );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        if ( AppLovinSdk.VERSION_CODE >= 91100 && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABUSPrivacyString() ) )
         {
             Boolean isDoNotSell = parameters.isDoNotSell();
             if ( isDoNotSell != null && isDoNotSell )
             {
-                HyBid.getUserDataManager().setIABUSPrivacyString( "1NYN" );
-            }
-            else
-            {
-                HyBid.getUserDataManager().removeIABUSPrivacyString();
+                // NOTE: PubNative suggested this US Privacy String, so it does not match other adapters.
+                userDataManager.setIABUSPrivacyString( "1NYN" );
             }
         }
     }
