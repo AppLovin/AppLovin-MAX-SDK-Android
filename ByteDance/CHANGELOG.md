@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.5.2.3
+* Fix memory leaks related to adapter passing in `Activity` contexts into ByteDance SDK which uses strong references.
+* Minimum native ads SDK version will be 11.1.0+.
+
 ## 4.2.5.2.2
 * Add privacy icon (ad logo view) for native ads.
 
