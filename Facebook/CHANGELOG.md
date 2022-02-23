@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.12
+* Add support for using a media view instead of an icon for manual native banners.
+
 ## 6.8.0.11
 * Fix icon click registration for manual native banners.
 

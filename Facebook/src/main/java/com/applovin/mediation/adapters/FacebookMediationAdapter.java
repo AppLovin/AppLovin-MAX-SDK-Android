@@ -1101,7 +1101,7 @@ public class FacebookMediationAdapter
 
                     if ( iconDrawable != null )
                     {
-                        handleNativeAdLoaded( isTemplateAd, nativeAd, iconDrawable, mediaView, activity );
+                        handleNativeAdLoaded( nativeAd, iconDrawable, mediaView, activity );
                     }
                     else if ( icon != null )
                     {
@@ -1133,7 +1133,7 @@ public class FacebookMediationAdapter
                                     }
                                 }
 
-                                handleNativeAdLoaded( isTemplateAd, nativeAd, iconDrawable, mediaView, activity );
+                                handleNativeAdLoaded( nativeAd, iconDrawable, mediaView, activity );
                             }
                         } );
                     }
@@ -1142,7 +1142,7 @@ public class FacebookMediationAdapter
                         // No ad icon available. Not a failure because it's not a required ad asset for Meta Audience Network:
                         // https://developers.facebook.com/docs/audience-network/reference/android/com/facebook/ads/nativead.html/?version=v6.2.0
                         log( "No native ad icon (optional) available for the current creative." );
-                        handleNativeAdLoaded( isTemplateAd, nativeAd, null, mediaView, activity );
+                        handleNativeAdLoaded( nativeAd, null, mediaView, activity );
                     }
                 }
             } );
@@ -1176,7 +1176,7 @@ public class FacebookMediationAdapter
             listener.onNativeAdClicked();
         }
 
-        private void handleNativeAdLoaded(final boolean isTemplateAd, final NativeAdBase nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Activity activity)
+        private void handleNativeAdLoaded(final NativeAdBase nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Activity activity)
         {
             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                     .setAdFormat( MaxAdFormat.NATIVE )
@@ -1199,7 +1199,7 @@ public class FacebookMediationAdapter
                 builder.setMediaView( mediaView );
             }
 
-            final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( isTemplateAd, builder );
+            final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
         }
 
@@ -1221,12 +1221,9 @@ public class FacebookMediationAdapter
     private class MaxFacebookNativeAd
             extends MaxNativeAd
     {
-        private final boolean isTemplateAd;
-
-        private MaxFacebookNativeAd(final boolean isTemplateAd, final Builder builder)
+        private MaxFacebookNativeAd(final Builder builder)
         {
             super( builder );
-            this.isTemplateAd = isTemplateAd;
         }
 
         @Override
@@ -1272,8 +1269,18 @@ public class FacebookMediationAdapter
                 {
                     if ( nativeAd instanceof NativeBannerAd )
                     {
-                        ImageView iconImageView = isTemplateAd ? (ImageView) getMediaView() : maxNativeAdView.getIconImageView();
-                        ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, iconImageView, clickableViews );
+                        if ( maxNativeAdView.getIconImageView() != null )
+                        {
+                            ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, maxNativeAdView.getIconImageView(), clickableViews );
+                        }
+                        else if ( getMediaView() != null )
+                        {
+                            ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, (ImageView) getMediaView(), clickableViews );
+                        }
+                        else
+                        {
+                            e( "Failed to register native ad view for interaction: icon image view and media view are null" );
+                        }
                     }
                     else
                     {
