@@ -584,6 +584,19 @@ public class InneractiveMediationAdapter
         {
             InneractiveAdManager.setMuteVideo( serverParameters.getBoolean( "is_muted" ) );
         }
+
+        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        {
+            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+            if ( isDoNotSell != null )
+            {
+                InneractiveAdManager.setUSPrivacyString( isDoNotSell ? "1YY-" : "1YN-" );
+            }
+            else
+            {
+                InneractiveAdManager.setUSPrivacyString( "1---" );
+            }
+        }
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
