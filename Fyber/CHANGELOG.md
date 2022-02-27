@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.3.0
+* Certified with Fyber SDK 8.1.3.
+
 ## 8.1.2.2
 * Add support for IAB's CCPA Privacy String.
 
