@@ -405,7 +405,7 @@ public class GoogleAdManagerMediationAdapter
         if ( isNative )
         {
             NativeAdOptions.Builder optionsBuilder = new NativeAdOptions.Builder();
-            optionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters.getLocalExtraParameters() ) );
+            optionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters ) );
             optionsBuilder.setRequestMultipleImages( adFormat == MaxAdFormat.MREC ); // MRECs can handle multiple images via AdMob's media view
 
             NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, activity, listener );
@@ -443,7 +443,7 @@ public class GoogleAdManagerMediationAdapter
         AdRequest adRequest = createAdRequestWithParameters( parameters, activity );
 
         NativeAdOptions.Builder nativeAdOptionsBuilder = new NativeAdOptions.Builder();
-        nativeAdOptionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters.getLocalExtraParameters() ) );
+        nativeAdOptionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters ) );
 
         // Medium templates can handle multiple images via AdMob's media view
         String template = BundleUtils.getString( "template", "", parameters.getServerParameters() );
@@ -652,11 +652,19 @@ public class GoogleAdManagerMediationAdapter
         return nativeAd.getHeadline() != null;
     }
 
-    private int getAdChoicesPlacement(Map<String, Object> localExtraParams)
+    private int getAdChoicesPlacement(MaxAdapterResponseParameters parameters)
     {
         // Publishers can set via nativeAdLoader.setLocalExtraParameter( "gam_ad_choices_placement", ADCHOICES_BOTTOM_LEFT );
-        final Object adChoicesPlacementObj = localExtraParams.get( "gam_ad_choices_placement" );
-        return isValidAdChoicesPlacement( adChoicesPlacementObj ) ? (Integer) adChoicesPlacementObj : NativeAdOptions.ADCHOICES_TOP_RIGHT;
+        // Note: This feature requires AppLovin v11.0.0+
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            final Map<String, Object> localExtraParams = parameters.getLocalExtraParameters();
+            final Object adChoicesPlacementObj = localExtraParams != null ? localExtraParams.get( "gam_ad_choices_placement" ) : null;
+
+            return isValidAdChoicesPlacement( adChoicesPlacementObj ) ? (Integer) adChoicesPlacementObj : NativeAdOptions.ADCHOICES_TOP_RIGHT;
+        }
+
+        return NativeAdOptions.ADCHOICES_TOP_RIGHT;
     }
 
     private boolean isValidAdChoicesPlacement(Object placementObj)
