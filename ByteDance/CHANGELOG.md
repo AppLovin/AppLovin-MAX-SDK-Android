@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.5.2.4
+* Fix `TTNativeAd.getAdLogoView()` NPE for banner native ads introduced in v4.2.5.2.2.
+
 ## 4.2.5.2.3
 * Fix memory leaks related to adapter passing in `Activity` contexts into ByteDance SDK which uses strong references.
 * Minimum native ads SDK version will be 11.1.0+.

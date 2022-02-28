@@ -938,7 +938,7 @@ public class ByteDanceMediationAdapter
                                     .setCallToAction( nativeAdViewAd.getButtonText() )
                                     .setIcon( icon )
                                     .setMediaView( mediaView )
-                                    .setOptionsView( nativeAd.getAdLogoView() )
+                                    .setOptionsView( nativeAdViewAd.getAdLogoView() )
                                     .build();
 
                             String templateName = BundleUtils.getString( "template", "", serverParameters );
