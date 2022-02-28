@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.1.0
+* Certified with UnityAds SDK 4.0.1.
+
 ## 4.0.0.2
 * Support for null `Activity` on init.
 
