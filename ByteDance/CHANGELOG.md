@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.5.2.5
+* Update adapters to ingest `event_id`.
+
 ## 4.2.5.2.4
 * Fix `TTNativeAd.getAdLogoView()` NPE for banner native ads introduced in v4.2.5.2.2.
 

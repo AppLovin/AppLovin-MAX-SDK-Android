@@ -171,6 +171,11 @@ public class ByteDanceMediationAdapter
                 adapterVersionObject.putOpt( "value", getAdapterVersion() );
                 data.put( adapterVersionObject );
 
+                JSONObject eventIdObject = new JSONObject();
+                eventIdObject.putOpt( "name", "hybrid_id" );
+                eventIdObject.putOpt( "value", BundleUtils.getString( "event_id", serverParameters ) );
+                data.put( eventIdObject );
+
                 builder.data( data.toString() );
             }
             catch ( Throwable th )
