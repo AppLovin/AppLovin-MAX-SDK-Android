@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.2
+* Add adaptive banner size info for bidding ad requests.
+
 ## 20.6.0.1
 * Fix AdChoices `getLocalExtraParameters()` crash. Publishers can set a custom placement on AppLovin SDKs 11.0.0+ and the placement is defaulted to the top right corner otherwise.
 
