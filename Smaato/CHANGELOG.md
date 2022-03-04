@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.7.3.1
+* Add support for passing local parameter "is_location_collection_enabled" to set `SmaatoSdk.setGPSEnabled(...)` for bidding.
+
 ## 21.7.3.0
 * Certified with Smaato SDK 21.7.3.
 

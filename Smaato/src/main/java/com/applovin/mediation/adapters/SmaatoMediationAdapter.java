@@ -141,6 +141,9 @@ public class SmaatoMediationAdapter
     {
         log( "Collecting signal..." );
 
+        // Update local params, since not available on init
+        updateLocationCollectionEnabled( parameters );
+
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
         String signal = SmaatoSdk.collectSignals( application );
