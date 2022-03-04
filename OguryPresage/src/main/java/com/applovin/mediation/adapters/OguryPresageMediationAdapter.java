@@ -7,14 +7,18 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
+import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.ogurypresage.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkUtils;
 import com.ogury.cm.OguryChoiceManagerExternal;
 import com.ogury.core.OguryError;
 import com.ogury.ed.OguryAdFormatErrorCode;
@@ -30,6 +34,8 @@ import com.ogury.sdk.OguryConfiguration;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.presage.common.token.OguryTokenProvider;
+
 /**
  * This is an AppLovin Mediation Adapter for Ogury Presage SDK.
  * <p>
@@ -37,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class OguryPresageMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter
 {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
@@ -62,10 +68,9 @@ public class OguryPresageMediationAdapter
             // Pass the user consent before initializing SDK for personalized ads
             updateUserConsent( parameters );
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+            OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( getContext( activity ), assetKey )
+                    .putMonitoringInfo( "max_applovin_mediation_version", AppLovinSdk.VERSION );
 
-            OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( context, assetKey );
             Ogury.start( oguryConfigurationBuilder.build() );
         }
 
@@ -92,12 +97,26 @@ public class OguryPresageMediationAdapter
     }
     //endregion
 
+    //region Signal Collection
+
+    @Override
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    {
+        log( "Collecting signal..." );
+
+        final String bidderToken = OguryTokenProvider.getBidderToken( getContext( activity ) );
+        callback.onSignalCollected( bidderToken );
+    }
+
+    //endregion
+
     //region MaxInterstitialAdapter methods
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String adUnitId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading interstitial for ad unit id: " + adUnitId );
+        final String bidResponse = parameters.getBidResponse();
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for ad unit id: " + adUnitId + "..." );
 
         interstitialAd = new OguryInterstitialAd( activity.getApplicationContext(), adUnitId );
 
@@ -115,6 +134,11 @@ public class OguryPresageMediationAdapter
         }
         else
         {
+            if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+            {
+                interstitialAd.setAdMarkup( bidResponse );
+            }
+
             interstitialAd.load();
         }
     }
@@ -256,6 +280,12 @@ public class OguryPresageMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), oguryErrorCode, oguryError.getMessage() );
+    }
+
+    private Context getContext(Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private class InterstitialAdListener

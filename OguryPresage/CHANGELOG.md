@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.2.0.0
+* Support for header bidding.
+
 ## 5.0.10.1
 * Support for null `Activity` on init.
 
