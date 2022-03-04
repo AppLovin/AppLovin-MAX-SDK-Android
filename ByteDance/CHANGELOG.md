@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.5.2.6
+* Update to ingest `event_id` during ad load.
+
 ## 4.2.5.2.5
 * Update adapters to ingest `event_id`.
 

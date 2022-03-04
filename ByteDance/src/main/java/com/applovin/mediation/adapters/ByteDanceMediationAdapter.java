@@ -158,30 +158,7 @@ public class ByteDanceMediationAdapter
             TTAdConfig.Builder builder = new TTAdConfig.Builder();
 
             // Set mediation provider
-            try
-            {
-                JSONArray data = new JSONArray();
-                JSONObject mediationObject = new JSONObject();
-                mediationObject.putOpt( "name", "mediation" );
-                mediationObject.putOpt( "value", "MAX" );
-                data.put( mediationObject );
-
-                JSONObject adapterVersionObject = new JSONObject();
-                adapterVersionObject.putOpt( "name", "adapter_version" );
-                adapterVersionObject.putOpt( "value", getAdapterVersion() );
-                data.put( adapterVersionObject );
-
-                JSONObject eventIdObject = new JSONObject();
-                eventIdObject.putOpt( "name", "hybrid_id" );
-                eventIdObject.putOpt( "value", BundleUtils.getString( "event_id", serverParameters ) );
-                data.put( eventIdObject );
-
-                builder.data( data.toString() );
-            }
-            catch ( Throwable th )
-            {
-                log( "Failed to set mediation provider", th );
-            }
+            builder.data( createAdConfigData( serverParameters, true ) );
 
             if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
             {
@@ -294,6 +271,8 @@ public class ByteDanceMediationAdapter
         String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for code id \"" + codeId + "\"..." );
 
+        updateAdConfig( parameters );
+
         // NOTE: No privacy APIs to toggle before ad load
 
         AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
@@ -331,6 +310,8 @@ public class ByteDanceMediationAdapter
         String codeId = parameters.getThirdPartyAdPlacementId();
         String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for code id \"" + codeId + "\"..." );
+
+        updateAdConfig( parameters );
 
         // NOTE: No privacy APIs to toggle before ad load
 
@@ -376,6 +357,8 @@ public class ByteDanceMediationAdapter
         String codeId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for code id \"" + codeId + "\"..." );
 
+        updateAdConfig( parameters );
+
         AppLovinSdkUtils.Size adSize = adFormat.getSize();
         AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
                 .setCodeId( codeId )
@@ -412,6 +395,8 @@ public class ByteDanceMediationAdapter
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         String codeId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for code id \"" + codeId + "\"..." );
+
+        updateAdConfig( parameters );
 
         // Minimum supported Android SDK version is 11.1.0+, previous version has `MaxNativeAdView` requiring an Activity context which might leak
         if ( AppLovinSdk.VERSION_CODE < 11010000 )
@@ -552,6 +537,25 @@ public class ByteDanceMediationAdapter
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    private String createAdConfigData(Bundle serverParameters, Boolean isInitializing)
+    {
+        if ( isInitializing )
+        {
+            return String.format( "[{\"name\":\"mediation\",\"value\":\"MAX\"},{\"name\":\"adapter_version\",\"value\":\"%s\"}]", getAdapterVersion() );
+        }
+        else
+        {
+            return String.format( "[{\"name\":\"mediation\",\"value\":\"MAX\"},{\"name\":\"adapter_version\",\"value\":\"%s\"},{\"name\":\"hybrid_id\",\"value\":\"%s\"}]", getAdapterVersion(), BundleUtils.getString( "event_id", serverParameters ) );
+        }
+    }
+
+    private void updateAdConfig(final MaxAdapterResponseParameters parameters)
+    {
+        TTAdConfig.Builder builder = new TTAdConfig.Builder();
+        builder.data( createAdConfigData( parameters.getServerParameters(), false ) );
+        TTAdSdk.updateAdConfig( builder.build() );
     }
 
     //endregion
