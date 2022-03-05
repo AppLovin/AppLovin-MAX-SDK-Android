@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.11.1.2
+* Add support for location updates.
+
 ## 2.11.1.1
 * Update user consent to not override existing GDPR and CCPA privacy strings.
 

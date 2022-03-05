@@ -75,8 +75,6 @@ public class VerveMediationAdapter
                 HyBid.setTestMode( true );
             }
 
-            HyBid.setLocationUpdatesEnabled( false );
-
             // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
             Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
 
