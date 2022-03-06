@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.3
+* Fix version check minimum for local extra parameter API usage.
+
 ## 20.6.0.2
 * Add adaptive banner size info for bidding ad requests.
 

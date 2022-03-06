@@ -665,7 +665,7 @@ public class GoogleMediationAdapter
             // MAX specific
             networkExtras.putString( "query_info_type", "requester_type_2" );
 
-            if ( adFormat.isAdViewAd() )
+            if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
             {
                 Object isAdaptiveBanner = parameters.getLocalExtraParameters().get( "adaptive_banner" );
                 if ( isAdaptiveBanner instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBanner ) )
