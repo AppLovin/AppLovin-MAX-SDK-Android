@@ -213,6 +213,7 @@ public class TappxMediationAdapter
     private AdRequest createAdRequest(MaxAdapterParameters parameters)
     {
         AdRequest adRequest = new AdRequest();
+        adRequest.sdkType("native");
         adRequest.mediator( "applovin" );
 
         Bundle customParameters = parameters.getCustomParameters();
