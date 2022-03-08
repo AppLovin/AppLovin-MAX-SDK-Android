@@ -1083,9 +1083,7 @@ public class ByteDanceMediationAdapter
         final Context                    context;
         final MaxNativeAdAdapterListener listener;
 
-        NativeAdListener(final MaxAdapterResponseParameters parameters,
-                         final Context context,
-                         final MaxNativeAdAdapterListener listener)
+        NativeAdListener(final MaxAdapterResponseParameters parameters, final Context context, final MaxNativeAdAdapterListener listener)
         {
             this.codeId = parameters.getThirdPartyAdPlacementId();
             this.serverParameters = parameters.getServerParameters();
