@@ -14,17 +14,18 @@ import com.applovin.mediation.MaxError
 import com.applovin.mediation.nativeAds.MaxNativeAdListener
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
+import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 
-class TemplateNativeAdActivity : BaseAdActivity() {
+class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     private lateinit var nativeAdLoader: MaxNativeAdLoader
-    private var nativeAd: MaxAd? = null
-
     private lateinit var nativeAdLayout: FrameLayout
+
+    private var nativeAd: MaxAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_native_template)
-        setTitle(R.string.activity_template_native_ad)
+        setContentView(R.layout.activity_native_manual)
+        setTitle(R.string.activity_manual_native_late_binding_ad)
 
         nativeAdLayout = findViewById(R.id.native_ad_layout)
         setupCallbacksRecyclerView()
@@ -85,5 +86,20 @@ class TemplateNativeAdActivity : BaseAdActivity() {
 
     fun showAd(view: View) {
         nativeAdLoader.loadAd()
+        // Render the ad separately
+        nativeAdLoader.render(createNativeAdView(), nativeAd)
+    }
+
+    private fun createNativeAdView(): MaxNativeAdView {
+        val binder: MaxNativeAdViewBinder = MaxNativeAdViewBinder.Builder(R.layout.native_custom_ad_view)
+                .setTitleTextViewId(R.id.title_text_view)
+                .setBodyTextViewId(R.id.body_text_view)
+                .setAdvertiserTextViewId(R.id.advertiser_textView)
+                .setIconImageViewId(R.id.icon_image_view)
+                .setMediaContentViewGroupId(R.id.media_view_container)
+                .setOptionsContentViewGroupId(R.id.options_view)
+                .setCallToActionButtonId(R.id.cta_button)
+                .build()
+        return MaxNativeAdView(binder, this)
     }
 }
