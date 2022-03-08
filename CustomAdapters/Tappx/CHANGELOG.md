@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.3.4
+* Add "native" as the SDK type.
+
 ## 3.2.3.3
 * Add custom parameters support for "test" as a key to enable test mode.
 
