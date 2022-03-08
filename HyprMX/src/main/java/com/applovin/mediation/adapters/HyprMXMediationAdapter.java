@@ -59,7 +59,7 @@ public class HyprMXMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return getVersionString( com.hyprmx.android.BuildConfig.class, "VERSION_NAME" );
+        return getVersionString( com.hyprmx.android.BuildConfig.class, "HYPRMX_VERSION" );
     }
 
     @Override
