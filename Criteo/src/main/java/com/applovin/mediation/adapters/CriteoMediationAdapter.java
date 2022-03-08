@@ -29,7 +29,6 @@ import com.applovin.mediation.adapters.criteo.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.criteo.publisher.Criteo;
 import com.criteo.publisher.CriteoBannerAdListener;
@@ -292,13 +291,11 @@ public class CriteoMediationAdapter
 
     private void updatePrivacySettings(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        final Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
         {
-            final Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                Criteo.getInstance().setUsPrivacyOptOut( !hasUserConsent );
-            }
+            // CCPA
+            Criteo.getInstance().setUsPrivacyOptOut( isDoNotSell );
         }
     }
 
