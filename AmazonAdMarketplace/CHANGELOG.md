@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.2.0
+* Certified with APS SDK 9.4.2 with interstitial video support.
+
 ## 9.3.0.3
 * Fix case where new ad loader might not be used when passed in.
 
