@@ -2,6 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.max.nativead;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.adjust.sdk.Adjust;
@@ -21,6 +22,7 @@ public class ManualNativeLateBindingAdActivity
 {
     private MaxNativeAdLoader nativeAdLoader;
     private FrameLayout       nativeAdLayout;
+    private Button            showAdButton;
 
     private MaxAd nativeAd;
 
@@ -28,10 +30,11 @@ public class ManualNativeLateBindingAdActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_native_manual );
+        setContentView( R.layout.activity_native_manual_late_binding );
         setTitle( R.string.activity_manual_native_late_binding_ad );
 
         nativeAdLayout = findViewById( R.id.native_ad_layout );
+        showAdButton = findViewById( R.id.show_ad_button );
         setupCallbacksRecyclerView();
 
         nativeAdLoader = new MaxNativeAdLoader( "YOUR_AD_UNIT_ID", this );
@@ -64,7 +67,8 @@ public class ManualNativeLateBindingAdActivity
 
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews();
-                nativeAdLayout.addView( nativeAdView );
+
+                showAdButton.setEnabled( true );
             }
 
             @Override
@@ -97,11 +101,18 @@ public class ManualNativeLateBindingAdActivity
         super.onDestroy();
     }
 
-    public void onShowAdClicked(View view)
+    public void onLoadAdClicked(View view)
     {
         nativeAdLoader.loadAd();
+    }
+
+    public void onShowAdClicked(View view)
+    {
+        MaxNativeAdView adView = createNativeAdView();
         // Render the ad separately
-        nativeAdLoader.render( createNativeAdView(), nativeAd );
+        nativeAdLoader.render( adView, nativeAd );
+        nativeAdLayout.addView( adView );
+
     }
 
     private MaxNativeAdView createNativeAdView()

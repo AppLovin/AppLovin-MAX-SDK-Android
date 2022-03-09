@@ -2,6 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.max.nativead
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
@@ -19,21 +20,23 @@ import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     private lateinit var nativeAdLoader: MaxNativeAdLoader
     private lateinit var nativeAdLayout: FrameLayout
+    private lateinit var showAdButton: Button
 
     private var nativeAd: MaxAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_native_manual)
+        setContentView(R.layout.activity_native_manual_late_binding)
         setTitle(R.string.activity_manual_native_late_binding_ad)
 
         nativeAdLayout = findViewById(R.id.native_ad_layout)
+        showAdButton = findViewById(R.id.show_ad_button)
         setupCallbacksRecyclerView()
 
-        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
+        nativeAdLoader = MaxNativeAdLoader("2ae08312099b9acb", this)
         nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd?) {
-                logCallback()
+                logAnonymousCallback()
 
                 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
                 adjustAdRevenue.setRevenue(ad?.revenue, "USD")
@@ -58,7 +61,8 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
 
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews()
-                nativeAdLayout.addView(nativeAdView)
+
+                showAdButton.isEnabled = true
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
@@ -84,10 +88,15 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
         super.onDestroy()
     }
 
-    fun showAd(view: View) {
+    fun loadAd(view: View) {
         nativeAdLoader.loadAd()
+    }
+
+    fun showAd(view: View) {
+        val adView = createNativeAdView()
         // Render the ad separately
-        nativeAdLoader.render(createNativeAdView(), nativeAd)
+        nativeAdLoader.render(adView, nativeAd)
+        nativeAdLayout.addView(adView)
     }
 
     private fun createNativeAdView(): MaxNativeAdView {
