@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.6.5.2
+* Update CCPA arguments passed to `setPrivacyConsentString()` to correct order.
+
 ## 4.6.5.1
 * Remove `checkExistence()` call from adapter.
 * Support for null `Activity` on init.

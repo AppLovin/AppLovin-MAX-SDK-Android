@@ -332,7 +332,7 @@ public class AdColonyMediationAdapter
             if ( isDoNotSell != null )
             {
                 options.setPrivacyFrameworkRequired( AdColonyAppOptions.CCPA, true );
-                options.setPrivacyConsentString( isDoNotSell ? "0" : "1", AdColonyAppOptions.CCPA ); // isDoNotSell means user has opted out of selling data.
+                options.setPrivacyConsentString( AdColonyAppOptions.CCPA, isDoNotSell ? "0" : "1" ); // isDoNotSell means user has opted out of selling data.
             }
             else
             {
