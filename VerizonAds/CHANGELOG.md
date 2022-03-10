@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0.7
+* Remove support for `consent_string`.
+
 ## 1.14.0.6
 * Add support for IAB's CCPA Privacy String.
 

@@ -345,15 +345,6 @@ public class VerizonAdsMediationAdapter
             builder.setCoppaApplies( isAgeRestrictedUser );
         }
 
-        //
-        // For more GDPR info please see: https://sdk.verizonmedia.com/gdpr-coppa.html
-        //
-        if ( parameters.getServerParameters().containsKey( "consent_string" ) )
-        {
-            String consentString = parameters.getServerParameters().getString( "consent_string" );
-            builder.setGdprConsent( consentString );
-        }
-
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
         {
             Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
