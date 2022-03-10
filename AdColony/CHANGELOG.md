@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.0.0
+* Certified with AdColony SDK 4.7.0.
+
 ## 4.6.5.2
 * Update CCPA arguments passed to `setPrivacyConsentString()` to correct order.
 
