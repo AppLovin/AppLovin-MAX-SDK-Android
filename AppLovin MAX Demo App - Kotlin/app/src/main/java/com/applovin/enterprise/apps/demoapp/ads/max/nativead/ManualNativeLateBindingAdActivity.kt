@@ -86,9 +86,9 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     }
 
     fun loadAd(view: View) {
-        nativeAdLoader.loadAd()
-
         nativeAdLayout.removeAllViews()
+
+        nativeAdLoader.loadAd()
     }
 
     fun showAd(view: View) {

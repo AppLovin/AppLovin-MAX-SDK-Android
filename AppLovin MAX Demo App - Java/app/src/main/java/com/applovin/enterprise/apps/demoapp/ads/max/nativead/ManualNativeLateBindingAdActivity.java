@@ -100,9 +100,9 @@ public class ManualNativeLateBindingAdActivity
 
     public void onLoadAdClicked(View view)
     {
-        nativeAdLoader.loadAd();
-
         nativeAdLayout.removeAllViews();
+
+        nativeAdLoader.loadAd();
     }
 
     public void onShowAdClicked(View view)
