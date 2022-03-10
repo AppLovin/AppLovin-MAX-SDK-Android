@@ -62,11 +62,8 @@ public class ManualNativeLateBindingAdActivity
                     nativeAdLoader.destroy( nativeAd );
                 }
 
-                // Save ad for cleanup.
+                // Save ad to be rendered later.
                 nativeAd = ad;
-
-                // Add ad view to view.
-                nativeAdLayout.removeAllViews();
 
                 showAdButton.setEnabled( true );
             }
@@ -108,11 +105,12 @@ public class ManualNativeLateBindingAdActivity
 
     public void onShowAdClicked(View view)
     {
+        nativeAdLayout.removeAllViews();
         MaxNativeAdView adView = createNativeAdView();
         // Render the ad separately
         nativeAdLoader.render( adView, nativeAd );
         nativeAdLayout.addView( adView );
-
+        showAdButton.setEnabled( false );
     }
 
     private MaxNativeAdView createNativeAdView()

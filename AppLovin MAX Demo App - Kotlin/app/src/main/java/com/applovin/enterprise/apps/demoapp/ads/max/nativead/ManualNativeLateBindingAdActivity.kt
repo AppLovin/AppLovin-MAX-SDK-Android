@@ -56,11 +56,8 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
                     nativeAdLoader.destroy(nativeAd)
                 }
 
-                // Save ad for cleanup.
+                // Save ad to be rendered later.
                 nativeAd = ad
-
-                // Add ad view to view.
-                nativeAdLayout.removeAllViews()
 
                 showAdButton.isEnabled = true
             }
@@ -93,10 +90,12 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     }
 
     fun showAd(view: View) {
+        nativeAdLayout.removeAllViews()
         val adView = createNativeAdView()
         // Render the ad separately
         nativeAdLoader.render(adView, nativeAd)
         nativeAdLayout.addView(adView)
+        showAdButton.isEnabled = false
     }
 
     private fun createNativeAdView(): MaxNativeAdView {
