@@ -22,10 +22,12 @@ import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.hyprmx.android.sdk.banner.HyprMXBannerListener;
 import com.hyprmx.android.sdk.banner.HyprMXBannerSize;
 import com.hyprmx.android.sdk.banner.HyprMXBannerView;
+import com.hyprmx.android.sdk.consent.ConsentStatus;
 import com.hyprmx.android.sdk.core.HyprMX;
 import com.hyprmx.android.sdk.core.HyprMXErrors;
 import com.hyprmx.android.sdk.core.HyprMXIf;
@@ -163,6 +165,8 @@ public class HyprMXMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + adFormat.getLabel() + " AdView ad for placement: " + placementId + "..." );
 
+        updateUserConsent( parameters );
+
         adView = new HyprMXBannerView( activity.getApplicationContext(), null, placementId, toAdSize( adFormat ) );
         adView.setListener( new AdViewListener( listener ) );
 
@@ -182,6 +186,8 @@ public class HyprMXMediationAdapter
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad for placement: " + placementId );
+
+        updateUserConsent( parameters );
 
         interstitialAd = createFullscreenAd( placementId, new InterstitialListener( listener ) );
         interstitialAd.loadAd();
@@ -209,6 +215,8 @@ public class HyprMXMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad for placement: " + placementId );
 
+        updateUserConsent( parameters );
+
         rewardedAd = createFullscreenAd( placementId, new RewardedAdListener( listener ) );
         rewardedAd.loadAd();
     }
@@ -229,6 +237,22 @@ public class HyprMXMediationAdapter
         {
             log( "Rewarded ad not ready" );
             listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+        }
+    }
+
+    private void updateUserConsent(final MaxAdapterResponseParameters parameters)
+    {
+        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        {
+            Boolean hasUserConsent = parameters.hasUserConsent();
+            if ( hasUserConsent != null )
+            {
+                HyprMX.INSTANCE.setConsentStatus( hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED );
+            }
+            else
+            {
+                HyprMX.INSTANCE.setConsentStatus( ConsentStatus.CONSENT_STATUS_UNKNOWN );
+            }
         }
     }
 
