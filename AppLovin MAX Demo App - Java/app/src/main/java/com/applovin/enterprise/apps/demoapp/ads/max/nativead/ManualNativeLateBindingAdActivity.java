@@ -101,11 +101,12 @@ public class ManualNativeLateBindingAdActivity
     public void onLoadAdClicked(View view)
     {
         nativeAdLoader.loadAd();
+
+        nativeAdLayout.removeAllViews();
     }
 
     public void onShowAdClicked(View view)
     {
-        nativeAdLayout.removeAllViews();
         MaxNativeAdView adView = createNativeAdView();
         // Render the ad separately
         nativeAdLoader.render( adView, nativeAd );

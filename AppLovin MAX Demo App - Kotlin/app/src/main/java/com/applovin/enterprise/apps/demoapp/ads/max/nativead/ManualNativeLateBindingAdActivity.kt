@@ -87,10 +87,11 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
 
     fun loadAd(view: View) {
         nativeAdLoader.loadAd()
+
+        nativeAdLayout.removeAllViews()
     }
 
     fun showAd(view: View) {
-        nativeAdLayout.removeAllViews()
         val adView = createNativeAdView()
         // Render the ad separately
         nativeAdLoader.render(adView, nativeAd)
