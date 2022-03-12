@@ -2,6 +2,7 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,9 +10,11 @@ import android.widget.ImageView;
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
+import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
@@ -26,9 +29,11 @@ import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.huawei.hms.ads.AdListener;
 import com.huawei.hms.ads.AdParam;
+import com.huawei.hms.ads.BannerAdSize;
 import com.huawei.hms.ads.HwAds;
 import com.huawei.hms.ads.Image;
 import com.huawei.hms.ads.InterstitialAd;
+import com.huawei.hms.ads.banner.BannerView;
 import com.huawei.hms.ads.consent.constant.ConsentStatus;
 import com.huawei.hms.ads.consent.inter.Consent;
 import com.huawei.hms.ads.nativead.MediaContent;
@@ -46,17 +51,28 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
+import static com.huawei.hms.ads.AdParam.ErrorCode.AD_LOADING;
+import static com.huawei.hms.ads.AdParam.ErrorCode.BANNER_AD_CANCEL;
+import static com.huawei.hms.ads.AdParam.ErrorCode.BANNER_AD_EXPIRE;
+import static com.huawei.hms.ads.AdParam.ErrorCode.HMS_NOT_SUPPORT_SET_APP;
+import static com.huawei.hms.ads.AdParam.ErrorCode.INNER;
+import static com.huawei.hms.ads.AdParam.ErrorCode.INVALID_REQUEST;
+import static com.huawei.hms.ads.AdParam.ErrorCode.LOW_API;
+import static com.huawei.hms.ads.AdParam.ErrorCode.NETWORK_ERROR;
+import static com.huawei.hms.ads.AdParam.ErrorCode.NO_AD;
 
 public class HuaweiMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter /* MaxNativeAdAdapter */
+        implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter /* MaxNativeAdAdapter */
 {
-    private static final String INTERSTITIAL_TEST_ADID = "testb4znbuh3n2";
-    private static final String REWARDED_TEST_ADID     = "testx9dtjwj8hp";
-    private static final String NATIVE_TEST_ADID       = "testy63txaom86";
+    private static final String BANNER_TEST_AD_ID       = "testw6vs28auh3";
+    private static final String INTERSTITIAL_TEST_AD_ID = "testb4znbuh3n2";
+    private static final String REWARDED_TEST_AD_ID     = "testx9dtjwj8hp";
+    private static final String NATIVE_TEST_AD_ID       = "testy63txaom86";
 
     private static final AtomicBoolean initialized = new AtomicBoolean();
 
+    private BannerView     adView;
     private InterstitialAd interstitialAd;
     private RewardAd       rewardedAd;
     private NativeAd       nativeAd;
@@ -99,6 +115,13 @@ public class HuaweiMediationAdapter
     {
         log( "Destroy called for adapter " + this );
 
+        if ( adView != null )
+        {
+            adView.destroy();
+            adView.setAdListener( null );
+            adView = null;
+        }
+
         if ( interstitialAd != null )
         {
             interstitialAd.setAdListener( null );
@@ -124,6 +147,37 @@ public class HuaweiMediationAdapter
         }
     }
 
+    //region MaxAdViewAdapter Methods
+
+    @Override
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    {
+        final String adId = parameters.getThirdPartyAdPlacementId();
+        d( "Loading " + adFormat.getLabel() + " AdView ad for placement: " + adId + "..." );
+
+        updateConsentStatus( parameters, activity.getApplicationContext() );
+
+        adView = new BannerView( activity.getApplicationContext() );
+
+        if ( parameters.isTesting() )
+        {
+            adView.setAdId( BANNER_TEST_AD_ID );
+        }
+        else
+        {
+            adView.setAdId( adId );
+        }
+
+        adView.setBannerAdSize( toAdSize( adFormat ) );
+        adView.pause();
+        adView.setAdListener( new AdViewListener( listener ) );
+
+        AdParam adParam = createAdParam( activity.getApplicationContext() );
+        adView.loadAd( adParam );
+    }
+
+    //endregion
+
     //region MaxInterstitialAdapter Methods
 
     @Override
@@ -139,7 +193,7 @@ public class HuaweiMediationAdapter
 
         if ( parameters.isTesting() )
         {
-            interstitialAd.setAdId( INTERSTITIAL_TEST_ADID );
+            interstitialAd.setAdId( INTERSTITIAL_TEST_AD_ID );
         }
         else
         {
@@ -148,7 +202,7 @@ public class HuaweiMediationAdapter
 
         interstitialAd.setAdListener( new InterstitialListener( listener ) );
 
-        AdParam adParam = new AdParam.Builder().build();
+        AdParam adParam = createAdParam( activity.getApplicationContext() );
         interstitialAd.loadAd( adParam );
     }
 
@@ -184,14 +238,14 @@ public class HuaweiMediationAdapter
 
         if ( parameters.isTesting() )
         {
-            rewardedAd = new RewardAd( activity, REWARDED_TEST_ADID );
+            rewardedAd = new RewardAd( activity, REWARDED_TEST_AD_ID );
         }
         else
         {
             rewardedAd = new RewardAd( activity, adId );
         }
 
-        AdParam adParam = new AdParam.Builder().build();
+        AdParam adParam = createAdParam( activity.getApplicationContext() );
         rewardedAd.loadAd( adParam, new RewardedLoadAdListener( listener ) );
     }
 
@@ -235,7 +289,7 @@ public class HuaweiMediationAdapter
         NativeAdLoader.Builder nativeAdLoaderBuilder;
         if ( parameters.isTesting() )
         {
-            nativeAdLoaderBuilder = new NativeAdLoader.Builder( activity, NATIVE_TEST_ADID );
+            nativeAdLoaderBuilder = new NativeAdLoader.Builder( activity, NATIVE_TEST_AD_ID );
         }
         else
         {
@@ -245,12 +299,34 @@ public class HuaweiMediationAdapter
         nativeAdLoaderBuilder.setNativeAdLoadedListener( nativeAdListener ).setAdListener( nativeAdListener );
 
         NativeAdLoader nativeAdLoader = nativeAdLoaderBuilder.setNativeAdOptions( nativeAdOptionsBuilder.build() ).build();
-        nativeAdLoader.loadAd( new AdParam.Builder().build() );
+
+        AdParam adParam = createAdParam( activity.getApplicationContext() );
+        nativeAdLoader.loadAd( adParam );
     }
 
     //endregion
 
     //region Helper Methods
+
+    private static BannerAdSize toAdSize(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return BannerAdSize.BANNER_SIZE_320_50;
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return BannerAdSize.BANNER_SIZE_300_250;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return BannerAdSize.BANNER_SIZE_728_90;
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+        }
+    }
 
     private MaxAdapterError toMaxShowError(int huaweiShowError)
     {
@@ -303,7 +379,108 @@ public class HuaweiMediationAdapter
         }
     }
 
+    private AdParam createAdParam(Context applicationContext)
+    {
+        AdParam.Builder adParamBuilder = new AdParam.Builder();
+
+        // Based on the request here: https://github.com/AppLovin/AppLovin-MAX-SDK-Android/issues/214#issuecomment-1065114064
+        SharedPreferences sharedPreferences = applicationContext.getSharedPreferences( "SharedPreferences", Context.MODE_PRIVATE );
+        String tcfString = sharedPreferences.getString( "IABTCF_TCString", "" );
+        if ( AppLovinSdkUtils.isValidString( tcfString ) )
+        {
+            adParamBuilder.setConsent( tcfString );
+        }
+
+        return adParamBuilder.build();
+    }
+
+    private static MaxAdapterError toMaxError(final int huaweiError)
+    {
+        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+        switch ( huaweiError )
+        {
+            case NO_AD:
+                adapterError = MaxAdapterError.NO_FILL;
+                break;
+            case INNER:
+            case BANNER_AD_CANCEL:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case INVALID_REQUEST:
+            case LOW_API:
+            case HMS_NOT_SUPPORT_SET_APP:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case NETWORK_ERROR:
+                adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case AD_LOADING:
+                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            case BANNER_AD_EXPIRE:
+                adapterError = MaxAdapterError.AD_EXPIRED;
+                break;
+        }
+
+        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), huaweiError, "" );
+    }
+
     //endregion
+
+    private class AdViewListener
+            extends AdListener
+    {
+        final MaxAdViewAdapterListener listener;
+
+        AdViewListener(MaxAdViewAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded()
+        {
+            d( "AdView loaded" );
+
+            listener.onAdViewAdLoaded( adView );
+            listener.onAdViewAdDisplayed();
+        }
+
+        @Override
+        public void onAdFailed(int errorCode)
+        {
+            MaxAdapterError error = toMaxError( errorCode );
+            e( "AdView failed to load with error " + error );
+            listener.onAdViewAdLoadFailed( error );
+        }
+
+        @Override
+        public void onAdOpened()
+        {
+            d( "AdView expanded" );
+            listener.onAdViewAdExpanded();
+        }
+
+        @Override
+        public void onAdClosed()
+        {
+            d( "AdView collapsed" );
+            listener.onAdViewAdCollapsed();
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            d( "AdView clicked" );
+            listener.onAdViewAdClicked();
+        }
+
+        @Override
+        public void onAdLeave()
+        {
+            d( "AdView will leave application" );
+        }
+    }
 
     private class InterstitialListener
             extends AdListener
@@ -325,8 +502,9 @@ public class HuaweiMediationAdapter
         @Override
         public void onAdFailed(int errorCode)
         {
-            e( "Interstitial failed to load: " + errorCode );
-            listener.onInterstitialAdLoadFailed( MaxAdapterError.NO_FILL );
+            MaxAdapterError error = toMaxError( errorCode );
+            e( "Interstitial failed to load: " + error );
+            listener.onInterstitialAdLoadFailed( error );
         }
 
         @Override
@@ -371,8 +549,9 @@ public class HuaweiMediationAdapter
         @Override
         public void onRewardAdFailedToLoad(int errorCode)
         {
-            d( "Rewarded ad failed to load with error: " + errorCode );
-            listener.onRewardedAdLoadFailed( MaxAdapterError.NO_FILL );
+            MaxAdapterError error = toMaxError( errorCode );
+            d( "Rewarded ad failed to load with error: " + error );
+            listener.onRewardedAdLoadFailed( error );
         }
     }
 
@@ -400,9 +579,9 @@ public class HuaweiMediationAdapter
         @Override
         public void onRewardAdFailedToShow(int errorCode)
         {
-            d( "Rewarded ad failed to show with error: " + errorCode );
-
-            listener.onRewardedAdDisplayFailed( toMaxShowError( errorCode ) );
+            MaxAdapterError error = toMaxShowError( errorCode );
+            e( "Rewarded ad failed to show with error: " + error );
+            listener.onRewardedAdDisplayFailed( error );
         }
 
         @Override
@@ -538,8 +717,9 @@ public class HuaweiMediationAdapter
         @Override
         public void onAdFailed(int errorCode)
         {
-            e( "Native failed to load: " + errorCode );
-            listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
+            MaxAdapterError error = toMaxError( errorCode );
+            e( "Native failed to load: " + error );
+            listener.onNativeAdLoadFailed( error );
         }
 
         @Override
