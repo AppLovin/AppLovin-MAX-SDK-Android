@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.7.3.2
+* Downgrade Smaato SDK to 21.6.7, because 21.7.3 fails to build for Unity IDE.
+
 ## 21.7.3.1
 * Add support for passing local parameter "is_location_collection_enabled" to set `SmaatoSdk.setGPSEnabled(...)` for bidding.
 

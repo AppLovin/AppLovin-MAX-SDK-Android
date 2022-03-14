@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 21
 private val versionMinor = 7
 private val versionPatch = 3
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -24,7 +24,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.smaato.android.sdk:module-core-light:${libraryVersions["smaato"]}")
     implementation("com.smaato.android.sdk:smaato-sdk:${libraryVersions["smaato"]}")
     implementation("com.smaato.android.sdk:smaato-sdk-in-app-bidding:${libraryVersions["smaato"]}")
     implementation("com.smaato.android.sdk:smaato-sdk-native:${libraryVersions["smaato"]}")
