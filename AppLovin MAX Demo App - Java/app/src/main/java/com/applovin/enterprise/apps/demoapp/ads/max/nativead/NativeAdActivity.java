@@ -14,6 +14,7 @@ public class NativeAdActivity
         DemoMenuItem[] result = {
                 new DemoMenuItem( "Templates API", new Intent( this, TemplateNativeAdActivity.class ) ),
                 new DemoMenuItem( "Manual API", new Intent( this, ManualNativeAdActivity.class ) ),
+                new DemoMenuItem( "Manual Late Binding API", new Intent( this, ManualNativeLateBindingAdActivity.class ) )
         };
         return result;
     }
