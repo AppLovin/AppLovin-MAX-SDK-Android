@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -80,7 +81,7 @@ public class CriteoMediationAdapter
     //region MaxAdapter Methods
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         log( "Initializing Criteo SDK..." );
 
@@ -102,7 +103,7 @@ public class CriteoMediationAdapter
 
             try
             {
-                new Criteo.Builder( activity.getApplication(), publisherKey )
+                new Criteo.Builder( (Application) getApplicationContext(), publisherKey )
                         .debugLogsEnabled( parameters.isTesting() )
                         .init();
 
