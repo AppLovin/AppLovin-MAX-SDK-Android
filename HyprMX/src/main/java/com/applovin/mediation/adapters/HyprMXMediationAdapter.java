@@ -249,10 +249,6 @@ public class HyprMXMediationAdapter
             {
                 HyprMX.INSTANCE.setConsentStatus( hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED );
             }
-            else
-            {
-                HyprMX.INSTANCE.setConsentStatus( ConsentStatus.CONSENT_STATUS_UNKNOWN );
-            }
         }
     }
 
