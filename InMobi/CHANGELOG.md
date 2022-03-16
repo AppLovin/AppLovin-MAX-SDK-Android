@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.5.0
+* Certified with InMobi SDK 10.0.5.
+
 ## 10.0.3.1
 * Support for null `Activity` on init.
 
