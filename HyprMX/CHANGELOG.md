@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.6
+* Fix `null` context when creating `HyprMXBannerView`.
+
 ## 6.0.1.5
 * Remove setting GDPR consent status to `CONSENT_STATUS_UNKNOWN`.
 

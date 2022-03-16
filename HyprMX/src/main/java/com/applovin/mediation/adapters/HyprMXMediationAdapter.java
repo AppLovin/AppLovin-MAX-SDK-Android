@@ -167,11 +167,14 @@ public class HyprMXMediationAdapter
 
         updateUserConsent( parameters );
 
-        adView = new HyprMXBannerView( activity.getApplicationContext(), null, placementId, toAdSize( adFormat ) );
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context context = ( activity != null ) ? activity : getApplicationContext();
+
+        adView = new HyprMXBannerView( context, null, placementId, toAdSize( adFormat ) );
         adView.setListener( new AdViewListener( listener ) );
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) activity.getSystemService( Context.WINDOW_SERVICE );
+        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
         Display display = windowManager.getDefaultDisplay();
         display.getMetrics( displayMetrics );
 
