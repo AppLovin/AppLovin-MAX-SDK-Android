@@ -487,6 +487,7 @@ public class UnityAdsMediationAdapter
             if ( hasUserConsent != null )
             {
                 privacyMetaData.set( "gdpr.consent", hasUserConsent );
+                privacyMetaData.commit();
             }
         }
 
@@ -496,10 +497,9 @@ public class UnityAdsMediationAdapter
             if ( isDoNotSell != null ) // CCPA compliance - https://unityads.unity3d.com/help/legal/gdpr
             {
                 privacyMetaData.set( "privacy.consent", !isDoNotSell ); // isDoNotSell means user has opted out and is equivalent to false.
+                privacyMetaData.commit();
             }
         }
-
-        privacyMetaData.commit();
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
