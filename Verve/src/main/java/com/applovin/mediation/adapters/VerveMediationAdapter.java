@@ -136,6 +136,14 @@ public class VerveMediationAdapter
     {
         log( "Loading interstitial ad" );
 
+        if ( !HyBid.isInitialized() )
+        {
+            log( "Verve SDK is not initialized: failing interstitial ad load..." );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
         updateMuteState( parameters );
         updateUserConsent( parameters );
 
@@ -163,6 +171,14 @@ public class VerveMediationAdapter
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Loading rewarded ad" );
+
+        if ( !HyBid.isInitialized() )
+        {
+            log( "Verve SDK is not initialized: failing rewarded ad load..." );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
 
         updateMuteState( parameters );
         updateUserConsent( parameters );
@@ -192,6 +208,14 @@ public class VerveMediationAdapter
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
         log( "Loading " + adFormat.getLabel() + " ad view ad..." );
+
+        if ( !HyBid.isInitialized() )
+        {
+            log( "Verve SDK is not initialized: failing " + adFormat.getLabel() + " ad load..." );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
 
         updateMuteState( parameters );
         updateUserConsent( parameters );

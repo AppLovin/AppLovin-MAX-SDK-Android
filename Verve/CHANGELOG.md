@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.11.1.3
+* Add check for SDK initialization before loading an ad.
+
 ## 2.11.1.2
 * Add support for location updates.
 
