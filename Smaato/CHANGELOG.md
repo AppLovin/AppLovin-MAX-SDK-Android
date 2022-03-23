@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.8.0.0
+* Certified with Smaato SDK 21.8.0.
+
 ## 21.7.3.2
 * Downgrade Smaato SDK to 21.6.7, because 21.7.3 fails to build for Unity IDE.
 

@@ -33,6 +33,7 @@ import com.smaato.sdk.banner.widget.BannerError;
 import com.smaato.sdk.banner.widget.BannerView;
 import com.smaato.sdk.core.Config;
 import com.smaato.sdk.core.SmaatoSdk;
+import com.smaato.sdk.core.lifecycle.Lifecycling;
 import com.smaato.sdk.core.log.LogLevel;
 import com.smaato.sdk.core.repository.AdRequestParams;
 import com.smaato.sdk.iahb.InAppBid;
@@ -51,7 +52,6 @@ import com.smaato.sdk.rewarded.RewardedError;
 import com.smaato.sdk.rewarded.RewardedInterstitial;
 import com.smaato.sdk.rewarded.RewardedInterstitialAd;
 import com.smaato.sdk.rewarded.RewardedRequestError;
-import com.smaato.sdk.sys.Lifecycling;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
@@ -144,7 +144,10 @@ public class SmaatoMediationAdapter
         // Update local params, since not available on init
         updateLocationCollectionEnabled( parameters );
 
-        String signal = SmaatoSdk.collectSignals();
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+
+        String signal = SmaatoSdk.collectSignals( application );
         callback.onSignalCollected( signal );
     }
 
