@@ -31,20 +31,20 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.five_corp.ad.FiveAd;
 import com.five_corp.ad.FiveAdConfig;
 import com.five_corp.ad.FiveAdCustomLayout;
-import com.five_corp.ad.FiveAdFormat;
+import com.five_corp.ad.FiveAdErrorCode;
 import com.five_corp.ad.FiveAdInterface;
 import com.five_corp.ad.FiveAdInterstitial;
-import com.five_corp.ad.FiveAdListener;
+import com.five_corp.ad.FiveAdLoadListener;
 import com.five_corp.ad.FiveAdNative;
 import com.five_corp.ad.FiveAdState;
 import com.five_corp.ad.FiveAdVideoReward;
+import com.five_corp.ad.FiveAdViewEventListener;
 import com.five_corp.ad.NeedChildDirectedTreatment;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,10 +54,11 @@ public class LineMediationAdapter
 {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
-    private FiveAdInterstitial interstitialAd;
-    private FiveAdVideoReward  rewardedAd;
-    private FiveAdCustomLayout adView;
-    private FiveAdNative       nativeAd;
+    private FiveAdInterstitial      interstitialAd;
+    private FiveAdVideoReward       rewardedAd;
+    private FiveAdCustomLayout      adView;
+    private FiveAdNative            nativeAd;
+    private WeakReference<Activity> activityRef;
 
     public LineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -83,10 +84,14 @@ public class LineMediationAdapter
 
             FiveAdConfig config = new FiveAdConfig( appId );
             config.isTest = parameters.isTesting();
-            config.formats = EnumSet.of(
-                    FiveAdFormat.VIDEO_REWARD,
-                    FiveAdFormat.CUSTOM_LAYOUT
-            );
+
+            Bundle serverParameters = parameters.getServerParameters();
+            // Overwritten by `mute_state` setting, unless `mute_state` is disabled
+            if ( serverParameters.containsKey( "is_muted" ) )
+            {
+                boolean muted = serverParameters.getBoolean( "is_muted" );
+                config.enableSoundByDefault( !muted );
+            }
 
             //
             // GDPR options
@@ -146,17 +151,25 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad for slot id: " + slotId + "..." );
 
-        updateMuteState( parameters );
-
         interstitialAd = new FiveAdInterstitial( activity, slotId );
-        interstitialAd.setListener( new InterstitialListener( listener ) );
+        activityRef = new WeakReference<>( activity );
 
+        InterstitialListener interstitialListener = new InterstitialListener( listener );
+        interstitialAd.setLoadListener( interstitialListener );
+        interstitialAd.setViewEventListener( interstitialListener );
         interstitialAd.loadAdAsync();
     }
 
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
+        if ( activityRef.get() != activity )
+        {
+            log( "Display error: Activity instance used in interstitial ad initialization is different from activity instance being used to display ad." );
+            listener.onInterstitialAdDisplayFailed( MaxAdapterError.INTERNAL_ERROR );
+            return;
+        }
+
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
 
@@ -169,17 +182,25 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad for slot id: " + slotId + "..." );
 
-        updateMuteState( parameters );
-
         rewardedAd = new FiveAdVideoReward( activity, slotId );
-        rewardedAd.setListener( new RewardedListener( listener ) );
+        activityRef = new WeakReference<>( activity );
 
+        RewardedListener rewardedListener = new RewardedListener( listener );
+        rewardedAd.setLoadListener( rewardedListener );
+        rewardedAd.setViewEventListener( rewardedListener );
         rewardedAd.loadAdAsync();
     }
 
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
+        if ( activityRef.get() != activity )
+        {
+            log( "Display error: Activity instance used in rewarded ad initialization is different from activity instance being used to display ad." );
+            listener.onRewardedAdDisplayFailed( MaxAdapterError.INTERNAL_ERROR );
+            return;
+        }
+
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for slot id: " + slotId + "..." );
 
@@ -198,7 +219,9 @@ public class LineMediationAdapter
         if ( isNative )
         {
             nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
-            nativeAd.setListener( new NativeAdViewListener( listener, adFormat, parameters.getServerParameters(), activity ) );
+            NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters(), activity );
+            nativeAd.setLoadListener( nativeAdViewListener );
+            nativeAd.setViewEventListener( nativeAdViewListener );
 
             // We always want to mute banners and MRECs
             nativeAd.enableSound( false );
@@ -208,7 +231,9 @@ public class LineMediationAdapter
         else
         {
             adView = new FiveAdCustomLayout( activity, slotId, new DisplayMetrics().widthPixels );
-            adView.setListener( new AdViewListener( listener, adFormat ) );
+            AdViewListener adViewListener = new AdViewListener( listener, adFormat );
+            adView.setLoadListener( adViewListener );
+            adView.setViewEventListener( adViewListener );
 
             // We always want to mute banners and MRECs
             adView.enableSound( false );
@@ -224,7 +249,9 @@ public class LineMediationAdapter
         log( "Loading native ad for slot id: " + slotId + "..." );
 
         nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
-        nativeAd.setListener( new NativeAdListener( listener, parameters.getServerParameters(), activity ) );
+        NativeAdListener nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters(), activity );
+        nativeAd.setLoadListener( nativeAdListener );
+        nativeAd.setViewEventListener( nativeAdListener );
 
         // We always want to mute banners and MRECs
         nativeAd.enableSound( false );
@@ -232,18 +259,7 @@ public class LineMediationAdapter
         nativeAd.loadAdAsync();
     }
 
-    private void updateMuteState(MaxAdapterResponseParameters parameters)
-    {
-        final Bundle serverParameters = parameters.getServerParameters();
-        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-        if ( serverParameters.containsKey( "is_muted" ) )
-        {
-            boolean muted = serverParameters.getBoolean( "is_muted" );
-            FiveAd.getSingleton().enableSound( !muted );
-        }
-    }
-
-    private static MaxAdapterError toMaxError(FiveAdListener.ErrorCode lineAdsError)
+    private static MaxAdapterError toMaxError(FiveAdErrorCode lineAdsError)
     {
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
         String thirdPartySdkErrorMessage = "Please contact us.";
@@ -253,13 +269,9 @@ public class LineMediationAdapter
                 adapterError = MaxAdapterError.NO_CONNECTION;
                 thirdPartySdkErrorMessage = "Please try again in a stable network environment.";
                 break;
-            case NO_CACHED_AD:
+            case NO_AD:
                 adapterError = MaxAdapterError.AD_NOT_READY;
-                thirdPartySdkErrorMessage = "Please enable isTest and try again";
-                break;
-            case NO_FILL:
-                adapterError = MaxAdapterError.NO_FILL;
-                thirdPartySdkErrorMessage = "Please enable isTest and try again";
+                thirdPartySdkErrorMessage = "Ad was not ready at display time. Please try again.";
                 break;
             case BAD_APP_ID:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
@@ -273,10 +285,6 @@ public class LineMediationAdapter
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 thirdPartySdkErrorMessage = "Please contact us.";
                 break;
-            case UNSUPPORTED_OS_VERSION:
-                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                thirdPartySdkErrorMessage = "Please check with Android 4.0.0 or above.";
-                break;
             case INVALID_STATE:
                 adapterError = MaxAdapterError.INVALID_LOAD_STATE;
                 thirdPartySdkErrorMessage = "There is a problem with the implementation. Please check the following. Whether the initialization process (FiveAd.initialize) is executed before the creation of the ad object or loadAdAsync. Are you calling loadAdAsync multiple times for one ad object?";
@@ -286,7 +294,6 @@ public class LineMediationAdapter
                 thirdPartySdkErrorMessage = "Make sure you are using the SlotID issued on the FIVE Dashboard.";
                 break;
             case SUPPRESSED:
-            case CONTENT_UNAVAILABLE:
             case PLAYER_ERROR:
                 adapterError = MaxAdapterError.UNSPECIFIED;
                 thirdPartySdkErrorMessage = "Please contact us.";
@@ -313,7 +320,7 @@ public class LineMediationAdapter
     }
 
     private class InterstitialListener
-            implements FiveAdListener
+            implements FiveAdLoadListener, FiveAdViewEventListener
     {
         private final MaxInterstitialAdapterListener listener;
 
@@ -330,7 +337,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdError(final FiveAdInterface ad, final ErrorCode errorCode)
+        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Interstitial ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
@@ -338,11 +345,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpressionImage(final FiveAdInterface ad)
+        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        {
+            log( "Interstitial ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            MaxAdapterError error = toMaxError( errorCode );
+            listener.onInterstitialAdDisplayFailed( error );
+        }
+
+        @Override
+        public void onFiveAdImpression(final FiveAdInterface ad)
         {
             log( "Interstitial ad impression tracked for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for graphic-only interstitial ads.
             listener.onInterstitialAdDisplayed();
         }
 
@@ -407,7 +420,7 @@ public class LineMediationAdapter
     }
 
     private class RewardedListener
-            implements FiveAdListener
+            implements FiveAdLoadListener, FiveAdViewEventListener
     {
         private final MaxRewardedAdapterListener listener;
         private       boolean                    hasGrantedReward;
@@ -425,7 +438,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdError(final FiveAdInterface ad, final ErrorCode errorCode)
+        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Rewarded ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
@@ -433,11 +446,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpressionImage(final FiveAdInterface ad)
+        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        {
+            log( "Rewarded ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            MaxAdapterError error = toMaxError( errorCode );
+            listener.onRewardedAdDisplayFailed( error );
+        }
+
+        @Override
+        public void onFiveAdImpression(final FiveAdInterface ad)
         {
             log( "Rewarded ad impression tracked for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for graphic-only rewarded ads.
             listener.onRewardedAdDisplayed();
             listener.onRewardedAdVideoStarted();
         }
@@ -516,7 +535,7 @@ public class LineMediationAdapter
     }
 
     private class AdViewListener
-            implements FiveAdListener
+            implements FiveAdLoadListener, FiveAdViewEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -535,7 +554,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdError(final FiveAdInterface ad, final ErrorCode errorCode)
+        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( adFormat.getLabel() + " ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
@@ -543,11 +562,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpressionImage(final FiveAdInterface ad)
+        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        {
+            log( adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            MaxAdapterError error = toMaxError( errorCode );
+            listener.onAdViewAdDisplayFailed( error );
+        }
+
+        @Override
+        public void onFiveAdImpression(final FiveAdInterface ad)
         {
             log( adFormat.getLabel() + " ad impression tracked for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for graphic-only adview ads.
             listener.onAdViewAdDisplayed();
         }
 
@@ -612,7 +637,7 @@ public class LineMediationAdapter
     }
 
     private class NativeAdViewListener
-            implements FiveAdListener
+            implements FiveAdLoadListener, FiveAdViewEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -643,7 +668,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdError(final FiveAdInterface ad, final ErrorCode errorCode)
+        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Native " + adFormat.getLabel() + " ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
@@ -651,11 +676,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpressionImage(final FiveAdInterface ad)
+        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        {
+            log( "Native " + adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            MaxAdapterError error = toMaxError( errorCode );
+            listener.onAdViewAdDisplayFailed( error );
+        }
+
+        @Override
+        public void onFiveAdImpression(final FiveAdInterface ad)
         {
             log( "Native " + adFormat.getLabel() + " ad impression tracked for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for graphic-only native adview ads.
             listener.onAdViewAdDisplayed();
         }
 
@@ -820,7 +851,7 @@ public class LineMediationAdapter
     }
 
     private class NativeAdListener
-            implements FiveAdListener
+            implements FiveAdLoadListener, FiveAdViewEventListener
     {
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
@@ -895,7 +926,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdError(final FiveAdInterface ad, final ErrorCode errorCode)
+        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Native ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
@@ -903,11 +934,15 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpressionImage(final FiveAdInterface ad)
+        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        {
+            log( "Native ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+        }
+
+        @Override
+        public void onFiveAdImpression(final FiveAdInterface ad)
         {
             log( "Native ad impression tracked for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for graphic-only native adview ads.
             listener.onNativeAdDisplayed( null );
         }
 

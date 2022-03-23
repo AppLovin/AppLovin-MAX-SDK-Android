@@ -1,5 +1,13 @@
 # Changelog
 
+## 2021.10.29.0
+* Certified with FiveAd SDK 2.4.20211029.
+* Update mute setting API to use `enableSoundByDefault()` instead of `enableSound()`. NOTE: The mute state can only be set at SDK initialization, hence, the mute state at time of ad display may not reflect the current mute state.
+* Update impression callback to `onFiveAdImpression()` to replace `onFiveAdImpressionImage()`.
+* Add check to ensure that the same `activity` instance used to initialize interstitial and rewarded ads is passed in their respective `show()` methods.
+* Improve error handling.
+* Remove `FiveAdConfig.formats` since it is deprecated.
+
 ## 2021.5.11.11
 * Support for null `Activity` on init.
 
