@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.5.1
+* Add support for COPPA.
+
 ## 10.0.5.0
 * Certified with InMobi SDK 10.0.5.
 

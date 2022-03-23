@@ -88,6 +88,8 @@ public class InMobiMediationAdapter
             return;
         }
 
+        updateAgeRestrictedUser( parameters );
+
         String signal = InMobiSdk.getToken( getExtras( parameters ), null );
         callback.onSignalCollected( signal );
     }
@@ -117,6 +119,8 @@ public class InMobiMediationAdapter
             Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
 
             status = InitializationStatus.INITIALIZING;
+
+            updateAgeRestrictedUser( parameters );
 
             JSONObject consentObject = getConsentJSONObject( parameters );
             InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
@@ -155,6 +159,9 @@ public class InMobiMediationAdapter
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
+        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
+        log( "Loading " + adFormat.getLabel() + " AdView ad for placement: " + placementId + "..." );
+
         if ( !InMobiSdk.isSDKInitialized() )
         {
             log( "InMobi SDK not successfully initialized: failing " + adFormat.getLabel() + " ad load..." );
@@ -163,8 +170,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
-        log( "Loading " + adFormat.getLabel() + " AdView ad for placement: " + placementId + "..." );
+        updateAgeRestrictedUser( parameters );
 
         adView = new InMobiBanner( activity, placementId );
         adView.setExtras( getExtras( parameters ) );
@@ -218,6 +224,9 @@ public class InMobiMediationAdapter
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
+        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
+        log( "Loading interstitial ad for placement: " + placementId + "..." );
+
         if ( !InMobiSdk.isSDKInitialized() )
         {
             log( "InMobi SDK not successfully initialized: failing interstitial ad load..." );
@@ -226,8 +235,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
-        log( "Loading interstitial ad for placement: " + placementId + "..." );
+        updateAgeRestrictedUser( parameters );
 
         interstitialAd = createFullscreenAd( placementId, parameters, new InterstitialListener( listener ), activity );
 
@@ -258,6 +266,9 @@ public class InMobiMediationAdapter
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
+        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
+        log( "Loading rewarded ad for placement: " + placementId + "..." );
+
         if ( !InMobiSdk.isSDKInitialized() )
         {
             log( "InMobi SDK not successfully initialized: failing rewarded ad load..." );
@@ -266,8 +277,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
-        log( "Loading rewarded ad for placement: " + placementId + "..." );
+        updateAgeRestrictedUser( parameters );
 
         rewardedAd = createFullscreenAd( placementId, parameters, new RewardedAdListener( listener ), activity );
 
@@ -354,17 +364,20 @@ public class InMobiMediationAdapter
         return consentObject;
     }
 
-    private Map<String, String> getExtras(MaxAdapterParameters parameters)
+    private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
     {
-        Map<String, String> extras = new HashMap<>( 3 );
-        extras.put( "tp", "c_applovin" );
-        extras.put( "tp-ver", AppLovinSdk.VERSION );
-
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {
-            extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
+            InMobiSdk.setIsAgeRestricted( isAgeRestrictedUser );
         }
+    }
+
+    private Map<String, String> getExtras(MaxAdapterParameters parameters)
+    {
+        Map<String, String> extras = new HashMap<>( 2 );
+        extras.put( "tp", "c_applovin" );
+        extras.put( "tp-ver", AppLovinSdk.VERSION );
 
         return extras;
     }
