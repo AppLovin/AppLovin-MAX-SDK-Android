@@ -38,6 +38,7 @@ import com.chartboost.sdk.Events.ChartboostShowEvent;
 import com.chartboost.sdk.Libraries.CBLogging;
 import com.chartboost.sdk.Model.CBError;
 import com.chartboost.sdk.Privacy.model.CCPA;
+import com.chartboost.sdk.Privacy.model.COPPA;
 import com.chartboost.sdk.Privacy.model.DataUseConsent;
 import com.chartboost.sdk.Privacy.model.GDPR;
 
@@ -97,7 +98,7 @@ public class ChartboostMediationAdapter
             Chartboost.startWithAppId( context, appId, appSignature );
             Chartboost.setDelegate( ROUTER.getDelegate() );
 
-            Chartboost.setMediation( Chartboost.CBMediation.CBMediationOther, AppLovinSdk.VERSION, getAdapterVersion() );
+            Chartboost.setMediation( Chartboost.CBMediation.CBMediationMAX, AppLovinSdk.VERSION, getAdapterVersion() );
 
             // Whether or not to autocache ads - it is enabled by default and AdMob sets it to true while MoPub sets it to false
             boolean autoCacheAds = serverParameters.getBoolean( "auto_cache_ads" ); // We will default to false to match MoPub
@@ -293,6 +294,12 @@ public class ChartboostMediationAdapter
                 DataUseConsent ccpaConsent = new CCPA( isDoNotSell ? CCPA.CCPA_CONSENT.OPT_OUT_SALE : CCPA.CCPA_CONSENT.OPT_IN_SALE );
                 Chartboost.addDataUseConsent( applicationContext, ccpaConsent );
             }
+        }
+
+        Boolean isAgeRestrictedUser = getPrivacySetting("isAgeRestrictedUser", parameters);
+        if (isAgeRestrictedUser != null) {
+            DataUseConsent coppaConsent = new COPPA(isAgeRestrictedUser);
+            Chartboost.addDataUseConsent(applicationContext, coppaConsent);
         }
     }
 
