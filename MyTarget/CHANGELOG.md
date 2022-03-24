@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.1.0
+* Certified with MyTarget SDK 5.15.1.
+
 ## 5.15.0.3
 * Add support for Binary CCPA.
 
