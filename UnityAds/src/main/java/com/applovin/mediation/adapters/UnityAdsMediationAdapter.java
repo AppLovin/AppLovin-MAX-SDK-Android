@@ -25,6 +25,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
+import com.unity3d.ads.IUnityAdsTokenListener;
 import com.unity3d.ads.UnityAds;
 import com.unity3d.ads.UnityAdsLoadOptions;
 import com.unity3d.ads.UnityAdsShowOptions;
@@ -136,8 +137,12 @@ public class UnityAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
-        String signal = UnityAds.getToken();
-        callback.onSignalCollected( signal );
+        UnityAds.getToken(new IUnityAdsTokenListener() {
+            @Override
+            public void onUnityAdsTokenReady(String token) {
+                callback.onSignalCollected( token );
+            }
+        });
     }
 
     @Override
@@ -145,14 +150,6 @@ public class UnityAdsMediationAdapter
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement \"" + placementId + "\"..." );
-
-        if ( !UnityAds.isInitialized() )
-        {
-            log( "Unity Ads SDK is not initialized: failing interstitial ad load..." );
-            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
-            return;
-        }
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
