@@ -500,6 +500,16 @@ public class UnityAdsMediationAdapter
                 privacyMetaData.commit();
             }
         }
+
+        privacyMetaData.set( "privacy.mode", "mixed" );
+        privacyMetaData.commit();
+
+        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        if ( isAgeRestrictedUser != null )
+        {
+            privacyMetaData.set( "user.nonbehavioral", isAgeRestrictedUser );
+            privacyMetaData.commit();
+        }
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)

@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.1.2
+* Add support for COPPA. 
+
 ## 4.0.1.1
 * Fix privacy consent by using `commit()` after each value is set to the metadata.
 
