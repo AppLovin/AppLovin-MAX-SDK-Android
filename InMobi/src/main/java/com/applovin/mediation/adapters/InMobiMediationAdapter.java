@@ -366,6 +366,7 @@ public class InMobiMediationAdapter
 
     private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
     {
+        // NOTE: Only for family apps and not related to COPPA
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {
@@ -375,9 +376,15 @@ public class InMobiMediationAdapter
 
     private Map<String, String> getExtras(MaxAdapterParameters parameters)
     {
-        Map<String, String> extras = new HashMap<>( 2 );
+        Map<String, String> extras = new HashMap<>( 3 );
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
+
+        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        if ( isAgeRestrictedUser != null )
+        {
+            extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
+        }
 
         return extras;
     }

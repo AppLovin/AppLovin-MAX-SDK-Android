@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.5.2
+* Add support for both Family Apps and COPPA.
+
 ## 10.0.5.1
 * Add support for COPPA.
 
