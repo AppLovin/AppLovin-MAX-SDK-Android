@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -440,7 +441,10 @@ public class GoogleAdManagerMediationAdapter
         log( "Loading native ad for placement id: " + placementId + "..." );
 
         setRequestConfiguration( parameters );
-        AdRequest adRequest = createAdRequestWithParameters( parameters, activity );
+
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context applicationContext = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+        AdRequest adRequest = createAdRequestWithParameters( parameters, applicationContext );
 
         NativeAdOptions.Builder nativeAdOptionsBuilder = new NativeAdOptions.Builder();
         nativeAdOptionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters ) );
@@ -449,8 +453,8 @@ public class GoogleAdManagerMediationAdapter
         String template = BundleUtils.getString( "template", "", parameters.getServerParameters() );
         nativeAdOptionsBuilder.setRequestMultipleImages( template.contains( "medium" ) );
 
-        NativeAdListener nativeAdListener = new NativeAdListener( parameters, activity, listener );
-        AdLoader adLoader = new AdLoader.Builder( activity, placementId )
+        NativeAdListener nativeAdListener = new NativeAdListener( parameters, applicationContext, listener );
+        AdLoader adLoader = new AdLoader.Builder( applicationContext, placementId )
                 .withNativeAdOptions( nativeAdOptionsBuilder.build() )
                 .forNativeAd( nativeAdListener )
                 .withAdListener( nativeAdListener )
@@ -572,7 +576,7 @@ public class GoogleAdManagerMediationAdapter
         MobileAds.setRequestConfiguration( requestConfigurationBuilder.build() );
     }
 
-    private AdManagerAdRequest createAdRequestWithParameters(final MaxAdapterParameters parameters, final Activity activity)
+    private AdManagerAdRequest createAdRequestWithParameters(final MaxAdapterParameters parameters, final Context context)
     {
         AdManagerAdRequest.Builder requestBuilder = new AdManagerAdRequest.Builder();
 
@@ -607,7 +611,8 @@ public class GoogleAdManagerMediationAdapter
             {
                 networkExtras.putInt( "rdp", 1 ); // Restrict data processing - https://developers.google.com/admob/android/ccpa
 
-                activity.getPreferences( Context.MODE_PRIVATE ).edit()
+                PreferenceManager.getDefaultSharedPreferences( context )
+                        .edit()
                         .putInt( "gad_rdp", 1 )
                         .commit();
             }
@@ -913,7 +918,7 @@ public class GoogleAdManagerMediationAdapter
         final String                   placementId;
         final MaxAdFormat              adFormat;
         final Bundle                   serverParameters;
-        final WeakReference<Activity>  activityRef;
+        final WeakReference<Activity>  activityRef; // TODO: Switch to application context when SDK that takes in Context for MaxNativeAdView constructor gets enough traction.
         final MaxAdViewAdapterListener listener;
 
         NativeAdViewListener(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
@@ -1083,15 +1088,15 @@ public class GoogleAdManagerMediationAdapter
     {
         final String                     placementId;
         final Bundle                     serverParameters;
-        final WeakReference<Activity>    activityRef;
+        final Context                    applicationContext;
         final MaxNativeAdAdapterListener listener;
 
-        public NativeAdListener(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+        public NativeAdListener(final MaxAdapterResponseParameters parameters, final Context applicationContext, final MaxNativeAdAdapterListener listener)
         {
             placementId = parameters.getThirdPartyAdPlacementId();
             serverParameters = parameters.getServerParameters();
-            activityRef = new WeakReference<>( activity );
 
+            this.applicationContext = applicationContext;
             this.listener = listener;
         }
 
@@ -1099,17 +1104,6 @@ public class GoogleAdManagerMediationAdapter
         public void onNativeAdLoaded(@NonNull final NativeAd nativeAd)
         {
             log( "Native ad loaded: " + placementId );
-
-            final Activity activity = activityRef.get();
-            if ( activity == null )
-            {
-                log( "Native ad failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                nativeAd.destroy();
-
-                return;
-            }
 
             GoogleAdManagerMediationAdapter.this.nativeAd = nativeAd;
 
@@ -1132,7 +1126,7 @@ public class GoogleAdManagerMediationAdapter
                     MediaContent mediaContent = nativeAd.getMediaContent();
                     if ( mediaContent != null )
                     {
-                        MediaView googleMediaView = new MediaView( activity );
+                        MediaView googleMediaView = new MediaView( applicationContext );
                         googleMediaView.setMediaContent( mediaContent );
 
                         mediaView = googleMediaView;
@@ -1143,7 +1137,7 @@ public class GoogleAdManagerMediationAdapter
                         if ( images.size() > 0 )
                         {
                             NativeAd.Image image = images.get( 0 );
-                            ImageView mainImageView = new ImageView( activity );
+                            ImageView mainImageView = new ImageView( applicationContext );
                             mainImageView.setImageDrawable( image.getDrawable() );
 
                             mediaView = mainImageView;
