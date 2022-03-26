@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -522,7 +523,10 @@ public class GoogleMediationAdapter
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + " native ad for placement id: " + placementId + "..." );
 
         setRequestConfiguration( parameters );
-        AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.NATIVE, parameters, activity );
+
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context applicationContext = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+        AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.NATIVE, parameters, applicationContext );
 
         NativeAdOptions.Builder nativeAdOptionsBuilder = new NativeAdOptions.Builder();
         nativeAdOptionsBuilder.setAdChoicesPlacement( getAdChoicesPlacement( parameters ) );
@@ -531,8 +535,8 @@ public class GoogleMediationAdapter
         String template = BundleUtils.getString( "template", "", parameters.getServerParameters() );
         nativeAdOptionsBuilder.setRequestMultipleImages( template.contains( "medium" ) );
 
-        NativeAdListener nativeAdListener = new NativeAdListener( parameters, activity, listener );
-        AdLoader adLoader = new AdLoader.Builder( activity, placementId )
+        NativeAdListener nativeAdListener = new NativeAdListener( parameters, applicationContext, listener );
+        AdLoader adLoader = new AdLoader.Builder( applicationContext, placementId )
                 .withNativeAdOptions( nativeAdOptionsBuilder.build() )
                 .forNativeAd( nativeAdListener )
                 .withAdListener( nativeAdListener )
@@ -1022,7 +1026,7 @@ public class GoogleMediationAdapter
         final String                   placementId;
         final MaxAdFormat              adFormat;
         final Bundle                   serverParameters;
-        final WeakReference<Activity>  activityRef;
+        final WeakReference<Activity>  activityRef; // TODO: Switch to application context when SDK that takes in Context for MaxNativeAdView constructor gets enough traction.
         final MaxAdViewAdapterListener listener;
 
         NativeAdViewListener(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
@@ -1041,7 +1045,10 @@ public class GoogleMediationAdapter
             log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
 
             final Activity activity = activityRef.get();
-            if ( activity == null )
+            if ( activity == null
+                    || ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed() )
+                    || activity.isFinishing()
+                    || activity.isChangingConfigurations() )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: activity reference is null when ad is loaded" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
@@ -1192,15 +1199,15 @@ public class GoogleMediationAdapter
     {
         final String                     placementId;
         final Bundle                     serverParameters;
-        final WeakReference<Activity>    activityRef;
+        final Context                    applicationContext;
         final MaxNativeAdAdapterListener listener;
 
-        public NativeAdListener(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+        public NativeAdListener(final MaxAdapterResponseParameters parameters, final Context applicationContext, final MaxNativeAdAdapterListener listener)
         {
             placementId = parameters.getThirdPartyAdPlacementId();
             serverParameters = parameters.getServerParameters();
-            activityRef = new WeakReference<>( activity );
 
+            this.applicationContext = applicationContext;
             this.listener = listener;
         }
 
@@ -1208,17 +1215,6 @@ public class GoogleMediationAdapter
         public void onNativeAdLoaded(@NonNull final NativeAd nativeAd)
         {
             log( "Native ad loaded: " + placementId );
-
-            final Activity activity = activityRef.get();
-            if ( activity == null )
-            {
-                log( "Native ad failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                nativeAd.destroy();
-
-                return;
-            }
 
             GoogleMediationAdapter.this.nativeAd = nativeAd;
 
@@ -1241,7 +1237,7 @@ public class GoogleMediationAdapter
                     MediaContent mediaContent = nativeAd.getMediaContent();
                     if ( mediaContent != null )
                     {
-                        MediaView googleMediaView = new MediaView( activity );
+                        MediaView googleMediaView = new MediaView( applicationContext );
                         googleMediaView.setMediaContent( mediaContent );
 
                         mediaView = googleMediaView;
@@ -1252,7 +1248,7 @@ public class GoogleMediationAdapter
                         if ( images.size() > 0 )
                         {
                             NativeAd.Image image = images.get( 0 );
-                            ImageView mainImageView = new ImageView( activity );
+                            ImageView mainImageView = new ImageView( applicationContext );
                             mainImageView.setImageDrawable( image.getDrawable() );
 
                             mediaView = mainImageView;

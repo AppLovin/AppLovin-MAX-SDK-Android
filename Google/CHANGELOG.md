@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.4
+* Fix potential memory leak with using Activity context for creating native ad views.
+
 ## 20.6.0.3
 * Fix version check minimum for local extra parameter API usage.
 
