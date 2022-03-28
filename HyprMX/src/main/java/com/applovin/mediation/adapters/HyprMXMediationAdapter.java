@@ -245,13 +245,15 @@ public class HyprMXMediationAdapter
 
     private void updateUserConsent(final MaxAdapterResponseParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        // NOTE: HyprMX requested to always set GDPR regardless of region.
+        Boolean hasUserConsent = parameters.hasUserConsent();
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                HyprMX.INSTANCE.setConsentStatus( hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED );
-            }
+            HyprMX.INSTANCE.setConsentStatus( hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED );
+        }
+        else
+        {
+            HyprMX.INSTANCE.setConsentStatus( ConsentStatus.CONSENT_STATUS_UNKNOWN );
         }
     }
 

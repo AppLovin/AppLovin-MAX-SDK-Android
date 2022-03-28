@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.7
+* Set GDPR consent status regardless of users' region.
+
 ## 6.0.1.6
 * Fix `null` context when creating `HyprMXBannerView`.
 
