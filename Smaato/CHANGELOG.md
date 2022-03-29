@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.8.0.1
+* Add debug log for "is_location_collection_enabled" value.
+
 ## 21.8.0.0
 * Certified with Smaato SDK 21.8.0.
 

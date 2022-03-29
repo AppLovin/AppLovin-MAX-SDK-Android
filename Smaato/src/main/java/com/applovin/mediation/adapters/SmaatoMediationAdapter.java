@@ -245,7 +245,7 @@ public class SmaatoMediationAdapter
             }
             else
             {
-                log( adFormat.getLabel() + " ad load failed: ad request null with valid bid response" );
+                log( adFormat.getLabel() + " ad load failed: ad request null with invalid bid response" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             }
         }
@@ -289,7 +289,7 @@ public class SmaatoMediationAdapter
             }
             else
             {
-                log( "Interstitial load failed: ad request null with valid bid response" );
+                log( "Interstitial load failed: ad request null with invalid bid response" );
                 listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             }
         }
@@ -353,7 +353,7 @@ public class SmaatoMediationAdapter
             }
             else
             {
-                log( "Rewarded ad load failed: ad request null with valid bid response" );
+                log( "Rewarded ad load failed: ad request null with invalid bid response" );
                 listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             }
         }
@@ -421,6 +421,7 @@ public class SmaatoMediationAdapter
             Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
             if ( isLocationCollectionEnabledObj instanceof Boolean )
             {
+                log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
                 // NOTE: According to docs - this is disabled by default
                 SmaatoSdk.setGPSEnabled( (boolean) isLocationCollectionEnabledObj );
             }
@@ -534,7 +535,8 @@ public class SmaatoMediationAdapter
         }
         catch ( final InAppBiddingException exception )
         {
-            log( "Error occurred in saving pre-bid: " + exception );
+            log( "Error occurred in saving pre-bid: " + bidResponse, exception );
+
             return null;
         }
 
