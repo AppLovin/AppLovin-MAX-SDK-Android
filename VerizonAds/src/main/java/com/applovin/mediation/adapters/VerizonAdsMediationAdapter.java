@@ -2,11 +2,10 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -25,37 +24,37 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParamet
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
+import com.applovin.mediation.adapters.MediationAdapterBase;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.verizon.ads.ActivityStateManager;
-import com.verizon.ads.Component;
-import com.verizon.ads.CreativeInfo;
-import com.verizon.ads.DataPrivacy;
-import com.verizon.ads.ErrorInfo;
-import com.verizon.ads.Logger;
-import com.verizon.ads.RequestMetadata;
-import com.verizon.ads.VASAds;
-import com.verizon.ads.inlineplacement.AdSize;
-import com.verizon.ads.inlineplacement.InlineAdFactory;
-import com.verizon.ads.inlineplacement.InlineAdView;
-import com.verizon.ads.interstitialplacement.InterstitialAd;
-import com.verizon.ads.interstitialplacement.InterstitialAdFactory;
-import com.verizon.ads.nativeplacement.NativeAd;
-import com.verizon.ads.nativeplacement.NativeAdFactory;
-import com.verizon.ads.verizonnativecontroller.NativeImageComponent;
-import com.verizon.ads.verizonnativecontroller.NativeVideoComponent;
+import com.yahoo.ads.ActivityStateManager;
+import com.yahoo.ads.CcpaConsent;
+import com.yahoo.ads.CreativeInfo;
+import com.yahoo.ads.ErrorInfo;
+import com.yahoo.ads.Logger;
+import com.yahoo.ads.RequestMetadata;
+import com.yahoo.ads.VideoPlayerView;
+import com.yahoo.ads.YASAds;
+import com.yahoo.ads.inlineplacement.AdSize;
+import com.yahoo.ads.inlineplacement.InlineAdView;
+import com.yahoo.ads.inlineplacement.InlinePlacementConfig;
+import com.yahoo.ads.interstitialplacement.InterstitialAd;
+import com.yahoo.ads.interstitialplacement.InterstitialPlacementConfig;
+import com.yahoo.ads.nativeplacement.NativeAd;
+import com.yahoo.ads.nativeplacement.NativePlacementConfig;
+import com.yahoo.ads.yahoonativecontroller.NativeComponent;
+import com.yahoo.ads.yahoonativecontroller.NativeImageComponent;
+import com.yahoo.ads.yahoonativecontroller.NativeTextComponent;
+import com.yahoo.ads.yahoonativecontroller.NativeVideoComponent;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by santoshbagadi on 2/27/19.
@@ -64,8 +63,6 @@ public class VerizonAdsMediationAdapter
         extends MediationAdapterBase
         implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
 {
-    private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
-
     // Server parameters
     private static final String PARAMETER_SITE_ID = "site_id";
 
@@ -76,13 +73,8 @@ public class VerizonAdsMediationAdapter
     // Ad objects
     private InterstitialAd interstitialAd;
     private InterstitialAd rewardedAd;
-    private InlineAdView   inlineAdView;
-    private NativeAd       nativeAd;
-
-    // Factory objects require cleanup
-    private InterstitialAdFactory interstitialAdFactory;
-    private InlineAdFactory       inlineAdFactory;
-    private NativeAdFactory       nativeAdFactory;
+    private InlineAdView inlineAdView;
+    private NativeAd nativeAd;
 
     public VerizonAdsMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -90,16 +82,16 @@ public class VerizonAdsMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( !VASAds.isInitialized() )
+        if ( !YASAds.isInitialized() )
         {
             final Bundle serverParameters = parameters.getServerParameters();
             final String siteId = serverParameters.getString( PARAMETER_SITE_ID );
-            log( "Initializing Verizon Ads SDK with site id: " + siteId + "..." );
+            log( "Initializing Yahoo Mobile SDK with site id: " + siteId + "..." );
 
             // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
             Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
 
-            final boolean initialized = VASAds.initialize( application, siteId );
+            final boolean initialized = YASAds.initialize( application, siteId );
 
             InitializationStatus status = initialized ? InitializationStatus.INITIALIZED_SUCCESS : InitializationStatus.INITIALIZED_FAILURE;
             onCompletionListener.onCompletion( status, null );
@@ -116,13 +108,13 @@ public class VerizonAdsMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return getVersionString( com.verizon.ads.edition.BuildConfig.class, "VERSION_NAME" );
+        return "1.14.0";
     }
 
     @Override
     public String getAdapterVersion()
     {
-        return com.applovin.mediation.adapters.verizonads.BuildConfig.VERSION_NAME;
+        return "1.14.0.7";
     }
 
     @Override
@@ -142,37 +134,17 @@ public class VerizonAdsMediationAdapter
             rewardedAd = null;
         }
 
-        if ( interstitialAdFactory != null )
-        {
-            interstitialAdFactory.setListener( null );
-            interstitialAdFactory.destroy();
-            interstitialAdFactory = null;
-        }
-
         if ( inlineAdView != null )
         {
             inlineAdView.destroy();
             inlineAdView = null;
         }
 
-        if ( inlineAdFactory != null )
-        {
-            inlineAdFactory.setListener( null );
-            inlineAdFactory.destroy();
-            inlineAdFactory = null;
-        }
 
         if ( nativeAd != null )
         {
             nativeAd.destroy();
             nativeAd = null;
-        }
-
-        if ( nativeAdFactory != null )
-        {
-            nativeAdFactory.setListener( null );
-            nativeAdFactory.destroy();
-            nativeAdFactory = null;
         }
     }
     //endregion
@@ -186,21 +158,21 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for placement: '" + placementId + "'..." );
 
         InterstitialListener interstitialListener = new InterstitialListener( listener );
-        interstitialAdFactory = new InterstitialAdFactory( activity, placementId, interstitialListener );
+        interstitialAd = new InterstitialAd(activity, placementId, interstitialListener);
 
         Bundle serverParameters = parameters.getServerParameters();
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, parameters.getBidResponse() );
-        interstitialAdFactory.setRequestMetaData( requestMetadata );
+        InterstitialPlacementConfig interstitialPlacementConfig = new InterstitialPlacementConfig(placementId, requestMetadata);
 
         updateVerizonAdsSdkData( parameters );
 
-        ActivityStateManager activityStateManager = VASAds.getActivityStateManager();
+        ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
         if ( activityStateManager != null )
         {
             activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
         }
 
-        interstitialAdFactory.load( interstitialListener );
+        interstitialAd.load(interstitialPlacementConfig);
     }
 
     @Override
@@ -229,21 +201,21 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for placement: '" + placementId + "'..." );
 
         final RewardedListener rewardedListener = new RewardedListener( listener );
-        final InterstitialAdFactory rewardedAdFactory = new InterstitialAdFactory( activity, placementId, rewardedListener );
+        rewardedAd = new InterstitialAd(activity, placementId, rewardedListener);
 
         final Bundle serverParameters = parameters.getServerParameters();
         final RequestMetadata requestMetadata = createRequestMetadata( serverParameters, parameters.getBidResponse() );
-        rewardedAdFactory.setRequestMetaData( requestMetadata );
+        InterstitialPlacementConfig interstitialPlacementConfig = new InterstitialPlacementConfig(placementId, requestMetadata);
 
         updateVerizonAdsSdkData( parameters );
 
-        ActivityStateManager activityStateManager = VASAds.getActivityStateManager();
+        ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
         if ( activityStateManager != null )
         {
             activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
         }
 
-        rewardedAdFactory.load( rewardedListener );
+        rewardedAd.load( interstitialPlacementConfig );
     }
 
     @Override
@@ -274,21 +246,21 @@ public class VerizonAdsMediationAdapter
 
         AdSize adSize = toAdSize( adFormat );
         AdViewListener adViewListener = new AdViewListener( listener );
-        inlineAdFactory = new InlineAdFactory( activity, placementId, Collections.singletonList( adSize ), adViewListener );
+        inlineAdView = new InlineAdView(activity, placementId, adViewListener);
 
         Bundle serverParameters = parameters.getServerParameters();
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, parameters.getBidResponse() );
-        inlineAdFactory.setRequestMetaData( requestMetadata );
+        InlinePlacementConfig inlinePlacementConfig = new InlinePlacementConfig(placementId, requestMetadata, Collections.singletonList(adSize));
 
         updateVerizonAdsSdkData( parameters );
 
-        ActivityStateManager activityStateManager = VASAds.getActivityStateManager();
+        ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
         if ( activityStateManager != null )
         {
             activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
         }
 
-        inlineAdFactory.load( adViewListener );
+        inlineAdView.load( inlinePlacementConfig );
     }
     //endregion
 
@@ -302,14 +274,15 @@ public class VerizonAdsMediationAdapter
 
         Bundle serverParameters = parameters.getServerParameters();
         NativeAdListener nativeAdListener = new NativeAdListener( serverParameters, activity, listener );
-        nativeAdFactory = new NativeAdFactory( activity, placementId, new String[] { "simpleImage", "simpleVideo" }, nativeAdListener );
+        nativeAd = new NativeAd( activity, placementId, nativeAdListener );
 
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, bidResponse );
-        nativeAdFactory.setRequestMetaData( requestMetadata );
+        NativePlacementConfig nativePlacementConfig = new NativePlacementConfig(placementId, requestMetadata, new String[] { "simpleImage", "simpleVideo" });
 
         updateVerizonAdsSdkData( parameters );
-
-        nativeAdFactory.load( nativeAdListener );
+        AppLovinSdkUtils.runOnUiThread(() ->
+            nativeAd.load( nativePlacementConfig )
+        );
     }
     //endregion
 
@@ -319,10 +292,10 @@ public class VerizonAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
-        String signal = VASAds.getBiddingToken( activity );
+        String signal = YASAds.getBiddingToken( activity );
         if ( signal == null )
         {
-            callback.onSignalCollectionFailed( "VerizonAds SDK not initialized; failed to return a bid." );
+            callback.onSignalCollectionFailed( "Yahoo Mobile SDK not initialized; failed to return a bid." );
 
             return;
         }
@@ -335,14 +308,12 @@ public class VerizonAdsMediationAdapter
     private void updateVerizonAdsSdkData(final MaxAdapterParameters parameters)
     {
         final int logLevel = parameters.isTesting() ? Logger.VERBOSE : Logger.ERROR;
-        VASAds.setLogLevel( logLevel );
-
-        DataPrivacy.Builder builder = new DataPrivacy.Builder();
+        YASAds.setLogLevel( Logger.VERBOSE );
 
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
-        if ( isAgeRestrictedUser != null )
+        if ( isAgeRestrictedUser != null && isAgeRestrictedUser)
         {
-            builder.setCoppaApplies( isAgeRestrictedUser );
+            YASAds.applyCoppa();
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
@@ -350,15 +321,14 @@ public class VerizonAdsMediationAdapter
             Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
             if ( isDoNotSell != null )
             {
-                builder.setCcpaPrivacy( isDoNotSell ? "1YY-" : "1YN-" );
+                YASAds.applyCcpa();
+                YASAds.addConsent(new CcpaConsent(isDoNotSell ? "1YY-" : "1YN-"));
             }
             else
             {
-                builder.setCcpaPrivacy( "1---" );
+                YASAds.addConsent(new CcpaConsent( "1---" ));
             }
         }
-
-        VASAds.setDataPrivacy( builder.build() );
     }
 
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
@@ -402,23 +372,11 @@ public class VerizonAdsMediationAdapter
             builder.setUserChildren( serverParameters.getInt( "user_children" ) );
         }
 
-        if ( serverParameters.containsKey( "user_income" ) )
-        {
-            builder.setUserIncome( serverParameters.getInt( "user_income" ) );
-        }
-
         if ( serverParameters.containsKey( "user_education" ) )
         {
             final String educationString = serverParameters.getString( "user_education" );
             final RequestMetadata.Education education = RequestMetadata.Education.valueOf( educationString );
             builder.setUserEducation( education );
-        }
-
-        if ( serverParameters.containsKey( "user_ethnicity" ) )
-        {
-            final String ethnicityString = serverParameters.getString( "user_ethnicity" );
-            final RequestMetadata.Ethnicity ethnicity = RequestMetadata.Ethnicity.valueOf( ethnicityString );
-            builder.setUserEthnicity( ethnicity );
         }
 
         if ( serverParameters.containsKey( "user_gender" ) )
@@ -433,13 +391,6 @@ public class VerizonAdsMediationAdapter
             final String maritalStatusString = serverParameters.getString( "user_marital_status" );
             final RequestMetadata.MaritalStatus maritalStatus = RequestMetadata.MaritalStatus.valueOf( maritalStatusString );
             builder.setUserMaritalStatus( maritalStatus );
-        }
-
-        if ( serverParameters.containsKey( "user_politics" ) )
-        {
-            final String politicsString = serverParameters.getString( "user_politics" );
-            final RequestMetadata.Politics politics = RequestMetadata.Politics.valueOf( politicsString );
-            builder.setUserPolitics( politics );
         }
 
         if ( serverParameters.containsKey( "dob" ) )
@@ -477,14 +428,14 @@ public class VerizonAdsMediationAdapter
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
         switch ( verizonErrorCode )
         {
-            case VASAds.ERROR_NO_FILL:
+            case YASAds.ERROR_NO_FILL:
                 adapterError = MaxAdapterError.NO_FILL;
                 break;
-            case VASAds.ERROR_AD_REQUEST_TIMED_OUT:
+            case YASAds.ERROR_AD_REQUEST_TIMED_OUT:
                 adapterError = MaxAdapterError.TIMEOUT;
                 break;
-            case VASAds.ERROR_AD_REQUEST_FAILED:
-            case VASAds.ERROR_AD_REQUEST_FAILED_APP_IN_BACKGROUND:
+            case YASAds.ERROR_AD_REQUEST_FAILED:
+            case YASAds.ERROR_AD_REQUEST_FAILED_APP_IN_BACKGROUND:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
         }
@@ -514,8 +465,7 @@ public class VerizonAdsMediationAdapter
     //endregion
 
     //region Listeners implementation
-    private class InterstitialListener
-            implements InterstitialAdFactory.InterstitialAdFactoryListener, InterstitialAd.InterstitialAdListener
+    private class InterstitialListener implements InterstitialAd.InterstitialAdListener
     {
         private final MaxInterstitialAdapterListener listener;
 
@@ -525,7 +475,7 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onLoaded(final InterstitialAdFactory interstitialAdFactory, final InterstitialAd interstitialAd)
+        public void onLoaded(final InterstitialAd interstitialAd)
         {
             log( "Interstitial ad loaded" );
 
@@ -546,10 +496,10 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onError(final InterstitialAdFactory interstitialAdFactory, final ErrorInfo errorInfo)
+        public void onLoadFailed(InterstitialAd interstitialAd, final ErrorInfo errorInfo)
         {
             MaxAdapterError adapterError = toMaxError( errorInfo );
-            log( "Interstitial ad (" + interstitialAdFactory.getPlacementId() + ") load failed with error: " + adapterError );
+            log( "Interstitial ad (" + interstitialAd.getPlacementId() + ") load failed with error: " + adapterError );
             listener.onInterstitialAdLoadFailed( adapterError );
         }
 
@@ -595,8 +545,7 @@ public class VerizonAdsMediationAdapter
         }
     }
 
-    private class RewardedListener
-            implements InterstitialAdFactory.InterstitialAdFactoryListener, InterstitialAd.InterstitialAdListener
+    private class RewardedListener implements InterstitialAd.InterstitialAdListener
     {
         private final MaxRewardedAdapterListener listener;
         private       boolean                    hasGrantedReward;
@@ -607,7 +556,7 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onLoaded(final InterstitialAdFactory rewardedAdFactory, final InterstitialAd rewardedAd)
+        public void onLoaded(final InterstitialAd rewardedAd)
         {
             log( "Interstitial ad loaded" );
 
@@ -628,10 +577,10 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onError(final InterstitialAdFactory rewardedAdFactory, final ErrorInfo errorInfo)
+        public void onLoadFailed(final InterstitialAd rewardedAd, final ErrorInfo errorInfo)
         {
             MaxAdapterError adapterError = toMaxError( errorInfo );
-            log( "Rewarded ad (" + rewardedAdFactory.getPlacementId() + ") load failed with error: " + adapterError );
+            log( "Rewarded ad (" + rewardedAd.getPlacementId() + ") load failed with error: " + adapterError );
             listener.onRewardedAdLoadFailed( adapterError );
         }
 
@@ -693,8 +642,7 @@ public class VerizonAdsMediationAdapter
         }
     }
 
-    private class AdViewListener
-            implements InlineAdFactory.InlineAdFactoryListener, InlineAdView.InlineAdListener
+    private class AdViewListener implements InlineAdView.InlineAdListener
     {
         private final MaxAdViewAdapterListener listener;
 
@@ -704,12 +652,12 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onLoaded(final InlineAdFactory inlineAdFactory, final InlineAdView inlineAdView)
+        public void onLoaded(final InlineAdView inlineAdView)
         {
-            log( "AdView loaded: " + inlineAdFactory.getPlacementId() );
+            log( "AdView loaded: " + inlineAdView.getPlacementId() );
 
             // Disable AdView ad refresh by setting the refresh interval to max value.
-            inlineAdView.setRefreshInterval( Integer.MAX_VALUE );
+//            inlineAdView.setRefreshInterval( Integer.MAX_VALUE );
 
             VerizonAdsMediationAdapter.this.inlineAdView = inlineAdView;
 
@@ -728,10 +676,10 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onError(final InlineAdFactory inlineAdFactory, final ErrorInfo errorInfo)
+        public void onLoadFailed(final InlineAdView inlineAdView, final ErrorInfo errorInfo)
         {
             MaxAdapterError adapterError = toMaxError( errorInfo );
-            log( "AdView ad (" + inlineAdFactory.getPlacementId() + ") failed to load with error: " + adapterError );
+            log( "AdView ad (" + inlineAdView.getPlacementId() + ") failed to load with error: " + adapterError );
             listener.onAdViewAdLoadFailed( adapterError );
         }
 
@@ -789,8 +737,7 @@ public class VerizonAdsMediationAdapter
         }
     }
 
-    private class NativeAdListener
-            implements NativeAdFactory.NativeAdFactoryListener, NativeAd.NativeAdListener
+    private class NativeAdListener implements NativeAd.NativeAdListener
     {
         private final Bundle                     serverParameters;
         private final WeakReference<Activity>    activityRef;
@@ -805,7 +752,7 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onLoaded(final NativeAdFactory nativeAdFactory, final NativeAd nativeAd)
+        public void onLoaded(final NativeAd nativeAd)
         {
             log( "Native ad loaded: " + nativeAd.getPlacementId() );
 
@@ -820,131 +767,109 @@ public class VerizonAdsMediationAdapter
                 return;
             }
 
-            AppLovinSdkUtils.runOnUiThread( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    String title = null;
-                    String disclaimer = null;
-                    String body = null;
-                    String callToAction = null;
-                    try
-                    {
-                        // Verizon's `getText()` getter returns null, so we need reflection to get the text
-                        Class<?> verizonNativeTextComponentClass = Class.forName( "com.verizon.ads.verizonnativecontroller.VerizonNativeTextComponent" );
-                        Field field = verizonNativeTextComponentClass.getDeclaredField( "text" );
-                        field.setAccessible( true );
+            AppLovinSdkUtils.runOnUiThread(() -> {
+                String title = null;
+                String disclaimer = null;
+                String body = null;
+                String callToAction = null;
 
-                        Object titleObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "title" ) );
-                        title = (String) field.get( titleObject );
-
-                        Object disclaimerObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "disclaimer" ) );
-                        disclaimer = (String) field.get( disclaimerObject );
-
-                        Object bodyObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "body" ) );
-                        body = (String) field.get( bodyObject );
-
-                        Object callToActionObject = verizonNativeTextComponentClass.cast( nativeAd.getComponent( "callToAction" ) );
-                        callToAction = (String) field.get( callToActionObject );
-                    }
-                    catch ( Exception ignored ) {}
-
-                    final NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
-                    NativeImageComponent mediaImageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
-                    NativeVideoComponent mediaVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
-
-                    View mediaView = null;
-                    if ( mediaVideoComponent != null && mediaVideoComponent.getView( activity ) != null )
-                    {
-                        mediaView = mediaVideoComponent.getView( activity );
-                    }
-                    else if ( mediaImageComponent != null && mediaImageComponent.getView( activity ) != null )
-                    {
-                        mediaView = mediaImageComponent.getView( activity );
-                    }
-
-                    String templateName = BundleUtils.getString( "template", "", serverParameters );
-                    boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-                    boolean missingRequiredAssets = false;
-                    if ( isTemplateAd && TextUtils.isEmpty( title ) )
-                    {
-                        missingRequiredAssets = true;
-                    }
-                    else if ( TextUtils.isEmpty( title )
-                            || TextUtils.isEmpty( callToAction )
-                            || mediaView == null )
-                    {
-                        missingRequiredAssets = true;
-                    }
-
-                    if ( missingRequiredAssets )
-                    {
-                        e( "Custom native ad (" + nativeAd + ") does not have required assets." );
-                        listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
-
-                        return;
-                    }
-
-                    VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
-
-                    final String finalTitle = title;
-                    final String finalDisclaimer = disclaimer;
-                    final String finalBody = body;
-                    final String finalCallToAction = callToAction;
-                    final View finalMediaView = mediaView;
-                    getCachingExecutorService().submit( new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            Uri iconUri = iconComponent.getUri();
-                            Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUri.toString(), activity.getResources() );
-                            MaxNativeAd.MaxNativeAdImage iconImage = null;
-                            try
-                            {
-                                int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
-                                Drawable iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
-
-                                if ( iconDrawable != null )
-                                {
-                                    iconImage = new MaxNativeAd.MaxNativeAdImage( iconDrawable );
-                                }
-                            }
-                            catch ( Throwable th )
-                            {
-                                log( "Failed to fetch icon image from URL: " + iconUri, th );
-                            }
-
-                            MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                                    .setAdFormat( MaxAdFormat.NATIVE )
-                                    .setTitle( finalTitle )
-                                    .setAdvertiser( finalDisclaimer )
-                                    .setBody( finalBody )
-                                    .setCallToAction( finalCallToAction )
-                                    .setIcon( iconImage )
-                                    .setMediaView( finalMediaView );
-                            MaxNativeAd maxNativeAd = new MaxVerizonNativeAd( listener, builder );
-
-                            CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
-                            Bundle extraInfo = new Bundle( 1 );
-                            if ( creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
-                            {
-                                extraInfo.putString( "creative_id", creativeInfo.getCreativeId() );
-                            }
-
-                            listener.onNativeAdLoaded( maxNativeAd, extraInfo );
-                        }
-                    } );
+                NativeTextComponent titleComponent = (NativeTextComponent)nativeAd.getComponent("title");
+                if (titleComponent != null) {
+                    title = titleComponent.getText();
                 }
-            } );
+
+                NativeTextComponent disclaimerComponent = (NativeTextComponent)nativeAd.getComponent("disclaimer");
+                if (disclaimerComponent != null) {
+                    disclaimer = disclaimerComponent.getText();
+                }
+
+                NativeTextComponent bodyComponent = (NativeTextComponent)nativeAd.getComponent("body");
+                if (bodyComponent != null) {
+                    body = bodyComponent.getText();
+                }
+
+                NativeTextComponent ctaComponent = (NativeTextComponent)nativeAd.getComponent("callToAction");
+                if (ctaComponent != null) {
+                    callToAction = ctaComponent.getText();
+                }
+
+                final NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
+                ImageView iconView= null;
+                if (iconComponent != null) {
+                    iconView = new ImageView(activity);
+                    iconComponent.prepareView(iconView);
+
+                }
+                final NativeVideoComponent nativeVideoComponent = (NativeVideoComponent)nativeAd.getComponent("video");
+                final NativeImageComponent nativeImageComponent = (NativeImageComponent)nativeAd.getComponent("mainImage");
+
+                View mediaView = null;
+
+                if(nativeVideoComponent != null) {
+                    mediaView = new VideoPlayerView(activity);
+                    nativeVideoComponent.prepareView((VideoPlayerView)mediaView);
+                } else if (nativeImageComponent != null) {
+                    mediaView = new ImageView(activity);
+                    nativeImageComponent.prepareView((ImageView)mediaView);
+                }
+
+                String templateName = BundleUtils.getString( "template", "", serverParameters );
+                boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+                boolean missingRequiredAssets = false;
+                if ( isTemplateAd && TextUtils.isEmpty( title ) )
+                {
+                    missingRequiredAssets = true;
+                }
+                else if ( TextUtils.isEmpty( title )
+                        || TextUtils.isEmpty( callToAction )
+                        || mediaView == null )
+                {
+                    missingRequiredAssets = true;
+                }
+
+                if ( missingRequiredAssets )
+                {
+                    e( "Custom native ad (" + nativeAd + ") does not have required assets." );
+                    listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+
+                    return;
+                }
+
+                VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
+
+                final String finalTitle = title;
+                final String finalDisclaimer = disclaimer;
+                final String finalBody = body;
+                final String finalCallToAction = callToAction;
+                final View finalMediaView = mediaView;
+                final View finalIconView = iconView;
+
+                MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( MaxAdFormat.NATIVE )
+                            .setTitle( finalTitle )
+                            .setAdvertiser( finalDisclaimer )
+                            .setBody( finalBody )
+                            .setCallToAction( finalCallToAction )
+                            .setIconView( finalIconView )
+                            .setMediaView( finalMediaView );
+                MaxNativeAd maxNativeAd = new MaxYahooNativeAd( builder );
+
+                CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
+                Bundle extraInfo = new Bundle( 1 );
+                if ( creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
+                {
+                    extraInfo.putString( "creative_id", creativeInfo.getCreativeId() );
+                }
+
+                listener.onNativeAdLoaded( maxNativeAd, extraInfo );
+            });
         }
 
         @Override
-        public void onError(final NativeAdFactory nativeAdFactory, final ErrorInfo errorInfo)
+        public void onLoadFailed(final NativeAd nativeAd, final ErrorInfo errorInfo)
         {
             MaxAdapterError adapterError = toMaxError( errorInfo );
-            log( "Native ad factory (" + nativeAdFactory.getPlacementId() + ") failed to load with error: " + adapterError );
+            log( "Native ad factory (" + nativeAd.getPlacementId() + ") failed to load with error: " + adapterError );
             listener.onNativeAdLoadFailed( adapterError );
         }
 
@@ -957,7 +882,7 @@ public class VerizonAdsMediationAdapter
         }
 
         @Override
-        public void onClicked(final NativeAd nativeAd, final Component component)
+        public void onClicked(final NativeAd nativeAd, final NativeComponent nativeComponent)
         {
             log( "Native ad clicked" );
             listener.onNativeAdClicked();
@@ -987,53 +912,33 @@ public class VerizonAdsMediationAdapter
         }
     }
 
-    private class MaxVerizonNativeAd
-            extends MaxNativeAd
-    {
-        private final MaxNativeAdAdapterListener listener;
+    private class MaxYahooNativeAd extends MaxNativeAd {
 
-        private MaxVerizonNativeAd(final MaxNativeAdAdapterListener listener, final Builder builder)
-        {
-            super( builder );
-
-            this.listener = listener;
+        public MaxYahooNativeAd(Builder builder) {
+            super(builder);
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView nativeAdView)
-        {
-            if ( nativeAd == null )
-            {
-                e( "Failed to register native ad view for interaction. Native ad is null" );
-                return;
+        public void prepareViewForInteraction(MaxNativeAdView maxNativeAdView) {
+            final NativeTextComponent titleComponent = (NativeTextComponent)nativeAd.getComponent("title");
+            final NativeTextComponent disclaimerComponent = (NativeTextComponent)nativeAd.getComponent("disclaimer");
+            final NativeTextComponent bodyComponent = (NativeTextComponent)nativeAd.getComponent("body");
+            final NativeTextComponent ctaComponent = (NativeTextComponent)nativeAd.getComponent("callToAction");
+
+            if (titleComponent != null && maxNativeAdView.getTitleTextView() != null) {
+                titleComponent.prepareView(maxNativeAdView.getTitleTextView());
+            }
+            if (disclaimerComponent != null && maxNativeAdView.getAdvertiserTextView() != null) {
+                disclaimerComponent.prepareView(maxNativeAdView.getAdvertiserTextView());
+            }
+            if (bodyComponent != null && maxNativeAdView.getBodyTextView() != null) {
+                bodyComponent.prepareView(maxNativeAdView.getBodyTextView());
+            }
+            if (ctaComponent != null && maxNativeAdView.getCallToActionButton() != null) {
+                ctaComponent.prepareView(maxNativeAdView.getCallToActionButton());
             }
 
-            final View.OnClickListener clickListener = new View.OnClickListener()
-            {
-                @Override
-                public void onClick(final View view)
-                {
-                    log( "Native ad clicked from click listener" );
-
-                    nativeAd.invokeDefaultAction( view.getContext() );
-                    listener.onNativeAdClicked();
-                }
-            };
-
-            // Verizon's click registration methods don't work with views when recycling is involved
-            // so they told us to manually invoke it as AdMob does
-            AppLovinSdkUtils.runOnUiThread( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    if ( nativeAdView.getTitleTextView() != null ) nativeAdView.getTitleTextView().setOnClickListener( clickListener );
-                    if ( nativeAdView.getAdvertiserTextView() != null ) nativeAdView.getAdvertiserTextView().setOnClickListener( clickListener );
-                    if ( nativeAdView.getBodyTextView() != null ) nativeAdView.getBodyTextView().setOnClickListener( clickListener );
-                    if ( nativeAdView.getIconImageView() != null ) nativeAdView.getIconImageView().setOnClickListener( clickListener );
-                    if ( nativeAdView.getCallToActionButton() != null ) nativeAdView.getCallToActionButton().setOnClickListener( clickListener );
-                }
-            } );
+            nativeAd.registerContainerView(maxNativeAdView);
         }
     }
     //endregion

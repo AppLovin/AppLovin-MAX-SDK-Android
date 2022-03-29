@@ -20,11 +20,11 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.verizon.ads:android-vas-standard-edition:${libraryVersions["verizonAds"]}")
+    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:1.0.0-SNAPSHOT")
 }
 
 repositories {
-    maven { url = uri("https://artifactory.verizonmedia.com/artifactory/maven/") }
+    maven { url 'https://artifactory.yahooinc.com/artifactory/maven-beta-local/' }
 }
 
 publishing {
@@ -54,9 +54,9 @@ publishing {
                     // Add Verizon Ads SDK to list of dependencies.
                     appendNode("dependencies")
                             .appendNode("dependency").apply {
-                                appendNode("groupId", "com.verizon.ads")
-                                appendNode("artifactId", "android-vas-standard-edition")
-                                appendNode("version", libraryVersions["verizonAds"])
+                                appendNode("groupId", "com.yahoo.mobile.ads")
+                                appendNode("artifactId", "android-yahoo-mobile-sdk")
+                                appendNode("version", "1.0.0-SNAPSHOT")
                                 appendNode("scope", "compile")
                             }
                 }
