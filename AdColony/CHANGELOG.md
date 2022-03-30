@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.1.0
+* Certified with AdColony SDK 4.7.1.
+
 ## 4.7.0.0
 * Certified with AdColony SDK 4.7.0.
 
