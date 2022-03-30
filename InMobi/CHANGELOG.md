@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.5.3
+* Add support for native ads.
+
 ## 10.0.5.2
 * Add support for both Family Apps and COPPA.
 

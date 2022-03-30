@@ -2,13 +2,19 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -18,6 +24,7 @@ import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -25,23 +32,31 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.inmobi.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkUtils;
 import com.inmobi.ads.AdMetaInfo;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiBanner;
 import com.inmobi.ads.InMobiInterstitial;
+import com.inmobi.ads.InMobiNative;
 import com.inmobi.ads.listeners.BannerAdEventListener;
 import com.inmobi.ads.listeners.InterstitialAdEventListener;
+import com.inmobi.ads.listeners.NativeAdEventListener;
 import com.inmobi.sdk.InMobiSdk;
 import com.inmobi.sdk.SdkInitializationListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
@@ -57,12 +72,15 @@ public class InMobiMediationAdapter
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
     private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
 
+    private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 5;
+
     private static final AtomicBoolean        INITIALIZED = new AtomicBoolean();
     private static       InitializationStatus status;
 
     private InMobiBanner       adView;
     private InMobiInterstitial interstitialAd;
     private InMobiInterstitial rewardedAd;
+    private InMobiNative       nativeAd;
 
     // Explicit default constructor declaration
     public InMobiMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -101,6 +119,12 @@ public class InMobiMediationAdapter
         {
             adView.destroy();
             adView = null;
+        }
+
+        if ( nativeAd != null )
+        {
+            nativeAd.destroy();
+            nativeAd = null;
         }
 
         interstitialAd = null;
@@ -155,6 +179,8 @@ public class InMobiMediationAdapter
             onCompletionListener.onCompletion( status, null );
         }
     }
+
+    //region MaxAdViewAdAdapter Methods
 
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
@@ -221,6 +247,10 @@ public class InMobiMediationAdapter
         }
     }
 
+    //endregion
+
+    //region MaxInterstitialAdAdapter Methods
+
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
@@ -262,6 +292,10 @@ public class InMobiMediationAdapter
             listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
         }
     }
+
+    //endregion
+
+    //region MaxRewardedAdAdapter Methods
 
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
@@ -307,6 +341,51 @@ public class InMobiMediationAdapter
             listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
         }
     }
+
+    //endregion
+
+    //region MaxNativeAdAdapter Methods
+
+    @Override
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    {
+        if ( !InMobiSdk.isSDKInitialized() )
+        {
+            log( "InMobi SDK not successfully initialized: failing native ad load..." );
+            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
+        updateAgeRestrictedUser( parameters );
+
+        final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
+
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
+
+        // Update GDPR states
+        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
+
+        final Context context = getContext( activity );
+        nativeAd = new InMobiNative( context,
+                                     placementId,
+                                     new NativeAdListener( parameters, context, listener ) );
+
+        nativeAd.setExtras( getExtras( parameters ) );
+
+        if ( isBiddingAd )
+        {
+            nativeAd.load( bidResponse.getBytes() );
+        }
+        else
+        {
+            nativeAd.load();
+        }
+    }
+
+    //endregion
 
     //region Helper Methods
 
@@ -372,6 +451,12 @@ public class InMobiMediationAdapter
         {
             InMobiSdk.setIsAgeRestricted( isAgeRestrictedUser );
         }
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private Map<String, String> getExtras(MaxAdapterParameters parameters)
@@ -716,6 +801,250 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad granted reward" );
             hasGrantedReward = true;
+        }
+    }
+
+    //region Native Ad Listener
+
+    private class NativeAdListener
+            extends NativeAdEventListener
+    {
+        private final String                     placementId;
+        private final WeakReference<Context>     contextRef;
+        private final MaxNativeAdAdapterListener listener;
+        private final Bundle                     serverParameters;
+
+        NativeAdListener(final MaxAdapterResponseParameters parameters, final Context context, final MaxNativeAdAdapterListener listener)
+        {
+            placementId = parameters.getThirdPartyAdPlacementId();
+            serverParameters = parameters.getServerParameters();
+            contextRef = new WeakReference<>( context );
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoadSucceeded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
+        {
+            final Context context = contextRef.get();
+
+            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill.
+            if ( nativeAd == null || nativeAd != inMobiNative )
+            {
+                log( "Native ad failed to load: no fill" );
+                listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
+
+                return;
+            }
+
+            final String templateName = BundleUtils.getString( "template", "", serverParameters );
+            final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+            if ( !hasRequiredAssets( nativeAd, isTemplateAd ) )
+            {
+                e( "Native ad (" + nativeAd + ") does not have required assets." );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
+
+                return;
+            }
+
+            log( "Native ad loaded: " + placementId );
+
+            getCachingExecutorService().submit( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Drawable iconDrawable = null;
+
+                    if ( AppLovinSdkUtils.isValidString( inMobiNative.getAdIconUrl() ) )
+                    {
+                        log( "Adding native ad icon (" + inMobiNative.getAdIconUrl() + ") to queue to be fetched" );
+
+                        final Future<Drawable> iconDrawableFuture = createDrawableFuture( inMobiNative.getAdIconUrl(), context.getResources() );
+                        try
+                        {
+                            final int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
+                            iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
+                        }
+                        catch ( Throwable th )
+                        {
+                            e( "Failed to fetch icon image from URL: " + inMobiNative.getAdIconUrl(), th );
+                        }
+                    }
+
+                    handleNativeAdLoaded( nativeAd, adMetaInfo, iconDrawable, context );
+                }
+            } );
+        }
+
+        private void handleNativeAdLoaded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo, final Drawable iconDrawable, final Context context)
+        {
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    ImageView imageView = new ImageView( context );
+                    imageView.setImageDrawable( iconDrawable );
+
+                    FrameLayout frameLayout = new FrameLayout( context );
+                    final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( MaxAdFormat.NATIVE )
+                            .setTitle( inMobiNative.getAdTitle() )
+                            .setBody( inMobiNative.getAdDescription() )
+                            .setMediaView( frameLayout )
+                            .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
+                            .setCallToAction( inMobiNative.getAdCtaText() );
+
+                    final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder );
+                    if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
+                        listener.onNativeAdLoaded( maxInMobiNativeAd, extraInfo );
+                    }
+                    else
+                    {
+                        listener.onNativeAdLoaded( maxInMobiNativeAd, null );
+                    }
+                }
+            } );
+        }
+
+        private boolean hasRequiredAssets(InMobiNative inMobiNative, boolean isTemplateAd)
+        {
+            if ( isTemplateAd )
+            {
+                return AppLovinSdkUtils.isValidString( inMobiNative.getAdTitle() );
+            }
+            else
+            {
+                // We are passing InMobi's primaryView directly to our MediaView so we don't check it here
+                return AppLovinSdkUtils.isValidString( inMobiNative.getAdTitle() )
+                        && AppLovinSdkUtils.isValidString( inMobiNative.getAdCtaText() );
+            }
+        }
+
+        @Override
+        public void onAdLoadFailed(@NonNull final InMobiNative inMobiNative, @NonNull final InMobiAdRequestStatus inMobiAdRequestStatus)
+        {
+            MaxAdapterError adapterError = toMaxError( inMobiAdRequestStatus );
+            log( "Native ad failed to load with error " + adapterError );
+            listener.onNativeAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpressed(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad shown" );
+            listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdClicked(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad clicked" );
+            listener.onNativeAdClicked();
+        }
+
+        @Override
+        public void onUserWillLeaveApplication(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad user will leave application" );
+        }
+
+        @Override
+        public void onAdFullScreenWillDisplay(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad fullscreen will display" );
+        }
+
+        @Override
+        public void onAdFullScreenDisplayed(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad fullscreen displayed" );
+        }
+
+        @Override
+        public void onAdFullScreenDismissed(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad fullscreen dismissed" );
+        }
+
+        @Override
+        public void onAdStatusChanged(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad status changed" );
+        }
+    }
+
+    //endregion
+
+    private class MaxInMobiNativeAd
+            extends MaxNativeAd
+    {
+        private final MaxNativeAdAdapterListener listener;
+
+        public MaxInMobiNativeAd(final MaxNativeAdAdapterListener listener, final Builder builder)
+        {
+            super( builder );
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        {
+            if ( nativeAd == null )
+            {
+                e( "Failed to register native ad views: native ad is null." );
+                return;
+            }
+
+            final FrameLayout mediaView = (FrameLayout) getMediaView();
+            mediaView.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.MATCH_PARENT,
+                                                                     FrameLayout.LayoutParams.MATCH_PARENT ) );
+            mediaView.setForegroundGravity( Gravity.CENTER );
+            mediaView.post( new Runnable()
+            {
+                @Override public void run()
+                {
+                    final View primaryView = nativeAd.getPrimaryViewOfWidth( mediaView.getContext(),
+                                                                             null,
+                                                                             mediaView,
+                                                                             mediaView.getWidth() );
+
+                    if ( primaryView == null ) return;
+
+                    mediaView.addView( primaryView );
+                }
+            } );
+
+            final View.OnClickListener clickListener = new View.OnClickListener()
+            {
+                @Override
+                public void onClick(final View view)
+                {
+                    log( "Native ad clicked from click listener" );
+
+                    nativeAd.reportAdClickAndOpenLandingPage();
+                    listener.onNativeAdClicked();
+                }
+            };
+
+            // InMobi is not providing a method to bind views with landing url, so we need to do it manually
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if ( maxNativeAdView.getTitleTextView() != null ) maxNativeAdView.getTitleTextView().setOnClickListener( clickListener );
+                    if ( maxNativeAdView.getAdvertiserTextView() != null ) maxNativeAdView.getAdvertiserTextView().setOnClickListener( clickListener );
+                    if ( maxNativeAdView.getBodyTextView() != null ) maxNativeAdView.getBodyTextView().setOnClickListener( clickListener );
+                    if ( maxNativeAdView.getIconImageView() != null ) maxNativeAdView.getIconImageView().setOnClickListener( clickListener );
+                    if ( maxNativeAdView.getCallToActionButton() != null ) maxNativeAdView.getCallToActionButton().setOnClickListener( clickListener );
+                }
+            } );
         }
     }
 }
