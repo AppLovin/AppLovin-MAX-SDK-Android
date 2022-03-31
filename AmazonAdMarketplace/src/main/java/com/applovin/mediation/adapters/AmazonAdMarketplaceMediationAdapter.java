@@ -279,6 +279,20 @@ public class AmazonAdMarketplaceMediationAdapter
         if ( mediationHints != null )
         {
             adView = new DTBAdView( activity, new AdViewListener( listener ) );
+
+            // APS banners have a memory leak that could be causing ANRs. This is a temporary fix while Amazon fixes it in their SDK.
+            // https://app.asana.com/0/573104092700345/1202045373630994
+            // Publishers can enable fix via maxAdView.setLocalExtraParameter( "enable_aps_banner_memory_leak_fix", "true" ); (requires MAX SDK 11.0.0+)
+            if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+            {
+                final Map<String, Object> localExtraParams = parameters.getLocalExtraParameters();
+                final Object enableMemoryLeakFix = localExtraParams != null ? localExtraParams.get( "enable_aps_banner_memory_leak_fix" ) : null;
+                if ( "true".equals( enableMemoryLeakFix ) )
+                {
+                    adView.finalize();
+                }
+            }
+
             adView.fetchAd( mediationHints.value );
         }
         else

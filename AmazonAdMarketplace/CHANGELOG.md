@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.4.2.1
+* Fix memory leak in APS banners.
+* Publishers can enable fix via maxAdView.setLocalExtraParameter( "enable_aps_banner_memory_leak_fix", "true" ); (requires MAX SDK 11.0.0+)
+
 ## 9.4.2.0
 * Certified with APS SDK 9.4.2 with interstitial video support.
 
