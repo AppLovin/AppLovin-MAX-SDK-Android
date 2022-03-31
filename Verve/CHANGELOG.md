@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.12.1.0
+* Certified with Verve SDK 2.12.1.
+
 ## 2.11.1.3
 * Add check for SDK initialization before loading an ad.
 
