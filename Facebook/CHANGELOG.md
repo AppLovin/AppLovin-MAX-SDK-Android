@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.13
+* Remove dependencies `com.android.support:recyclerview-v7:28.+` and `com.android.support:appcompat-v7:28.+` from Unity adapter.
+
 ## 6.8.0.12
 * Add support for using a media view instead of an icon for manual native banners.
 
