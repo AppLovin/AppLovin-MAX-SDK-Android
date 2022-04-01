@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.4.0.0
+* Certified with Snap SDK 2.3.4.
+
 ## 2.3.3.0.0
 * Certified with Snap SDK 2.3.3.
 
