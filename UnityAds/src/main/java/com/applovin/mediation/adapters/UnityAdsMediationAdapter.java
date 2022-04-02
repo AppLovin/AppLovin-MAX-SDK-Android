@@ -50,7 +50,7 @@ public class UnityAdsMediationAdapter
     private static final String KEY_GAME_ID                  = "game_id";
     private static final String KEY_SET_MEDIATION_IDENTIFIER = "set_mediation_identifier";
     private static final String KEY_ADAPTER_VERSION          = "adapter_version";
-    private static final String MEDIATION_TAG_ID             = "Max";
+    private static final String MEDIATION_TAG_ID             = "MAX";
 
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus initializationStatus;
@@ -78,8 +78,8 @@ public class UnityAdsMediationAdapter
 
             MediationMetaData mediationMetaData = new MediationMetaData( context );
             mediationMetaData.setName( MEDIATION_TAG );
-            mediationMetaData.setVersion( UnityAds.getVersion() );
-            mediationMetaData.set( KEY_ADAPTER_VERSION, AppLovinSdk.VERSION );
+            mediationMetaData.setVersion( AppLovinSdk.VERSION );
+            mediationMetaData.set( KEY_ADAPTER_VERSION, BuildConfig.VERSION_NAME );
             mediationMetaData.commit();
 
             UnityAds.setDebugMode( parameters.isTesting() );
