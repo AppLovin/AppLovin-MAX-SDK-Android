@@ -521,6 +521,12 @@ public class VungleMediationAdapter
             }
         }
 
+        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        if ( isAgeRestrictedUser != null )
+        {
+            Vungle.updateUserCoppaStatus( isAgeRestrictedUser );
+        }
+
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
         {
             Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );

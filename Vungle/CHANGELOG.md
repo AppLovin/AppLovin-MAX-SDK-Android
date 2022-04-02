@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.10.5.1
+* Add support for COPPA.
+
 ## 6.10.5.0
 * Certified with Vungle SDK 6.10.5.
 
