@@ -224,9 +224,16 @@ public class CriteoMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        bannerView = new CriteoBannerView( activity, new BannerAdUnit( placementId, toAdSize( adFormat ) ) );
-        bannerView.setCriteoBannerAdListener( new AdViewListener( placementId, adFormat, listener ) );
-        bannerView.loadAdWithDisplayData( parameters.getBidResponse() );
+        runOnUiThread( new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                bannerView = new CriteoBannerView( activity.getApplicationContext(), new BannerAdUnit( placementId, toAdSize( adFormat ) ) );
+                bannerView.setCriteoBannerAdListener( new AdViewListener( placementId, adFormat, listener ) );
+                bannerView.loadAdWithDisplayData( parameters.getBidResponse() );
+            }
+        } );
     }
 
     //endregion
