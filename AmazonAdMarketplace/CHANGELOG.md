@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.2.2
+* Fix memory leak for all ad formats.
+
 ## 9.4.2.1
 * Fix memory leak in APS banners.
 * Publishers can enable fix via maxAdView.setLocalExtraParameter( "enable_aps_banner_memory_leak_fix", "true" ); (requires MAX SDK 11.0.0+)

@@ -53,7 +53,7 @@ public class AmazonAdMarketplaceMediationAdapter
     private static final Map<MaxAdFormat, DTBAdLoader> adLoaders = Collections.synchronizedMap( new HashMap<MaxAdFormat, DTBAdLoader>() );
 
     // NOTE: Will remove for more space-efficient implementation
-    private static final Set<DTBAdLoader> usedAdLoaders = Collections.synchronizedSet( new HashSet<DTBAdLoader>() );
+    private static final Set<Integer> usedAdLoaders = new HashSet<Integer>();
 
     // Contains mapping of encoded bid id -> mediation hints / bid info
     private static final Map<String, MediationHints> mediationHintsCache     = new HashMap<>();
@@ -62,7 +62,6 @@ public class AmazonAdMarketplaceMediationAdapter
     private DTBAdView         adView;
     private DTBAdInterstitial interstitialAd;
 
-    // Explicit default constructor declaration
     public AmazonAdMarketplaceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
@@ -111,7 +110,7 @@ public class AmazonAdMarketplaceMediationAdapter
         if ( adResponseObj instanceof DTBAdResponse )
         {
             DTBAdLoader retrievedAdLoader = ( (DTBAdResponse) adResponseObj ).getAdLoader();
-            if ( !usedAdLoaders.contains( retrievedAdLoader ) )
+            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
                 d( "Using ad loader from ad response object: " + retrievedAdLoader );
                 adLoader = retrievedAdLoader;
@@ -121,7 +120,7 @@ public class AmazonAdMarketplaceMediationAdapter
         if ( adErrorObj instanceof AdError )
         {
             DTBAdLoader retrievedAdLoader = ( (AdError) adErrorObj ).getAdLoader();
-            if ( !usedAdLoaders.contains( retrievedAdLoader ) )
+            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
                 d( "Using ad loader from ad error object: " + retrievedAdLoader );
                 adLoader = retrievedAdLoader;
@@ -144,7 +143,7 @@ public class AmazonAdMarketplaceMediationAdapter
                 d( "New loader passed in for " + adFormat + ": " + adLoader + ", replacing current ad loader: " + currentAdLoader );
 
                 adLoaders.put( adFormat, adLoader );
-                usedAdLoaders.add( adLoader );
+                usedAdLoaders.add( adLoader.hashCode() );
 
                 if ( adResponseObj instanceof DTBAdResponse )
                 {
@@ -187,7 +186,7 @@ public class AmazonAdMarketplaceMediationAdapter
                 // Store ad loader for future ad refresh token collection
                 adLoaders.put( adFormat, dtbAdResponse.getAdLoader() );
 
-                usedAdLoaders.add( dtbAdResponse.getAdLoader() );
+                usedAdLoaders.add( dtbAdResponse.getAdLoader().hashCode() );
 
                 d( "Signal collected for ad loader: " + dtbAdResponse.getAdLoader() );
 
@@ -200,7 +199,7 @@ public class AmazonAdMarketplaceMediationAdapter
                 // Store ad loader for future ad refresh token collection
                 adLoaders.put( adFormat, adError.getAdLoader() );
 
-                usedAdLoaders.add( adError.getAdLoader() );
+                usedAdLoaders.add( adError.getAdLoader().hashCode() );
 
                 d( "Signal failed to collect for ad loader: " + adError.getAdLoader() );
 
