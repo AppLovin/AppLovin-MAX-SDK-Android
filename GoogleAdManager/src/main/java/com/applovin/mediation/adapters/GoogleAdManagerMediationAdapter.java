@@ -618,6 +618,15 @@ public class GoogleAdManagerMediationAdapter
             }
         }
 
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            Object maxContentRating = parameters.getLocalExtraParameters().get( "google_max_ad_content_rating" );
+            if ( maxContentRating instanceof String )
+            {
+                networkExtras.putString( "max_ad_content_rating", (String) maxContentRating );
+            }
+        }
+
         requestBuilder.addNetworkExtrasBundle( AdMobAdapter.class, networkExtras );
 
         return requestBuilder.build();

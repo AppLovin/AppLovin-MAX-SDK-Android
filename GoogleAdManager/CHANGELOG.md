@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.3
+* Add ability to set [maximum ad content rating](https://support.google.com/admanager/answer/9467073) via local extra parameters by calling `setLocalExtraParameter("google_max_ad_content_rating", String)`.
+
 ## 20.6.0.2
 * Fix potential memory leak with using Activity context for creating native ad views.
 
