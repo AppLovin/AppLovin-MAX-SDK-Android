@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.0.0
+* Certified with UnityAds SDK 4.1.0.
+* Remove checks for UnityAds SDK being initialized before loading ads.
+
 ## 4.0.1.2
 * Add support for COPPA. 
 
