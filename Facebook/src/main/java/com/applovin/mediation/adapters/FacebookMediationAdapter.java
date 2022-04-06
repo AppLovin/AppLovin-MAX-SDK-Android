@@ -579,27 +579,57 @@ public class FacebookMediationAdapter
     {
         final int facebookErrorCode = facebookError.getErrorCode();
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+
         // Facebook's SDK sometimes creates new instances of their pre-defined enums, so we should extract the raw int, and not do pointer equality
         switch ( facebookErrorCode )
         {
-            case AdError.NETWORK_ERROR_CODE: // 1000
-                adapterError = MaxAdapterError.NO_CONNECTION; // -5207
+            case AdError.NETWORK_ERROR_CODE:
+                adapterError = MaxAdapterError.NO_CONNECTION;
                 break;
-            case AdError.NO_FILL_ERROR_CODE: // 1001
-                adapterError = MaxAdapterError.NO_FILL; // 204
+            case AdError.NO_FILL_ERROR_CODE:
+                adapterError = MaxAdapterError.NO_FILL;
                 break;
-            case AdError.LOAD_TOO_FREQUENTLY_ERROR_CODE: // 1002
-                adapterError = MaxAdapterError.INVALID_LOAD_STATE; // -5201
+            case AdError.SERVER_ERROR_CODE:
+            case AdError.REMOTE_ADS_SERVICE_ERROR:
+                adapterError = MaxAdapterError.SERVER_ERROR;
                 break;
-            case AdError.SERVER_ERROR_CODE: // 2000
-                adapterError = MaxAdapterError.SERVER_ERROR; // -5208
+            case AdError.INTERNAL_ERROR_CODE: // It's actually a timeout event...
+            case AdError.INTERSTITIAL_AD_TIMEOUT:
+                adapterError = MaxAdapterError.TIMEOUT;
                 break;
-            case AdError.INTERNAL_ERROR_CODE: // 2001 - it's actually a timeout event...
-                adapterError = MaxAdapterError.TIMEOUT; // -5209
+            case AdError.CACHE_ERROR_CODE:
+            case AdError.BROKEN_MEDIA_ERROR_CODE:
+            case AdError.SHOW_CALLED_BEFORE_LOAD_ERROR_CODE:
+            case AdError.LOAD_CALLED_WHILE_SHOWING_AD:
+            case AdError.LOAD_TOO_FREQUENTLY_ERROR_CODE:
+            case AdError.NATIVE_AD_IS_NOT_LOADED:
+            case AdError.INCORRECT_STATE_ERROR:
+                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            case AdError.INTERNAL_ERROR_2003:
+            case AdError.INTERNAL_ERROR_2004:
+            case AdError.INTERNAL_ERROR_2006:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case AdError.MEDIAVIEW_MISSING_ERROR_CODE:
+            case AdError.ICONVIEW_MISSING_ERROR_CODE:
+            case AdError.AD_ASSETS_UNSUPPORTED_TYPE_ERROR_CODE:
+                adapterError = new MaxAdapterError( -5400, "Missing Native Ad Assets" );
+                break;
+            case AdError.CLEAR_TEXT_SUPPORT_NOT_ALLOWED:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case AdError.MISSING_DEPENDENCIES_ERROR:
+            case AdError.API_NOT_SUPPORTED:
+            case AdError.AD_PRESENTATION_ERROR_CODE:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), facebookErrorCode, facebookError.getErrorMessage() );
+        return new MaxAdapterError( adapterError.getErrorCode(),
+                                    adapterError.getErrorMessage(),
+                                    facebookErrorCode,
+                                    facebookError.getErrorMessage() );
     }
 
     private String getMediationIdentifier()

@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.14
+* Update error code mapping for SDK error reports.
+
 ## 6.8.0.13
 * Remove dependencies `com.android.support:recyclerview-v7:28.+` and `com.android.support:appcompat-v7:28.+` from Unity adapter.
 
