@@ -570,6 +570,7 @@ public class GoogleMediationAdapter
                 adapterError = MaxAdapterError.BAD_REQUEST;
                 break;
             case AdRequest.ERROR_CODE_APP_ID_MISSING:
+            case AdRequest.ERROR_CODE_INVALID_AD_STRING:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                 break;
         }
