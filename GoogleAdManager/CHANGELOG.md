@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.4
+* Map `AdRequest.ERROR_CODE_INVALID_AD_STRING` error to MAX invalid configuration error.
+
 ## 20.6.0.3
 * Add ability to set [maximum ad content rating](https://support.google.com/admanager/answer/9467073) via local extra parameters by calling `setLocalExtraParameter("google_max_ad_content_rating", String)`.
 
