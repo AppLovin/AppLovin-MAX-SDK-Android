@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.7.1
+* Downgrade ByteDance SDK 4.3.0.6.
+
 ## 4.3.0.7.0
 * Certified with ByteDance SDK 4.3.0.7.
 
