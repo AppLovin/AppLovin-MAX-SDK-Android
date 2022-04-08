@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.3.1
+* Fix memory leak for APS ad request and response objects.
+
 ## 9.4.3.0
 * Certified with APS SDK 9.4.3.
 * Remove temporary memory leak fix for previous SDK version.

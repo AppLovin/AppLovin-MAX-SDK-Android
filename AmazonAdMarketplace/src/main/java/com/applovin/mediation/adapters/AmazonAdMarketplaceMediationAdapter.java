@@ -115,6 +115,10 @@ public class AmazonAdMarketplaceMediationAdapter
                 d( "Using ad loader from ad response object: " + retrievedAdLoader );
                 adLoader = retrievedAdLoader;
             }
+            else
+            {
+                parameters.getLocalExtraParameters().remove( "amazon_ad_response" );
+            }
         }
 
         if ( adErrorObj instanceof AdError )
@@ -124,6 +128,10 @@ public class AmazonAdMarketplaceMediationAdapter
             {
                 d( "Using ad loader from ad error object: " + retrievedAdLoader );
                 adLoader = retrievedAdLoader;
+            }
+            else
+            {
+                parameters.getLocalExtraParameters().remove( "amazon_ad_error" );
             }
         }
 
