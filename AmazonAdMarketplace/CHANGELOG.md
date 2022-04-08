@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.4.3.0
+* Certified with APS SDK 9.4.3.
+* Remove temporary memory leak fix for previous SDK version.
+
 ## 9.4.2.2
 * Fix memory leak for all ad formats.
 
