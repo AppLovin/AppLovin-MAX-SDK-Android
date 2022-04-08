@@ -5,8 +5,8 @@ plugins {
 
 private val versionMajor = 6
 private val versionMinor = 0
-private val versionPatch = 1
-private val versionAdapterPatch = 7
+private val versionPatch = 2
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -18,10 +18,6 @@ var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
-
-repositories {
-    maven { url = uri("https://hyprmx.jfrog.io/artifactory/hyprmx") }
-}
 
 dependencies {
     implementation("com.hyprmx.android:HyprMX-SDK:${libraryVersions["hyprmx"]}")
@@ -52,7 +48,7 @@ publishing {
                                 appendNode("name", "AppLovin")
                                 appendNode("url", "https://www.applovin.com")
                             }
-                    // Add Vungle to list of dependencies.
+                    // Add HyprMX to list of dependencies.
                     appendNode("dependencies")
                             .appendNode("dependency").apply {
 

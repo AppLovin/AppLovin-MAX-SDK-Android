@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.2.0
+* Certified with HyprMX SDK 6.0.2.
+
 ## 6.0.1.7
 * Set GDPR consent status regardless of users' region.
 
