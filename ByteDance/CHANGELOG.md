@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.7.2
+* Remove setting app name.
+
 ## 4.3.0.7.1
 * Downgrade ByteDance SDK 4.3.0.6.
 

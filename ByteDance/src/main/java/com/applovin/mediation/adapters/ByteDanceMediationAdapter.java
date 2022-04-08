@@ -185,7 +185,6 @@ public class ByteDanceMediationAdapter
             }
 
             TTAdConfig adConfig = builder.appId( appId )
-                    .appName( serverParameters.getString( "app_name", "Default App Name" ) )
                     .debug( parameters.isTesting() )
                     .supportMultiProcess( false )
                     .build();
