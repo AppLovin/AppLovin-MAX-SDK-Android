@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.1.3
+* Re-certified with Chartboost SDK 8.4.1.
+
 ## 8.4.1.2
 * Downgrade Chartboost SDK to 8.3.1 due to Android build issues.
 
