@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.5
+* Add support for null `Activity` context for native ads, native banner/MRECs, and regular banner/MRECs.
+
 ## 20.6.0.4
 * Map `AdRequest.ERROR_CODE_INVALID_AD_STRING` error to MAX invalid configuration error.
 
