@@ -59,8 +59,7 @@ public class UnityAdsMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-        Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+        final Context context = getContext( activity );
 
         updatePrivacyConsent( parameters, context );
 
@@ -300,6 +299,16 @@ public class UnityAdsMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading banner ad for placement \"" + placementId + "\"..." );
 
+        if ( activity == null )
+        {
+            log( "Banner ad load failed: Activity is null" );
+
+            MaxAdapterError error = new MaxAdapterError( -5601, "No Activity" );
+            listener.onAdViewAdLoadFailed( error );
+
+            return;
+        }
+
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
         bannerView = new BannerView( activity, placementId, toUnityBannerSize( adFormat ) );
@@ -505,5 +514,11 @@ public class UnityAdsMediationAdapter
             log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
             return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
+    }
+
+    private Context getContext(Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 }
