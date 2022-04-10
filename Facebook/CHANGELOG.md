@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.8.0.15
+* Add support for `null` Activity context for native ads, native banners/MRECs, regular banners/MRECs, and true native banner ads.
+
 ## 6.8.0.14
 * Update error code mapping for SDK error reports.
 
