@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.3.1
+* Add support for `null` Activity context for regular banners/MRECs.
+
 ## 8.1.3.0
 * Certified with Fyber SDK 8.1.3.
 

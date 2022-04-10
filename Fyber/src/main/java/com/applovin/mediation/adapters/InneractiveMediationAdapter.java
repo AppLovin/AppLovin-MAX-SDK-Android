@@ -75,11 +75,7 @@ public class InneractiveMediationAdapter
             log( "Initializing Inneractive SDK with app id: " + appId + "..." );
 
             InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
-
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
-
-            InneractiveAdManager.initialize( context, appId, new OnFyberMarketplaceInitializedListener()
+            InneractiveAdManager.initialize( getContext( activity ), appId, new OnFyberMarketplaceInitializedListener()
             {
                 @Override
                 public void onFyberMarketplaceInitialized(final FyberInitStatus fyberInitStatus)
@@ -518,7 +514,7 @@ public class InneractiveMediationAdapter
             public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) {}
         } );
 
-        adViewGroup = new RelativeLayout( activity );
+        adViewGroup = new RelativeLayout( getContext( activity ) );
 
         adViewSpot = InneractiveAdSpotManager.get().createSpot();
         adViewSpot.addUnitController( controller );
@@ -677,5 +673,11 @@ public class InneractiveMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), adapterErrorCode, adapterErrorStr );
+    }
+
+    private Context getContext(Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 }
