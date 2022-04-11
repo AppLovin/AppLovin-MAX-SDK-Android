@@ -1,10 +1,13 @@
 # Changelog
 
+## 4.3.0.7.3
+* Add support for null `Activity` context for native banner/MRECs.
+
 ## 4.3.0.7.2
 * Remove setting app name.
 
 ## 4.3.0.7.1
-* Downgrade ByteDance SDK 4.3.0.6.
+* Downgrade ByteDance SDK to 4.3.0.6.
 
 ## 4.3.0.7.0
 * Certified with ByteDance SDK 4.3.0.7.

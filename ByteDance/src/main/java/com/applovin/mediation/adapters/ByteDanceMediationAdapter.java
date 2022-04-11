@@ -824,15 +824,6 @@ public class ByteDanceMediationAdapter
         @Override
         public void onFeedAdLoad(final List<TTFeedAd> ads)
         {
-            final Activity activity = activityRef.get();
-            if ( activity == null )
-            {
-                log( "Native " + adFormat.getLabel() + " ad (" + codeId + ") failed to load: activity reference is null when ad is loaded" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                return;
-            }
-
             if ( ads == null || ads.size() == 0 )
             {
                 log( "Native " + adFormat.getLabel() + " ad (" + codeId + ") failed to load: no fill" );
@@ -854,12 +845,14 @@ public class ByteDanceMediationAdapter
                 executorServiceToUse = executor;
             }
 
+            final Activity activity = activityRef.get();
+            final Context context = getContext( activity );
             executorServiceToUse.execute( new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    final Resources resources = activity.getResources();
+                    final Resources resources = context.getResources();
 
                     // Create image fetching tasks to run asynchronously in the background
                     Future<Drawable> iconDrawableFuture = null;
@@ -924,7 +917,7 @@ public class ByteDanceMediationAdapter
                     }
                     else
                     {
-                        mediaView = new ImageView( activity );
+                        mediaView = new ImageView( context );
                         if ( mediaViewImageDrawable != null )
                         {
                             ( (ImageView) mediaView ).setImageDrawable( mediaViewImageDrawable );
@@ -958,7 +951,7 @@ public class ByteDanceMediationAdapter
                             MaxNativeAdView maxNativeAdView;
                             if ( AppLovinSdk.VERSION_CODE >= 11010000 )
                             {
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
                             }
                             else
                             {
