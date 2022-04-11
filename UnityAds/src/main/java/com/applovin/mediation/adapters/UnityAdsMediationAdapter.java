@@ -303,7 +303,7 @@ public class UnityAdsMediationAdapter
         {
             log( "Banner ad load failed: Activity is null" );
 
-            MaxAdapterError error = new MaxAdapterError( -5601, "No Activity" );
+            MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
             listener.onAdViewAdLoadFailed( error );
 
             return;
