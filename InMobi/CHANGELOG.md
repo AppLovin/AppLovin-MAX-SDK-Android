@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.5.4
+* Add support for null `Activity` context for regular banner/MRECs.
+
 ## 10.0.5.3
 * Add support for native ads.
 

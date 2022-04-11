@@ -51,7 +51,6 @@ import com.inmobi.sdk.SdkInitializationListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,8 +138,7 @@ public class InMobiMediationAdapter
             final String accountId = parameters.getServerParameters().getString( "account_id" );
             log( "Initializing InMobi SDK with account id: " + accountId + "..." );
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+            Context context = getContext( activity );
 
             status = InitializationStatus.INITIALIZING;
 
@@ -198,7 +196,8 @@ public class InMobiMediationAdapter
 
         updateAgeRestrictedUser( parameters );
 
-        adView = new InMobiBanner( activity, placementId );
+        Context context = getContext( activity );
+        adView = new InMobiBanner( context, placementId );
         adView.setExtras( getExtras( parameters ) );
         adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
         adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
@@ -208,7 +207,7 @@ public class InMobiMediationAdapter
         InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager windowManager = (WindowManager) activity.getSystemService( Context.WINDOW_SERVICE );
+        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
         Display display = windowManager.getDefaultDisplay();
         display.getMetrics( displayMetrics );
 
@@ -810,7 +809,7 @@ public class InMobiMediationAdapter
             extends NativeAdEventListener
     {
         private final String                     placementId;
-        private final WeakReference<Context>     contextRef;
+        private final Context                    context;
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
 
@@ -818,16 +817,14 @@ public class InMobiMediationAdapter
         {
             placementId = parameters.getThirdPartyAdPlacementId();
             serverParameters = parameters.getServerParameters();
-            contextRef = new WeakReference<>( context );
 
+            this.context = context;
             this.listener = listener;
         }
 
         @Override
         public void onAdLoadSucceeded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
         {
-            final Context context = contextRef.get();
-
             // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill.
             if ( nativeAd == null || nativeAd != inMobiNative )
             {
