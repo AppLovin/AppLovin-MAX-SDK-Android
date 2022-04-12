@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.10.0.0
+* Certified with Facebook SDK 6.10.0.
+
 ## 6.8.0.15
 * Add support for `null` Activity context for native ads, native banners/MRECs, regular banners/MRECs, and true native banner ads.
 
