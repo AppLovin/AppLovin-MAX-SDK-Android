@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.1.2
+* Add support for `null` Activity context for signal collection, regular banners/MRECs, and native ads.
+
 ## 5.15.1.1
 * Downgrade MyTarget SDK to 5.15.0, because 5.15.1 fails to build due to ExoPlayer version conflicts.
 
