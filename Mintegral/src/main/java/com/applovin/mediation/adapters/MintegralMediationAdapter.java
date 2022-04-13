@@ -144,8 +144,7 @@ public class MintegralMediationAdapter
 
             final MBridgeSDK mBridgeSDK = MBridgeSDKFactory.getMBridgeSDK();
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+            final Context context = getContext( activity );
 
             // Communicated over email, GDPR status can only be set before SDK initialization
             Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
@@ -243,7 +242,7 @@ public class MintegralMediationAdapter
     {
         log( "Collecting signal..." );
 
-        final String signal = BidManager.getBuyerUid( activity );
+        final String signal = BidManager.getBuyerUid( getContext( activity ) );
         callback.onSignalCollected( signal );
     }
 
@@ -502,7 +501,7 @@ public class MintegralMediationAdapter
         mbUnitId = parameters.getThirdPartyAdPlacementId();
         final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
 
-        mbBannerView = new MBBannerView( activity );
+        mbBannerView = new MBBannerView( getContext( activity ) );
         mbBannerView.init( size, placementId, mbUnitId );
         mbBannerView.setAllowShowCloseBtn( false );
         mbBannerView.setRefreshTime( 0 );
@@ -600,10 +599,10 @@ public class MintegralMediationAdapter
         properties.put( MBridgeConstans.PROPERTIES_AD_NUM, 1 ); // Only load one ad.
         properties.put( MBridgeConstans.NATIVE_VIDEO_SUPPORT, true );
 
-        final NativeAdListener nativeAdListener = new NativeAdListener( parameters, activity, listener );
+        final NativeAdListener nativeAdListener = new NativeAdListener( parameters, getContext( activity ), listener );
 
         // Native ads do not use the handler maps, because MBNativeHandler.setAdListener fails to update the ad listener after the first assignment.
-        mbBidNativeHandler = new MBBidNativeHandler( properties, activity.getApplicationContext() );
+        mbBidNativeHandler = new MBBidNativeHandler( properties, getContext( activity ) );
         mbBidNativeHandler.setAdListener( nativeAdListener );
         mbBidNativeHandler.bidLoad( parameters.getBidResponse() );
     }
@@ -660,6 +659,12 @@ public class MintegralMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), 0, mintegralError );
+    }
+
+    private Context getContext(Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private BannerSize toBannerSize(final MaxAdFormat adFormat)
@@ -908,10 +913,10 @@ public class MintegralMediationAdapter
         private final String                       unitId;
         private final String                       placementId;
 
-        NativeAdListener(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+        NativeAdListener(final MaxAdapterResponseParameters parameters, final Context context, final MaxNativeAdAdapterListener listener)
         {
             this.parameters = parameters;
-            this.context = activity.getApplicationContext();
+            this.context = context;
             this.listener = listener;
 
             unitId = parameters.getThirdPartyAdPlacementId();

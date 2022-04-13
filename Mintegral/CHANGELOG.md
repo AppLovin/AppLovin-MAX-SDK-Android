@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.0.31.1
+* Add support for `null` Activity context for regular banners/MRECs and native ads.
+
 ## 16.0.31.0
 * Certified with Mintegral SDK 16.0.31.
 
