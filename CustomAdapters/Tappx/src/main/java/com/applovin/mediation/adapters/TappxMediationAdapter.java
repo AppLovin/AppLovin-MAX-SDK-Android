@@ -100,7 +100,8 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading interstitial ad: " + appKey + "..." );
 
-                interstitialAd = new TappxInterstitial( getApplicationContext(), appKey );
+                Application appContext = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+                interstitialAd = new TappxInterstitial( appContext, appKey );
                 interstitialAd.setListener( new InterstitialListener( listener ) );
 
                 AdRequest adRequest = new AdRequest();
@@ -148,7 +149,8 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading rewarded ad: " + appKey + "..." );
 
-                rewardedAd = new TappxRewardedVideo( getApplicationContext(), appKey );
+                Application appContext = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+                rewardedAd = new TappxRewardedVideo( appContext, appKey );
                 rewardedAd.setListener( new RewardedAdListener( listener ) );
 
                 AdRequest adRequest = new AdRequest();
@@ -199,7 +201,8 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading " + adFormat.getLabel() + " ad: " + appKey + "..." );
 
-                adView = new TappxBanner( getApplicationContext(), appKey );
+                Application appContext = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+                adView = new TappxBanner( appContext, appKey );
                 adView.setListener( new AdViewListener( listener ) );
 
                 adView.setAdSize( toAdSize( adFormat ) );
