@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.8.1.2
+* Remove check for manual native ad assets.
+
 ## 21.8.1.1
 * Add support for `null` Activity context for signal collection, regular banners/MRECs, and native ads.
 

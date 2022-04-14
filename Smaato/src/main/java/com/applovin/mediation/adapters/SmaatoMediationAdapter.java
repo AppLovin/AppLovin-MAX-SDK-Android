@@ -54,7 +54,6 @@ import com.smaato.sdk.rewarded.RewardedInterstitial;
 import com.smaato.sdk.rewarded.RewardedInterstitialAd;
 import com.smaato.sdk.rewarded.RewardedRequestError;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -594,8 +593,7 @@ public class SmaatoMediationAdapter
                     NativeAdAssets assets = renderer.getAssets();
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
                     boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-                    if ( !hasRequiredAssets( isTemplateAd, assets ) )
+                    if ( isTemplateAd && TextUtils.isEmpty( assets.title() ) )
                     {
                         e( "Native ad (" + nativeAd + ") does not have required assets." );
                         listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -662,21 +660,6 @@ public class SmaatoMediationAdapter
         public void onTtlExpired(@NonNull final NativeAd nativeAd)
         {
             log( "Native ad expired" );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAdAssets assets)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( assets.title() );
-            }
-            else
-            {
-                return AppLovinSdkUtils.isValidString( assets.title() )
-                        && AppLovinSdkUtils.isValidString( assets.cta() )
-                        && assets.images().size() > 0
-                        && assets.images().get( 0 ).drawable() != null;
-            }
         }
     }
 
