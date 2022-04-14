@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -242,7 +243,7 @@ public class LineMediationAdapter
         }
     }
 
-    // @Override
+    @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
@@ -889,7 +890,7 @@ public class LineMediationAdapter
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( !hasRequiredAssets( isTemplateAd, loadedNativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( loadedNativeAd.getAdTitle() ) )
             {
                 e( "Native ad (" + ad + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -1002,20 +1003,6 @@ public class LineMediationAdapter
         public void onFiveAdRecover(final FiveAdInterface ad)
         {
             log( "Native ad did recover for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final FiveAdNative nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdTitle() );
-            }
-            else
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdTitle() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getButtonText() )
-                        && nativeAd.getAdMainView() != null;
-            }
         }
     }
 

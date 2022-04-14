@@ -1,5 +1,8 @@
 # Changelog
 
+## 2021.10.29.1
+* Remove check for manual native ad assets.
+
 ## 2021.10.29.0
 * Certified with FiveAd SDK 2.4.20211029.
 * Update mute setting API to use `enableSoundByDefault()` instead of `enableSound()`. NOTE: The mute state can only be set at SDK initialization, hence, the mute state at time of ad display may not reflect the current mute state.
