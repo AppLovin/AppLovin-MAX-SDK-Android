@@ -836,7 +836,7 @@ public class InMobiMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( !hasRequiredAssets( nativeAd, isTemplateAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getAdTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
@@ -906,20 +906,6 @@ public class InMobiMediationAdapter
                     }
                 }
             } );
-        }
-
-        private boolean hasRequiredAssets(InMobiNative inMobiNative, boolean isTemplateAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( inMobiNative.getAdTitle() );
-            }
-            else
-            {
-                // We are passing InMobi's primaryView directly to our MediaView so we don't check it here
-                return AppLovinSdkUtils.isValidString( inMobiNative.getAdTitle() )
-                        && AppLovinSdkUtils.isValidString( inMobiNative.getAdCtaText() );
-            }
         }
 
         @Override
