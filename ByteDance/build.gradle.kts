@@ -7,7 +7,7 @@ private val versionMajor = 4
 private val versionMinor = 3
 private val versionPatch = 0
 private val versionBuild = 7
-private val versionAdapterPatch = 3
+private val versionAdapterPatch = 4
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 100000000) + (versionMinor * 1000000) + (versionPatch * 10000) + (versionBuild * 100) + versionAdapterPatch)

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -45,9 +46,6 @@ import com.bytedance.sdk.openadsdk.TTImage;
 import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
 import com.bytedance.sdk.openadsdk.TTRewardVideoAd;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -387,7 +385,7 @@ public class ByteDanceMediationAdapter
 
     //region MaxNativeAdAdapter Methods
 
-    // @Override
+    @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         String bidResponse = parameters.getBidResponse();
@@ -1101,7 +1099,7 @@ public class ByteDanceMediationAdapter
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -1184,15 +1182,6 @@ public class ByteDanceMediationAdapter
                             else
                             {
                                 mediaView = null;
-                            }
-
-                            // Media view is required for non-template native ads.
-                            if ( !isTemplateAd && mediaView == null )
-                            {
-                                e( "Media view asset is null for native custom ad view. Failing ad request." );
-                                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
-
-                                return;
                             }
 
                             log( "Creating native ad with assets" );
@@ -1286,20 +1275,6 @@ public class ByteDanceMediationAdapter
         public void onVideoAdComplete(final TTFeedAd ad)
         {
             log( "Native ad video completed" );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final TTFeedAd nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() );
-            }
-            else
-            {
-                // NOTE: Media view is required and is checked separately.
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getButtonText() );
-            }
         }
     }
 
