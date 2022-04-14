@@ -518,7 +518,7 @@ public class GoogleMediationAdapter
 
     //region MaxNativeAdAdapter Methods
 
-    // @Override
+    @Override
     @SuppressLint("MissingPermission")
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
@@ -775,11 +775,6 @@ public class GoogleMediationAdapter
         {
             MobileAds.setAppMuted( serverParameters.getBoolean( "is_muted" ) );
         }
-    }
-
-    private boolean isValidNativeAd(final NativeAd nativeAd)
-    {
-        return nativeAd.getHeadline() != null;
     }
 
     private int getAdChoicesPlacement(MaxAdapterResponseParameters parameters)
@@ -1067,7 +1062,7 @@ public class GoogleMediationAdapter
         {
             log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
 
-            if ( !isValidNativeAd( nativeAd ) )
+            if ( TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: Google native ad is missing one or more required assets" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
@@ -1232,7 +1227,7 @@ public class GoogleMediationAdapter
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -1265,15 +1260,6 @@ public class GoogleMediationAdapter
 
                             mediaView = mainImageView;
                         }
-                    }
-
-                    // Media view is required for non-template native ads.
-                    if ( !isTemplateAd && mediaView == null )
-                    {
-                        e( "Media view asset is null for native custom ad view. Failing ad request." );
-                        listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
-
-                        return;
                     }
 
                     NativeAd.Image icon = nativeAd.getIcon();
@@ -1342,20 +1328,6 @@ public class GoogleMediationAdapter
         public void onAdClosed()
         {
             log( "Native ad closed" );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getHeadline() );
-            }
-            else
-            {
-                // NOTE: Media view is required and is checked separately.
-                return AppLovinSdkUtils.isValidString( nativeAd.getHeadline() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getCallToAction() );
-            }
         }
     }
 

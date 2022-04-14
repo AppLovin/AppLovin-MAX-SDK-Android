@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.8
+* Remove check for manual native ad assets.
+
 ## 20.6.0.7
 * Add support for null `Activity` context for native ads, native banner/MRECs, and regular banner/MRECs.
 
