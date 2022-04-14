@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.webkit.URLUtil;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -938,19 +937,18 @@ public class MintegralMediationAdapter
             final Campaign campaign = campaigns.get( 0 );
             final String templateName = BundleUtils.getString( "template", "", parameters.getServerParameters() );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-            if ( hasRequiredAssets( campaign, isTemplateAd ) )
-            {
-                nativeAdCampaign = campaign;
-
-                log( "Native ad loaded for unit id: " + unitId + " placement id: " + placementId );
-                processNativeAd( campaign );
-            }
-            else
+            if ( isTemplateAd && TextUtils.isEmpty( campaign.getAppName() ) )
             {
                 log( "Native ad failed to load for unit id: " + unitId + " placement id: " + placementId + " with error: missing required assets" );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+
+                return;
             }
+
+            nativeAdCampaign = campaign;
+
+            log( "Native ad loaded for unit id: " + unitId + " placement id: " + placementId );
+            processNativeAd( campaign );
         }
 
         @Override
@@ -1085,20 +1083,6 @@ public class MintegralMediationAdapter
                     } );
                 }
             } );
-        }
-
-        private boolean hasRequiredAssets(final Campaign campaign, final boolean isTemplateAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( campaign.getAppName() );
-            }
-            else
-            {
-                return AppLovinSdkUtils.isValidString( campaign.getAppName() ) &&
-                        AppLovinSdkUtils.isValidString( campaign.getAdCall() ) &&
-                        URLUtil.isValidUrl( campaign.getImageUrl() );
-            }
         }
 
         //endregion

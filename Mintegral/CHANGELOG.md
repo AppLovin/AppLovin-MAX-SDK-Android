@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.0.31.2
+* Remove check for manual native ad assets.
+
 ## 16.0.31.1
 * Add support for `null` Activity context for regular banners/MRECs and native ads.
 
