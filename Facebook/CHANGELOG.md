@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.10.0.1
+* Remove check for manual native ad assets.
+
 ## 6.10.0.0
 * Certified with Facebook SDK 6.10.0.
 

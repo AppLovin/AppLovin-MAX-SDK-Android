@@ -1098,7 +1098,7 @@ public class FacebookMediationAdapter
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getAdHeadline() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -1218,20 +1218,6 @@ public class FacebookMediationAdapter
 
             final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAdBase nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdHeadline() );
-            }
-            else
-            {
-                // NOTE: media view is created and will always be non-null
-                return AppLovinSdkUtils.isValidString( nativeAd.getAdHeadline() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getAdCallToAction() );
-            }
         }
     }
 
