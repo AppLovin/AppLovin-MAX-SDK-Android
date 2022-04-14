@@ -248,10 +248,8 @@ public class CriteoMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        final CriteoNativeLoader nativeLoader = new CriteoNativeLoader(
-                new NativeAdUnit( placementId ),
-                new MaxNativeAdListener( placementId, parameters, getApplicationContext(), listener ),
-                new MaxNativeAdListener( placementId, parameters, getApplicationContext(), listener ) );
+        final MaxNativeAdListener maxNativeAdListener = new MaxNativeAdListener( placementId, parameters, getApplicationContext(), listener );
+        final CriteoNativeLoader nativeLoader = new CriteoNativeLoader( new NativeAdUnit( placementId ), maxNativeAdListener, maxNativeAdListener );
 
         nativeLoader.loadAd();
     }
@@ -436,8 +434,7 @@ public class CriteoMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MISSING_REQUIRED_NATIVE_AD_ASSETS );
@@ -463,15 +460,6 @@ public class CriteoMediationAdapter
                 {
                     final Drawable icon = getImageDrawable( iconUrl, context );
                     final Drawable media = getImageDrawable( mediaUrl, context );
-
-                    // Media view is required for non-template native ads.
-                    if ( !isTemplateAd && media == null )
-                    {
-                        e( "Media view asset is null for native custom ad view. Failing ad request." );
-                        listener.onNativeAdLoadFailed( MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                        return;
-                    }
 
                     runOnUiThread( new Runnable()
                     {
@@ -586,20 +574,6 @@ public class CriteoMediationAdapter
 
             log( "Native ad image data retrieved" );
             return iconDrawable;
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final CriteoNativeAd nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() );
-            }
-            else
-            {
-                // NOTE: Media view is required and is checked separately.
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getCallToAction() );
-            }
         }
     }
 

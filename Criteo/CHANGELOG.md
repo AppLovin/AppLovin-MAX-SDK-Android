@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.6.0.4
+* Remove check for manual native ad assets.
+
 ## 4.6.0.3
 * Request banner and MREC ads on the main thread as required by Criteo.
 
