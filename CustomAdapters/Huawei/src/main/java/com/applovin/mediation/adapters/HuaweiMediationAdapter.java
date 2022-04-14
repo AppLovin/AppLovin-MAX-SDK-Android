@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -639,8 +640,7 @@ public class HuaweiMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
@@ -674,15 +674,6 @@ public class HuaweiMediationAdapter
 
                             mediaView = mainImageView;
                         }
-                    }
-
-                    // Media view is required for non-template native ads.
-                    if ( !isTemplateAd && mediaView == null )
-                    {
-                        e( "Media view asset is null for native custom ad view. Failing ad request." );
-                        listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                        return;
                     }
 
                     Image icon = nativeAd.getIcon();
@@ -741,20 +732,6 @@ public class HuaweiMediationAdapter
         {
             d( "Native ad clicked" );
             listener.onNativeAdClicked();
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() );
-            }
-            else
-            {
-                // NOTE: Media view is required and is checked separately.
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getCallToAction() );
-            }
         }
     }
 
