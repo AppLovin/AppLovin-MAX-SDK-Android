@@ -866,19 +866,7 @@ public class VerizonAdsMediationAdapter
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
                     boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-                    boolean missingRequiredAssets = false;
                     if ( isTemplateAd && TextUtils.isEmpty( title ) )
-                    {
-                        missingRequiredAssets = true;
-                    }
-                    else if ( TextUtils.isEmpty( title )
-                            || TextUtils.isEmpty( callToAction )
-                            || mediaView == null )
-                    {
-                        missingRequiredAssets = true;
-                    }
-
-                    if ( missingRequiredAssets )
                     {
                         e( "Custom native ad (" + nativeAd + ") does not have required assets." );
                         listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
