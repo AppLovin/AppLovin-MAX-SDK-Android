@@ -5,9 +5,9 @@ plugins {
 
 // NOTE: Mintegral has 2 separate SDK versions, e.g. x.x.51 for Google Play & x.x.52 for Android Market (in China)
 private val versionMajor = 16
-private val versionMinor = 0
-private val versionPatch = 31
-private val versionAdapterPatch = 2
+private val versionMinor = 1
+private val versionPatch = 11
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
