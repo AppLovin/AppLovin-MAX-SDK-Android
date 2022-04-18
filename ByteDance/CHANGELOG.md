@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.7.5
+* Update to check SDK initialization status before collecting signal.
+
 ## 4.3.0.7.4
 * Remove check for manual native ad assets.
 
