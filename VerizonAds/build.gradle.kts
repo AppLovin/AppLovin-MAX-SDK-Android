@@ -20,11 +20,11 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:1.0.0-SNAPSHOT")
+    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:1.0.0")
 }
 
 repositories {
-    maven { url 'https://artifactory.yahooinc.com/artifactory/maven-beta-local/' }
+    maven { url 'https://artifactory.yahooinc.com/artifactory/maven/' }
 }
 
 publishing {
@@ -56,7 +56,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.yahoo.mobile.ads")
                                 appendNode("artifactId", "android-yahoo-mobile-sdk")
-                                appendNode("version", "1.0.0-SNAPSHOT")
+                                appendNode("version", "1.0.0")
                                 appendNode("scope", "compile")
                             }
                 }
