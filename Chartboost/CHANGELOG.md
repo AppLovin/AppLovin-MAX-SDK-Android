@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.2.0
+* Certified with Chartboost SDK 8.4.2.
+
 ## 8.4.1.3
 * Re-certified with Chartboost SDK 8.4.1.
 
