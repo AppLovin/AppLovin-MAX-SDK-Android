@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.2.3.6
+* Remove `<receiver>` and `<meta-data>` tags from adapter's Android Manifest.
+
+## 3.2.3.5
+* Add support for null `Activity` context for interstitials, rewarded videos and regular banner/MRECs.
+
 ## 3.2.3.4
 * Add "native" as the SDK type.
 

@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
@@ -27,6 +28,8 @@ import com.tappx.sdk.android.TappxInterstitial;
 import com.tappx.sdk.android.TappxInterstitialListener;
 import com.tappx.sdk.android.TappxRewardedVideo;
 import com.tappx.sdk.android.TappxRewardedVideoListener;
+
+import androidx.annotation.Nullable;
 
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 
@@ -103,9 +106,8 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading interstitial ad: " + appKey + "..." );
 
-                interstitialAd = new TappxInterstitial( getApplicationContext(), appKey );
+                interstitialAd = new TappxInterstitial( getContext( activity ), appKey );
                 interstitialAd.setListener( new InterstitialListener( listener ) );
-
 
                 interstitialAd.loadAd( createAdRequest( parameters ) );
             }
@@ -149,9 +151,8 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading rewarded ad: " + appKey + "..." );
 
-                rewardedAd = new TappxRewardedVideo( getApplicationContext(), appKey );
+                rewardedAd = new TappxRewardedVideo( getContext( activity ), appKey );
                 rewardedAd.setListener( new RewardedAdListener( listener ) );
-
 
                 rewardedAd.loadAd( createAdRequest( parameters ) );
             }
@@ -198,7 +199,7 @@ public class TappxMediationAdapter
                 final String appKey = parameters.getThirdPartyAdPlacementId();
                 log( "Loading " + adFormat.getLabel() + " ad: " + appKey + "..." );
 
-                adView = new TappxBanner( getApplicationContext(), appKey );
+                adView = new TappxBanner( getContext( activity ), appKey );
                 adView.setListener( new AdViewListener( listener ) );
 
                 adView.setAdSize( toAdSize( adFormat ) );
@@ -271,6 +272,12 @@ public class TappxMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private class InterstitialListener
