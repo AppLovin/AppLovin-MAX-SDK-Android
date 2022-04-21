@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.9
+* Add ability to set [content mapping URLs](https://support.google.com/admob/answer/11050896) via local extra parameters by calling `setLocalExtraParameter("google_content_url", String)` or set multiple URLs by calling `setLocalExtraParameter("google_neighbouring_content_url_strings", List<String>)`.
+
 ## 20.6.0.8
 * Remove check for manual native ad assets.
 

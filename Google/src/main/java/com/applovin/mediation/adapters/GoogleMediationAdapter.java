@@ -736,10 +736,32 @@ public class GoogleMediationAdapter
 
         if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
         {
-            Object maxContentRating = parameters.getLocalExtraParameters().get( "google_max_ad_content_rating" );
+            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+
+            Object maxContentRating = localExtraParameters.get( "google_max_ad_content_rating" );
             if ( maxContentRating instanceof String )
             {
                 networkExtras.putString( "max_ad_content_rating", (String) maxContentRating );
+            }
+
+            Object contentUrlString = localExtraParameters.get( "google_content_url" );
+            if ( contentUrlString instanceof String )
+            {
+                requestBuilder.setContentUrl( (String) contentUrlString );
+            }
+
+            Object neighbouringContentUrlStringsObject = localExtraParameters.get( "google_neighbouring_content_url_strings" );
+            if ( neighbouringContentUrlStringsObject instanceof List )
+            {
+                // try-catching unsafe cast to List<String> in case an incorrect list type is set.
+                try
+                {
+                    requestBuilder.setNeighboringContentUrls( (List<String>) neighbouringContentUrlStringsObject );
+                }
+                catch ( Throwable th )
+                {
+                    e( "Neighbouring content URL strings extra param needs to be of type List<String>.", th );
+                }
             }
         }
 
