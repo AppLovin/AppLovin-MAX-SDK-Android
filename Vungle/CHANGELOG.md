@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.10.5.2
+* Update COPPA to only be set before initialization.
+
 ## 6.10.5.1
 * Add support for COPPA.
 
