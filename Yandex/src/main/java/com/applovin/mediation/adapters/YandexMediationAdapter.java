@@ -180,7 +180,7 @@ public class YandexMediationAdapter
         updateUserConsent( parameters );
 
         interstitialAd = new InterstitialAd( activity.getApplicationContext() );
-        interstitialAd.setBlockId( placementId );
+        interstitialAd.setAdUnitId( placementId );
         interstitialAd.setInterstitialAdEventListener( new InterstitialAdListener( parameters, listener ) );
 
         interstitialAd.loadAd( createAdRequest( parameters ) );
@@ -214,7 +214,7 @@ public class YandexMediationAdapter
         updateUserConsent( parameters );
 
         rewardedAd = new RewardedAd( activity.getApplicationContext() );
-        rewardedAd.setBlockId( placementId );
+        rewardedAd.setAdUnitId( placementId );
         rewardedAd.setRewardedAdEventListener( new RewardedAdListener( parameters, listener ) );
 
         rewardedAd.loadAd( createAdRequest( parameters ) );
@@ -252,7 +252,7 @@ public class YandexMediationAdapter
         updateUserConsent( parameters );
 
         adView = new BannerAdView( activity.getApplicationContext() );
-        adView.setBlockId( placementId );
+        adView.setAdUnitId( placementId );
         adView.setAdSize( toAdSize( adFormat ) );
         adView.setBannerAdEventListener( new AdViewListener( adFormatLabel, listener ) );
 
@@ -407,7 +407,13 @@ public class YandexMediationAdapter
         @Override
         public void onLeftApplication()
         {
-            log( "Interstitial clicked and left application" );
+            log( "Interstitial left application after click" );
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( "Interstitial clicked" );
             listener.onInterstitialAdClicked();
         }
 
@@ -480,7 +486,13 @@ public class YandexMediationAdapter
         @Override
         public void onLeftApplication()
         {
-            log( "Rewarded ad clicked and left application" );
+            log( "Rewarded ad left application after click" );
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( "Rewarded clicked" );
             listener.onRewardedAdClicked();
         }
 
@@ -545,7 +557,13 @@ public class YandexMediationAdapter
         @Override
         public void onLeftApplication()
         {
-            log( adFormatLabel + " ad clicked and left application" );
+            log( adFormatLabel + " ad left application after click" );
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( adFormatLabel + " ad clicked" );
             listener.onAdViewAdClicked();
         }
 
