@@ -2,7 +2,7 @@
 
 ## 5.0.0.0
 * Certified with Yandex SDK 5.0.0.
-* Add click callback for ads.
+* Update click callback for ads.
 
 ## 4.5.0.3
 * Add impression callback for ad view ads.
