@@ -675,7 +675,7 @@ public class GoogleMediationAdapter
         if ( isBiddingAd )
         {
             // MAX specific
-            networkExtras.putString( "query_info_type", "requester_type_2" );
+            networkExtras.putString( "query_info_type", "requester_type_3" );
 
             if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
             {
@@ -701,7 +701,7 @@ public class GoogleMediationAdapter
         if ( serverParameters.getBoolean( "set_mediation_identifier", true ) )
         {
             // MAX specific
-            requestBuilder.setRequestAgent( "applovin" );
+            requestBuilder.setRequestAgent( "applovin_dv360" );
         }
 
         // Use event id as AdMob's placement request id
