@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.8.0
+* Certified with ByteDance SDK 4.3.0.8.
+
 ## 4.3.0.7.5
 * Update to check SDK initialization status before collecting signal.
 

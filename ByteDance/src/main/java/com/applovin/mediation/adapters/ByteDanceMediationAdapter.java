@@ -167,6 +167,8 @@ public class ByteDanceMediationAdapter
                 }
             }
 
+            // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+            // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
             Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
             if ( isAgeRestrictedUser != null )
             {
