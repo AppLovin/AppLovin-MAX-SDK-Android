@@ -627,6 +627,36 @@ public class GoogleAdManagerMediationAdapter
                     e( "Neighbouring content URL strings extra param needs to be of type List<String>.", th );
                 }
             }
+
+            Object customTargetingDataObject = localExtraParameters.get( "custom_targeting" );
+            if ( customTargetingDataObject instanceof Map )
+            {
+                // try-catching unsafe cast to List<String> or Map<String, Object> in case an incorrect type is set.
+                try
+                {
+                    Map<String, Object> customTargetingDataMap = (Map<String, Object>) customTargetingDataObject;
+                    for ( String key : customTargetingDataMap.keySet() )
+                    {
+                        Object value = customTargetingDataMap.get( key );
+                        if ( value instanceof String )
+                        {
+                            requestBuilder.addCustomTargeting( key, (String) value );
+                        }
+                        else if ( value instanceof List )
+                        {
+                            requestBuilder.addCustomTargeting( key, (List<String>) value );
+                        }
+                        else
+                        {
+                            e( "Object in the map needs to be either of type String or List<String>." );
+                        }
+                    }
+                }
+                catch ( Throwable th )
+                {
+                    e( "Custom targeting extra param value needs to be of type Map<String, Object>.", th );
+                }
+            }
         }
 
         requestBuilder.addNetworkExtrasBundle( AdMobAdapter.class, networkExtras );
