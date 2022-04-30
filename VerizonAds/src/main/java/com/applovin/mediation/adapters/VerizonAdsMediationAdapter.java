@@ -339,6 +339,8 @@ public class VerizonAdsMediationAdapter
 
         DataPrivacy.Builder builder = new DataPrivacy.Builder();
 
+        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {
@@ -786,6 +788,11 @@ public class VerizonAdsMediationAdapter
         public void onEvent(final InlineAdView inlineAdView, final String source, final String eventId, final Map<String, Object> arguments)
         {
             log( "AdView event from source: " + source + " with event ID: " + eventId + " and arguments: " + arguments );
+
+            if ( AD_IMPRESSION_EVENT_ID.equals( eventId ) )
+            {
+                listener.onAdViewAdDisplayed();
+            }
         }
     }
 
