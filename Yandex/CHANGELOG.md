@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0.0
+* Certified with Yandex SDK 5.0.0.
+* Update all ad formats to use a new click callback.
+
 ## 4.5.0.3
 * Add impression callback for ad view ads.
 
