@@ -594,6 +594,11 @@ public class VerizonAdsMediationAdapter
         public void onEvent(final InterstitialAd interstitialAd, final String source, final String eventId, final Map<String, Object> arguments)
         {
             log( "Interstitial ad event from source: " + source + " with event ID: " + eventId + " and arguments: " + arguments );
+
+            if ( AD_IMPRESSION_EVENT_ID.equals( eventId ) )
+            {
+                listener.onInterstitialAdDisplayed();
+            }
         }
     }
 
@@ -688,7 +693,11 @@ public class VerizonAdsMediationAdapter
         {
             log( "Rewarded ad event from source: " + source + " with event ID: " + eventId + " and arguments: " + arguments );
 
-            if ( VIDEO_COMPLETED_EVENT_ID.equals( eventId ) )
+            if ( AD_IMPRESSION_EVENT_ID.equals( eventId ) )
+            {
+                listener.onRewardedAdDisplayed();
+            }
+            else if ( VIDEO_COMPLETED_EVENT_ID.equals( eventId ) )
             {
                 hasGrantedReward = true;
             }
