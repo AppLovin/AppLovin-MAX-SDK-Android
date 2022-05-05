@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.8.2.0
+* Certified with Smaato SDK 21.8.2.
+
 ## 21.8.1.2
 * Remove check for manual native ad assets.
 
