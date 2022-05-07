@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.2.1
+* Update ad display failed error code.
+
 ## 8.4.2.0
 * Certified with Chartboost SDK 8.4.2.
 

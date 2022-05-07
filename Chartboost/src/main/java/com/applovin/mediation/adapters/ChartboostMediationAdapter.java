@@ -189,7 +189,7 @@ public class ChartboostMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            ROUTER.onAdDisplayFailed( mLocation, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -236,7 +236,7 @@ public class ChartboostMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            ROUTER.onAdDisplayFailed( mLocation, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -408,15 +408,16 @@ public class ChartboostMediationAdapter
             @Override
             public void didFailToLoadInterstitial(String location, CBError.CBImpressionError error)
             {
-                MaxAdapterError adapterError = toMaxError( error );
 
                 if ( isShowingAd.compareAndSet( true, false ) )
                 {
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.ordinal(), error.name() );
                     log( "Interstitial failed to show with error: " + error );
                     onAdDisplayFailed( location, adapterError );
                 }
                 else
                 {
+                    MaxAdapterError adapterError = toMaxError( error );
                     log( "Interstitial failed to load with error: " + error );
                     onAdLoadFailed( location, adapterError );
                 }
@@ -459,15 +460,15 @@ public class ChartboostMediationAdapter
             @Override
             public void didFailToLoadRewardedVideo(String location, CBError.CBImpressionError error)
             {
-                MaxAdapterError adapterError = toMaxError( error );
-
                 if ( isShowingAd.compareAndSet( true, false ) )
                 {
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.ordinal(), error.name() );
                     log( "Rewarded ad failed to show with error: " + error );
                     onAdDisplayFailed( location, adapterError );
                 }
                 else
                 {
+                    MaxAdapterError adapterError = toMaxError( error );
                     log( "Rewarded ad failed to load with error: " + error );
                     onAdLoadFailed( location, adapterError );
                 }
@@ -571,7 +572,7 @@ public class ChartboostMediationAdapter
                 String location = adView.getLocation();
                 if ( error != null )
                 {
-                    MaxAdapterError adapterError = toMaxError( error );
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.code.getErrorCode(), error.toString() );
 
                     log( "AdView failed \"" + location + "\" to show with error: " + error.code );
                     onAdDisplayFailed( location, adapterError );
