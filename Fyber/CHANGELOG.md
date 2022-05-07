@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.3.2
+* Update ad display failed error code.
+
 ## 8.1.3.1
 * Add support for `null` Activity context for regular banners/MRECs.
 
