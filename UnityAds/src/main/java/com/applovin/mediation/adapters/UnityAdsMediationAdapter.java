@@ -187,7 +187,7 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Interstitial placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onInterstitialAdDisplayFailed( toMaxError( error, message ) );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), message ) );
             }
 
             @Override
@@ -261,7 +261,7 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Rewarded ad placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onRewardedAdDisplayFailed( toMaxError( error, message ) );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), message ) );
             }
 
             @Override
