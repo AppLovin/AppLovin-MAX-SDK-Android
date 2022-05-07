@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.10.0.1
+* Update ad display failed error code.
+
 ## 12.10.0.0
 * Certified with Tapjoy SDK 12.10.0.
 
