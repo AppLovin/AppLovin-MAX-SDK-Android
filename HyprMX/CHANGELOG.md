@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.2.1
+* Update ad display failed error code.
+
 ## 6.0.2.0
 * Certified with HyprMX SDK 6.0.2.
 
