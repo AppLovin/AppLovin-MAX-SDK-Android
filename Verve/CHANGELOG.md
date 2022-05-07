@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.12.1.1
+* Update ad display failed error code.
+
 ## 2.12.1.0
 * Certified with Verve SDK 2.12.1.
 
