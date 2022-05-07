@@ -312,7 +312,7 @@ public class SmaatoMediationAdapter
         else
         {
             log( "Interstitial not ready." );
-            ROUTER.onAdDisplayFailed( placementId, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -379,7 +379,7 @@ public class SmaatoMediationAdapter
         else
         {
             log( "Rewarded ad not ready." );
-            ROUTER.onAdDisplayFailed( placementId, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -765,7 +765,8 @@ public class SmaatoMediationAdapter
                     interstitialAds.remove( placementId );
                 }
 
-                onAdDisplayFailed( placementId, toMaxError( interstitialError ) );
+                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", interstitialError.ordinal(), interstitialError.name() );
+                onAdDisplayFailed( placementId, adapterError );
             }
         }
 
@@ -882,7 +883,8 @@ public class SmaatoMediationAdapter
                     rewardedAds.remove( placementId );
                 }
 
-                onAdDisplayFailed( placementId, toMaxError( rewardedError ) );
+                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", rewardedError.ordinal(), rewardedError.name() );
+                onAdDisplayFailed( placementId, adapterError );
             }
         }
 
