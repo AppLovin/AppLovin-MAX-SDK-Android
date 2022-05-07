@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.2.1.1.1
+* Update ad display failed error code.
+
 ## 7.2.1.1.0
 * Certified with IronSource SDK 7.2.1.1.
 

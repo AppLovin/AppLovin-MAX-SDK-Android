@@ -180,7 +180,7 @@ public class IronSourceMediationAdapter
         else
         {
             log( "Unable to show ironSource interstitial - no ad loaded for instance ID: " + instanceId );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -226,7 +226,7 @@ public class IronSourceMediationAdapter
         else
         {
             log( "Unable to show ironSource rewarded - no ad loaded..." );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -320,8 +320,9 @@ public class IronSourceMediationAdapter
         @Override
         public void onInterstitialAdShowFailed(final String instanceId, final IronSourceError ironSourceError)
         {
-            log( "Interstitial ad failed to show for instance ID: " + instanceId + " with error: " + ironSourceError );
-            onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), toMaxError( ironSourceError ) );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", ironSourceError.getErrorCode(), ironSourceError.getErrorMessage() );
+            log( "Interstitial ad failed to show for instance ID: " + instanceId + " with error: " + adapterError );
+            onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), adapterError );
         }
 
         @Override
@@ -386,8 +387,9 @@ public class IronSourceMediationAdapter
         @Override
         public void onRewardedVideoAdShowFailed(final String instanceId, final IronSourceError ironSourceError)
         {
-            log( "Rewarded ad failed to show for instance ID: " + instanceId + " with error: " + ironSourceError );
-            onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), toMaxError( ironSourceError ) );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", ironSourceError.getErrorCode(), ironSourceError.getErrorMessage() );
+            log( "Rewarded ad failed to show for instance ID: " + instanceId + " with error: " + adapterError );
+            onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), adapterError );
         }
 
         @Override
