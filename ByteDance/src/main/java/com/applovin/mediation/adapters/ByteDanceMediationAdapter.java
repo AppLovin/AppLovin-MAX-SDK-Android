@@ -687,7 +687,7 @@ public class ByteDanceMediationAdapter
         public void onVideoError()
         {
             log( "Rewarded ad failed to display: " + codeId );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
 
         @Override
