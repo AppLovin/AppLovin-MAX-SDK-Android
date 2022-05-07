@@ -1,7 +1,10 @@
 # Changelog
 
+## 20.6.0.9
+* Update ad display failed error code.
+
 ## 20.6.0.8
-* Add ability to set [custom_targeting](https://developers.google.com/ad-manager/mobile-ads-sdk/android/targeting#custom_targeting) via local extra parameters by calling `setLocalExtraParameter("custom_targeting", Map<String, Object>)`, `Object` value must be either a `String` or `List<String>`.
+* Add ability to set [custom targeting](https://developers.google.com/ad-manager/mobile-ads-sdk/android/targeting#custom_targeting) via local extra parameters by calling `setLocalExtraParameter("custom_targeting", Map<String, Object>)`, `Object` value must be either a `String` or `List<String>`.
 
 ## 20.6.0.7
 * Add ability to set [content mapping URLs](https://support.google.com/admanager/answer/11050896) via local extra parameters by calling `setLocalExtraParameter("google_content_url", String)` or set multiple URLs by calling `setLocalExtraParameter("google_neighbouring_content_url_strings", List<String>)`.
