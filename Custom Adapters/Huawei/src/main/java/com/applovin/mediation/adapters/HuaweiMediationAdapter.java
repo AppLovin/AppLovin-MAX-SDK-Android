@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -157,23 +158,30 @@ public class HuaweiMediationAdapter
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
 
-        adView = new BannerView( activity.getApplicationContext() );
-
-        if ( parameters.isTesting() )
+        runOnUiThread( new Runnable()
         {
-            adView.setAdId( BANNER_TEST_AD_ID );
-        }
-        else
-        {
-            adView.setAdId( adId );
-        }
+            @Override
+            public void run()
+            {
+                adView = new BannerView( activity.getApplicationContext() );
 
-        adView.setBannerAdSize( toAdSize( adFormat ) );
-        adView.pause();
-        adView.setAdListener( new AdViewListener( listener ) );
+                if ( parameters.isTesting() )
+                {
+                    adView.setAdId( BANNER_TEST_AD_ID );
+                }
+                else
+                {
+                    adView.setAdId( adId );
+                }
 
-        AdParam adParam = createAdParam( activity.getApplicationContext() );
-        adView.loadAd( adParam );
+                adView.setBannerAdSize( toAdSize( adFormat ) );
+                adView.pause();
+                adView.setAdListener( new AdViewListener( listener ) );
+
+                AdParam adParam = createAdParam( activity.getApplicationContext() );
+                adView.loadAd( adParam );
+            }
+        } );
     }
 
     //endregion
@@ -219,7 +227,7 @@ public class HuaweiMediationAdapter
         else
         {
             e( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -265,7 +273,7 @@ public class HuaweiMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -372,6 +380,8 @@ public class HuaweiMediationAdapter
             }
         }
 
+        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
         Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
@@ -632,8 +642,7 @@ public class HuaweiMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
@@ -667,15 +676,6 @@ public class HuaweiMediationAdapter
 
                             mediaView = mainImageView;
                         }
-                    }
-
-                    // Media view is required for non-template native ads.
-                    if ( !isTemplateAd && mediaView == null )
-                    {
-                        e( "Media view asset is null for native custom ad view. Failing ad request." );
-                        listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                        return;
                     }
 
                     Image icon = nativeAd.getIcon();
@@ -734,20 +734,6 @@ public class HuaweiMediationAdapter
         {
             d( "Native ad clicked" );
             listener.onNativeAdClicked();
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)
-        {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() );
-            }
-            else
-            {
-                // NOTE: Media view is required and is checked separately.
-                return AppLovinSdkUtils.isValidString( nativeAd.getTitle() )
-                        && AppLovinSdkUtils.isValidString( nativeAd.getCallToAction() );
-            }
         }
     }
 

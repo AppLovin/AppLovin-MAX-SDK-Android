@@ -1,5 +1,14 @@
 # Changelog
 
+## 13.4.49.301.5
+* Update ad display failed error code.
+
+## 13.4.49.301.4
+* Remove check for manual native ad assets.
+
+## 13.4.49.301.3
+* Fix NPE caused from running ad view logic on background threads by using the UI thread.
+
 ## 13.4.49.301.2
 * Add support for banners and MRECs.
 * Add mapping for errors.
