@@ -307,7 +307,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Interstitial ad failed to show: " + placementId );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -384,7 +384,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Rewarded interstitial ad failed to show: " + placementId );
-            listener.onRewardedInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -462,7 +462,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Rewarded ad failed to show: " + placementId );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -899,7 +899,7 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Rewarded interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedInterstitialAdDisplayFailed( adapterError );
         }
@@ -954,7 +954,7 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Rewarded ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
