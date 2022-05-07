@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.12.2
+* Update ad display failed error code.
+
 ## 1.0.12.1
 * Remove `checkExistence()` call from adapter.
 * Support for null `Activity` on init.
