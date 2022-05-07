@@ -361,7 +361,7 @@ public class MintegralMediationAdapter
             log( "Unable to show interstitial - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( mbUnitId, MaxAdapterError.AD_NOT_READY );
+            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -488,7 +488,7 @@ public class MintegralMediationAdapter
             log( "Unable to show rewarded ad - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( mbUnitId, MaxAdapterError.AD_NOT_READY );
+            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -746,8 +746,9 @@ public class MintegralMediationAdapter
             @Override
             public void onShowFail(final MBridgeIds mBridgeIds, String errorMsg)
             {
-                log( "Interstitial failed to show: " + errorMsg );
-                onAdDisplayFailed( mBridgeIds.getUnitId(), toMaxError( errorMsg ) );
+                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+                log( "Interstitial failed to show: " + adapterError );
+                onAdDisplayFailed( mBridgeIds.getUnitId(), adapterError );
             }
 
             @Override
@@ -846,8 +847,9 @@ public class MintegralMediationAdapter
             @Override
             public void onShowFail(final MBridgeIds mBridgeIds, String errorMsg)
             {
-                log( "Rewarded ad failed to show: " + errorMsg );
-                onAdDisplayFailed( mBridgeIds.getUnitId(), toMaxError( errorMsg ) );
+                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+                log( "Rewarded ad failed to show: " + adapterError );
+                onAdDisplayFailed( mBridgeIds.getUnitId(), adapterError );
             }
 
             @Override
