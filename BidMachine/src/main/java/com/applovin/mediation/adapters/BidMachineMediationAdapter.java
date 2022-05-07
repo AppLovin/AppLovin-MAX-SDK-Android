@@ -196,7 +196,7 @@ public class BidMachineMediationAdapter
         if ( !interstitialAd.canShow() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
@@ -234,7 +234,7 @@ public class BidMachineMediationAdapter
         if ( !rewardedAd.canShow() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
