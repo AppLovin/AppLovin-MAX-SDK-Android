@@ -167,7 +167,7 @@ public class AdColonyMediationAdapter
         if ( loadedInterstitialAd == null )
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
@@ -186,7 +186,7 @@ public class AdColonyMediationAdapter
         if ( !success )
         {
             log( "Interstitial ad failed to display" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -220,7 +220,7 @@ public class AdColonyMediationAdapter
         if ( loadedRewardedAd == null )
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
@@ -242,7 +242,7 @@ public class AdColonyMediationAdapter
         if ( !success )
         {
             log( "Rewarded ad failed to display" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
