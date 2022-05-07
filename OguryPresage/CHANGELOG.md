@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.2.0.1
+* Update ad display failed error code.
+
 ## 5.2.0.0
 * Support for header bidding.
 
