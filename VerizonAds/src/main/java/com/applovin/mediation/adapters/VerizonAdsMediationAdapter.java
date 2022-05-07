@@ -211,7 +211,7 @@ public class VerizonAdsMediationAdapter
         if ( interstitialAd == null )
         {
             log( "Unable to show interstitial - no ad loaded" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
@@ -254,7 +254,7 @@ public class VerizonAdsMediationAdapter
         if ( rewardedAd == null )
         {
             log( "Unable to show rewarded ad - no ad loaded" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
