@@ -258,7 +258,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show interstitial - no ad loaded..." );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -400,7 +400,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show rewarded interstitial ad - no ad loaded..." );
-            listener.onRewardedInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -452,7 +452,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show rewarded ad - no ad loaded..." );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -466,6 +466,7 @@ public class FacebookMediationAdapter
 
         updateAdSettings( parameters );
 
+        // NOTE: FB native is no longer supported in banners but is kept in for backwards compatibility for existing users.
         if ( isNative )
         {
             mNativeAd = new NativeAd( getContext( activity ), placementId );
@@ -544,6 +545,8 @@ public class FacebookMediationAdapter
             AdSettings.setVideoAutoplay( videoAutoplay );
         }
 
+        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {

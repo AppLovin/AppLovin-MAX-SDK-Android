@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.10.0.2
+* Update ad display failed error code.
+
 ## 6.10.0.1
 * Remove check for manual native ad assets.
 
