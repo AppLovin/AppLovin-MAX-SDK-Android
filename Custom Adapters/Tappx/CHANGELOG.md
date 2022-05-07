@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.3.7
+* Update ad display failed error code.
+
 ## 3.2.3.6
 * Remove `<receiver>` and `<meta-data>` tags from adapter's Android Manifest.
 

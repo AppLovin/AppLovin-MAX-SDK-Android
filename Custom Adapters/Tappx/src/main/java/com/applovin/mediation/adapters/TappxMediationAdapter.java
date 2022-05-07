@@ -132,7 +132,7 @@ public class TappxMediationAdapter
                 else
                 {
                     log( "Interstitial ad not ready" );
-                    listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+                    listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
                 }
             }
         } );
@@ -180,7 +180,7 @@ public class TappxMediationAdapter
                 else
                 {
                     log( "Rewarded ad not ready" );
-                    listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+                    listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
                 }
             }
         } );
@@ -300,7 +300,7 @@ public class TappxMediationAdapter
         @Override
         public void onInterstitialLoadFailed(final TappxInterstitial tappxInterstitial, final TappxAdError tappxAdError)
         {
-            MaxAdapterError adapterError = toMaxError( tappxAdError );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", tappxAdError.ordinal(), tappxAdError.name() );
             log( "Interstitial failed to load: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -366,7 +366,7 @@ public class TappxMediationAdapter
         public void onRewardedVideoPlaybackFailed(final TappxRewardedVideo tappxRewardedVideo)
         {
             log( "Rewarded ad playback failed" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
 
         @Override
