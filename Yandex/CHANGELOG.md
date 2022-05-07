@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.0.1
+* Update ad display failed error code.
+
 ## 5.0.0.0
 * Certified with Yandex SDK 5.0.0.
 * Update all ad formats to use a new click callback.

@@ -194,7 +194,7 @@ public class YandexMediationAdapter
         if ( interstitialAd == null || !interstitialAd.isLoaded() )
         {
             log( "Interstitial ad failed to load - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
             return;
         }
 
@@ -228,7 +228,7 @@ public class YandexMediationAdapter
         if ( rewardedAd == null || !rewardedAd.isLoaded() )
         {
             log( "Rewarded ad failed to load - ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
             return;
         }
 
