@@ -206,7 +206,7 @@ public class CriteoMediationAdapter
         else
         {
             e( "Interstitial ad failed to show: " + placementId );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
