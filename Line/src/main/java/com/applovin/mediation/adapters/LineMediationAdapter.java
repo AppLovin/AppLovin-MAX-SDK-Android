@@ -108,7 +108,8 @@ public class LineMediationAdapter
 
             //
             // COPPA options
-            //
+            // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+            // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
             Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
             if ( isAgeRestrictedUser != null )
             {
@@ -167,7 +168,7 @@ public class LineMediationAdapter
         if ( activityRef.get() != activity )
         {
             log( "Display error: Activity instance used in interstitial ad initialization is different from activity instance being used to display ad." );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.INTERNAL_ERROR );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
             return;
         }
 
@@ -198,7 +199,7 @@ public class LineMediationAdapter
         if ( activityRef.get() != activity )
         {
             log( "Display error: Activity instance used in rewarded ad initialization is different from activity instance being used to display ad." );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.INTERNAL_ERROR );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
             return;
         }
 
@@ -349,7 +350,7 @@ public class LineMediationAdapter
         public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Interstitial ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = toMaxError( errorCode );
+            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
             listener.onInterstitialAdDisplayFailed( error );
         }
 
@@ -450,7 +451,7 @@ public class LineMediationAdapter
         public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Rewarded ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = toMaxError( errorCode );
+            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
             listener.onRewardedAdDisplayFailed( error );
         }
 
@@ -566,7 +567,7 @@ public class LineMediationAdapter
         public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = toMaxError( errorCode );
+            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 
@@ -680,7 +681,7 @@ public class LineMediationAdapter
         public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
         {
             log( "Native " + adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = toMaxError( errorCode );
+            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 

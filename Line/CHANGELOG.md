@@ -1,5 +1,8 @@
 # Changelog
 
+## 2021.10.29.2
+* Update ad display failed error code.
+
 ## 2021.10.29.1
 * Remove check for manual native ad assets.
 
