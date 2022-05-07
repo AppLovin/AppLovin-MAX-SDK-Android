@@ -126,7 +126,7 @@ public class NendMediationAdapter
         if ( !interstitialVideo.isLoaded() )
         {
             log( "Interstitial ad has not loaded" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
@@ -174,7 +174,7 @@ public class NendMediationAdapter
         if ( !rewardedVideo.isLoaded() )
         {
             log( "Rewarded ad has not loaded" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
 
             return;
         }
