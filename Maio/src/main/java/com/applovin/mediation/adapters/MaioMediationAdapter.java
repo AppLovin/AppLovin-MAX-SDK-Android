@@ -152,7 +152,7 @@ public class MaioMediationAdapter
         else
         {
             log( "Interstitial not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -201,7 +201,7 @@ public class MaioMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, MaxAdapterError.AD_NOT_READY );
+            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -302,15 +302,15 @@ public class MaioMediationAdapter
         @Override
         public void onFailed(FailNotificationReason reason, String zoneId)
         {
-            MaxAdapterError error = toMaxError( reason );
-
             if ( isShowingAd.compareAndSet( true, false ) )
             {
+                MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", reason.ordinal(), reason.name() );
                 log( "Ad failed to display with Maio reason: " + reason + " Max error: " + error );
                 onAdDisplayFailed( zoneId, error );
             }
             else
             {
+                MaxAdapterError error = toMaxError( reason );
                 log( "Ad failed to load with Maio reason: " + reason + " Max error: " + error );
                 onAdLoadFailed( zoneId, error );
             }
