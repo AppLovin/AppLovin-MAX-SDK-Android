@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.3.2
+* Update ad display failed error code.
+
 ## 9.4.3.1
 * Fix memory leak for APS ad request and response objects.
 

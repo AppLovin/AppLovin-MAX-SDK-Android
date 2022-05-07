@@ -38,6 +38,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
+
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
 /**
@@ -53,7 +55,7 @@ public class AmazonAdMarketplaceMediationAdapter
     private static final Map<MaxAdFormat, DTBAdLoader> adLoaders = Collections.synchronizedMap( new HashMap<MaxAdFormat, DTBAdLoader>() );
 
     // NOTE: Will remove for more space-efficient implementation
-    private static final Set<Integer> usedAdLoaders = new HashSet<Integer>();
+    private static final Set<Integer> usedAdLoaders = new HashSet<>();
 
     // Contains mapping of encoded bid id -> mediation hints / bid info
     private static final Map<String, MediationHints> mediationHintsCache     = new HashMap<>();
@@ -189,7 +191,7 @@ public class AmazonAdMarketplaceMediationAdapter
         adLoader.loadAd( new DTBAdCallback()
         {
             @Override
-            public void onSuccess(final DTBAdResponse dtbAdResponse)
+            public void onSuccess(@NonNull final DTBAdResponse dtbAdResponse)
             {
                 // Store ad loader for future ad refresh token collection
                 adLoaders.put( adFormat, dtbAdResponse.getAdLoader() );
@@ -202,7 +204,7 @@ public class AmazonAdMarketplaceMediationAdapter
             }
 
             @Override
-            public void onFailure(final AdError adError)
+            public void onFailure(@NonNull final AdError adError)
             {
                 // Store ad loader for future ad refresh token collection
                 adLoaders.put( adFormat, adError.getAdLoader() );
@@ -216,9 +218,7 @@ public class AmazonAdMarketplaceMediationAdapter
         } );
     }
 
-    private void processAdResponse(final MaxAdapterSignalCollectionParameters parameters,
-                                   final DTBAdResponse adResponse,
-                                   final MaxSignalCollectionListener callback)
+    private void processAdResponse(final MaxAdapterSignalCollectionParameters parameters, final DTBAdResponse adResponse, final MaxSignalCollectionListener callback)
     {
         d( "Processing ad response..." );
 
@@ -264,7 +264,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(MaxAdapterResponseParameters parameters, MaxAdFormat adFormat, Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
         String encodedBidId = parameters.getServerParameters().getString( "encoded_bid_id" );
         d( "Loading " + adFormat.getLabel() + " ad view ad for encoded bid id: " + encodedBidId + "..." );
@@ -339,7 +339,7 @@ public class AmazonAdMarketplaceMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -502,7 +502,7 @@ public class AmazonAdMarketplaceMediationAdapter
             return result;
         }
 
-        @Override
+        @Override @NonNull
         public String toString()
         {
             return "MediationHints{" +

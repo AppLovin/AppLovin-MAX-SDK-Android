@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 9
 private val versionMinor = 4
 private val versionPatch = 3
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -21,6 +21,7 @@ android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
     api("com.amazon.android:aps-sdk:${libraryVersions["amazon"]}")
+    compileOnly("com.android.support:support-annotations:+")
 }
 
 publishing {
