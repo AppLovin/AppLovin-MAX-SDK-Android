@@ -47,7 +47,6 @@ import com.my.target.nativeads.factories.NativeViewsFactory;
 import com.my.target.nativeads.views.MediaAdView;
 import com.my.target.nativeads.views.NativeAdView;
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,7 +178,7 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Interstitial ad is null" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -219,7 +218,7 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Rewarded ad is null" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
     }
 
@@ -282,6 +281,8 @@ public class MyTargetMediationAdapter
 
     private void updatePrivacyStates(final MaxAdapterResponseParameters parameters)
     {
+        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
+        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=eno
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {
@@ -541,8 +542,8 @@ public class MyTargetMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-
-            if ( !hasRequiredAssets( isTemplateAd, nativeAd ) )
+            final NativePromoBanner nativeBanner = nativeAd.getBanner();
+            if ( isTemplateAd && TextUtils.isEmpty( nativeBanner.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
@@ -550,7 +551,6 @@ public class MyTargetMediationAdapter
                 return;
             }
 
-            final NativePromoBanner nativeBanner = nativeAd.getBanner();
             final ImageData icon = nativeBanner.getIcon();
             final MediaAdView mediaView = NativeViewsFactory.getMediaAdView( context );
 
@@ -630,23 +630,6 @@ public class MyTargetMediationAdapter
         public void onImageLoad(@NonNull final NativeAd nativeAd)
         {
             log( "Native ad image loaded: " + slotId );
-        }
-
-        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd nativeAd)
-        {
-            NativePromoBanner banner = nativeAd.getBanner();
-            if ( banner == null ) return false;
-
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( banner.getTitle() );
-            }
-            else
-            {
-                // NOTE: media view is created and will always be non-null
-                return AppLovinSdkUtils.isValidString( banner.getTitle() ) &&
-                        AppLovinSdkUtils.isValidString( banner.getCtaText() );
-            }
         }
     }
 

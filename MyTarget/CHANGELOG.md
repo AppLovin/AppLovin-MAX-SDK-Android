@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.15.1.4
+* Update ad display failed error code.
+
+## 5.15.1.3
+* Remove check for manual native ad assets.
+
 ## 5.15.1.2
 * Add support for `null` Activity context for signal collection, regular banners/MRECs, and native ads.
 
