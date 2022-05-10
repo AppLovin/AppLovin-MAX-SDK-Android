@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.4.3.3
+* Add support for `null` Activity context for regular banners.
+
 ## 9.4.3.2
 * Update ad display failed error code.
 

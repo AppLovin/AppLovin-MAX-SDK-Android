@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -39,6 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
 
@@ -285,7 +287,7 @@ public class AmazonAdMarketplaceMediationAdapter
         // Paranoia
         if ( mediationHints != null )
         {
-            adView = new DTBAdView( activity, new AdViewListener( listener ) );
+            adView = new DTBAdView( getContext( activity ), new AdViewListener( listener ) );
             adView.fetchAd( mediationHints.value );
         }
         else
@@ -341,6 +343,12 @@ public class AmazonAdMarketplaceMediationAdapter
             log( "Interstitial ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private class AdViewListener
