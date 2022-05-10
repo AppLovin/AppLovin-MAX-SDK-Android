@@ -5,9 +5,9 @@ plugins {
 
 private val versionMajor = 13
 private val versionMinor = 4
-private val versionPatch = 49
-private val versionBuild = 301
-private val versionAdapterPatch = 5
+private val versionPatch = 54
+private val versionBuild = 300
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000000) + (versionMinor * 10000000) + (versionPatch * 100000) + (versionBuild * 100) + versionAdapterPatch)
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.huawei.hms:ads:${libraryVersions["huawei"]}")
+    implementation("com.huawei.hms:ads-prime:${libraryVersions["huawei"]}")
     implementation("com.huawei.hms:ads-consent:${libraryVersions["huawei"]}")
 }
 

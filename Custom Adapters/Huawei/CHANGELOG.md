@@ -1,5 +1,8 @@
 # Changelog
 
+## 13.4.54.300.0
+* Certified with Huawei SDK 13.4.54.300.
+
 ## 13.4.49.301.5
 * Update ad display failed error code.
 
