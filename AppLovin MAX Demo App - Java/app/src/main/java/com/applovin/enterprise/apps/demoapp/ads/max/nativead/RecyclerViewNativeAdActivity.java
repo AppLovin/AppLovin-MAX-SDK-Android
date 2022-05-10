@@ -77,7 +77,7 @@ public class RecyclerViewNativeAdActivity
     }
 
     static class CustomRecyclerAdapter
-            extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+            extends RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>
     {
         private final LayoutInflater inflater;
         private final List<String>   data;
@@ -90,16 +90,16 @@ public class RecyclerViewNativeAdActivity
 
         @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
+        public CustomRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
         {
             View view = inflater.inflate( R.layout.activity_native_recycler_view_holder, parent, false );
-            return new CustomViewHolder( view );
+            return new ViewHolder( view );
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position)
+        public void onBindViewHolder(@NonNull final ViewHolder holder, final int position)
         {
-            ( (CustomViewHolder) holder ).textView.setText( data.get( position ) );
+            holder.textView.setText( data.get( position ) );
         }
 
         @Override
@@ -108,12 +108,12 @@ public class RecyclerViewNativeAdActivity
             return data.size();
         }
 
-        static class CustomViewHolder
+        static class ViewHolder
                 extends RecyclerView.ViewHolder
         {
             TextView textView;
 
-            CustomViewHolder(View itemView)
+            ViewHolder(View itemView)
             {
                 super( itemView );
                 textView = itemView.findViewById( R.id.textView );
