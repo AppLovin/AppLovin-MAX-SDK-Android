@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0.12
+* Add support for null `Activity` context for signal collection, native ads and regular banner/MRECs.
+
 ## 1.14.0.11
 * Update ad display failed error code.
 

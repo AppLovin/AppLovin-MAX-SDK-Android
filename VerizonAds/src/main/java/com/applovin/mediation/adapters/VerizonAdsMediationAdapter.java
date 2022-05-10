@@ -2,6 +2,7 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -56,6 +57,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by santoshbagadi on 2/27/19.
@@ -274,7 +277,7 @@ public class VerizonAdsMediationAdapter
 
         AdSize adSize = toAdSize( adFormat );
         AdViewListener adViewListener = new AdViewListener( listener );
-        inlineAdFactory = new InlineAdFactory( activity, placementId, Collections.singletonList( adSize ), adViewListener );
+        inlineAdFactory = new InlineAdFactory( getContext( activity ), placementId, Collections.singletonList( adSize ), adViewListener );
 
         Bundle serverParameters = parameters.getServerParameters();
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, parameters.getBidResponse() );
@@ -301,8 +304,9 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "native ad for placement: '" + placementId + "'..." );
 
         Bundle serverParameters = parameters.getServerParameters();
-        NativeAdListener nativeAdListener = new NativeAdListener( serverParameters, activity, listener );
-        nativeAdFactory = new NativeAdFactory( activity, placementId, new String[] { "simpleImage", "simpleVideo" }, nativeAdListener );
+        Context context = getContext( activity );
+        NativeAdListener nativeAdListener = new NativeAdListener( serverParameters, context, listener );
+        nativeAdFactory = new NativeAdFactory( context, placementId, new String[] { "simpleImage", "simpleVideo" }, nativeAdListener );
 
         RequestMetadata requestMetadata = createRequestMetadata( serverParameters, bidResponse );
         nativeAdFactory.setRequestMetaData( requestMetadata );
@@ -319,7 +323,7 @@ public class VerizonAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
-        String signal = VASAds.getBiddingToken( activity );
+        String signal = VASAds.getBiddingToken( getContext( activity ) );
         if ( signal == null )
         {
             callback.onSignalCollectionFailed( "VerizonAds SDK not initialized; failed to return a bid." );
@@ -512,6 +516,12 @@ public class VerizonAdsMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
     //endregion
 
@@ -809,14 +819,13 @@ public class VerizonAdsMediationAdapter
             implements NativeAdFactory.NativeAdFactoryListener, NativeAd.NativeAdListener
     {
         private final Bundle                     serverParameters;
-        private final WeakReference<Activity>    activityRef;
+        private final Context                    context;
         private final MaxNativeAdAdapterListener listener;
 
-        private NativeAdListener(final Bundle serverParameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+        private NativeAdListener(final Bundle serverParameters, final Context context, final MaxNativeAdAdapterListener listener)
         {
-            activityRef = new WeakReference<>( activity );
-
             this.serverParameters = serverParameters;
+            this.context = context;
             this.listener = listener;
         }
 
@@ -824,17 +833,6 @@ public class VerizonAdsMediationAdapter
         public void onLoaded(final NativeAdFactory nativeAdFactory, final NativeAd nativeAd)
         {
             log( "Native ad loaded: " + nativeAd.getPlacementId() );
-
-            final Activity activity = activityRef.get();
-            if ( activity == null )
-            {
-                log( "Native ad failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                nativeAd.destroy();
-
-                return;
-            }
 
             AppLovinSdkUtils.runOnUiThread( new Runnable()
             {
@@ -871,13 +869,13 @@ public class VerizonAdsMediationAdapter
                     NativeVideoComponent mediaVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
 
                     View mediaView = null;
-                    if ( mediaVideoComponent != null && mediaVideoComponent.getView( activity ) != null )
+                    if ( mediaVideoComponent != null && mediaVideoComponent.getView( context ) != null )
                     {
-                        mediaView = mediaVideoComponent.getView( activity );
+                        mediaView = mediaVideoComponent.getView( context );
                     }
-                    else if ( mediaImageComponent != null && mediaImageComponent.getView( activity ) != null )
+                    else if ( mediaImageComponent != null && mediaImageComponent.getView( context ) != null )
                     {
-                        mediaView = mediaImageComponent.getView( activity );
+                        mediaView = mediaImageComponent.getView( context );
                     }
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -903,7 +901,7 @@ public class VerizonAdsMediationAdapter
                         public void run()
                         {
                             Uri iconUri = iconComponent.getUri();
-                            Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUri.toString(), activity.getResources() );
+                            Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUri.toString(), context.getResources() );
                             MaxNativeAd.MaxNativeAdImage iconImage = null;
                             try
                             {
