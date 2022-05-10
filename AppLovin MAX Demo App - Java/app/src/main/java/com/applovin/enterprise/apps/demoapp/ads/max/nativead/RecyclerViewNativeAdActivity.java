@@ -41,7 +41,7 @@ public class RecyclerViewNativeAdActivity
         MaxAdPlacerSettings settings = new MaxAdPlacerSettings( "YOUR_AD_UNIT_ID" );
         settings.addFixedPosition( 2 );
         settings.addFixedPosition( 8 );
-        settings.setRepeatingInterval( 10 );
+        settings.setRepeatingInterval( 6 );
 
         // If using custom views, you must also set the nativeAdViewBinder on the adapter
 

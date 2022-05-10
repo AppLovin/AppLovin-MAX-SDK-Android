@@ -31,7 +31,7 @@ class RecyclerViewNativeAdActivity : AppCompatActivity() {
         val settings = MaxAdPlacerSettings("YOUR_AD_UNIT_ID")
         settings.addFixedPosition(2)
         settings.addFixedPosition(8)
-        settings.repeatingInterval = 10
+        settings.repeatingInterval = 6
 
         // If using custom views, you must also set the nativeAdViewBinder on the adapter
 
