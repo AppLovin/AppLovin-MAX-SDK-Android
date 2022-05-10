@@ -12,6 +12,7 @@ android {
         targetSdkVersion 31
         versionCode 10000
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
