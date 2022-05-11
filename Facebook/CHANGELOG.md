@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.0
+* Certified with Facebook SDK 6.11.0.
+
 ## 6.10.0.2
 * Update ad display failed error code.
 
