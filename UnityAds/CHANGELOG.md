@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.0.0
+* Certified with UnityAds SDK 4.2.0.
+
 ## 4.1.0.3
 * Update ad display failed error code.
 
