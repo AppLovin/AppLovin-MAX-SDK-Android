@@ -77,6 +77,7 @@ public class MintegralMediationAdapter
     private final static String NO_FILL_2        = "no ads available";
     private final static String NO_FILL_3        = "no server ads available";
     private final static String NO_FILL_4        = "no ads source";
+    private final static String NO_FILL_5        = "load no ad";
     private final static String NETWORK_ERROR    = "network exception";
     private final static String BAD_REQUEST      = "request parameter is null";
     private final static String TIMEOUT          = "load timeout";
@@ -631,8 +632,9 @@ public class MintegralMediationAdapter
         {
             adapterError = MaxAdapterError.NOT_INITIALIZED;
         }
-        else if ( NO_FILL_1.contains( mintegralError ) || NO_FILL_2.contains( mintegralError )
-                || NO_FILL_3.contains( mintegralError ) || NO_FILL_4.contains( mintegralError ) || mintegralError.contains( EXCEPTION_RETURN_EMPTY ) )
+        else if ( mintegralError.contains( NO_FILL_1 ) || mintegralError.contains( NO_FILL_2 )
+                || mintegralError.contains( NO_FILL_3 ) || mintegralError.contains( NO_FILL_4 )
+                || mintegralError.contains( NO_FILL_5 ) || mintegralError.contains( EXCEPTION_RETURN_EMPTY ) )
         {
             adapterError = MaxAdapterError.NO_FILL;
         }
