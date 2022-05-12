@@ -221,6 +221,7 @@ public class VerveMediationAdapter
         updateUserConsent( parameters );
 
         adViewAd = new HyBidAdView( activity, getSize( adFormat ) );
+        adViewAd.setTrackingMethod(ImpressionTrackingMethod.AD_VIEWABLE);
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
     }
 
