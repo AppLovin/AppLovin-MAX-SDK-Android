@@ -869,13 +869,16 @@ public class VerizonAdsMediationAdapter
                     NativeVideoComponent mediaVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
 
                     View mediaView = null;
+                    float mediaViewAspectRatio = 0.0f;
                     if ( mediaVideoComponent != null && mediaVideoComponent.getView( context ) != null )
                     {
                         mediaView = mediaVideoComponent.getView( context );
+                        mediaViewAspectRatio = (float) mediaVideoComponent.getWidth() / (float) mediaVideoComponent.getHeight();
                     }
                     else if ( mediaImageComponent != null && mediaImageComponent.getView( context ) != null )
                     {
                         mediaView = mediaImageComponent.getView( context );
+                        mediaViewAspectRatio = (float) mediaImageComponent.getWidth() / (float) mediaImageComponent.getHeight();
                     }
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -895,6 +898,7 @@ public class VerizonAdsMediationAdapter
                     final String finalBody = body;
                     final String finalCallToAction = callToAction;
                     final View finalMediaView = mediaView;
+                    final float finalMediaViewAspectRatio = mediaViewAspectRatio;
                     getCachingExecutorService().submit( new Runnable()
                     {
                         @Override
@@ -926,6 +930,12 @@ public class VerizonAdsMediationAdapter
                                     .setCallToAction( finalCallToAction )
                                     .setIcon( iconImage )
                                     .setMediaView( finalMediaView );
+
+                            if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
+                            {
+                                builder.setMediaContentAspectRatio( finalMediaViewAspectRatio );
+                            }
+
                             MaxNativeAd maxNativeAd = new MaxVerizonNativeAd( listener, builder );
 
                             CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
