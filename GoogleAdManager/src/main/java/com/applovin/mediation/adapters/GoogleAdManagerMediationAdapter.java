@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -1158,23 +1159,29 @@ public class GoogleAdManagerMediationAdapter
                 {
                     View mediaView = null;
                     MediaContent mediaContent = nativeAd.getMediaContent();
+                    List<NativeAd.Image> images = nativeAd.getImages();
+                    float mediaContentAspectRatio = 0.0f;
+
                     if ( mediaContent != null )
                     {
                         MediaView googleMediaView = new MediaView( context );
                         googleMediaView.setMediaContent( mediaContent );
-
                         mediaView = googleMediaView;
-                    }
-                    else if ( nativeAd.getImages() != null )
-                    {
-                        List<NativeAd.Image> images = nativeAd.getImages();
-                        if ( images.size() > 0 )
-                        {
-                            NativeAd.Image image = images.get( 0 );
-                            ImageView mainImageView = new ImageView( context );
-                            mainImageView.setImageDrawable( image.getDrawable() );
 
-                            mediaView = mainImageView;
+                        mediaContentAspectRatio = mediaContent.getAspectRatio();
+                    }
+                    else if ( images != null && images.size() > 0 )
+                    {
+                        NativeAd.Image mediaImage = images.get( 0 );
+                        ImageView mediaImageView = new ImageView( context );
+                        Drawable mediaImageDrawable = mediaImage.getDrawable();
+
+                        if ( mediaImageDrawable != null )
+                        {
+                            mediaImageView.setImageDrawable( mediaImage.getDrawable() );
+                            mediaView = mediaImageView;
+
+                            mediaContentAspectRatio = (float) mediaImage.getDrawable().getIntrinsicWidth() / (float) mediaImage.getDrawable().getIntrinsicHeight();
                         }
                     }
 
@@ -1200,6 +1207,12 @@ public class GoogleAdManagerMediationAdapter
                             .setBody( nativeAd.getBody() )
                             .setMediaView( mediaView )
                             .setCallToAction( nativeAd.getCallToAction() );
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
+                    {
+                        builder.setMediaContentAspectRatio( mediaContentAspectRatio );
+                    }
+
                     MaxNativeAd maxNativeAd = new MaxGoogleAdManagerNativeAd( builder );
 
                     ResponseInfo responseInfo = nativeAd.getResponseInfo();
