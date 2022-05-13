@@ -570,14 +570,21 @@ public class MyTargetMediationAdapter
             nativeAdView = NativeViewsFactory.getNativeAdView( context );
             nativeAdView.setupView( nativeAd.getBanner() );
 
-            final MaxNativeAd maxNativeAd = new MaxMyTargetNativeAd( new MaxNativeAd.Builder()
-                                                                             .setAdFormat( MaxAdFormat.NATIVE )
-                                                                             .setTitle( nativeBanner.getTitle() )
-                                                                             .setBody( nativeBanner.getDescription() )
-                                                                             .setCallToAction( nativeBanner.getCtaText() )
-                                                                             .setIcon( maxNativeAdImage )
-                                                                             .setMediaView( mediaView )
-                                                                             .setAdvertiser( nativeBanner.getAdvertisingLabel() ) );
+            final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                    .setAdFormat( MaxAdFormat.NATIVE )
+                    .setTitle( nativeBanner.getTitle() )
+                    .setBody( nativeBanner.getDescription() )
+                    .setCallToAction( nativeBanner.getCtaText() )
+                    .setIcon( maxNativeAdImage )
+                    .setMediaView( mediaView )
+                    .setAdvertiser( nativeBanner.getAdvertisingLabel() );
+
+            if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
+            {
+                builder.setMediaContentAspectRatio( mediaView.getMediaAspectRatio() );
+            }
+
+            final MaxNativeAd maxNativeAd = new MaxMyTargetNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
         }
 

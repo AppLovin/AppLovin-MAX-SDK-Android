@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.1.5
+* Add support for providing native media content aspect ratio in `MaxNativeAdView`.
+
 ## 5.15.1.4
 * Update ad display failed error code.
 
