@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.1
+* Add support for providing native media content aspect ratio in `MaxNativeAdView`.
+
 ## 6.11.0.0
 * Certified with Facebook SDK 6.11.0.
 
