@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.6.0.11
+* Add support for providing native media content aspect ratio in `MaxNativeAdView`.
+
 ## 20.6.0.10
 * Update ad display failed error code.
 
