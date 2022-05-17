@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.1.0.0
+* Certified with Yandex SDK 5.1.0.
+
 ## 5.0.0.1
 * Update ad display failed error code.
 
