@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.5.1.0
+* Certified with APS SDK 9.5.1.
+
 ## 9.4.3.3
 * Add support for `null` Activity context for regular banners.
 
