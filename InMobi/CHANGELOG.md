@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.6.0
+* Certified with InMobi SDK 10.0.6.
+
 ## 10.0.5.6
 * Update ad display failed error code.
 

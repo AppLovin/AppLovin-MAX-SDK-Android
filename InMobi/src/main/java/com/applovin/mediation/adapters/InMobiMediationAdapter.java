@@ -846,7 +846,7 @@ public class InMobiMediationAdapter
 
             log( "Native ad loaded: " + placementId );
 
-            getCachingExecutorService().submit( new Runnable()
+            getCachingExecutorService().execute( new Runnable()
             {
                 @Override
                 public void run()
@@ -984,6 +984,7 @@ public class InMobiMediationAdapter
                 return;
             }
 
+            // We don't provide the aspect ratio for InMobi's media view since the media view is rendered after the ad is rendered
             final FrameLayout mediaView = (FrameLayout) getMediaView();
             mediaView.setLayoutParams( new FrameLayout.LayoutParams( FrameLayout.LayoutParams.MATCH_PARENT,
                                                                      FrameLayout.LayoutParams.MATCH_PARENT ) );
@@ -1015,7 +1016,7 @@ public class InMobiMediationAdapter
                 }
             };
 
-            // InMobi is not providing a method to bind views with landing url, so we need to do it manually
+            // InMobi does not provide a method to bind views with landing url, so we need to do it manually
             AppLovinSdkUtils.runOnUiThread( new Runnable()
             {
                 @Override
