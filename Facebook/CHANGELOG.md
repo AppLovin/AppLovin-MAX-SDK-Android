@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.2
+* Fix potential NPE when getting media content aspect ratio.
+
 ## 6.11.0.1
 * Add support for providing native media content aspect ratio in `MaxNativeAdView`.
 

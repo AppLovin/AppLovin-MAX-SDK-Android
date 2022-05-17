@@ -1207,14 +1207,18 @@ public class FacebookMediationAdapter
                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                     .setOptionsView( new AdOptionsView( context, nativeAd, null ) );
 
-            final float mediaViewAspectRatio;
+            float mediaViewAspectRatio = 0;
             if ( nativeAd instanceof NativeBannerAd )
             {
                 // Facebook true native banners do not provide media views so use icon asset in place of it
                 ImageView mediaViewImageView = new ImageView( context );
                 mediaViewImageView.setImageDrawable( iconDrawable );
                 builder.setMediaView( mediaViewImageView );
-                mediaViewAspectRatio = (float) iconDrawable.getIntrinsicWidth() / (float) iconDrawable.getIntrinsicHeight();
+
+                if ( iconDrawable != null )
+                {
+                    mediaViewAspectRatio = (float) iconDrawable.getIntrinsicWidth() / (float) iconDrawable.getIntrinsicHeight();
+                }
             }
             else
             {
