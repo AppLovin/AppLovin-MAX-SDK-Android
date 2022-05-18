@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.0
+* Certified with Yahoo Mobile SDK 1.0.0.
+
 ## 1.14.0.13
 * Add support for providing native media content aspect ratio in `MaxNativeAdView`.
 
