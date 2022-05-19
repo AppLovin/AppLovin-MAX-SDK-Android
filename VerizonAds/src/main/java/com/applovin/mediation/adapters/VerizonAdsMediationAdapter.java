@@ -830,8 +830,13 @@ public class VerizonAdsMediationAdapter
                             .setAdvertiser( advertiser )
                             .setCallToAction( callToAction )
                             .setIcon( iconImage )
-                            .setMediaView( mediaView )
-                            .setMediaContentAspectRatio( mediaViewAspectRatio );
+                            .setMediaView( mediaView );
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
+                    {
+                        builder.setMediaContentAspectRatio( mediaViewAspectRatio );
+                    }
+
                     MaxNativeAd maxNativeAd = new MaxYahooNativeAd( listener, builder );
 
                     CreativeInfo creativeInfo = nativeAd.getCreativeInfo();

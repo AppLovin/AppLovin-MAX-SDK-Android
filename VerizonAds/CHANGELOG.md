@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.1
+* Add backwards compatibility support for Native Ads.
+
 ## 2.0.0.0
 * Certified with Yahoo Mobile SDK 1.0.0.
 
