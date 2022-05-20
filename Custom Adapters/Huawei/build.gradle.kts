@@ -7,7 +7,7 @@ private val versionMajor = 13
 private val versionMinor = 4
 private val versionPatch = 54
 private val versionBuild = 300
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000000) + (versionMinor * 10000000) + (versionPatch * 100000) + (versionBuild * 100) + versionAdapterPatch)
@@ -57,7 +57,7 @@ publishing {
                     appendNode("dependencies").apply  {
                         appendNode("dependency").apply {
                             appendNode("groupId", "com.huawei.hms")
-                            appendNode("artifactId", "ads")
+                            appendNode("artifactId", "ads-prime")
                             appendNode("version", libraryVersions["huawei"])
                             appendNode("type", "aar")
                             appendNode("scope", "compile")
