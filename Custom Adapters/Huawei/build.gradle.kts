@@ -7,7 +7,7 @@ private val versionMajor = 13
 private val versionMinor = 4
 private val versionPatch = 54
 private val versionBuild = 300
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000000) + (versionMinor * 10000000) + (versionPatch * 100000) + (versionBuild * 100) + versionAdapterPatch)
@@ -39,25 +39,25 @@ publishing {
                     appendNode("description", "Huawei adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
-                        .appendNode("license").apply {
-                            appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
-                            appendNode("url", "https://www.applovin.com/eula")
-                        }
+                            .appendNode("license").apply {
+                                appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
+                                appendNode("url", "https://www.applovin.com/eula")
+                            }
                     appendNode("scm").apply {
                         appendNode("connection", "scm:git:github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("developerConnection", "scm:git:ssh://github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("url", "https://github.com/AppLovin/AppLovin-MAX-SDK-Android")
                     }
                     appendNode("developers")
-                        .appendNode("developer").apply {
-                            appendNode("name", "AppLovin")
-                            appendNode("url", "https://www.applovin.com")
-                        }
+                            .appendNode("developer").apply {
+                                appendNode("name", "AppLovin")
+                                appendNode("url", "https://www.applovin.com")
+                            }
                     // Add Huawei to list of dependencies.
-                    appendNode("dependencies").apply  {
+                    appendNode("dependencies").apply {
                         appendNode("dependency").apply {
                             appendNode("groupId", "com.huawei.hms")
-                            appendNode("artifactId", "ads")
+                            appendNode("artifactId", "ads-prime")
                             appendNode("version", libraryVersions["huawei"])
                             appendNode("type", "aar")
                             appendNode("scope", "compile")
