@@ -28,6 +28,7 @@ import net.pubnative.lite.sdk.HyBidError;
 import net.pubnative.lite.sdk.UserDataManager;
 import net.pubnative.lite.sdk.interstitial.HyBidInterstitialAd;
 import net.pubnative.lite.sdk.models.AdSize;
+import net.pubnative.lite.sdk.models.ImpressionTrackingMethod;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 import net.pubnative.lite.sdk.vpaid.enums.AudioState;
@@ -221,6 +222,7 @@ public class VerveMediationAdapter
         updateUserConsent( parameters );
 
         adViewAd = new HyBidAdView( activity, getSize( adFormat ) );
+        adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
     }
 

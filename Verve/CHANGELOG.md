@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.13.1.1
+* Call `adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );` on `HyBidAdView` banners/MRECs.
+
 ## 2.13.1.0
 * Certified with Verve SDK 2.13.1.
 
