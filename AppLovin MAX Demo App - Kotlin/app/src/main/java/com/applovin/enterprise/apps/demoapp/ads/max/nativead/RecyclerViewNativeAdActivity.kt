@@ -17,7 +17,7 @@ import com.applovin.mediation.nativeAds.adPlacer.MaxRecyclerAdapter
 
 class RecyclerViewNativeAdActivity : AppCompatActivity() {
 
-    private val sampleData = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").toTypedArray()
+    private val sampleData = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chunked(1)
     private lateinit var adAdapter: MaxRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +59,7 @@ class RecyclerViewNativeAdActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    class CustomRecyclerAdapter(private val activity: Activity, val data: Array<String>) : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>() {
+    class CustomRecyclerAdapter(private val activity: Activity, val data: List<String>) : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = activity.layoutInflater.inflate(R.layout.activity_native_recycler_view_holder, parent, false)

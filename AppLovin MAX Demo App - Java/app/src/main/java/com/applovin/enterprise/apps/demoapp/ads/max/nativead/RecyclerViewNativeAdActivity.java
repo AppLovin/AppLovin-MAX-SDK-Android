@@ -25,7 +25,7 @@ import java.util.List;
 public class RecyclerViewNativeAdActivity
         extends AppCompatActivity
 {
-    private final ArrayList<String>  sampleData = new ArrayList<>( Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split( "" ) ) );
+    private final ArrayList<String>  sampleData = new ArrayList<>( Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split( "(?!^)" ) ) );
     private       MaxRecyclerAdapter adAdapter;
 
     @Override
