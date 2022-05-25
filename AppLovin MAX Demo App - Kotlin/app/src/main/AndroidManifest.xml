@@ -81,6 +81,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.RecyclerViewNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity"
             android:label="@string/title_activity_interstitial_list" />
         <activity
