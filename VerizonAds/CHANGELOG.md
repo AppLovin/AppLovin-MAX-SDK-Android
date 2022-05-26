@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.2
+* Fixed Native Ads NPE: `Fatal Exception: java.lang.NullPointerException: Attempt to invoke virtual method 'void com.yahoo.ads.nativeplacement.b.w()' on a null object reference`.
+
 ## 2.0.0.1
 * Add backwards compatibility support for Native Ads.
 

@@ -926,8 +926,11 @@ public class VerizonAdsMediationAdapter
                 {
                     log( "Native ad clicked from click listener" );
 
-                    nativeAd.invokeDefaultAction();
-                    listener.onNativeAdClicked();
+                    if ( nativeAd != null )
+                    {
+                        nativeAd.invokeDefaultAction();
+                        listener.onNativeAdClicked();
+                    }
                 }
             };
 
