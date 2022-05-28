@@ -160,7 +160,7 @@ public class GoogleMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return status != null ? MobileAds.getVersionString() :
+        return status != null ? String.valueOf( MobileAds.getVersion() ) :
                 getAdapterVersion().substring( 0, getAdapterVersion().lastIndexOf( '.' ) );
     }
 
@@ -1287,7 +1287,7 @@ public class GoogleMediationAdapter
                             mediaImageView.setImageDrawable( mediaImageDrawable );
                             mediaView = mediaImageView;
 
-                            mediaContentAspectRatio = (float) mediaImage.getDrawable().getIntrinsicWidth() / (float) mediaImage.getDrawable().getIntrinsicHeight();
+                            mediaContentAspectRatio = (float) mediaImageDrawable.getIntrinsicWidth() / (float) mediaImageDrawable.getIntrinsicHeight();
                         }
                     }
 
