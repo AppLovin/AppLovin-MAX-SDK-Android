@@ -1181,7 +1181,7 @@ public class GoogleAdManagerMediationAdapter
                             mediaImageView.setImageDrawable( mediaImage.getDrawable() );
                             mediaView = mediaImageView;
 
-                            mediaContentAspectRatio = (float) mediaImage.getDrawable().getIntrinsicWidth() / (float) mediaImage.getDrawable().getIntrinsicHeight();
+                            mediaContentAspectRatio = (float) mediaImageDrawable.getIntrinsicWidth() / (float) mediaImageDrawable.getIntrinsicHeight();
                         }
                     }
 

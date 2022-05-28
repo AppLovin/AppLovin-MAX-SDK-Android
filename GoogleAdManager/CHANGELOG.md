@@ -1,5 +1,9 @@
 # Changelog
 
+## 21.0.0.0
+* Certified with GoogleAdManager SDK 21.0.0.
+* MinSdkVersion required is now 19.
+
 ## 20.6.0.10
 * Add support for providing native media content aspect ratio in `MaxNativeAdView`.
 
