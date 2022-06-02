@@ -149,6 +149,8 @@ public class VerizonAdsMediationAdapter
 
         if ( nativeAd != null )
         {
+            // NOTE: A side effect of this call (specific to Yahoo's SDK only) is that their SDK will automatically clear any TextViews that were registered to their `NativeAd`.
+            // This is true, even if the TextView has had another native ad rendered into it and the text is different.
             nativeAd.destroy();
             nativeAd = null;
         }
@@ -747,8 +749,6 @@ public class VerizonAdsMediationAdapter
         @Override
         public void onLoaded(final NativeAd nativeAd)
         {
-            log( "Native ad loaded: " + nativeAd.getPlacementId() );
-
             runOnUiThread( new Runnable()
             {
                 @Override
@@ -837,7 +837,7 @@ public class VerizonAdsMediationAdapter
                         builder.setMediaContentAspectRatio( mediaViewAspectRatio );
                     }
 
-                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( listener, builder );
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( builder );
 
                     CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
                     Bundle extraInfo = new Bundle( 1 );
@@ -901,13 +901,10 @@ public class VerizonAdsMediationAdapter
     private class MaxYahooNativeAd
             extends MaxNativeAd
     {
-        private final MaxNativeAdAdapterListener listener;
 
-        private MaxYahooNativeAd(final MaxNativeAdAdapterListener listener, final Builder builder)
+        private MaxYahooNativeAd(final Builder builder)
         {
             super( builder );
-
-            this.listener = listener;
         }
 
         @Override
@@ -919,28 +916,33 @@ public class VerizonAdsMediationAdapter
                 return;
             }
 
-            final View.OnClickListener clickListener = new View.OnClickListener()
+            //
+            // Now that we have access to the native ad view's UI assets, call `prepareView()` where applicable
+            //
+
+            NativeTextComponent titleComponent = (NativeTextComponent) nativeAd.getComponent( "title" );
+            NativeTextComponent disclaimerComponent = (NativeTextComponent) nativeAd.getComponent( "disclaimer" );
+            NativeTextComponent bodyComponent = (NativeTextComponent) nativeAd.getComponent( "body" );
+            NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
+
+            if ( titleComponent != null && maxNativeAdView.getTitleTextView() != null )
             {
-                @Override
-                public void onClick(final View view)
-                {
-                    log( "Native ad clicked from click listener" );
+                titleComponent.prepareView( maxNativeAdView.getTitleTextView() );
+            }
+            if ( disclaimerComponent != null && maxNativeAdView.getAdvertiserTextView() != null )
+            {
+                disclaimerComponent.prepareView( maxNativeAdView.getAdvertiserTextView() );
+            }
+            if ( bodyComponent != null && maxNativeAdView.getBodyTextView() != null )
+            {
+                bodyComponent.prepareView( maxNativeAdView.getBodyTextView() );
+            }
+            if ( ctaComponent != null && maxNativeAdView.getCallToActionButton() != null )
+            {
+                ctaComponent.prepareView( maxNativeAdView.getCallToActionButton() );
+            }
 
-                    if ( nativeAd != null )
-                    {
-                        nativeAd.invokeDefaultAction();
-                        listener.onNativeAdClicked();
-                    }
-                }
-            };
-
-            // Verizon's click registration methods don't work with views when recycling is involved
-            // so they told us to manually invoke it as AdMob does
-            if ( maxNativeAdView.getTitleTextView() != null ) maxNativeAdView.getTitleTextView().setOnClickListener( clickListener );
-            if ( maxNativeAdView.getAdvertiserTextView() != null ) maxNativeAdView.getAdvertiserTextView().setOnClickListener( clickListener );
-            if ( maxNativeAdView.getBodyTextView() != null ) maxNativeAdView.getBodyTextView().setOnClickListener( clickListener );
-            if ( maxNativeAdView.getIconImageView() != null ) maxNativeAdView.getIconImageView().setOnClickListener( clickListener );
-            if ( maxNativeAdView.getCallToActionButton() != null ) maxNativeAdView.getCallToActionButton().setOnClickListener( clickListener );
+            nativeAd.registerContainerView( maxNativeAdView );
         }
     }
 
