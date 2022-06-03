@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -146,14 +147,7 @@ public class VerizonAdsMediationAdapter
             inlineAdView = null;
         }
 
-
-        if ( nativeAd != null )
-        {
-            // NOTE: A side effect of this call (specific to Yahoo's SDK only) is that their SDK will automatically clear any TextViews that were registered to their `NativeAd`.
-            // This is true, even if the TextView has had another native ad rendered into it and the text is different.
-            nativeAd.destroy();
-            nativeAd = null;
-        }
+        nativeAd = null;
     }
 
     //region MAX Signal Provider Methods
@@ -924,6 +918,9 @@ public class VerizonAdsMediationAdapter
             NativeTextComponent disclaimerComponent = (NativeTextComponent) nativeAd.getComponent( "disclaimer" );
             NativeTextComponent bodyComponent = (NativeTextComponent) nativeAd.getComponent( "body" );
             NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
+            NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
+            NativeImageComponent imageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
+            NativeVideoComponent videoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
 
             if ( titleComponent != null && maxNativeAdView.getTitleTextView() != null )
             {
@@ -941,6 +938,24 @@ public class VerizonAdsMediationAdapter
             {
                 ctaComponent.prepareView( maxNativeAdView.getCallToActionButton() );
             }
+            if ( iconComponent != null && maxNativeAdView.getIconImageView() != null )
+            {
+                iconComponent.prepareView( maxNativeAdView.getIconImageView() );
+            }
+
+            View mediaView = null;
+            ViewGroup mediaContentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+            if ( videoComponent != null && mediaContentViewGroup != null )
+            {
+                mediaView = new VideoPlayerView( mediaContentViewGroup.getContext() );
+                videoComponent.prepareView( (VideoPlayerView) mediaView );
+            }
+            else if ( imageComponent != null && mediaContentViewGroup != null )
+            {
+                mediaView = new ImageView( mediaContentViewGroup.getContext() );
+                imageComponent.prepareView( (ImageView) mediaView );
+            }
+            mediaContentViewGroup.addView( mediaView );
 
             nativeAd.registerContainerView( maxNativeAdView );
         }

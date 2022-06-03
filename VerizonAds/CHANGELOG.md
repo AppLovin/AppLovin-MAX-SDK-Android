@@ -1,7 +1,11 @@
 # Changelog
 
+## 2.0.0.4
+* Add support for preparing video, image and icon components.
+
 ## 2.0.0.3
 * Fix native ads not tracking impressions properly.
+* Do not explicitly destroy Yahoo native ads, as it will clear previously-registered `TextView`s and `Buttons`.
 
 ## 2.0.0.2
 * Fixed Native Ads NPE: `Fatal Exception: java.lang.NullPointerException: Attempt to invoke virtual method 'void com.yahoo.ads.nativeplacement.b.w()' on a null object reference`.
