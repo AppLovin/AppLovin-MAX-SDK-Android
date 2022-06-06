@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.5.2.0
+* Certified with APS SDK 9.5.2.
+
 ## 9.5.1.0
 * Certified with APS SDK 9.5.1.
 
