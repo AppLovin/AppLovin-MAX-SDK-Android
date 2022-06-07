@@ -854,9 +854,9 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
-            listener.onInterstitialAdLoadFailed( adapterError );
+            listener.onInterstitialAdDisplayFailed( adapterError );
         }
 
         @Override

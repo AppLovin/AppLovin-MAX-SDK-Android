@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.0.0.1
+* Fix interstitial ad display failed callback not being mapped correctly.
+
 ## 21.0.0.0
 * Certified with Google SDK 21.0.0.
 * MinSdkVersion required is now 19.
