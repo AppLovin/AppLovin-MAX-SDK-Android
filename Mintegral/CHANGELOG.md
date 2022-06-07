@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.1.11.3
+* Unity: add `androidx.recyclerview:recyclerview` dependency.
+
 ## 16.1.11.2
 * Add mapping for "load no ad" error message to MAX no fill.
 

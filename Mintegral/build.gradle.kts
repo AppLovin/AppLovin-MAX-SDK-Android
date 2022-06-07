@@ -7,7 +7,7 @@ plugins {
 private val versionMajor = 16
 private val versionMinor = 1
 private val versionPatch = 11
-private val versionAdapterPatch = 2
+private val versionAdapterPatch = 3
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -36,6 +36,8 @@ dependencies {
     implementation("com.mbridge.msdk.oversea:videocommon:${libraryVersions["mintegral"]}")
     implementation("com.mbridge.msdk.oversea:videojs:${libraryVersions["mintegral"]}")
     implementation("com.mbridge.msdk.oversea:mbnative:${libraryVersions["mintegral"]}")
+
+    implementation("androidx.recyclerview:recyclerview:${libraryVersions["recyclerView"]}")
 }
 
 publishing {
