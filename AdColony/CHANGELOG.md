@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.0
+* Certified with AdColony SDK 4.8.0.
+
 ## 4.7.1.1
 * Update ad display failed error code.
 
