@@ -82,7 +82,7 @@ public class BidMachineMediationAdapter
         {
             status = InitializationStatus.INITIALIZING;
 
-            final String sourceId = parameters.getCustomParameters().getString( "source_id" );
+            final String sourceId = parameters.getServerParameters().getString( "source_id" );
             log( "Initializing BidMachine SDK with source id: " + sourceId );
 
             BidMachine.setLoggingEnabled( parameters.isTesting() );
