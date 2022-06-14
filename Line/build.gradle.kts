@@ -3,10 +3,10 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 2021
-private val versionMinor = 10
-private val versionPatch = 29
-private val versionAdapterPatch = 2
+private val versionMajor = 2022
+private val versionMinor = 2
+private val versionPatch = 16
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)

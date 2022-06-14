@@ -1,5 +1,8 @@
 # Changelog
 
+## 2022.2.16.0
+* Certified with FiveAd SDK 2.4.20220216.
+
 ## 2021.10.29.2
 * Update ad display failed error code.
 
