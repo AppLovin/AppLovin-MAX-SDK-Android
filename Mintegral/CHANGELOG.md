@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.1.41.0
+* Certified with Mintegral SDK 16.1.41.
+
 ## 16.1.11.3
 * Unity: add `androidx.recyclerview:recyclerview` dependency.
 
