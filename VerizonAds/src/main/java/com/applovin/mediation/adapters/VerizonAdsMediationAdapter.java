@@ -36,6 +36,7 @@ import com.yahoo.ads.ActivityStateManager;
 import com.yahoo.ads.CcpaConsent;
 import com.yahoo.ads.CreativeInfo;
 import com.yahoo.ads.ErrorInfo;
+import com.yahoo.ads.GdprConsent;
 import com.yahoo.ads.Logger;
 import com.yahoo.ads.RequestMetadata;
 import com.yahoo.ads.VideoPlayerView;
@@ -335,6 +336,14 @@ public class VerizonAdsMediationAdapter
 
     private void updatePrivacyStates(final MaxAdapterParameters parameters)
     {
+        if ( AppLovinSdk.VERSION_CODE >= 11040399 )
+        {
+            if ( parameters.getConsentString() != null )
+            {
+                YASAds.addConsent( new GdprConsent( parameters.getConsentString() ) );
+            }
+        }
+
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
         Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
