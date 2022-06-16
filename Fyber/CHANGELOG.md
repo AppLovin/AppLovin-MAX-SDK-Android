@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.3.3
+* Add support for IAB's TCFv2 GDPR consent string. Note that you must be on the AppLovin MAX SDK v11.4.3+ and use a TCFv2-compliant framework which stores the consent string in SharedPreferences via the `IABTCF_TCString` key to use this feature. Fyber will still be filtered out of the waterfall in GDPR regions if the string is not available or one of the criteria is not met.
+
 ## 8.1.3.2
 * Update ad display failed error code.
 

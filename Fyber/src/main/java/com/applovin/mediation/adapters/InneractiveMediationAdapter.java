@@ -574,6 +574,14 @@ public class InneractiveMediationAdapter
             InneractiveAdManager.clearGdprConsentData();
         }
 
+        if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+        {
+            if ( parameters.getConsentString() != null )
+            {
+                InneractiveAdManager.setGdprConsentString( parameters.getConsentString() );
+            }
+        }
+
         Bundle serverParameters = parameters.getServerParameters();
         // Overwritten by `mute_state` setting, unless `mute_state` is disabled
         if ( serverParameters.containsKey( "is_muted" ) ) // Introduced in 9.10.0
