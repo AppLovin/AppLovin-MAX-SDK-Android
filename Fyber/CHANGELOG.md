@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.4.1
+* Downgrade Fyber SDK to 8.1.3 due to duplicate symbol conflicts with other SDKs (e.g. `a.a`).
+
 ## 8.1.4.0
 * Certified with Fyber SDK 8.1.4.
 
