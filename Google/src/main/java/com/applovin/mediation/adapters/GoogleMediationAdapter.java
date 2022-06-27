@@ -1266,6 +1266,7 @@ public class GoogleMediationAdapter
                     View mediaView = null;
                     MediaContent mediaContent = nativeAd.getMediaContent();
                     List<NativeAd.Image> images = nativeAd.getImages();
+                    Drawable mainImage = null;
                     float mediaContentAspectRatio = 0.0f;
 
                     if ( mediaContent != null )
@@ -1274,6 +1275,7 @@ public class GoogleMediationAdapter
                         googleMediaView.setMediaContent( mediaContent );
                         mediaView = googleMediaView;
 
+                        mainImage = mediaContent.getMainImage();
                         mediaContentAspectRatio = mediaContent.getAspectRatio();
                     }
                     else if ( images != null && images.size() > 0 )
@@ -1313,6 +1315,11 @@ public class GoogleMediationAdapter
                             .setBody( nativeAd.getBody() )
                             .setMediaView( mediaView )
                             .setCallToAction( nativeAd.getCallToAction() );
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                    {
+                        builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( mainImage ) );
+                    }
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
                     {
