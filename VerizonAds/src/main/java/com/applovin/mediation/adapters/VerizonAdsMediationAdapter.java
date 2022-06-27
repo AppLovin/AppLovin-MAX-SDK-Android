@@ -795,6 +795,7 @@ public class VerizonAdsMediationAdapter
 
                     View mediaView = null;
                     float mediaViewAspectRatio = 0.0f;
+                    MaxNativeAd.MaxNativeAdImage mainImage = null;
                     NativeVideoComponent nativeVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
                     NativeImageComponent nativeImageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
 
@@ -812,6 +813,12 @@ public class VerizonAdsMediationAdapter
 
                         mediaView = new ImageView( context );
                         nativeImageComponent.prepareView( (ImageView) mediaView );
+
+                        Drawable drawable = ( (ImageView) mediaView ).getDrawable();
+                        if ( drawable != null )
+                        {
+                            mainImage = new MaxNativeAd.MaxNativeAdImage( drawable );
+                        }
                     }
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -834,6 +841,11 @@ public class VerizonAdsMediationAdapter
                             .setCallToAction( callToAction )
                             .setIcon( iconImage )
                             .setMediaView( mediaView );
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                    {
+                        builder.setMainImage( mainImage );
+                    }
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
                     {
