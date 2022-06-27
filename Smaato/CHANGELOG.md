@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.8.3.1
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 21.8.3.0
 * Certified with Smaato SDK 21.8.3.
 
