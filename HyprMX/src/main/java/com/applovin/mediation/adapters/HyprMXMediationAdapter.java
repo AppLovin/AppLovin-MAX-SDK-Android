@@ -120,8 +120,18 @@ public class HyprMXMediationAdapter
 
             HyprMXLog.enableDebugLogs( parameters.isTesting() );
 
-            // NOTE: HyprMX deals with user consent and CCPA via their UI and don't support GDPR. Backend will filter HyprMX out in EU region.
-            HyprMX.INSTANCE.initialize( context, distributorId, userId, new HyprMXIf.HyprMXInitializationListener()
+            HyprMX.INSTANCE.setMediationProvider("applovin_max", getAdapterVersion(), AppLovinSdk.VERSION);
+
+            Boolean hasUserConsent = parameters.hasUserConsent();
+            ConsentStatus consent = ConsentStatus.CONSENT_STATUS_UNKNOWN;
+            if ( hasUserConsent != null )
+            {
+                consent = hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED;
+            }
+
+            boolean ageRestrictedUser = parameters.isAgeRestrictedUser();
+
+            HyprMX.INSTANCE.initialize( context, distributorId, userId, consent, ageRestrictedUser, new HyprMXIf.HyprMXInitializationListener()
             {
                 @Override
                 public void initializationComplete()
