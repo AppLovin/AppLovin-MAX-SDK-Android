@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.3
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 6.11.0.2
 * Fix potential NPE when getting media content aspect ratio.
 
