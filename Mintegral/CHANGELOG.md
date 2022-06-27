@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.1.51.1
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 16.1.51.0
 * Certified with Mintegral SDK 16.1.51.
 
