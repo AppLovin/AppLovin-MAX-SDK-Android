@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.7
+* Add support for passing local parameter "is_location_collection_enabled" to set `YASAds.setLocationAccessMode(...)`.
+
 ## 2.0.0.6
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 
