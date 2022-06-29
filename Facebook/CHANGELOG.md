@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.4
+* Fix NPE caused by getting AdCoverImage from wrong object.
+
 ## 6.11.0.3
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 
