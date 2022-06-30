@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 9
 private val versionMinor = 5
 private val versionPatch = 4
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -34,20 +34,20 @@ publishing {
                     appendNode("description", "Amazon TAM adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
-                            .appendNode("license").apply {
-                                appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
-                                appendNode("url", "https://www.applovin.com/eula")
-                            }
+                        .appendNode("license").apply {
+                            appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
+                            appendNode("url", "https://www.applovin.com/eula")
+                        }
                     appendNode("scm").apply {
                         appendNode("connection", "scm:git:github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("developerConnection", "scm:git:ssh://github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("url", "https://github.com/AppLovin/AppLovin-MAX-SDK-Android")
                     }
                     appendNode("developers")
-                            .appendNode("developer").apply {
-                                appendNode("name", "AppLovin")
-                                appendNode("url", "https://www.applovin.com")
-                            }
+                        .appendNode("developer").apply {
+                            appendNode("name", "AppLovin")
+                            appendNode("url", "https://www.applovin.com")
+                        }
                     // NOTE: Amazon requested us to not add them to the list of transitive dependencies. External pubs have to manually integrate their SDK.
                 }
             }
