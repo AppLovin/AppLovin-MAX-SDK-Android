@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -657,11 +658,13 @@ public class HuaweiMediationAdapter
                 {
                     View mediaView = null;
                     MediaContent mediaContent = nativeAd.getMediaContent();
+                    Drawable mainImage = null;
 
                     if ( mediaContent != null )
                     {
                         MediaView huaweiMediaView = new MediaView( context );
                         huaweiMediaView.setMediaContent( mediaContent );
+                        mainImage = mediaContent.getImage();
 
                         mediaView = huaweiMediaView;
                     }
@@ -673,6 +676,7 @@ public class HuaweiMediationAdapter
                             Image image = images.get( 0 );
                             ImageView mainImageView = new ImageView( context );
                             mainImageView.setImageDrawable( image.getDrawable() );
+                            mainImage = image.getDrawable();
 
                             mediaView = mainImageView;
                         }
@@ -701,6 +705,10 @@ public class HuaweiMediationAdapter
                             .setCallToAction( nativeAd.getCallToAction() )
                             .setIcon( iconImage )
                             .setMediaView( mediaView );
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                    {
+                        builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( mainImage ) );
+                    }
                     MaxNativeAd maxNativeAd = new MaxHuaweiNativeAd( builder );
 
                     listener.onNativeAdLoaded( maxNativeAd, null );

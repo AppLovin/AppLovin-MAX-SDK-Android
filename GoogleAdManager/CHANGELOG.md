@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.0.0.2
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 21.0.0.1
 * Fix interstitial ad display failed callback not being mapped correctly.
 

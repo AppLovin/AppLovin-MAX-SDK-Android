@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.5.4.1
+* Add rewarded video support.
+
+## 9.5.4.0
+* Certified with APS SDK 9.5.4.
+
 ## 9.5.2.0
 * Certified with APS SDK 9.5.2.
 

@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -1042,9 +1043,13 @@ public class MintegralMediationAdapter
                 public void run()
                 {
                     final String iconUrl = campaign.getIconUrl();
+                    final String mainImageUrl = campaign.getImageUrl();
                     final Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUrl, context.getResources() );
 
                     MaxNativeAd.MaxNativeAdImage iconImage = null;
+                    Uri uri = Uri.parse( mainImageUrl );
+                    final MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( uri );
+
                     try
                     {
                         final int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, parameters.getServerParameters() );
@@ -1074,14 +1079,20 @@ public class MintegralMediationAdapter
                             final MBAdChoice adChoiceView = new MBAdChoice( context );
                             adChoiceView.setCampaign( campaign );
 
-                            final MaxNativeAd maxNativeAd = new MaxMintegralNativeAd( new MaxNativeAd.Builder()
-                                                                                              .setAdFormat( MaxAdFormat.NATIVE )
-                                                                                              .setTitle( campaign.getAppName() )
-                                                                                              .setBody( campaign.getAppDesc() )
-                                                                                              .setCallToAction( campaign.getAdCall() )
-                                                                                              .setIcon( finalIconImage )
-                                                                                              .setMediaView( mediaView )
-                                                                                              .setOptionsView( adChoiceView ) );
+                            MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                                    .setAdFormat( MaxAdFormat.NATIVE )
+                                    .setTitle( campaign.getAppName() )
+                                    .setBody( campaign.getAppDesc() )
+                                    .setCallToAction( campaign.getAdCall() )
+                                    .setIcon( finalIconImage )
+                                    .setMediaView( mediaView )
+                                    .setOptionsView( adChoiceView );
+                            if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                            {
+                                builder.setMainImage( mainImage );
+                            }
+
+                            final MaxNativeAd maxNativeAd = new MaxMintegralNativeAd( builder );
                             listener.onNativeAdLoaded( maxNativeAd, null );
                         }
                     } );

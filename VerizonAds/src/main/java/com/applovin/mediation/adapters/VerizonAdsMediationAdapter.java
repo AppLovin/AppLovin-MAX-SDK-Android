@@ -106,6 +106,7 @@ public class VerizonAdsMediationAdapter
 
             // ...GDPR settings, which is part of verizon Ads SDK data, should be established after initialization and prior to making any ad requests... (https://sdk.verizonmedia.com/gdpr-coppa.html)
             updatePrivacyStates( parameters );
+            updateLocationCollectionEnabled( parameters );
         }
         else
         {
@@ -158,6 +159,8 @@ public class VerizonAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateLocationCollectionEnabled( parameters );
+
         String signal = YASAds.getBiddingToken( getContext( activity ) );
         if ( signal == null )
         {
@@ -180,6 +183,7 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for placement: '" + placementId + "'..." );
 
         updatePrivacyStates( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         InterstitialListener interstitialListener = new InterstitialListener( listener );
         interstitialAd = new InterstitialAd( getContext( activity ), placementId, interstitialListener );
@@ -228,6 +232,7 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for placement: '" + placementId + "'..." );
 
         updatePrivacyStates( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         RewardedListener rewardedListener = new RewardedListener( listener );
         rewardedAd = new InterstitialAd( activity, placementId, rewardedListener );
@@ -277,6 +282,7 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " for placement: '" + placementId + "'..." );
 
         updatePrivacyStates( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         AdSize adSize = toAdSize( adFormat );
         AdViewListener adViewListener = new AdViewListener( listener );
@@ -311,6 +317,7 @@ public class VerizonAdsMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "native ad for placement: '" + placementId + "'..." );
 
         updatePrivacyStates( parameters );
+        updateLocationCollectionEnabled( parameters );
 
         Context context = getContext( activity );
 
@@ -363,6 +370,24 @@ public class VerizonAdsMediationAdapter
             else
             {
                 YASAds.addConsent( new CcpaConsent( "1---" ) );
+            }
+        }
+    }
+
+    private void updateLocationCollectionEnabled(final MaxAdapterParameters parameters)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+            if ( isLocationCollectionEnabledObj instanceof Boolean )
+            {
+                log( "Setting location collection: " + isLocationCollectionEnabledObj );
+                YASAds.setLocationAccessMode( (boolean) isLocationCollectionEnabledObj ? YASAds.LocationAccessMode.PRECISE : YASAds.LocationAccessMode.DENIED );
+            }
+            else if ( isLocationCollectionEnabledObj != null )
+            {
+                log( "Location collection could not be set - Boolean type is required." );
             }
         }
     }
@@ -795,6 +820,7 @@ public class VerizonAdsMediationAdapter
 
                     View mediaView = null;
                     float mediaViewAspectRatio = 0.0f;
+                    MaxNativeAd.MaxNativeAdImage mainImage = null;
                     NativeVideoComponent nativeVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
                     NativeImageComponent nativeImageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
 
@@ -812,6 +838,12 @@ public class VerizonAdsMediationAdapter
 
                         mediaView = new ImageView( context );
                         nativeImageComponent.prepareView( (ImageView) mediaView );
+
+                        Drawable drawable = ( (ImageView) mediaView ).getDrawable();
+                        if ( drawable != null )
+                        {
+                            mainImage = new MaxNativeAd.MaxNativeAdImage( drawable );
+                        }
                     }
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -834,6 +866,11 @@ public class VerizonAdsMediationAdapter
                             .setCallToAction( callToAction )
                             .setIcon( iconImage )
                             .setMediaView( mediaView );
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                    {
+                        builder.setMainImage( mainImage );
+                    }
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
                     {

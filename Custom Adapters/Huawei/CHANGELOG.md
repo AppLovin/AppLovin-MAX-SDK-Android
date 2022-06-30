@@ -1,5 +1,8 @@
 # Changelog
 
+## 13.4.54.300.2
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 13.4.54.300.1
 * Fix POM file to point to "ads-prime" artifact id instead of "ads".
 

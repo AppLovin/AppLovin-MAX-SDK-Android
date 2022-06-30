@@ -1,7 +1,13 @@
 # Changelog
 
+## 2.0.0.7
+* Add support for passing local parameter "is_location_collection_enabled" to set `YASAds.setLocationAccessMode(...)`.
+
+## 2.0.0.6
+* Add support for returning the main image asset in `MaxNativeAd` for native ads.
+
 ## 2.0.0.5
-* Add support for IAB's TCFv2 GDPR consent string. Note that you must be on the AppLovin MAX SDK v11.4.3+ and use a TCFv2-compliant framework which stores the consent string in SharedPreferences via the `IABTCF_TCString` key to use this feature. Yahoo will still be filtered out of the waterfall in GDPR regions if the string is not available or one of the criteria is not met.
+* Add support for IAB's TCFv2 GDPR consent string. Note that you must be on the AppLovin MAX SDK v11.4.3+ and use a TCFv2-compliant framework which stores the consent string in SharedPreferences via the `IABTCF_TCString` key to use this feature.
 
 ## 2.0.0.4
 * Add support for preparing video, image and icon components.

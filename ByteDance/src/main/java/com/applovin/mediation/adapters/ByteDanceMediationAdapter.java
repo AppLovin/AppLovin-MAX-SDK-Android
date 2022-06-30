@@ -1205,6 +1205,10 @@ public class ByteDanceMediationAdapter
                                     .setIcon( icon )
                                     .setMediaView( mediaView )
                                     .setOptionsView( nativeAd.getAdLogoView() );
+                            if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+                            {
+                                builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( finalMediaViewImageDrawable ) );
+                            }
                             MaxNativeAd maxNativeAd = new MaxByteDanceNativeAd( builder );
 
                             log( "Native ad fully loaded: " + codeId );

@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -1198,6 +1199,14 @@ public class FacebookMediationAdapter
 
         private void handleNativeAdLoaded(final NativeAdBase nativeAd, final Drawable iconDrawable, final MediaView mediaView, final Context context)
         {
+            MaxNativeAd.MaxNativeAdImage mainImage = null;
+            // only get ad cover image when the ad is a NativeAd (and not a banner native ad)
+            if ( nativeAd instanceof NativeAd && nativeAd.getAdCoverImage() != null )
+            {
+                Uri uri = Uri.parse( nativeAd.getAdCoverImage().getUrl() );
+                mainImage = new MaxNativeAd.MaxNativeAdImage( uri );
+            }
+
             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                     .setAdFormat( MaxAdFormat.NATIVE )
                     .setTitle( nativeAd.getAdHeadline() )
@@ -1206,6 +1215,10 @@ public class FacebookMediationAdapter
                     .setCallToAction( nativeAd.getAdCallToAction() )
                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                     .setOptionsView( new AdOptionsView( context, nativeAd, null ) );
+            if ( nativeAd instanceof NativeAd && AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+            {
+                builder.setMainImage( mainImage );
+            }
 
             float mediaViewAspectRatio = 0;
             if ( nativeAd instanceof NativeBannerAd )

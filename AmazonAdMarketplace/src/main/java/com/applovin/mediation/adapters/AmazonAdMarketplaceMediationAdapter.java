@@ -16,12 +16,15 @@ import com.amazon.device.ads.DTBAdResponse;
 import com.amazon.device.ads.DTBAdView;
 import com.amazon.device.ads.SDKUtilities;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
@@ -51,7 +54,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThreadDelayed;
  */
 public class AmazonAdMarketplaceMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxAdViewAdapter, MaxInterstitialAdapter
+        implements MaxSignalProvider, MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter
 {
     // Ad loader object used for collecting signal in non-maiden requests
     private static final Map<MaxAdFormat, DTBAdLoader> adLoaders = Collections.synchronizedMap( new HashMap<MaxAdFormat, DTBAdLoader>() );
@@ -65,6 +68,7 @@ public class AmazonAdMarketplaceMediationAdapter
 
     private DTBAdView         adView;
     private DTBAdInterstitial interstitialAd;
+    private DTBAdInterstitial rewardedAd;
 
     public AmazonAdMarketplaceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -98,6 +102,7 @@ public class AmazonAdMarketplaceMediationAdapter
     {
         adView = null;
         interstitialAd = null;
+        rewardedAd = null;
     }
 
     @Override
@@ -309,22 +314,11 @@ public class AmazonAdMarketplaceMediationAdapter
             return;
         }
 
-        MediationHints mediationHints;
-        synchronized ( mediationHintsCacheLock )
-        {
-            mediationHints = mediationHintsCache.get( encodedBidId );
-            mediationHintsCache.remove( encodedBidId );
-        }
+        interstitialAd = new DTBAdInterstitial( activity, new InterstitialListener( listener ) );
 
-        // Paranoia
-        if ( mediationHints != null )
+        final boolean success = loadFullscreenAd( encodedBidId, interstitialAd );
+        if ( !success )
         {
-            interstitialAd = new DTBAdInterstitial( activity, new InterstitialListener( listener ) );
-            interstitialAd.fetchAd( mediationHints.value );
-        }
-        else
-        {
-            e( "Unable to find mediation hints" );
             listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
         }
     }
@@ -340,9 +334,72 @@ public class AmazonAdMarketplaceMediationAdapter
         }
         else
         {
-            log( "Interstitial ad not ready" );
+            e( "Interstitial ad is null" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
         }
+    }
+
+    @Override
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    {
+        String encodedBidId = parameters.getServerParameters().getString( "encoded_bid_id" );
+        d( "Loading rewarded ad for encoded bid id: " + encodedBidId + "..." );
+
+        if ( TextUtils.isEmpty( encodedBidId ) )
+        {
+            listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            return;
+        }
+
+        rewardedAd = new DTBAdInterstitial( activity, new RewardedAdListener( listener ) );
+
+        final boolean success = loadFullscreenAd( encodedBidId, rewardedAd );
+        if ( !success )
+        {
+            listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
+        }
+    }
+
+    @Override
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    {
+        log( "Showing rewarded ad..." );
+
+        if ( rewardedAd != null )
+        {
+            // Configure userReward from server.
+            configureReward( parameters );
+
+            rewardedAd.show();
+        }
+        else
+        {
+            e( "Rewarded ad is null" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+        }
+    }
+
+    //region Helper Methods
+
+    private boolean loadFullscreenAd(final String encodedBidId, final DTBAdInterstitial interstitial)
+    {
+        MediationHints mediationHints;
+        synchronized ( mediationHintsCacheLock )
+        {
+            mediationHints = mediationHintsCache.get( encodedBidId );
+            mediationHintsCache.remove( encodedBidId );
+        }
+
+        // Paranoia
+        if ( mediationHints == null )
+        {
+            e( "Unable to find mediation hints" );
+            return false;
+        }
+
+        interstitial.fetchAd( mediationHints.value );
+
+        return true;
     }
 
     private Context getContext(@Nullable Activity activity)
@@ -350,6 +407,8 @@ public class AmazonAdMarketplaceMediationAdapter
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
+    
+    //endregion
 
     private class AdViewListener
             implements DTBAdBannerListener
@@ -413,7 +472,7 @@ public class AmazonAdMarketplaceMediationAdapter
     private class InterstitialListener
             implements DTBAdInterstitialListener
     {
-        final MaxInterstitialAdapterListener listener;
+        private final MaxInterstitialAdapterListener listener;
 
         InterstitialListener(MaxInterstitialAdapterListener listener)
         {
@@ -455,6 +514,12 @@ public class AmazonAdMarketplaceMediationAdapter
         }
 
         @Override
+        public void onVideoCompleted(final View view)
+        {
+            d( "Interstitial video completed" );
+        }
+
+        @Override
         public void onAdClosed(final View view)
         {
             d( "Interstitial closed" );
@@ -465,6 +530,82 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdLeftApplication(final View view)
         {
             d( "Interstitial will leave application" );
+        }
+    }
+
+    private class RewardedAdListener
+            implements DTBAdInterstitialListener
+    {
+        private final MaxRewardedAdapterListener listener;
+        private       boolean                    hasGrantedReward;
+
+        RewardedAdListener(MaxRewardedAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(final View view)
+        {
+            d( "Rewarded ad loaded" );
+            listener.onRewardedAdLoaded();
+        }
+
+        @Override
+        public void onAdFailed(final View view)
+        {
+            e( "Rewarded ad failed to load" );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.NO_FILL );
+        }
+
+        @Override
+        public void onImpressionFired(final View view)
+        {
+            d( "Rewarded ad did fire impression" );
+            listener.onRewardedAdDisplayed();
+        }
+
+        @Override
+        public void onAdOpen(final View view)
+        {
+            d( "Rewarded ad did open" );
+            listener.onRewardedAdVideoStarted();
+        }
+
+        @Override
+        public void onAdClicked(final View view)
+        {
+            d( "Rewarded ad clicked" );
+            listener.onRewardedAdClicked();
+        }
+
+        @Override
+        public void onVideoCompleted(final View view)
+        {
+            d( "Rewarded ad video completed" );
+            hasGrantedReward = true;
+            listener.onRewardedAdVideoCompleted();
+        }
+
+        @Override
+        public void onAdClosed(final View view)
+        {
+            d( "Rewarded ad closed" );
+
+            if ( hasGrantedReward || shouldAlwaysRewardUser() )
+            {
+                final MaxReward reward = getReward();
+                d( "Rewarded user with reward: " + reward );
+                listener.onUserRewarded( reward );
+            }
+
+            listener.onRewardedAdHidden();
+        }
+
+        @Override
+        public void onAdLeftApplication(final View view)
+        {
+            d( "Rewarded ad will leave application" );
         }
     }
 

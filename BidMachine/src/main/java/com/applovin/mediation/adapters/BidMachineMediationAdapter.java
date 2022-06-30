@@ -11,8 +11,6 @@ import android.widget.ImageView;
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.nativeAds.MaxNativeAd;
-import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
@@ -29,6 +27,8 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.bidmachine.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
@@ -65,7 +65,7 @@ public class BidMachineMediationAdapter
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
 {
     private static final int                  DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
-    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static final AtomicBoolean        initialized                        = new AtomicBoolean();
     private static       InitializationStatus status;
 
     private InterstitialAd interstitialAd;
@@ -683,6 +683,7 @@ public class BidMachineMediationAdapter
                 public void run()
                 {
                     final NativeMediaView mediaView = new NativeMediaView( getApplicationContext() );
+
                     final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( nativeAd.getTitle() )
@@ -691,6 +692,11 @@ public class BidMachineMediationAdapter
                             .setIcon( iconMaxNativeAdImage )
                             .setMediaView( mediaView )
                             .setOptionsView( nativeAd.getProviderView( getApplicationContext() ) );
+                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 && nativeAd.getMainImage() != null )
+                    {
+                        MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( nativeAd.getMainImage().getImage() );
+                        builder.setMainImage( mainImage );
+                    }
                     final MaxBidMachineNativeAd maxBidMachineNativeAd = new MaxBidMachineNativeAd( builder );
                     listener.onNativeAdLoaded( maxBidMachineNativeAd, null );
                 }
