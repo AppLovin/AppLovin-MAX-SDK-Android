@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.8
+* Fix native media content sizing issue.
+
 ## 2.0.0.7
 * Add support for passing local parameter "is_location_collection_enabled" to set `YASAds.setLocationAccessMode(...)`.
 

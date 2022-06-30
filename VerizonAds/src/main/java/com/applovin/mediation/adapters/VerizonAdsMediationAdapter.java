@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -965,8 +964,6 @@ public class VerizonAdsMediationAdapter
             NativeTextComponent bodyComponent = (NativeTextComponent) nativeAd.getComponent( "body" );
             NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
             NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
-            NativeImageComponent imageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
-            NativeVideoComponent videoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
 
             if ( titleComponent != null && maxNativeAdView.getTitleTextView() != null )
             {
@@ -988,20 +985,6 @@ public class VerizonAdsMediationAdapter
             {
                 iconComponent.prepareView( maxNativeAdView.getIconImageView() );
             }
-
-            View mediaView = null;
-            ViewGroup mediaContentViewGroup = maxNativeAdView.getMediaContentViewGroup();
-            if ( videoComponent != null && mediaContentViewGroup != null )
-            {
-                mediaView = new VideoPlayerView( mediaContentViewGroup.getContext() );
-                videoComponent.prepareView( (VideoPlayerView) mediaView );
-            }
-            else if ( imageComponent != null && mediaContentViewGroup != null )
-            {
-                mediaView = new ImageView( mediaContentViewGroup.getContext() );
-                imageComponent.prepareView( (ImageView) mediaView );
-            }
-            mediaContentViewGroup.addView( mediaView );
 
             nativeAd.registerContainerView( maxNativeAdView );
         }
