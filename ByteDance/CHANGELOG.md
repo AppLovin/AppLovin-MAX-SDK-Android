@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.5.0.5.0
+* Certified with ByteDance SDK 4.5.0.5.
+
 ## 4.5.0.4.1
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 
