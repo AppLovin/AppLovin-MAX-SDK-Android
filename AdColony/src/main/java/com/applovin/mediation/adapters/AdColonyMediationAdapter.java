@@ -632,5 +632,11 @@ public class AdColonyMediationAdapter
             log( adFormat.getLabel() + " ad failed to fill for zone: " + zone.getZoneID() );
             listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
         }
+
+        public void onShow(final AdColonyAdView ad)
+        {
+            log( adFormat.getLabel() + " ad shown" );
+            listener.onAdViewAdDisplayed();
+        }
     }
 }
