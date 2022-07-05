@@ -169,8 +169,6 @@ public class CriteoMediationAdapter
     @Override
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
-        updatePrivacySettings( parameters );
-
         callback.onSignalCollected( "" ); // No-op since Criteo does not need the buyeruid to bid
     }
 
@@ -181,6 +179,13 @@ public class CriteoMediationAdapter
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
+        if ( !initialized.get() )
+        {
+            log( "Interstitial ad failed to load. Criteo SDK not initialized." );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+            return;
+        }
+
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
 
@@ -217,6 +222,13 @@ public class CriteoMediationAdapter
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
+        if ( !initialized.get() )
+        {
+            log( adFormat.getLabel() + " ad failed to load. Criteo SDK not initialized." );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+            return;
+        }
+
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
 
@@ -243,6 +255,13 @@ public class CriteoMediationAdapter
     @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
+        if ( !initialized.get() )
+        {
+            log( "Native ad failed to load. Criteo SDK not initialized" );
+            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+            return;
+        }
+
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading native ad: " + placementId + "..." );
 
@@ -588,6 +607,7 @@ public class CriteoMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final CriteoNativeAd nativeAd = CriteoMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad view: native ad is null." );
