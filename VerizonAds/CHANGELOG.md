@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.0.9
+* Add support for passing an Activity to Yahoo's SDK for native ad view impression tracking.
+* Use local scope copy of native ad while preparing view.
+
 ## 2.0.0.8
 * Fix native media content sizing issue.
 
