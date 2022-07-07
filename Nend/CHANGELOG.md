@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.0.0
+* Certified with Nend SDK 8.2.0.
+
 ## 8.0.1.1
 * Update ad display failed error code.
 * Remove `checkExistence()` call from adapter.
