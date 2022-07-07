@@ -14,6 +14,7 @@ public class MRecDemoMenuActivity
         return new DemoMenuItem[] {
                 new DemoMenuItem( "Programmatic", new Intent( this, MRecProgrammaticActivity.class ) ),
                 new DemoMenuItem( "Layout Editor", new Intent( this, MRecLayoutEditorActivity.class ) ),
+                new DemoMenuItem( "Recycler View", new Intent( this, MRecRecyclerViewActivity.class ) ),
         };
     }
 }

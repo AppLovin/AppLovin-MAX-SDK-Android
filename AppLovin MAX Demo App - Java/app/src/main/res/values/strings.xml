@@ -34,6 +34,7 @@
     <string name="title_activity_mrec_list">MRECs</string>
     <string name="title_activity_mrec_programmatic">Programmatic MRECs</string>
     <string name="title_activity_mrec_layout_editor">Layout Editor MRECs</string>
+    <string name="title_activity_mrec_recycler_view">Recycler View MREC Ads</string>
     <string name="title_activity_mrec_zone_integration">Zone Integration</string>
 
     <string name="title_activity_event_tracking">Event Tracking</string>
