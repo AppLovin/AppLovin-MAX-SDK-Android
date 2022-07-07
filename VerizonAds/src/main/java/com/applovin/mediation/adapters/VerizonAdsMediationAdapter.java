@@ -1016,6 +1016,9 @@ public class VerizonAdsMediationAdapter
                 iconComponent.prepareView( maxNativeAdView.getIconImageView() );
             }
 
+            ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
+            activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
+
             nativeAd.registerContainerView( maxNativeAdView, activity );
         }
     }

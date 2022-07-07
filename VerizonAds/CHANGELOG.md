@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.10
+* Explicitly set native activity's ActivityState to `RESUMED`.
+
 ## 2.0.0.9
 * Add support for passing an Activity to Yahoo's SDK for native ad view impression tracking.
 * Use local scope copy of native ad while preparing view.
@@ -42,7 +45,7 @@
 * Update ad display failed error code.
 
 ## 1.14.0.10
-* Add support for tracking impressions for all ad formats
+* Add support for tracking impressions for all ad formats.
 
 ## 1.14.0.9
 * Add support for tracking banner ad impressions.
