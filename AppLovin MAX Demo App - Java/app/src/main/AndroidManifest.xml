@@ -65,6 +65,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.RecyclerViewMrecAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="Natives"
@@ -136,9 +140,6 @@
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
             android:label="@string/title_activity_mrec_layout_editor" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecRecyclerViewActivity"
-            android:label="@string/title_activity_mrec_recycler_view" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
             android:label="@string/title_activity_event_tracking" />

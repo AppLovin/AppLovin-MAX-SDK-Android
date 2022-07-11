@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs;
+package com.applovin.enterprise.apps.demoapp.ads.max.mrecs;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -30,7 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MRecRecyclerViewActivity
+public class RecyclerViewMrecAdActivity
         extends AppCompatActivity
 {
     private final ArrayList<String> sampleData  = new ArrayList<>( Arrays.asList( "ABCDEFGHIJKL".split( "" ) ) );
@@ -41,11 +41,13 @@ public class MRecRecyclerViewActivity
     {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_mrec_recycler_view );
-        CustomRecyclerAdapter adapter = new CustomRecyclerAdapter( MRecRecyclerViewActivity.this, sampleData );
+        setTitle( R.string.activity_recycler_view_mrecs );
+
+        CustomRecyclerAdapter adapter = new CustomRecyclerAdapter( RecyclerViewMrecAdActivity.this, sampleData );
 
         // Configure recycler view
         RecyclerView recyclerView = findViewById( R.id.mrec_recycler_view );
-        recyclerView.setLayoutManager( new LinearLayoutManager( MRecRecyclerViewActivity.this ) );
+        recyclerView.setLayoutManager( new LinearLayoutManager( RecyclerViewMrecAdActivity.this ) );
         recyclerView.setAdapter( adapter );
 
         configureAdViews( 5 );
@@ -175,8 +177,8 @@ public class MRecRecyclerViewActivity
             public void configure()
             {
                 // MREC width and height are 300 and 250 respectively, on phones and tablets
-                int widthPx = AppLovinSdkUtils.dpToPx( MRecRecyclerViewActivity.this, 300 );
-                int heightPx = AppLovinSdkUtils.dpToPx( MRecRecyclerViewActivity.this, 250 );
+                int widthPx = AppLovinSdkUtils.dpToPx( RecyclerViewMrecAdActivity.this, 300 );
+                int heightPx = AppLovinSdkUtils.dpToPx( RecyclerViewMrecAdActivity.this, 250 );
 
                 // Set background or background color for MRECs to be fully functional
                 adView.setBackgroundColor( Color.WHITE );
