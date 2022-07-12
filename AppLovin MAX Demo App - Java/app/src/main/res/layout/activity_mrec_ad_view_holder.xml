@@ -3,7 +3,6 @@
     android:id="@+id/mrec_ad_view_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
