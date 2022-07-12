@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class RecyclerViewMrecAdActivity
         extends AppCompatActivity
+        implements MaxAdViewAdListener
 {
     private final int                   AD_VIEW_COUNT = 5;
     private final int                   AD_INTERVAL   = 10;
@@ -67,33 +68,7 @@ public class RecyclerViewMrecAdActivity
         for ( int i = 0; i < AD_VIEW_COUNT; i++ )
         {
             MaxAdView adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
-            adView.setListener( new MaxAdViewAdListener()
-            {
-                // MAX Ad Listener
-                @Override
-                public void onAdLoaded(final MaxAd maxAd) { }
-
-                @Override
-                public void onAdLoadFailed(final String adUnitId, final MaxError error) { }
-
-                @Override
-                public void onAdDisplayFailed(final MaxAd maxAd, final MaxError error) { }
-
-                @Override
-                public void onAdClicked(final MaxAd maxAd) { }
-
-                @Override
-                public void onAdExpanded(final MaxAd maxAd) { }
-
-                @Override
-                public void onAdCollapsed(final MaxAd maxAd) { }
-
-                @Override
-                public void onAdDisplayed(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
-
-                @Override
-                public void onAdHidden(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
-            } );
+            adView.setListener( this );
 
             // Set this extra parameter to work around SDK bug that ignores calls to stopAutoRefresh()
             adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
@@ -165,7 +140,7 @@ public class RecyclerViewMrecAdActivity
             if ( holder instanceof AdViewHolder )
             {
                 AdViewHolder adViewHolder = (AdViewHolder) holder;
-                ((ViewGroup) adViewHolder.itemView).removeView( adViewHolder.adView );
+                ( (ViewGroup) adViewHolder.itemView ).removeView( adViewHolder.adView );
                 adViewHolder.adView = null;
             }
         }
@@ -238,4 +213,29 @@ public class RecyclerViewMrecAdActivity
             }
         }
     }
+
+    // MAX Ad Listener
+    @Override
+    public void onAdLoaded(final MaxAd maxAd) { }
+
+    @Override
+    public void onAdLoadFailed(final String adUnitId, final MaxError error) { }
+
+    @Override
+    public void onAdDisplayFailed(final MaxAd maxAd, final MaxError error) { }
+
+    @Override
+    public void onAdClicked(final MaxAd maxAd) { }
+
+    @Override
+    public void onAdExpanded(final MaxAd maxAd) { }
+
+    @Override
+    public void onAdCollapsed(final MaxAd maxAd) { }
+
+    @Override
+    public void onAdDisplayed(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+
+    @Override
+    public void onAdHidden(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
 }
