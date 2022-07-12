@@ -60,8 +60,9 @@ public class RecyclerViewMrecAdActivity
         for ( int i = 0; i < sampleData.size(); i += AD_INTERVAL )
         {
             sampleData.add( i, "" );
-            adapter.notifyDataSetChanged();
         }
+
+        adapter.notifyDataSetChanged();
 
         for ( int i = 0; i < AD_VIEW_COUNT; i++ )
         {
@@ -161,21 +162,12 @@ public class RecyclerViewMrecAdActivity
         {
             super.onViewRecycled( holder );
 
-            ViewGroup viewGroup = (ViewGroup) holder.itemView;
-
-            for ( int i = viewGroup.getChildCount(); i >= 0; i-- )
-            {
-                View subview = viewGroup.getChildAt( i );
-
-                if ( subview instanceof MaxAdView )
-                {
-                    viewGroup.removeViewAt( i );
-                }
-            }
-
             if ( holder instanceof AdViewHolder )
             {
-                ( (AdViewHolder) holder ).adView = null;
+                AdViewHolder adViewHolder = (AdViewHolder) holder;
+                ViewGroup viewGroup = (ViewGroup) adViewHolder.itemView;
+                viewGroup.removeView( adViewHolder.adView );
+                adViewHolder.adView = null;
             }
         }
 
