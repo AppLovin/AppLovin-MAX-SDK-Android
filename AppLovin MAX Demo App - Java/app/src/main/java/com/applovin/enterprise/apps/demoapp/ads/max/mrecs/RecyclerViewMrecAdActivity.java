@@ -80,7 +80,9 @@ public class RecyclerViewMrecAdActivity
         }
     }
 
-    private enum HolderViewType
+    // RecyclerAdapter and ViewHolder
+
+    private enum ViewHolderType
     {
         AD_VIEW,
         CUSTOM_VIEW
@@ -102,7 +104,7 @@ public class RecyclerViewMrecAdActivity
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
         {
-            HolderViewType holderViewType = HolderViewType.values()[viewType];
+            ViewHolderType holderViewType = ViewHolderType.values()[viewType];
 
             switch ( holderViewType )
             {
@@ -165,7 +167,7 @@ public class RecyclerViewMrecAdActivity
         @Override
         public int getItemViewType(final int position)
         {
-            return ( position % AD_INTERVAL == 0 ) ? HolderViewType.AD_VIEW.ordinal() : HolderViewType.CUSTOM_VIEW.ordinal();
+            return ( position % AD_INTERVAL == 0 ) ? ViewHolderType.AD_VIEW.ordinal() : ViewHolderType.CUSTOM_VIEW.ordinal();
         }
 
         public class AdViewHolder
@@ -215,6 +217,7 @@ public class RecyclerViewMrecAdActivity
     }
 
     // MAX Ad Listener
+
     @Override
     public void onAdLoaded(final MaxAd maxAd) { }
 
