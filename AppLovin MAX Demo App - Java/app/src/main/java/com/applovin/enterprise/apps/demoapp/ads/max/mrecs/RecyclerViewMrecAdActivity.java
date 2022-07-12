@@ -31,10 +31,11 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RecyclerViewMrecAdActivity
         extends AppCompatActivity
 {
-    private final int               AD_VIEW_COUNT = 5;
-    private final int               AD_INTERVAL   = 10;
-    private final ArrayList<String> sampleData    = new ArrayList<>( Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split( "" ) ) );
-    private       List<MaxAdView>   adViews       = new ArrayList<>();
+    private final int                   AD_VIEW_COUNT = 5;
+    private final int                   AD_INTERVAL   = 10;
+    private final ArrayList<String>     sampleData    = new ArrayList<>( Arrays.asList( "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split( "" ) ) );
+    private final List<MaxAdView>       adViews       = new ArrayList<>();
+    private       CustomRecyclerAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState)
@@ -43,17 +44,23 @@ public class RecyclerViewMrecAdActivity
         setContentView( R.layout.activity_mrec_recycler_view );
         setTitle( R.string.activity_recycler_view_mrecs );
 
+        adapter = new CustomRecyclerAdapter( this, sampleData );
+
         // Configure recycler view
         RecyclerView recyclerView = findViewById( R.id.mrec_recycler_view );
-        recyclerView.setLayoutManager( new LinearLayoutManager( RecyclerViewMrecAdActivity.this ) );
-        recyclerView.setAdapter( new CustomRecyclerAdapter( RecyclerViewMrecAdActivity.this, sampleData ) );
+        recyclerView.setLayoutManager( new LinearLayoutManager( this ) );
+        recyclerView.setAdapter( adapter );
 
         configureAdViews( AD_VIEW_COUNT );
     }
 
     private void configureAdViews(int count)
     {
-        // TODO: Insert ads into stream rather than overwrite data
+        for ( int i = 0; i < sampleData.size(); i += AD_INTERVAL )
+        {
+            sampleData.add( i, "" );
+            adapter.notifyDataSetChanged();
+        }
 
         for ( int i = 0; i < count; i++ )
         {
@@ -96,11 +103,15 @@ public class RecyclerViewMrecAdActivity
         }
     }
 
+    private enum HolderViewType
+    {
+        AD_VIEW,
+        CUSTOM_VIEW
+    }
+
     public class CustomRecyclerAdapter
             extends RecyclerView.Adapter
     {
-        private final int            AD_VIEW_TYPE     = 0;
-        private final int            CUSTOM_VIEW_TYPE = 1;
         private final LayoutInflater inflater;
         private final List<String>   data;
 
@@ -114,13 +125,14 @@ public class RecyclerViewMrecAdActivity
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
         {
-            // TODO: Figure out a better way to get viewType
-            switch ( viewType )
+            HolderViewType holderViewType = HolderViewType.values()[viewType];
+
+            switch ( holderViewType )
             {
-                case AD_VIEW_TYPE:
-                    return new CustomRecyclerAdapter.AdViewHolder( inflater.inflate( R.layout.activity_mrec_ad_view_holder, parent, false ) );
-                case CUSTOM_VIEW_TYPE:
-                    return new CustomRecyclerAdapter.CustomViewHolder( inflater.inflate( R.layout.activity_mrec_custom_view_holder, parent, false ) );
+                case AD_VIEW:
+                    return new AdViewHolder( inflater.inflate( R.layout.activity_mrec_ad_view_holder, parent, false ) );
+                case CUSTOM_VIEW:
+                    return new CustomViewHolder( inflater.inflate( R.layout.activity_mrec_custom_view_holder, parent, false ) );
                 default:
                     return null;
             }
@@ -181,7 +193,7 @@ public class RecyclerViewMrecAdActivity
         @Override
         public int getItemViewType(final int position)
         {
-            return ( position % AD_INTERVAL == 0 ) ? AD_VIEW_TYPE : CUSTOM_VIEW_TYPE;
+            return ( position % AD_INTERVAL == 0 ) ? HolderViewType.AD_VIEW.ordinal() : HolderViewType.CUSTOM_VIEW.ordinal();
         }
 
         public class AdViewHolder
