@@ -181,12 +181,7 @@ public class RecyclerViewMrecAdActivity
         @Override
         public int getItemViewType(final int position)
         {
-            if ( position % AD_INTERVAL == 0 )
-            {
-                return AD_VIEW_TYPE;
-            }
-
-            return CUSTOM_VIEW_TYPE;
+            return ( position % AD_INTERVAL == 0 ) ? AD_VIEW_TYPE : CUSTOM_VIEW_TYPE;
         }
 
         public class AdViewHolder
