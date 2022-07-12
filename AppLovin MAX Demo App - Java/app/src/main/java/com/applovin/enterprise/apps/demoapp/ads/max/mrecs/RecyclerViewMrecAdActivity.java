@@ -104,9 +104,9 @@ public class RecyclerViewMrecAdActivity
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
         {
-            ViewHolderType holderViewType = ViewHolderType.values()[viewType];
+            ViewHolderType viewHolderType = ViewHolderType.values()[viewType];
 
-            switch ( holderViewType )
+            switch ( viewHolderType )
             {
                 case AD_VIEW:
                     return new AdViewHolder( inflater.inflate( R.layout.activity_mrec_ad_view_holder, parent, false ) );
