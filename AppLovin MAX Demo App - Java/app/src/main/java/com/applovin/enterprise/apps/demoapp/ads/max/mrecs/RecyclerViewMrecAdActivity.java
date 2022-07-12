@@ -218,13 +218,13 @@ public class RecyclerViewMrecAdActivity
                 // Set background or background color for MRECs to be fully functional
                 this.adView.setBackgroundColor( Color.BLACK );
                 this.adView.setLayoutParams( new FrameLayout.LayoutParams( widthPx, heightPx, Gravity.CENTER ) );
-                ( (ViewGroup) itemView ).addView( adView );
+                ( (ViewGroup) itemView ).addView( this.adView );
             }
 
             public void stopAutoRefresh()
             {
-                this.adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
-                this.adView.stopAutoRefresh();
+                adView.setExtraParameter( "allow_pause_auto_refresh_immediately", "true" );
+                adView.stopAutoRefresh();
             }
         }
 
