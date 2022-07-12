@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.1.81.0
+* Certified with Mintegral SDK 16.1.81.
+
 ## 16.1.71.0
 * Certified with Mintegral SDK 16.1.71.
 * Use local scope copy of native ad while preparing view.
