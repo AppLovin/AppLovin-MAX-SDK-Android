@@ -61,9 +61,8 @@ public class RecyclerViewMrecAdActivity
         for ( int i = 0; i < sampleData.size(); i += AD_INTERVAL )
         {
             sampleData.add( i, "" );
+            adapter.notifyItemInserted( i );
         }
-
-        adapter.notifyDataSetChanged();
 
         for ( int i = 0; i < AD_VIEW_COUNT; i++ )
         {
