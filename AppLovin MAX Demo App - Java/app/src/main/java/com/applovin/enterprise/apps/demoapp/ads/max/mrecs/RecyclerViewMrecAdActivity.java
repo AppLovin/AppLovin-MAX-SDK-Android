@@ -165,8 +165,7 @@ public class RecyclerViewMrecAdActivity
             if ( holder instanceof AdViewHolder )
             {
                 AdViewHolder adViewHolder = (AdViewHolder) holder;
-                ViewGroup viewGroup = (ViewGroup) adViewHolder.itemView;
-                viewGroup.removeView( adViewHolder.adView );
+                ((ViewGroup) adViewHolder.itemView).removeView( adViewHolder.adView );
                 adViewHolder.adView = null;
             }
         }
