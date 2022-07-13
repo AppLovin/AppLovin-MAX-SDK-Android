@@ -14,6 +14,7 @@ public class MrecAdActivity
         DemoMenuItem[] result = {
                 new DemoMenuItem( "Programmatic MRECs", new Intent( this, ProgrammaticMrecAdActivity.class ) ),
                 new DemoMenuItem( "Layout Editor MRECs", new Intent( this, LayoutEditorMrecAdActivity.class ) ),
+                new DemoMenuItem( "Recycler View MRECs", new Intent( this, RecyclerViewMrecAdActivity.class ) ),
         };
         return result;
     }
