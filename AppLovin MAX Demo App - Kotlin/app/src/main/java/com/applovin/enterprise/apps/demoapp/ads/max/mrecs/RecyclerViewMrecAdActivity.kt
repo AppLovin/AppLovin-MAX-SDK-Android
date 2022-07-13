@@ -20,10 +20,10 @@ import com.applovin.mediation.ads.MaxAdView
 import com.applovin.sdk.AppLovinSdkUtils
 
 class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
-    val AD_VIEW_COUNT = 5
-    val AD_INTERVAL = 10
+    private val AD_VIEW_COUNT = 5
+    private val AD_INTERVAL = 10
     private val sampleData = ArrayList("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".chunked(1))
-    private val adViews = ArrayList<MaxAdView>(AD_VIEW_COUNT);
+    private val adViews = ArrayList<MaxAdView>(AD_VIEW_COUNT)
     private lateinit var adapter: CustomRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +82,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
                 val adView: MaxAdView = adViews[(position / AD_INTERVAL) % AD_VIEW_COUNT]
 
                 // Configure cell with an ad
-                holder.configureWithAdView(adView)
+                holder.configure(adView)
             } else if (holder is CustomViewHolder) {
                 holder.textView.text = data[position]
             }
@@ -116,7 +116,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
         inner class AdViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var adView: MaxAdView? = null
 
-            fun configureWithAdView(adView: MaxAdView) {
+            fun configure(adView: MaxAdView) {
                 this.adView = adView
                 this.adView!!.startAutoRefresh()
 

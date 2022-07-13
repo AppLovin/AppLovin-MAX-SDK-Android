@@ -125,7 +125,7 @@ public class RecyclerViewMrecAdActivity
                 MaxAdView adView = adViews.get( ( position / AD_INTERVAL ) % AD_VIEW_COUNT );
 
                 // Configure cell with an ad
-                ( (AdViewHolder) holder ).configureWithAdView( adView );
+                ( (AdViewHolder) holder ).configure( adView );
             }
             else if ( holder instanceof CustomViewHolder )
             {
@@ -179,7 +179,7 @@ public class RecyclerViewMrecAdActivity
                 super( itemView );
             }
 
-            public void configureWithAdView(MaxAdView adView)
+            public void configure(MaxAdView adView)
             {
                 this.adView = adView;
                 this.adView.startAutoRefresh();
