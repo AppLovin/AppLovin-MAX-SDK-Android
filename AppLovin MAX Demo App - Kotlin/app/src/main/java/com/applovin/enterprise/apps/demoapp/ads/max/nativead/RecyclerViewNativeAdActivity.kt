@@ -62,7 +62,7 @@ class RecyclerViewNativeAdActivity : AppCompatActivity() {
     class CustomRecyclerAdapter(private val activity: Activity, val data: List<String>) : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = activity.layoutInflater.inflate(R.layout.activity_native_recycler_view_holder, parent, false)
+            val view = activity.layoutInflater.inflate(R.layout.activity_text_recycler_view_holder, parent, false)
             return ViewHolder(view)
         }
 

@@ -79,8 +79,7 @@ public class RecyclerViewMrecAdActivity
         }
     }
 
-    // RecyclerAdapter and ViewHolder
-
+    //region RecyclerAdapter and ViewHolder
     private enum ViewHolderType
     {
         AD_VIEW,
@@ -110,7 +109,7 @@ public class RecyclerViewMrecAdActivity
                 case AD_VIEW:
                     return new AdViewHolder( inflater.inflate( R.layout.activity_mrec_ad_view_holder, parent, false ) );
                 case CUSTOM_VIEW:
-                    return new CustomViewHolder( inflater.inflate( R.layout.activity_mrec_custom_view_holder, parent, false ) );
+                    return new CustomViewHolder( inflater.inflate( R.layout.activity_text_recycler_view_holder, parent, false ) );
                 default:
                     return null;
             }
@@ -124,7 +123,7 @@ public class RecyclerViewMrecAdActivity
                 // Select an ad view to display
                 MaxAdView adView = adViews.get( ( position / AD_INTERVAL ) % AD_VIEW_COUNT );
 
-                // Configure cell with an ad
+                // Configure view holder with an ad
                 ( (AdViewHolder) holder ).configure( adView );
             }
             else if ( holder instanceof CustomViewHolder )
@@ -214,9 +213,9 @@ public class RecyclerViewMrecAdActivity
             }
         }
     }
+    //endregion
 
-    // MAX Ad Listener
-
+    //region MAX Ad Listener
     @Override
     public void onAdLoaded(final MaxAd maxAd) { }
 
@@ -240,4 +239,5 @@ public class RecyclerViewMrecAdActivity
 
     @Override
     public void onAdHidden(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+    //endregion
 }

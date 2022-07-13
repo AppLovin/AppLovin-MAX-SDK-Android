@@ -33,6 +33,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
 
         adapter = CustomRecyclerAdapter(this, sampleData)
 
+        // Configure recycler view
         val recyclerView = findViewById<RecyclerView>(R.id.mrec_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -61,8 +62,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
         }
     }
 
-    // RecyclerAdapter and ViewHolder
-
+    //region RecyclerAdapter and ViewHolder
     private enum class ViewHolderType {
         AD_VIEW,
         CUSTOM_VIEW
@@ -70,9 +70,11 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
 
     inner class CustomRecyclerAdapter(private val activity: Activity, val data: List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return when (ViewHolderType.values()[viewType]) {
+            val viewHolderType = ViewHolderType.values()[viewType]
+
+            return when (viewHolderType) {
                 ViewHolderType.AD_VIEW -> AdViewHolder(activity.layoutInflater.inflate(R.layout.activity_mrec_ad_view_holder, parent, false))
-                ViewHolderType.CUSTOM_VIEW -> CustomViewHolder(activity.layoutInflater.inflate(R.layout.activity_mrec_custom_view_holder, parent, false))
+                ViewHolderType.CUSTOM_VIEW -> CustomViewHolder(activity.layoutInflater.inflate(R.layout.activity_text_recycler_view_holder, parent, false))
             }
         }
 
@@ -81,7 +83,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
                 // Select an ad view to display
                 val adView: MaxAdView = adViews[(position / AD_INTERVAL) % AD_VIEW_COUNT]
 
-                // Configure cell with an ad
+                // Configure view holder with an ad
                 holder.configure(adView)
             } else if (holder is CustomViewHolder) {
                 holder.textView.text = data[position]
@@ -140,8 +142,9 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
             val textView: TextView = itemView.findViewById(R.id.textView)
         }
     }
+    //endregion
 
-    // MAX Ad Listener
+    //region MAX Ad Listener
     override fun onAdLoaded(maxAd: MaxAd) {}
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {}
@@ -157,4 +160,5 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
     override fun onAdDisplayed(maxAd: MaxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
 
     override fun onAdHidden(maxAd: MaxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+    //endregion
 }

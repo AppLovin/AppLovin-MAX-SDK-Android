@@ -92,7 +92,7 @@ public class RecyclerViewNativeAdActivity
         @Override
         public CustomRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType)
         {
-            View view = inflater.inflate( R.layout.activity_native_recycler_view_holder, parent, false );
+            View view = inflater.inflate( R.layout.activity_text_recycler_view_holder, parent, false );
             return new ViewHolder( view );
         }
 
