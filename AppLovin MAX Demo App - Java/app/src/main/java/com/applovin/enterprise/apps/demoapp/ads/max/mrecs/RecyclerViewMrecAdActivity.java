@@ -80,6 +80,7 @@ public class RecyclerViewMrecAdActivity
     }
 
     //region RecyclerAdapter and ViewHolder
+
     private enum ViewHolderType
     {
         AD_VIEW,
@@ -213,9 +214,11 @@ public class RecyclerViewMrecAdActivity
             }
         }
     }
+
     //endregion
 
     //region MAX Ad Listener
+
     @Override
     public void onAdLoaded(final MaxAd maxAd) { }
 
@@ -239,5 +242,6 @@ public class RecyclerViewMrecAdActivity
 
     @Override
     public void onAdHidden(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+
     //endregion
 }

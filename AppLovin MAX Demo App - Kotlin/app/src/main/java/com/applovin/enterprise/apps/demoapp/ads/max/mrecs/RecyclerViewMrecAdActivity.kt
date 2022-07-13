@@ -63,6 +63,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
     }
 
     //region RecyclerAdapter and ViewHolder
+
     private enum class ViewHolderType {
         AD_VIEW,
         CUSTOM_VIEW
@@ -142,9 +143,11 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
             val textView: TextView = itemView.findViewById(R.id.textView)
         }
     }
+
     //endregion
 
     //region MAX Ad Listener
+
     override fun onAdLoaded(maxAd: MaxAd) {}
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {}
@@ -160,5 +163,6 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
     override fun onAdDisplayed(maxAd: MaxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
 
     override fun onAdHidden(maxAd: MaxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+
     //endregion
 }
