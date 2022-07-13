@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.2.2
+* Add support to set `hasUserConsent` and `ageRestrictedUser` on initialization.
+
 ## 6.0.2.1
 * Update ad display failed error code.
 

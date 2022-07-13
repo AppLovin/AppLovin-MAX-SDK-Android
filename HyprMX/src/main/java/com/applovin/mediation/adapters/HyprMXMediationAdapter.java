@@ -20,6 +20,7 @@ import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
@@ -120,8 +121,10 @@ public class HyprMXMediationAdapter
 
             HyprMXLog.enableDebugLogs( parameters.isTesting() );
 
-            // NOTE: HyprMX deals with user consent and CCPA via their UI and don't support GDPR. Backend will filter HyprMX out in EU region.
-            HyprMX.INSTANCE.initialize( context, distributorId, userId, new HyprMXIf.HyprMXInitializationListener()
+            HyprMX.INSTANCE.setMediationProvider( "applovin_max", getAdapterVersion(), AppLovinSdk.VERSION );
+
+            // NOTE: HyprMX deals with CCPA via their UI. Backend will filter HyprMX out in EU region.
+            HyprMX.INSTANCE.initialize( context, distributorId, userId, getConsentStatus( parameters ), parameters.isAgeRestrictedUser(), new HyprMXIf.HyprMXInitializationListener()
             {
                 @Override
                 public void initializationComplete()
@@ -243,18 +246,23 @@ public class HyprMXMediationAdapter
         }
     }
 
-    private void updateUserConsent(final MaxAdapterResponseParameters parameters)
+    private ConsentStatus getConsentStatus(final MaxAdapterParameters parameters)
     {
-        // NOTE: HyprMX requested to always set GDPR regardless of region.
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
-            HyprMX.INSTANCE.setConsentStatus( hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED );
+            return hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED;
         }
         else
         {
-            HyprMX.INSTANCE.setConsentStatus( ConsentStatus.CONSENT_STATUS_UNKNOWN );
+            return ConsentStatus.CONSENT_STATUS_UNKNOWN;
         }
+    }
+
+    private void updateUserConsent(final MaxAdapterResponseParameters parameters)
+    {
+        // NOTE: HyprMX requested to always set GDPR regardless of region.
+        HyprMX.INSTANCE.setConsentStatus( getConsentStatus( parameters ) );
     }
 
     //region Helper Methods

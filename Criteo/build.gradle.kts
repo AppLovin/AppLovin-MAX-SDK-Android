@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 4
 private val versionMinor = 6
 private val versionPatch = 0
-private val versionAdapterPatch = 5
+private val versionAdapterPatch = 6
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -35,28 +35,28 @@ publishing {
                     appendNode("description", "Criteo adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
-                        .appendNode("license").apply {
-                            appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
-                            appendNode("url", "https://www.applovin.com/eula")
-                        }
+                            .appendNode("license").apply {
+                                appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
+                                appendNode("url", "https://www.applovin.com/eula")
+                            }
                     appendNode("scm").apply {
                         appendNode("connection", "scm:git:github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("developerConnection", "scm:git:ssh://github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
                         appendNode("url", "https://github.com/AppLovin/AppLovin-MAX-SDK-Android")
                     }
                     appendNode("developers")
-                        .appendNode("developer").apply {
-                            appendNode("name", "AppLovin")
-                            appendNode("url", "https://www.applovin.com")
-                        }
+                            .appendNode("developer").apply {
+                                appendNode("name", "AppLovin")
+                                appendNode("url", "https://www.applovin.com")
+                            }
                     // Add Criteo to list of dependencies.
                     appendNode("dependencies")
-                        .appendNode("dependency").apply {
-                            appendNode("groupId", "com.criteo.publisher")
-                            appendNode("artifactId", "criteo-publisher-sdk")
-                            appendNode("version", libraryVersions["criteo"])
-                            appendNode("scope", "compile")
-                        }
+                            .appendNode("dependency").apply {
+                                appendNode("groupId", "com.criteo.publisher")
+                                appendNode("artifactId", "criteo-publisher-sdk")
+                                appendNode("version", libraryVersions["criteo"])
+                                appendNode("scope", "compile")
+                            }
                 }
             }
         }

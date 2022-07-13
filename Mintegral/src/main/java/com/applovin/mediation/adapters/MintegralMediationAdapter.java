@@ -1111,6 +1111,7 @@ public class MintegralMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final Campaign nativeAdCampaign = MintegralMediationAdapter.this.nativeAdCampaign;
             if ( nativeAdCampaign == null )
             {
                 e( "Failed to register native ad views: native ad is null." );

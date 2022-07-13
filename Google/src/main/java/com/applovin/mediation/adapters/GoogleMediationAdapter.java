@@ -667,16 +667,24 @@ public class GoogleMediationAdapter
         MobileAds.setRequestConfiguration( requestConfigurationBuilder.build() );
     }
 
+    @SuppressLint("ApplySharedPref")
     private AdRequest createAdRequestWithParameters(final boolean isBiddingAd, final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context)
     {
         AdRequest.Builder requestBuilder = new AdRequest.Builder();
-        Bundle networkExtras = new Bundle( 6 );
-
         Bundle serverParameters = parameters.getServerParameters();
+        Bundle networkExtras = new Bundle( 6 );
+        boolean isDv360Bidding = false;
+
         if ( isBiddingAd )
         {
-            // MAX specific
-            networkExtras.putString( "query_info_type", "requester_type_2" );
+            String bidderType = BundleUtils.getString( "bidder", "", serverParameters );
+            if ( "dv360".equalsIgnoreCase( bidderType ) )
+            {
+                isDv360Bidding = true;
+            }
+
+            // Requested by Google for signal collection
+            networkExtras.putString( "query_info_type", isDv360Bidding ? "requester_type_3" : "requester_type_2" );
 
             if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
             {
@@ -701,8 +709,9 @@ public class GoogleMediationAdapter
 
         if ( serverParameters.getBoolean( "set_mediation_identifier", true ) )
         {
-            // MAX specific
-            requestBuilder.setRequestAgent( "applovin" );
+            // Use "applovin" instead of mediationTag for Google's specs
+            // "applovin_dv360" is for DV360_BIDDING, which is a separate bidder from regular ADMOB_BIDDING
+            requestBuilder.setRequestAgent( isDv360Bidding ? "applovin_dv360" : "applovin" );
         }
 
         // Use event id as AdMob's placement request id
@@ -1384,6 +1393,7 @@ public class GoogleMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final NativeAd nativeAd = GoogleMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
