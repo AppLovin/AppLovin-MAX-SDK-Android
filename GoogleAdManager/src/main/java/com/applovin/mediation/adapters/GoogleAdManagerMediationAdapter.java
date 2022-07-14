@@ -1278,6 +1278,7 @@ public class GoogleAdManagerMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final NativeAd nativeAd = GoogleAdManagerMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
