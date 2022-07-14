@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.1.0.0
+* Certified with Google SDK 21.1.0.
+
 ## 21.0.0.3
 * Add support for DV360 Bidding by updating the requester type (`requester_type_3`) and request agent (`applovin_dv360`).
 * Use local scope copy of native ad while preparing view.
