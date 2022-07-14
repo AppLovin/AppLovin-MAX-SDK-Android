@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.util.Log;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -156,7 +157,10 @@ public class YandexMediationAdapter
                 {
                     log( "Yandex SDK initialized" );
 
-                    status = InitializationStatus.INITIALIZED_UNKNOWN;
+                    status = InitializationStatus.INITIALIZED_SUCCESS;
+                    final String version = getAdapterVersion();
+                    Log.i(YandexIntegrityCheckProvider.TAG,
+                            "Yandex Mobile Ads Adapter " + version + " for Applovin Mediation initialized successfully");
                     onCompletionListener.onCompletion( status, null );
                 }
             } );
@@ -378,7 +382,8 @@ public class YandexMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+            final AppLovinSdkUtils.Size appLovinSize = adFormat.getSize();
+            return AdSize.flexibleSize(appLovinSize.getWidth(), appLovinSize.getHeight());
         }
     }
 
