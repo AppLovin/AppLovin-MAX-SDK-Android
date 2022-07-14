@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.2.0.1
+* Add support for adaptive banners.
+
 ## 5.2.0.0
 * Certified with Yandex SDK 5.2.0.
 

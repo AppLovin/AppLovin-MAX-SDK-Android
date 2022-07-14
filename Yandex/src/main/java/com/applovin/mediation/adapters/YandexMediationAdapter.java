@@ -2,6 +2,7 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -126,7 +127,10 @@ public class YandexMediationAdapter
                 {
                     log( "Yandex SDK initialized" );
 
-                    status = InitializationStatus.INITIALIZED_UNKNOWN;
+                    status = InitializationStatus.INITIALIZED_SUCCESS;
+                    final String version = getAdapterVersion();
+                    Log.i(YandexIntegrityCheckProvider.TAG,
+                            "Yandex Mobile Ads Adapter " + version + " for Applovin Mediation initialized successfully");
                     onCompletionListener.onCompletion( status, null );
                 }
             } );
@@ -307,22 +311,8 @@ public class YandexMediationAdapter
 
     private static AdSize toAdSize(final MaxAdFormat adFormat)
     {
-        if ( adFormat == MaxAdFormat.BANNER )
-        {
-            return AdSize.BANNER_320x50;
-        }
-        else if ( adFormat == MaxAdFormat.MREC )
-        {
-            return AdSize.BANNER_300x250;
-        }
-        else if ( adFormat == MaxAdFormat.LEADER )
-        {
-            return AdSize.BANNER_728x90;
-        }
-        else
-        {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
-        }
+        final AppLovinSdkUtils.Size appLovinSize = adFormat.getSize();
+        return AdSize.flexibleSize(appLovinSize.getWidth(), appLovinSize.getHeight());
     }
 
     private static MaxAdapterError toMaxError(final AdRequestError yandexError)
