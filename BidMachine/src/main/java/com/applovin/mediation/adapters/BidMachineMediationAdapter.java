@@ -51,6 +51,7 @@ import io.bidmachine.banner.BannerView;
 import io.bidmachine.interstitial.InterstitialAd;
 import io.bidmachine.interstitial.InterstitialListener;
 import io.bidmachine.interstitial.InterstitialRequest;
+import io.bidmachine.models.AuctionResult;
 import io.bidmachine.nativead.NativeAd;
 import io.bidmachine.nativead.NativeListener;
 import io.bidmachine.nativead.NativeRequest;
@@ -370,7 +371,20 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull InterstitialAd interstitialAd)
         {
             log( "Interstitial ad loaded" );
-            listener.onInterstitialAdLoaded();
+            AuctionResult auctionResult = interstitialAd.getAuctionResult();
+            String creativeId = auctionResult != null ? auctionResult.getCreativeId() : null;
+            // Passing extra info such as creative id supported in 9.15.0+
+            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+            {
+                Bundle extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeId );
+
+                listener.onInterstitialAdLoaded( extraInfo );
+            }
+            else
+            {
+                listener.onInterstitialAdLoaded();
+            }
         }
 
         @Override
@@ -439,7 +453,20 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull RewardedAd rewardedAd)
         {
             log( "Rewarded ad loaded" );
-            listener.onRewardedAdLoaded();
+            AuctionResult auctionResult = rewardedAd.getAuctionResult();
+            String creativeId = auctionResult != null ? auctionResult.getCreativeId() : null;
+            // Passing extra info such as creative id supported in 9.15.0+
+            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+            {
+                Bundle extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeId );
+
+                listener.onRewardedAdLoaded( extraInfo );
+            }
+            else
+            {
+                listener.onRewardedAdLoaded();
+            }
         }
 
         @Override
@@ -454,7 +481,6 @@ public class BidMachineMediationAdapter
         public void onAdShown(@NonNull RewardedAd rewardedAd)
         {
             log( "Rewarded ad shown" );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -470,6 +496,7 @@ public class BidMachineMediationAdapter
         {
             log( "Rewarded ad impression" );
             listener.onRewardedAdDisplayed();
+            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -523,7 +550,20 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull BannerView bannerView)
         {
             log( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( bannerView );
+            AuctionResult auctionResult = bannerView.getAuctionResult();
+            String creativeId = auctionResult != null ? auctionResult.getCreativeId() : null;
+            // Passing extra info such as creative id supported in 9.15.0+
+            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+            {
+                Bundle extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeId );
+
+                listener.onAdViewAdLoaded( bannerView, extraInfo );
+            }
+            else
+            {
+                listener.onAdViewAdLoaded( bannerView );
+            }
         }
 
         @Override
@@ -698,7 +738,18 @@ public class BidMachineMediationAdapter
                         builder.setMainImage( mainImage );
                     }
                     final MaxBidMachineNativeAd maxBidMachineNativeAd = new MaxBidMachineNativeAd( builder );
-                    listener.onNativeAdLoaded( maxBidMachineNativeAd, null );
+                    AuctionResult auctionResult = nativeAd.getAuctionResult();
+                    String creativeId = auctionResult != null ? auctionResult.getCreativeId() : null;
+                    if ( AppLovinSdkUtils.isValidString( creativeId ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", creativeId );
+                        listener.onNativeAdLoaded( maxBidMachineNativeAd, extraInfo );
+                    }
+                    else
+                    {
+                        listener.onNativeAdLoaded( maxBidMachineNativeAd, null );
+                    }
                 }
             } );
         }
