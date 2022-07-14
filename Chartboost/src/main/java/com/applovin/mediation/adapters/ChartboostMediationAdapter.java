@@ -411,7 +411,7 @@ public class ChartboostMediationAdapter
 
                 if ( isShowingAd.compareAndSet( true, false ) )
                 {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.ordinal(), error.name() );
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), error.name() );
                     log( "Interstitial failed to show with error: " + error );
                     onAdDisplayFailed( location, adapterError );
                 }
@@ -462,7 +462,7 @@ public class ChartboostMediationAdapter
             {
                 if ( isShowingAd.compareAndSet( true, false ) )
                 {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.ordinal(), error.name() );
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), error.name() );
                     log( "Rewarded ad failed to show with error: " + error );
                     onAdDisplayFailed( location, adapterError );
                 }
@@ -572,7 +572,7 @@ public class ChartboostMediationAdapter
                 String location = adView.getLocation();
                 if ( error != null )
                 {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad ", error.code.getErrorCode(), error.toString() );
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.code.getErrorCode(), error.toString() );
 
                     log( "AdView failed \"" + location + "\" to show with error: " + error.code );
                     onAdDisplayFailed( location, adapterError );

@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.3.1
+* Fix incomplete ad display failure error message.
+
 ## 8.4.3.0
 * Certified with Chartboost SDK 8.4.3.
 
