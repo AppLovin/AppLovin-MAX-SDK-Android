@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.1
+* Add impression callback, `onShow()`, for banners and MRECs.
+
 ## 4.8.0.0
 * Certified with AdColony SDK 4.8.0.
 
