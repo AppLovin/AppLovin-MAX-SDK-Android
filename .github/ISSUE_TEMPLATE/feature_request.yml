@@ -1,0 +1,13 @@
+name: Feature Request
+description: Request an enhancement
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        *Before requesting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/releases) to see if the feature has already been addressed.*
+  - type: textarea
+    attributes:
+      label: "Feature Description"
+    validations:
+      required: true
