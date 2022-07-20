@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.4.2
+* Add support for passing creative id to SDK.
+
 ## 1.9.4.1
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 

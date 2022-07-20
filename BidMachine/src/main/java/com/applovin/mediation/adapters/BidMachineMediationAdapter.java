@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.bidmachine.BidMachine;
 import io.bidmachine.ImageData;
 import io.bidmachine.InitializationCallback;
@@ -59,6 +60,7 @@ import io.bidmachine.rewarded.RewardedAd;
 import io.bidmachine.rewarded.RewardedListener;
 import io.bidmachine.rewarded.RewardedRequest;
 import io.bidmachine.utils.BMError;
+import io.bidmachine.models.AuctionResult;
 
 public class BidMachineMediationAdapter
         extends MediationAdapterBase
@@ -356,6 +358,12 @@ public class BidMachineMediationAdapter
         }
     }
 
+    @Nullable
+    private String getCreativeId(@Nullable final AuctionResult result)
+    {
+        return result != null ? result.getCreativeId() : null;
+    }
+
     private class InterstitialAdListener
             implements InterstitialListener
     {
@@ -370,7 +378,17 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull InterstitialAd interstitialAd)
         {
             log( "Interstitial ad loaded" );
-            listener.onInterstitialAdLoaded();
+
+            final String creativeID = getCreativeId( interstitialAd.getAuctionResult() );
+            Bundle extraInfo = null;
+
+            if ( !TextUtils.isEmpty( creativeID ) )
+            {
+                extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeID );
+            }
+
+            listener.onInterstitialAdLoaded( extraInfo );
         }
 
         @Override
@@ -439,7 +457,17 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull RewardedAd rewardedAd)
         {
             log( "Rewarded ad loaded" );
-            listener.onRewardedAdLoaded();
+
+            final String creativeID = getCreativeId( rewardedAd.getAuctionResult() );
+            Bundle extraInfo = null;
+
+            if ( !TextUtils.isEmpty( creativeID ) )
+            {
+                extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeID );
+            }
+
+            listener.onRewardedAdLoaded( extraInfo );
         }
 
         @Override
@@ -454,7 +482,6 @@ public class BidMachineMediationAdapter
         public void onAdShown(@NonNull RewardedAd rewardedAd)
         {
             log( "Rewarded ad shown" );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -470,6 +497,7 @@ public class BidMachineMediationAdapter
         {
             log( "Rewarded ad impression" );
             listener.onRewardedAdDisplayed();
+            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -523,7 +551,17 @@ public class BidMachineMediationAdapter
         public void onAdLoaded(@NonNull BannerView bannerView)
         {
             log( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( bannerView );
+
+            final String creativeID = getCreativeId( bannerView.getAuctionResult() );
+            Bundle extraInfo = null;
+
+            if ( !TextUtils.isEmpty( creativeID ) )
+            {
+                extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeID );
+            }
+
+            listener.onAdViewAdLoaded( bannerView, extraInfo );
         }
 
         @Override
@@ -698,7 +736,17 @@ public class BidMachineMediationAdapter
                         builder.setMainImage( mainImage );
                     }
                     final MaxBidMachineNativeAd maxBidMachineNativeAd = new MaxBidMachineNativeAd( builder );
-                    listener.onNativeAdLoaded( maxBidMachineNativeAd, null );
+
+                    final String creativeID = getCreativeId( nativeAd.getAuctionResult() );
+                    Bundle extraInfo = null;
+
+                    if ( !TextUtils.isEmpty( creativeID ) )
+                    {
+                        extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", creativeID );
+                    }
+
+                    listener.onNativeAdLoaded( maxBidMachineNativeAd, extraInfo );
                 }
             } );
         }
