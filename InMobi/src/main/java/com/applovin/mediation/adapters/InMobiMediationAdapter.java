@@ -978,6 +978,7 @@ public class InMobiMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final InMobiNative nativeAd = InMobiMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
