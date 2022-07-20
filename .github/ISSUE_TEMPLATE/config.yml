@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://dash.applovin.com/documentation/mediation/android/getting-started/integration
+    about: Documentation for the AppLovin MAX SDK for Android
+  - name: Support
+    url: https://monetization-support.applovin.com/hc/en-us
+    about: Answers to common questions and support for AppLovin MAX
