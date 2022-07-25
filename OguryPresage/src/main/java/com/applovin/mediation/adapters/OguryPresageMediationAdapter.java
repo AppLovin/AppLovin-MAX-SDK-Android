@@ -104,6 +104,8 @@ public class OguryPresageMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateUserConsent( parameters );
+
         final String bidderToken = OguryTokenProvider.getBidderToken( getContext( activity ) );
         callback.onSignalCollected( bidderToken );
     }
