@@ -97,6 +97,8 @@ public class AdColonyMediationAdapter
     {
         log( "Collecting signal for " + parameters.getAdFormat() + " ad..." );
 
+        AdColony.setAppOptions( getOptions( parameters ) );
+
         AdColony.collectSignals( new AdColonySignalsListener()
         {
             @Override

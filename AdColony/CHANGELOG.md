@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.2
+* Update privacy settings before collecting signal.
+
 ## 4.8.0.1
 * Add impression callback, `onShow()`, for banners and MRECs.
 
