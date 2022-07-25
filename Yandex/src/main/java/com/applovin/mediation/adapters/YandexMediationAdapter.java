@@ -146,6 +146,8 @@ public class YandexMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateUserConsent( parameters );
+
         BidderTokenLoader.loadBidderToken( activity, new BidderTokenLoadListener()
         {
             @Override
