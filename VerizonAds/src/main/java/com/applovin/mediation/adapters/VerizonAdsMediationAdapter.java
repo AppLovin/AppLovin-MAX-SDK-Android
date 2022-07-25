@@ -159,6 +159,7 @@ public class VerizonAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updatePrivacyStates( parameters );
         updateLocationCollectionEnabled( parameters );
 
         String signal = YASAds.getBiddingToken( getContext( activity ) );

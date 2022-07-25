@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.11
+* Update privacy settings before collecting signal.
+
 ## 2.0.0.10
 * Explicitly set native activity's ActivityState to `RESUMED`.
 
