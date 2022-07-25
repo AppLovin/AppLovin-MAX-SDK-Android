@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.5.1
+* Update privacy settings before collecting signal.
+
 ## 8.1.5.0
 * Certified with Fyber SDK 8.1.5.
 

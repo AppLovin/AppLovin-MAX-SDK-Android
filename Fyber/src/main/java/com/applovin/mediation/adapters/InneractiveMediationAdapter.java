@@ -147,6 +147,8 @@ public class InneractiveMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateUserInfo( parameters );
+
         String signal = BidTokenProvider.getBidderToken();
         if ( signal != null )
         {
@@ -557,7 +559,7 @@ public class InneractiveMediationAdapter
         }
     }
 
-    private void updateUserInfo(final MaxAdapterResponseParameters parameters)
+    private void updateUserInfo(final MaxAdapterParameters parameters)
     {
         InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
 
