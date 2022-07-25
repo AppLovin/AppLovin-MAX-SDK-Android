@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.15.1.7
+* Update privacy settings before collecting signal.
+
 ## 5.15.1.6
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 

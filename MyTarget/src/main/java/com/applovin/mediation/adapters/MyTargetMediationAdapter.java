@@ -139,6 +139,8 @@ public class MyTargetMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updatePrivacyStates( parameters );
+
         // Must be ran on bg thread
         String signal = MyTargetManager.getBidderToken( getContext( activity ) );
         callback.onSignalCollected( signal );
@@ -279,7 +281,7 @@ public class MyTargetMediationAdapter
 
     //region Helper Functions
 
-    private void updatePrivacyStates(final MaxAdapterResponseParameters parameters)
+    private void updatePrivacyStates(final MaxAdapterParameters parameters)
     {
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=eno
