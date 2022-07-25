@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.5
+* Update privacy settings before collecting signal.
+
 ## 6.11.0.4
 * Fix NPE caused by getting AdCoverImage from wrong object.
 

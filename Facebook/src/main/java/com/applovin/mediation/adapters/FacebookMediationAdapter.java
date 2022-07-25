@@ -208,6 +208,8 @@ public class FacebookMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateAdSettings( parameters );
+
         // Must be ran on bg thread
         String signal = BidderTokenProvider.getBidderToken( getContext( activity ) );
         callback.onSignalCollected( signal );
