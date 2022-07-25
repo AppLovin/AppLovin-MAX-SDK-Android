@@ -131,6 +131,8 @@ public class UnityAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+
         UnityAds.getToken( new IUnityAdsTokenListener()
         {
             @Override
