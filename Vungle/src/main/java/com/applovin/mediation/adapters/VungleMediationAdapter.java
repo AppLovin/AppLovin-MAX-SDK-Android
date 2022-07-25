@@ -143,6 +143,8 @@ public class VungleMediationAdapter
     {
         log( "Collecting signal..." );
 
+        updateUserPrivacySettings( parameters );
+
         String signal = Vungle.getAvailableBidTokens( activity.getApplicationContext() );
         callback.onSignalCollected( signal );
     }

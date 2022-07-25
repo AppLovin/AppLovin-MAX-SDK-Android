@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.11.0.2
+* Update privacy settings before collecting signal.
+
 ## 6.11.0.1
 * Update ad display failed error code.
 
