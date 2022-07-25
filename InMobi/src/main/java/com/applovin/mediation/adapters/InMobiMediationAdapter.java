@@ -106,6 +106,7 @@ public class InMobiMediationAdapter
         }
 
         updateAgeRestrictedUser( parameters );
+        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
 
         String signal = InMobiSdk.getToken( getExtras( parameters ), null );
         callback.onSignalCollected( signal );
