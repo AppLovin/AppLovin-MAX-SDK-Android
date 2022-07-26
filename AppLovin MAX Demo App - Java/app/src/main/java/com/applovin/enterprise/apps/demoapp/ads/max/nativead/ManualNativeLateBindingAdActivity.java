@@ -17,6 +17,8 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder;
 
+import androidx.annotation.Nullable;
+
 public class ManualNativeLateBindingAdActivity
         extends BaseAdActivity
 {
@@ -52,7 +54,7 @@ public class ManualNativeLateBindingAdActivity
         nativeAdLoader.setNativeAdListener( new MaxNativeAdListener()
         {
             @Override
-            public void onNativeAdLoaded(final MaxNativeAdView nativeAdView, final MaxAd ad)
+            public void onNativeAdLoaded(@Nullable final MaxNativeAdView nativeAdView, final MaxAd ad)
             {
                 logAnonymousCallback();
 
