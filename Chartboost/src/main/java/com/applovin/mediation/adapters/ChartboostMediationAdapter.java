@@ -1,11 +1,14 @@
 package com.applovin.mediation.adapters;
 
+import static com.applovin.mediation.adapter.MaxAdapterError.ERROR_CODE_AD_DISPLAY_FAILED;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -19,29 +22,31 @@ import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
-import com.applovin.mediation.adapters.chartboost.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.chartboost.sdk.Banner.BannerSize;
-import com.chartboost.sdk.CBLocation;
 import com.chartboost.sdk.Chartboost;
-import com.chartboost.sdk.ChartboostBanner;
-import com.chartboost.sdk.ChartboostBannerListener;
-import com.chartboost.sdk.ChartboostDelegate;
-import com.chartboost.sdk.Events.ChartboostCacheError;
-import com.chartboost.sdk.Events.ChartboostCacheEvent;
-import com.chartboost.sdk.Events.ChartboostClickError;
-import com.chartboost.sdk.Events.ChartboostClickEvent;
-import com.chartboost.sdk.Events.ChartboostShowError;
-import com.chartboost.sdk.Events.ChartboostShowEvent;
-import com.chartboost.sdk.Libraries.CBLogging;
-import com.chartboost.sdk.Model.CBError;
-import com.chartboost.sdk.Privacy.model.CCPA;
-import com.chartboost.sdk.Privacy.model.COPPA;
-import com.chartboost.sdk.Privacy.model.DataUseConsent;
-import com.chartboost.sdk.Privacy.model.GDPR;
-
+import com.chartboost.sdk.LoggingLevel;
+import com.chartboost.sdk.Mediation;
+import com.chartboost.sdk.ads.Banner;
+import com.chartboost.sdk.ads.Interstitial;
+import com.chartboost.sdk.ads.Rewarded;
+import com.chartboost.sdk.callbacks.BannerCallback;
+import com.chartboost.sdk.callbacks.InterstitialCallback;
+import com.chartboost.sdk.callbacks.RewardedCallback;
+import com.chartboost.sdk.events.CacheError;
+import com.chartboost.sdk.events.CacheEvent;
+import com.chartboost.sdk.events.ClickError;
+import com.chartboost.sdk.events.ClickEvent;
+import com.chartboost.sdk.events.DismissEvent;
+import com.chartboost.sdk.events.ImpressionEvent;
+import com.chartboost.sdk.events.RewardEvent;
+import com.chartboost.sdk.events.ShowError;
+import com.chartboost.sdk.events.ShowEvent;
+import com.chartboost.sdk.privacy.model.CCPA;
+import com.chartboost.sdk.privacy.model.COPPA;
+import com.chartboost.sdk.privacy.model.DataUseConsent;
+import com.chartboost.sdk.privacy.model.GDPR;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -82,8 +87,6 @@ public class ChartboostMediationAdapter
             final String appId = serverParameters.getString( "app_id" );
             log( "Initializing Chartboost SDK with app id: " + appId + "..." );
 
-            ROUTER.setOnCompletionListener( onCompletionListener );
-
             // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
             Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
 
@@ -94,38 +97,32 @@ public class ChartboostMediationAdapter
             // NOTE: We should have autoinit server parameters AND ad response server parameters return credentials due to race condition
             String appSignature = serverParameters.getString( "app_signature" );
 
-            // NOTE: Unlike iOS, Chartboost will call `didInitialize()` in the event of a failure.
-            Chartboost.startWithAppId( context, appId, appSignature );
-            Chartboost.setDelegate( ROUTER.getDelegate() );
+            Chartboost.startWithAppId(context, appId, appSignature, startError -> {
+                log( "Chartboost SDK initialized" );
 
-            Chartboost.setMediation( Chartboost.CBMediation.CBMediationMAX, AppLovinSdk.VERSION, getAdapterVersion() );
+                sStatus = InitializationStatus.INITIALIZED_UNKNOWN;
 
-            // Whether or not to autocache ads - it is enabled by default and AdMob sets it to true while MoPub sets it to false
-            boolean autoCacheAds = serverParameters.getBoolean( "auto_cache_ads" ); // We will default to false to match MoPub
-            Chartboost.setAutoCacheAds( autoCacheAds );
+                if ( onCompletionListener != null )
+                {
+                    if ( startError == null ) {
+                        sStatus = InitializationStatus.INITIALIZED_SUCCESS;
+                    } else {
+                        sStatus = InitializationStatus.INITIALIZED_FAILURE;
+                    }
+
+                    onCompletionListener.onCompletion( sStatus, null );
+                }
+            });
 
             // Real test mode should be enabled from UI (https://answers.chartboost.com/en-us/articles/200780549)
             if ( parameters.isTesting() )
             {
-                Chartboost.setLoggingLevel( CBLogging.Level.ALL );
-            }
-
-            if ( serverParameters.containsKey( "prefetch_video_content" ) )
-            {
-                boolean prefetchVideoContent = serverParameters.getBoolean( "prefetch_video_content" );
-                Chartboost.setShouldPrefetchVideoContent( prefetchVideoContent );
+                Chartboost.setLoggingLevel( LoggingLevel.ALL );
             }
         }
         else
         {
             log( "Chartboost SDK already initialized..." );
-
-            // Callback needs to be set each time the activity is destroyed
-            if ( Chartboost.getDelegate() == null )
-            {
-                Chartboost.setDelegate( ROUTER.getDelegate() );
-            }
-
             onCompletionListener.onCompletion( sStatus, null );
         }
     }
@@ -156,15 +153,18 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
         ROUTER.addInterstitialAdapter( this, listener, mLocation );
+        Mediation mediation = new Mediation("AppLovinMax", AppLovinSdk.VERSION, getAdapterVersion() );
+        Interstitial interstitial = new Interstitial(mLocation, ROUTER.getInterstitialListener(), mediation);
+        ROUTER.setInterstitial( interstitial );
 
-        if ( Chartboost.hasInterstitial( mLocation ) )
+        if ( interstitial.isCached() )
         {
             log( "Ad is available already" );
             ROUTER.onAdLoaded( mLocation );
         }
         else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
-            Chartboost.cacheInterstitial( mLocation );
+            interstitial.cache();
         }
         else // Chartboost does not support showing interstitial ads for devices with Android versions lower than 21
         {
@@ -179,17 +179,15 @@ public class ChartboostMediationAdapter
         log( "Showing interstitial ad for location \"" + mLocation + "\"..." );
 
         ROUTER.addShowingAdapter( this );
-
-        updateShowConfigurations( parameters );
-
-        if ( Chartboost.hasInterstitial( mLocation ) )
+        Interstitial interstitial = ROUTER.getInterstitial();
+        if ( interstitial != null && interstitial.isCached() )
         {
-            Chartboost.showInterstitial( mLocation );
+            interstitial.show();
         }
         else
         {
             log( "Interstitial ad not ready" );
-            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed" ) );
         }
     }
 
@@ -201,15 +199,18 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
         ROUTER.addRewardedAdapter( this, listener, mLocation );
+        Mediation mediation = new Mediation("AppLovinMax", AppLovinSdk.VERSION, getAdapterVersion() );
+        Rewarded rewarded = new Rewarded(mLocation, ROUTER.getRewardedListener(), mediation);
+        ROUTER.setRewarded( rewarded );
 
-        if ( Chartboost.hasRewardedVideo( mLocation ) )
+        if ( rewarded.isCached() )
         {
             log( "Ad is available already" );
             ROUTER.onAdLoaded( mLocation );
         }
         else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
-            Chartboost.cacheRewardedVideo( mLocation );
+            rewarded.cache();
         }
         else // Chartboost does not support showing rewarded ads for devices with Android versions lower than 21
         {
@@ -224,14 +225,13 @@ public class ChartboostMediationAdapter
         log( "Showing rewarded ad for location \"" + mLocation + "\"..." );
 
         ROUTER.addShowingAdapter( this );
+        Rewarded rewarded = ROUTER.getRewarded();
 
-        updateShowConfigurations( parameters );
-
-        if ( Chartboost.hasRewardedVideo( mLocation ) )
+        if ( rewarded != null && rewarded.isCached() )
         {
             // Configure userReward from server.
             configureReward( parameters );
-            Chartboost.showRewardedVideo( mLocation );
+            rewarded.show();
         }
         else
         {
@@ -248,8 +248,8 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
 
-        ChartboostBanner adView = new ChartboostBanner( activity.getApplicationContext(), mLocation, toAdSize( adFormat ), null );
-        adView.setAutomaticallyRefreshesContent( false );
+        Mediation mediation = new Mediation("AppLovinMax", AppLovinSdk.VERSION, getAdapterVersion() );
+        Banner adView = new Banner(activity.getApplicationContext(), mLocation, toAdSize(adFormat), ROUTER.getBannerListener(), mediation);
         ROUTER.setAdView( adView );
         ROUTER.addAdViewAdapter( this, listener, mLocation, adView );
 
@@ -261,8 +261,6 @@ public class ChartboostMediationAdapter
         }
         else if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
         {
-            // Attach the listener after we check if adView is cached, since calling `isCached` before the first cache triggers `onAdCached` with an INTERNAL error.
-            adView.setListener( ROUTER.getBannerListener() );
             adView.cache();
         }
         else  // Chartboost does not support showing ad view ads for devices with Android versions lower than 21
@@ -274,9 +272,28 @@ public class ChartboostMediationAdapter
 
     //region GDPR
 
+    private AppLovinSdkConfiguration.ConsentDialogState getConsentDialogStateSafe() {
+        AppLovinSdk sdk = getWrappingSdk();
+        if ( sdk == null) {
+            return AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN;
+        }
+
+        AppLovinSdkConfiguration configuration = sdk.getConfiguration();
+        if ( configuration == null) {
+            return AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN;
+        }
+
+        AppLovinSdkConfiguration.ConsentDialogState state = configuration.getConsentDialogState();
+        if (state == null) {
+            return AppLovinSdkConfiguration.ConsentDialogState.UNKNOWN;
+        }
+        return state;
+    }
+
     void updateConsentStatus(MaxAdapterParameters parameters, Context applicationContext)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+
+        if ( getConsentDialogStateSafe() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
         {
             Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
             if ( hasUserConsent != null )
@@ -332,34 +349,23 @@ public class ChartboostMediationAdapter
         }
         else
         {
-            return CBLocation.LOCATION_DEFAULT;
+            return "Default";
         }
     }
 
-    private void updateShowConfigurations(MaxAdapterResponseParameters parameters)
-    {
-        final Bundle serverParameters = parameters.getServerParameters();
-
-        if ( serverParameters.containsKey( "hide_system_ui" ) )
-        {
-            boolean hideSystemUi = serverParameters.getBoolean( "hide_system_ui" );
-            Chartboost.setShouldHideSystemUI( hideSystemUi );
-        }
-    }
-
-    private BannerSize toAdSize(final MaxAdFormat adFormat)
+    private Banner.BannerSize toAdSize(final MaxAdFormat adFormat)
     {
         if ( adFormat == MaxAdFormat.BANNER )
         {
-            return BannerSize.STANDARD;
+            return Banner.BannerSize.STANDARD;
         }
         else if ( adFormat == MaxAdFormat.LEADER )
         {
-            return BannerSize.LEADERBOARD;
+            return Banner.BannerSize.LEADERBOARD;
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
-            return BannerSize.MEDIUM;
+            return Banner.BannerSize.MEDIUM;
         }
         else
         {
@@ -374,126 +380,129 @@ public class ChartboostMediationAdapter
     {
         private final AtomicBoolean isShowingAd = new AtomicBoolean();
 
-        private OnCompletionListener onCompletionListener;
-
         private boolean hasGrantedReward;
 
-        private ChartboostBanner adView;
+        private Interstitial interstitial;
 
-        private final ChartboostDelegate chartboostDelegate = new ChartboostDelegate()
+        private Rewarded rewarded;
+
+        private Banner adView;
+
+        private final InterstitialCallback chartboostInterstitialListener = new InterstitialCallback()
         {
             @Override
-            public void didInitialize()
-            {
-                log( "Chartboost SDK initialized" );
-
-                sStatus = InitializationStatus.INITIALIZED_UNKNOWN;
-
-                if ( onCompletionListener != null )
-                {
-                    onCompletionListener.onCompletion( sStatus, null );
-                    onCompletionListener = null;
-                }
-            }
-
-            //region Interstitial Callbacks
-
-            @Override
-            public void didCacheInterstitial(String location)
-            {
-                log( "Interstitial loaded" );
-                onAdLoaded( location );
-            }
-
-            @Override
-            public void didFailToLoadInterstitial(String location, CBError.CBImpressionError error)
-            {
-
-                if ( isShowingAd.compareAndSet( true, false ) )
-                {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), error.name() );
-                    log( "Interstitial failed to show with error: " + error );
-                    onAdDisplayFailed( location, adapterError );
-                }
-                else
-                {
-                    MaxAdapterError adapterError = toMaxError( error );
-                    log( "Interstitial failed to load with error: " + error );
-                    onAdLoadFailed( location, adapterError );
-                }
-            }
-
-            @Override
-            public void didDisplayInterstitial(String location)
-            {
-                log( "Interstitial shown" );
-                onAdDisplayed( location );
-            }
-
-            @Override
-            public void didClickInterstitial(String location)
-            {
-                log( "Interstitial clicked" );
-                onAdClicked( location );
-            }
-
-            @Override
-            public void didDismissInterstitial(String location)
-            {
+            public void onAdDismiss(@NonNull DismissEvent dismissEvent) {
                 isShowingAd.set( false );
 
                 log( "Interstitial hidden" );
-                onAdHidden( location );
-            }
-
-            //endregion
-
-            //region Rewarded Callbacks
-
-            @Override
-            public void didCacheRewardedVideo(String location)
-            {
-                log( "Rewarded ad loaded" );
-                onAdLoaded( location );
+                onAdHidden( dismissEvent.getAd().getLocation() );
             }
 
             @Override
-            public void didFailToLoadRewardedVideo(String location, CBError.CBImpressionError error)
-            {
-                if ( isShowingAd.compareAndSet( true, false ) )
+            public void onImpressionRecorded(@NonNull ImpressionEvent impressionEvent) {
+                log( "Interstitial onImpressionRecorded: " + impressionEvent.getAd().getLocation() );
+            }
+
+            @Override
+            public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
+                String location = adView.getLocation();
+                if ( showError != null )
                 {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), error.name() );
-                    log( "Rewarded ad failed to show with error: " + error );
-                    onAdDisplayFailed( location, adapterError );
+                    Exception exception = showError.getException();
+                    String exceptionMsg = null;
+                    if(exception != null) {
+                        exceptionMsg = exception.toString();
+                    }
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
+
+                    log( "Interstitial failed \"" + location + "\" to show with error: " + showError.getCode() );
+                    ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
                 }
                 else
                 {
-                    MaxAdapterError adapterError = toMaxError( error );
-                    log( "Rewarded ad failed to load with error: " + error );
-                    onAdLoadFailed( location, adapterError );
+                    log( "Interstitial shown: " + location );
+
+                    // Passing extra info such as creative id supported in 9.15.0+
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( showEvent.getAdID() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", showEvent.getAdID() );
+
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location, extraInfo );
+                    }
+                    else
+                    {
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location );
+                    }
                 }
             }
 
             @Override
-            public void didDisplayRewardedVideo(String location)
-            {
-                log( "Rewarded ad shown" );
-
-                onAdDisplayed( location );
-                onRewardedAdVideoStarted( location );
+            public void onAdRequestedToShow(@NonNull ShowEvent showEvent) {
+                log( "Interstitial onAdRequestedToShow: " + showEvent.getAd().getLocation() );
             }
 
             @Override
-            public void didClickRewardedVideo(String location)
-            {
-                log( "Rewarded ad clicked" );
-                onAdClicked( location );
+            public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
+                String location = adView.getLocation();
+                if ( cacheError != null )
+                {
+                    MaxAdapterError adapterError = toMaxError( cacheError );
+
+                    log( "Interstitial failed \"" + location + "\" to load with error: " + cacheError.getCode() );
+                    onAdLoadFailed( location, adapterError );
+                }
+                else
+                {
+                    log( "Interstitial loaded: " + location );
+
+                    // Passing extra info such as creative id supported in 9.15.0+
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( cacheEvent.getAdID() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", cacheEvent.getAdID() );
+
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location, extraInfo );
+                    }
+                    else
+                    {
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location );
+                    }
+
+                    showAdViewDelayed();
+                }
             }
 
             @Override
-            public void didDismissRewardedVideo(String location)
-            {
+            public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
+                String location = adView.getLocation();
+                if ( clickError != null )
+                {
+                    log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
+                }
+                else
+                {
+                    log( "Interstitial clicked: " + location );
+
+                    ChartboostMediationAdapterRouter.this.onAdClicked( location );
+                }
+            }
+        };
+
+        private final RewardedCallback chartboostRewardedListener = new RewardedCallback()
+        {
+            @Override
+            public void onRewardEarned(@NonNull RewardEvent rewardEvent) {
+                log( "Rewarded ad video completed" );
+                onRewardedAdVideoCompleted( rewardEvent.getAd().getLocation() );
+
+                hasGrantedReward = true;
+            }
+
+            @Override
+            public void onAdDismiss(@NonNull DismissEvent dismissEvent) {
                 isShowingAd.set( false );
+                String location = dismissEvent.getAd().getLocation();
 
                 if ( hasGrantedReward || shouldAlwaysRewardUser( location ) )
                 {
@@ -509,57 +518,76 @@ public class ChartboostMediationAdapter
                 onAdHidden( location );
             }
 
-            // NOTE: This is ran before didDismissRewardedVideo:
             @Override
-            public void didCompleteRewardedVideo(String location, int rewardAmount)
-            {
-                log( "Rewarded ad video completed" );
-                onRewardedAdVideoCompleted( location );
-
-                hasGrantedReward = true;
+            public void onImpressionRecorded(@NonNull ImpressionEvent impressionEvent) {
+                log( "Rewarded onImpressionRecorded: " + impressionEvent.getAd().getLocation() );
             }
 
-            //endregion
-
-            //region Shared Callbacks
-
             @Override
-            public void didFailToRecordClick(String uri, CBError.CBClickError error)
-            {
-                log( "Failed to record click at \"" + uri + "\" because of error: " + error );
-            }
-
-            //endregion
-        };
-
-        private final ChartboostBannerListener chartboostBannerListener = new ChartboostBannerListener()
-        {
-            @Override
-            public void onAdCached(final ChartboostCacheEvent event, final ChartboostCacheError error)
-            {
+            public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
                 String location = adView.getLocation();
-                if ( error != null )
+                if ( showError != null )
                 {
-                    MaxAdapterError adapterError = toMaxError( error );
+                    Exception exception = showError.getException();
+                    String exceptionMsg = null;
+                    if(exception != null) {
+                        exceptionMsg = exception.toString();
+                    }
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
 
-                    log( "AdView failed \"" + location + "\" to load with error: " + error.code );
+                    log( "Rewarded failed \"" + location + "\" to show with error: " + showError.getCode() );
+                    ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
+                }
+                else
+                {
+                    log( "Rewarded shown: " + location );
+
+                    // Passing extra info such as creative id supported in 9.15.0+
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( showEvent.getAdID() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", showEvent.getAdID() );
+
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location, extraInfo );
+                    }
+                    else
+                    {
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location );
+                    }
+                    onRewardedAdVideoStarted( location );
+                }
+            }
+
+            @Override
+            public void onAdRequestedToShow(@NonNull ShowEvent showEvent) {
+                log( "Rewarded onAdRequestedToShow: " + showEvent.getAd().getLocation() );
+            }
+
+            @Override
+            public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
+                String location = adView.getLocation();
+                if ( cacheError != null )
+                {
+                    MaxAdapterError adapterError = toMaxError( cacheError );
+
+                    log( "Rewarded failed \"" + location + "\" to load with error: " + cacheError.getCode() );
                     onAdLoadFailed( location, adapterError );
                 }
                 else
                 {
-                    log( "AdView loaded: " + location );
+                    log( "Rewarded loaded: " + location );
 
                     // Passing extra info such as creative id supported in 9.15.0+
-                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( event.adID ) )
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( cacheEvent.getAdID() ) )
                     {
                         Bundle extraInfo = new Bundle( 1 );
-                        extraInfo.putString( "creative_id", event.adID );
+                        extraInfo.putString( "creative_id", cacheEvent.getAdID() );
 
-                        onAdLoaded( location, extraInfo );
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location, extraInfo );
                     }
                     else
                     {
-                        onAdLoaded( location );
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location );
                     }
 
                     showAdViewDelayed();
@@ -567,42 +595,104 @@ public class ChartboostMediationAdapter
             }
 
             @Override
-            public void onAdShown(final ChartboostShowEvent event, final ChartboostShowError error)
-            {
+            public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
                 String location = adView.getLocation();
-                if ( error != null )
+                if ( clickError != null )
                 {
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", error.code.getErrorCode(), error.toString() );
+                    log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
+                }
+                else
+                {
+                    log( "Rewarded clicked: " + location );
 
-                    log( "AdView failed \"" + location + "\" to show with error: " + error.code );
-                    onAdDisplayFailed( location, adapterError );
+                    ChartboostMediationAdapterRouter.this.onAdClicked( location );
+                }
+            }
+        };
+
+        private final BannerCallback chartboostBannerListener = new BannerCallback()
+        {
+            @Override
+            public void onImpressionRecorded(@NonNull ImpressionEvent impressionEvent) {
+                log( "AdView onImpressionRecorded: " + impressionEvent.getAd().getLocation() );
+            }
+
+            @Override
+            public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
+                String location = adView.getLocation();
+                if ( showError != null )
+                {
+                    Exception exception = showError.getException();
+                    String exceptionMsg = null;
+                    if(exception != null) {
+                        exceptionMsg = exception.toString();
+                    }
+                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
+
+                    log( "AdView failed \"" + location + "\" to show with error: " + showError.getCode() );
+                    ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
                 }
                 else
                 {
                     log( "AdView shown: " + location );
 
                     // Passing extra info such as creative id supported in 9.15.0+
-                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( event.adID ) )
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( showEvent.getAdID() ) )
                     {
                         Bundle extraInfo = new Bundle( 1 );
-                        extraInfo.putString( "creative_id", event.adID );
+                        extraInfo.putString( "creative_id", showEvent.getAdID() );
 
-                        onAdDisplayed( location, extraInfo );
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location, extraInfo );
                     }
                     else
                     {
-                        onAdDisplayed( location );
+                        ChartboostMediationAdapterRouter.this.onAdDisplayed( location );
                     }
                 }
             }
 
             @Override
-            public void onAdClicked(final ChartboostClickEvent event, final ChartboostClickError error)
-            {
+            public void onAdRequestedToShow(@NonNull ShowEvent showEvent) {
+                log( "AdView onAdRequestedToShow: " + showEvent.getAd().getLocation() );
+            }
+
+            @Override
+            public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
                 String location = adView.getLocation();
-                if ( error != null )
+                if ( cacheError != null )
                 {
-                    log( "Failed to record click on \"" + location + "\" because of error: " + error.code );
+                    MaxAdapterError adapterError = toMaxError( cacheError );
+
+                    log( "AdView failed \"" + location + "\" to load with error: " + cacheError.getCode() );
+                    onAdLoadFailed( location, adapterError );
+                }
+                else
+                {
+                    log( "AdView loaded: " + location );
+
+                    // Passing extra info such as creative id supported in 9.15.0+
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( cacheEvent.getAdID() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", cacheEvent.getAdID() );
+
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location, extraInfo );
+                    }
+                    else
+                    {
+                        ChartboostMediationAdapterRouter.this.onAdLoaded( location );
+                    }
+
+                    showAdViewDelayed();
+                }
+            }
+
+            @Override
+            public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
+                String location = adView.getLocation();
+                if ( clickError != null )
+                {
+                    log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
                 }
                 else
                 {
@@ -613,22 +703,42 @@ public class ChartboostMediationAdapter
             }
         };
 
-        ChartboostDelegate getDelegate()
+        InterstitialCallback getInterstitialListener()
         {
-            return chartboostDelegate;
+            return chartboostInterstitialListener;
         }
 
-        ChartboostBannerListener getBannerListener()
+        RewardedCallback getRewardedListener()
+        {
+            return chartboostRewardedListener;
+        }
+
+        BannerCallback getBannerListener()
         {
             return chartboostBannerListener;
         }
 
-        void setOnCompletionListener(final OnCompletionListener onCompletionListener)
+        Interstitial getInterstitial()
         {
-            this.onCompletionListener = onCompletionListener;
+            return interstitial ;
         }
 
-        void setAdView(final ChartboostBanner adView)
+        void setInterstitial(final Interstitial interstitial)
+        {
+            this.interstitial = interstitial;
+        }
+
+        Rewarded getRewarded()
+        {
+            return rewarded ;
+        }
+
+        void setRewarded(final Rewarded rewarded)
+        {
+            this.rewarded = rewarded;
+        }
+
+        void setAdView(final Banner adView)
         {
             this.adView = adView;
         }
@@ -668,72 +778,10 @@ public class ChartboostMediationAdapter
 
         //region Helper Methods
 
-        private static MaxAdapterError toMaxError(CBError.CBImpressionError chartboostError)
+        private static MaxAdapterError toMaxError(CacheError chartboostError)
         {
             MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-            switch ( chartboostError )
-            {
-                case INTERNAL:
-                case TOO_MANY_CONNECTIONS: // Too many requests are pending for that location
-                case NO_HOST_ACTIVITY:
-                case ACTIVITY_MISSING_IN_MANIFEST:
-                case END_POINT_DISABLED:
-                case HARDWARE_ACCELERATION_DISABLED:
-                case PENDING_IMPRESSION_ERROR:
-                case ERROR_CREATING_VIEW:
-                case ERROR_DISPLAYING_VIEW:
-                case VIDEO_UNAVAILABLE:
-                case VIDEO_ID_MISSING:
-                case ERROR_PLAYING_VIDEO:
-                case INVALID_RESPONSE:
-                case EMPTY_LOCAL_VIDEO_LIST:
-                case VIDEO_UNAVAILABLE_FOR_CURRENT_ORIENTATION:
-                case ASSET_MISSING:
-                    adapterError = MaxAdapterError.INTERNAL_ERROR;
-                    break;
-                case WRONG_ORIENTATION: // Interstitial loaded with wrong orientation (from UI)
-                case FIRST_SESSION_INTERSTITIALS_DISABLED: // Interstitial disabled, first session
-                case INCOMPATIBLE_API_VERSION:
-                    adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                    break;
-                case INTERNET_UNAVAILABLE: // Network is currently unavailable
-                case NETWORK_FAILURE: // Network request failed
-                case INTERNET_UNAVAILABLE_AT_SHOW: // Network is unavailable while attempting to show
-                    adapterError = MaxAdapterError.NO_CONNECTION;
-                    break;
-                case NO_AD_FOUND: //  No ad received
-                    adapterError = MaxAdapterError.NO_FILL;
-                    break;
-                case SESSION_NOT_STARTED: // Session not started
-                    adapterError = MaxAdapterError.NOT_INITIALIZED;
-                    break;
-                case IMPRESSION_ALREADY_VISIBLE: // There is an impression already visible
-                    adapterError = MaxAdapterError.INVALID_LOAD_STATE;
-                    break;
-                case ASSETS_DOWNLOAD_FAILURE: // Error downloading asset
-                    adapterError = MaxAdapterError.BAD_REQUEST;
-                    break;
-                case ERROR_LOADING_WEB_VIEW:
-                case WEB_VIEW_PAGE_LOAD_TIMEOUT:
-                case WEB_VIEW_CLIENT_RECEIVED_ERROR:
-                    adapterError = MaxAdapterError.WEBVIEW_ERROR;
-                    break;
-                case ASSET_PREFETCH_IN_PROGRESS: // Video Prefetching is not finished
-                    adapterError = MaxAdapterError.AD_NOT_READY;
-                    break;
-                case USER_CANCELLATION: // User manually cancelled the impression
-                case INVALID_LOCATION: // No location detected
-                    adapterError = MaxAdapterError.UNSPECIFIED;
-                    break;
-            }
-
-            return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), chartboostError.ordinal(), chartboostError.name() );
-        }
-
-        private static MaxAdapterError toMaxError(ChartboostCacheError chartboostError)
-        {
-            MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-            switch ( chartboostError.code )
+            switch ( chartboostError.getCode() )
             {
                 case INTERNAL:
                     adapterError = MaxAdapterError.INTERNAL_ERROR;
@@ -757,13 +805,13 @@ public class ChartboostMediationAdapter
                     break;
             }
 
-            return new MaxAdapterError( adapterError, chartboostError.code.getErrorCode(), chartboostError.toString() );
+            return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
         }
 
-        private static MaxAdapterError toMaxError(ChartboostShowError chartboostError)
+        private static MaxAdapterError toMaxError(ShowError chartboostError)
         {
             MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-            switch ( chartboostError.code )
+            switch ( chartboostError.getCode() )
             {
                 case INTERNAL:
                 case PRESENTATION_FAILURE:
@@ -787,7 +835,7 @@ public class ChartboostMediationAdapter
                     break;
             }
 
-            return new MaxAdapterError( adapterError, chartboostError.code.getErrorCode(), chartboostError.toString() );
+            return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
         }
     }
 }
