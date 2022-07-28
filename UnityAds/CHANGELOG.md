@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.0
+* Certified with UnityAds SDK 4.3.0.
+
 ## 4.2.1.1
 * Update privacy settings before collecting signal.
 
