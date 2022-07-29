@@ -91,11 +91,10 @@ public class TapjoyMediationAdapter
             Hashtable<String, Object> connectFlags = new Hashtable<String, Object>( 1 );
             connectFlags.put( TapjoyConnectFlag.ENABLE_LOGGING, String.valueOf( parameters.isTesting() ) );
 
-            // Update GDPR settings before initialization
-            updateConsentAndActivity( parameters, activity );
+            Context context = getContext( activity );
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+            // Update GDPR settings before initialization
+            updateConsentAndActivity( parameters, activity, context );
 
             Tapjoy.connect( context, sdkKey, connectFlags, new TJConnectListener()
             {
@@ -118,7 +117,7 @@ public class TapjoyMediationAdapter
         }
         else
         {
-            updateConsentAndActivity( parameters, activity );
+            updateConsentAndActivity( parameters, activity, getContext( activity ) );
 
             onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
         }
@@ -128,7 +127,7 @@ public class TapjoyMediationAdapter
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
         // Update GDPR settings
-        updateConsentAndActivity( parameters, activity );
+        updateConsentAndActivity( parameters, activity, getContext( activity ) );
 
         String token = Tapjoy.getUserToken();
         callback.onSignalCollected( token );
@@ -148,7 +147,7 @@ public class TapjoyMediationAdapter
         }
 
         // Update GDPR settings
-        updateConsentAndActivity( parameters, activity );
+        updateConsentAndActivity( parameters, activity, getContext( activity ) );
 
         interstitialPlacement = createPlacement( parameters, new InterstitialListener( listener ) );
 
@@ -192,7 +191,7 @@ public class TapjoyMediationAdapter
         }
 
         // Update GDPR settings
-        updateConsentAndActivity( parameters, activity );
+        updateConsentAndActivity( parameters, activity, getContext( activity ) );
 
         rewardedPlacement = createPlacement( parameters, new RewardedListener( listener ) );
 
@@ -226,7 +225,7 @@ public class TapjoyMediationAdapter
     }
 
     //region Utility Methods
-    private void updateConsentAndActivity(final MaxAdapterParameters parameters, final Activity activity)
+    private void updateConsentAndActivity(final MaxAdapterParameters parameters, final Activity activity, final Context context)
     {
         TJPrivacyPolicy tjPrivacyPolicy = Tapjoy.getPrivacyPolicy();
 
@@ -236,6 +235,9 @@ public class TapjoyMediationAdapter
         if ( isAgeRestrictedUser != null )
         {
             tjPrivacyPolicy.setBelowConsentAge( isAgeRestrictedUser );
+
+            // To comply with the Google Families Program rules, where apps targeting children should not access the advertising id
+            Tapjoy.optOutAdvertisingID( context, isAgeRestrictedUser );
         }
 
         if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
@@ -341,6 +343,12 @@ public class TapjoyMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), tapjoyErrorCode, tapjoyErrorMessage );
+    }
+
+    private Context getContext(Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
     //endregion
 

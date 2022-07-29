@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.10.0.2
+* Set `Tapjoy.optOutAdvertisingID(...)` to `true` if COPPA, to comply with Google Families Program rules.
+
 ## 12.10.0.1
 * Update ad display failed error code.
 
