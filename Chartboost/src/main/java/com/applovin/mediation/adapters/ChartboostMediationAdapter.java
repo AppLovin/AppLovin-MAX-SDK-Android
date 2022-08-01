@@ -236,7 +236,7 @@ public class ChartboostMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( mLocation, new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed" ) );
         }
     }
 
@@ -405,7 +405,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
-                String location = adView.getLocation();
+                String location = showEvent.getAd().getLocation();
                 if ( showError != null )
                 {
                     Exception exception = showError.getException();
@@ -413,7 +413,7 @@ public class ChartboostMediationAdapter
                     if(exception != null) {
                         exceptionMsg = exception.toString();
                     }
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
+                    MaxAdapterError adapterError = new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
 
                     log( "Interstitial failed \"" + location + "\" to show with error: " + showError.getCode() );
                     ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
@@ -444,7 +444,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
-                String location = adView.getLocation();
+                String location = cacheEvent.getAd().getLocation();
                 if ( cacheError != null )
                 {
                     MaxAdapterError adapterError = toMaxError( cacheError );
@@ -475,7 +475,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
-                String location = adView.getLocation();
+                String location = clickEvent.getAd().getLocation();
                 if ( clickError != null )
                 {
                     log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
@@ -525,7 +525,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
-                String location = adView.getLocation();
+                String location = showEvent.getAd().getLocation();
                 if ( showError != null )
                 {
                     Exception exception = showError.getException();
@@ -533,7 +533,7 @@ public class ChartboostMediationAdapter
                     if(exception != null) {
                         exceptionMsg = exception.toString();
                     }
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
+                    MaxAdapterError adapterError = new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
 
                     log( "Rewarded failed \"" + location + "\" to show with error: " + showError.getCode() );
                     ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
@@ -565,7 +565,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
-                String location = adView.getLocation();
+                String location = cacheEvent.getAd().getLocation();
                 if ( cacheError != null )
                 {
                     MaxAdapterError adapterError = toMaxError( cacheError );
@@ -596,7 +596,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
-                String location = adView.getLocation();
+                String location = clickEvent.getAd().getLocation();
                 if ( clickError != null )
                 {
                     log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
@@ -619,7 +619,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdShown(@NonNull ShowEvent showEvent, @Nullable ShowError showError) {
-                String location = adView.getLocation();
+                String location = showEvent.getAd().getLocation();
                 if ( showError != null )
                 {
                     Exception exception = showError.getException();
@@ -627,7 +627,7 @@ public class ChartboostMediationAdapter
                     if(exception != null) {
                         exceptionMsg = exception.toString();
                     }
-                    MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
+                    MaxAdapterError adapterError = new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed", showError.getCode().getErrorCode(), exceptionMsg );
 
                     log( "AdView failed \"" + location + "\" to show with error: " + showError.getCode() );
                     ChartboostMediationAdapterRouter.this.onAdDisplayFailed( location, adapterError );
@@ -658,7 +658,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdLoaded(@NonNull CacheEvent cacheEvent, @Nullable CacheError cacheError) {
-                String location = adView.getLocation();
+                String location = cacheEvent.getAd().getLocation();
                 if ( cacheError != null )
                 {
                     MaxAdapterError adapterError = toMaxError( cacheError );
@@ -689,7 +689,7 @@ public class ChartboostMediationAdapter
 
             @Override
             public void onAdClicked(@NonNull ClickEvent clickEvent, @Nullable ClickError clickError) {
-                String location = adView.getLocation();
+                String location = clickEvent.getAd().getLocation();
                 if ( clickError != null )
                 {
                     log( "Failed to record click on \"" + location + "\" because of error: " + clickError.getCode() );
@@ -751,7 +751,12 @@ public class ChartboostMediationAdapter
                 @Override
                 public void run()
                 {
-                    adView.show();
+                    if ( adView != null ) {
+                        adView.show();
+                    } else {
+                        log( "Ad load failed: Chartboost Banner AdView is not ready." );
+                        ROUTER.onAdDisplayFailed( "Unknown", new MaxAdapterError( ERROR_CODE_AD_DISPLAY_FAILED, "Ad Display Failed" ) );
+                    }
                 }
             }, 500 );
         }
