@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.2.3.8
+* Add support for [enabling test mode](https://docs.google.com/document/d/12EXo3f0qbUnDqrjBPORZwaxhpGfWn6tkQjX93AvNkNI/edit?usp=sharing) with `setLocalExtraParameter()` API.
+
 ## 3.2.3.7
 * Update ad display failed error code.
 

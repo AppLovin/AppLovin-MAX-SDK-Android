@@ -29,6 +29,8 @@ import com.tappx.sdk.android.TappxInterstitialListener;
 import com.tappx.sdk.android.TappxRewardedVideo;
 import com.tappx.sdk.android.TappxRewardedVideoListener;
 
+import java.util.Map;
+
 import androidx.annotation.Nullable;
 
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
@@ -218,7 +220,22 @@ public class TappxMediationAdapter
         adRequest.mediator( "applovin" );
 
         Bundle customParameters = parameters.getCustomParameters();
-        boolean isTesting = parameters.isTesting() || customParameters.getBoolean( "is_testing" ) || customParameters.getBoolean( "test" );
+        Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        Object isTestingEnabledObj = localExtraParameters.get( "test" );
+        boolean isTestingEnabledLocalParam = false;
+
+        if ( isTestingEnabledObj instanceof Boolean )
+        {
+            isTestingEnabledLocalParam = (boolean) isTestingEnabledObj;
+        }
+        else if ( isTestingEnabledObj != null )
+        {
+            log( "Tappx test mode could not be enabled - Boolean type is required." );
+        }
+
+        boolean isTesting = parameters.isTesting() || customParameters.getBoolean( "is_testing" ) ||
+                customParameters.getBoolean( "test" ) || isTestingEnabledLocalParam;
+
         adRequest.useTestAds( isTesting );
 
         String endpoint = parameters.getCustomParameters().getString( "endpoint" );
