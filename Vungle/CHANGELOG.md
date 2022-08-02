@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.12.0.0
+* Certified with Vungle SDK 6.12.0.
+
 ## 6.11.0.2
 * Update privacy settings before collecting signal.
 
