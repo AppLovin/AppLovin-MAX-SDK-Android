@@ -468,8 +468,6 @@ public class ChartboostMediationAdapter
                     {
                         ChartboostMediationAdapterRouter.this.onAdLoaded( location );
                     }
-
-                    showAdViewDelayed();
                 }
             }
 
@@ -589,8 +587,6 @@ public class ChartboostMediationAdapter
                     {
                         ChartboostMediationAdapterRouter.this.onAdLoaded( location );
                     }
-
-                    showAdViewDelayed();
                 }
             }
 
