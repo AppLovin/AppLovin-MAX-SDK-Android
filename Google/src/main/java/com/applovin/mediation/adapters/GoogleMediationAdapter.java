@@ -120,6 +120,7 @@ public class GoogleMediationAdapter
             Context context = getContext( activity );
 
             // Prevent AdMob SDK from auto-initing its adapters in AB testing environments.
+            // NOTE: If MAX makes an ad request to AdMob, and the AdMob account has AL enabled (e.g. AppLovin Bidding) _and_ detects the AdMob<->AppLovin adapter, AdMob will still attempt to initialize AppLovin
             MobileAds.disableMediationAdapterInitialization( context );
 
             if ( parameters.getServerParameters().getBoolean( "init_without_callback", false ) )
@@ -857,7 +858,6 @@ public class GoogleMediationAdapter
         public void onAdShowedFullScreenContent()
         {
             log( "Interstitial ad shown: " + placementId );
-            listener.onInterstitialAdDisplayed();
         }
 
         @Override
@@ -866,6 +866,13 @@ public class GoogleMediationAdapter
             MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpression()
+        {
+            log( "Interstitial ad impression recorded: " + placementId );
+            listener.onInterstitialAdDisplayed();
         }
 
         @Override
@@ -901,8 +908,6 @@ public class GoogleMediationAdapter
         public void onAdShowedFullScreenContent()
         {
             log( "Rewarded interstitial ad shown: " + placementId );
-
-            listener.onRewardedInterstitialAdDisplayed();
             listener.onRewardedInterstitialAdVideoStarted();
         }
 
@@ -912,6 +917,13 @@ public class GoogleMediationAdapter
             MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Rewarded interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedInterstitialAdDisplayFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpression()
+        {
+            log( "Rewarded interstitial ad impression recorded: " + placementId );
+            listener.onRewardedInterstitialAdDisplayed();
         }
 
         @Override
@@ -956,8 +968,6 @@ public class GoogleMediationAdapter
         public void onAdShowedFullScreenContent()
         {
             log( "Rewarded ad shown: " + placementId );
-
-            listener.onRewardedAdDisplayed();
             listener.onRewardedAdVideoStarted();
         }
 
@@ -967,6 +977,13 @@ public class GoogleMediationAdapter
             MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
             log( "Rewarded ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpression()
+        {
+            log( "Rewarded ad impression recorded: " + placementId );
+            listener.onRewardedAdDisplayed();
         }
 
         @Override
