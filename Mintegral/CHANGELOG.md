@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.11.2
+* Add append node for `com.mbridge.msdk.oversea:dycreator` dependency.
+
 ## 16.2.11.1
 * Add `com.mbridge.msdk.oversea:dycreator` dependency.
 

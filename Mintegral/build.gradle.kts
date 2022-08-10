@@ -7,7 +7,7 @@ plugins {
 private val versionMajor = 16
 private val versionMinor = 2
 private val versionPatch = 11
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -130,6 +130,12 @@ publishing {
                         appendNode("dependency").apply {
                             appendNode("groupId", "com.mbridge.msdk.oversea")
                             appendNode("artifactId", "videojs")
+                            appendNode("version", libraryVersions["mintegral"])
+                            appendNode("scope", "compile")
+                        }
+                        appendNode("dependency").apply {
+                            appendNode("groupId", "com.mbridge.msdk.oversea")
+                            appendNode("artifactId", "dycreator")
                             appendNode("version", libraryVersions["mintegral"])
                             appendNode("scope", "compile")
                         }
