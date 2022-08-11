@@ -571,8 +571,12 @@ public class InMobiMediationAdapter
             {
                 listener.onAdViewAdLoaded( inMobiBanner );
             }
+        }
 
-            // InMobi track impressions in the `onAdLoadSucceeded()` callback
+        @Override
+        public void onAdImpression(@NonNull InMobiBanner inMobiBanner)
+        {
+            log( "AdView impressed" );
             listener.onAdViewAdDisplayed();
         }
 
@@ -675,7 +679,6 @@ public class InMobiMediationAdapter
         public void onAdDisplayed(@NonNull final InMobiInterstitial inMobiInterstitial, @NonNull final AdMetaInfo adMetaInfo)
         {
             log( "Interstitial did show" );
-            listener.onInterstitialAdDisplayed();
         }
 
         @Override
@@ -690,6 +693,13 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial hidden" );
             listener.onInterstitialAdHidden();
+        }
+
+        @Override
+        public void onAdImpression(@NonNull final InMobiInterstitial inMobiInterstitial)
+        {
+            log( "Interstitial Impressed" );
+            listener.onInterstitialAdDisplayed();
         }
 
         @Override
@@ -762,6 +772,12 @@ public class InMobiMediationAdapter
         public void onAdDisplayed(@NonNull final InMobiInterstitial inMobiInterstitial, @NonNull final AdMetaInfo adMetaInfo)
         {
             log( "Rewarded ad did show" );
+        }
+
+        @Override
+        public void onAdImpression(@NonNull final InMobiInterstitial inMobiInterstitial)
+        {
+            log( "Interstitial Impressed" );
             listener.onRewardedAdDisplayed();
             listener.onRewardedAdVideoStarted();
         }
@@ -919,6 +935,13 @@ public class InMobiMediationAdapter
 
         @Override
         public void onAdImpressed(@NonNull final InMobiNative inMobiNative)
+        {
+            log( "Native ad shown" );
+            listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdImpression(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native ad shown" );
             listener.onNativeAdDisplayed( null );
