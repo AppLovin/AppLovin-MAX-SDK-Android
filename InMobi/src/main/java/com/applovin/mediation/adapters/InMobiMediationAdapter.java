@@ -934,13 +934,6 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdImpressed(@NonNull final InMobiNative inMobiNative)
-        {
-            log( "Native ad shown" );
-            listener.onNativeAdDisplayed( null );
-        }
-
-        @Override
         public void onAdImpression(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native ad shown" );
