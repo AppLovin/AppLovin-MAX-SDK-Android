@@ -777,7 +777,7 @@ public class InMobiMediationAdapter
         @Override
         public void onAdImpression(@NonNull final InMobiInterstitial inMobiInterstitial)
         {
-            log( "Interstitial Impressed" );
+            log( "Rewarded Impressed" );
             listener.onRewardedAdDisplayed();
             listener.onRewardedAdVideoStarted();
         }
