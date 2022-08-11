@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.1.0.1
+* Fix impression tracking for fullscreen ads.
+
 ## 21.1.0.0
 * Certified with GoogleAdManager SDK 21.1.0.
 * Use local scope copy of native ad while preparing view.

@@ -17,6 +17,7 @@ import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.verve.BuildConfig;
@@ -33,6 +34,7 @@ import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 import net.pubnative.lite.sdk.vpaid.enums.AudioState;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VerveMediationAdapter
@@ -128,6 +130,10 @@ public class VerveMediationAdapter
     {
         log( "Collecting Signal..." );
 
+        // Update local params, since not available on init
+        updateLocationCollectionEnabled( parameters );
+        updateUserConsent( parameters );
+
         String signal = HyBid.getCustomRequestSignalData();
         callback.onSignalCollected( signal );
     }
@@ -145,8 +151,9 @@ public class VerveMediationAdapter
             return;
         }
 
-        updateMuteState( parameters );
+        updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
+        updateMuteState( parameters );
 
         interstitialAd = new HyBidInterstitialAd( activity, new InterstitialListener( listener ) );
         interstitialAd.prepareAd( parameters.getBidResponse() );
@@ -181,8 +188,9 @@ public class VerveMediationAdapter
             return;
         }
 
-        updateMuteState( parameters );
+        updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
+        updateMuteState( parameters );
 
         rewardedAd = new HyBidRewardedAd( activity, new RewardedListener( listener ) );
         rewardedAd.prepareAd( parameters.getBidResponse() );
@@ -218,15 +226,16 @@ public class VerveMediationAdapter
             return;
         }
 
-        updateMuteState( parameters );
+        updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
+        updateMuteState( parameters );
 
         adViewAd = new HyBidAdView( activity, getSize( adFormat ) );
         adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
     }
 
-    private void updateUserConsent(final MaxAdapterResponseParameters parameters)
+    private void updateUserConsent(final MaxAdapterParameters parameters)
     {
         // From PubNative: "HyBid SDK is TCF v2 compliant, so any change in the IAB consent string will be picked up by the SDK."
         // Because of this, they requested that we don't update consent values if one is already set.
@@ -260,6 +269,20 @@ public class VerveMediationAdapter
             {
                 // NOTE: PubNative suggested this US Privacy String, so it does not match other adapters.
                 userDataManager.setIABUSPrivacyString( "1NYN" );
+            }
+        }
+    }
+
+    private void updateLocationCollectionEnabled(final MaxAdapterParameters parameters)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+            if ( isLocationCollectionEnabledObj instanceof Boolean )
+            {
+                log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
+                HyBid.setLocationUpdatesEnabled( (boolean)isLocationCollectionEnabledObj );
             }
         }
     }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.11.1
+* Add `com.mbridge.msdk.oversea:dycreator` dependency.
+
 ## 16.2.11.0
 * Certified with Mintegral SDK 16.2.11.
 
