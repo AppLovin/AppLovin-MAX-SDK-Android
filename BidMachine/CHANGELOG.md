@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.4.3
+* Add BidMachine repository to Unity plugin.
+
 ## 1.9.4.2
 * Add support for passing creative id to SDK.
 
