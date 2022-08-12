@@ -677,7 +677,7 @@ public class ChartboostMediationAdapter
         @Override
         public void onAdLoaded(@NonNull final CacheEvent cacheEvent, @Nullable final CacheError cacheError)
         {
-            String location = adView.getLocation();
+            String location = cacheEvent.getAd().getLocation();
             if ( cacheError != null )
             {
                 log( adFormat.getLabel() + " ad failed \"" + location + "\" to load with error: " + cacheError );
@@ -707,13 +707,13 @@ public class ChartboostMediationAdapter
         @Override
         public void onAdRequestedToShow(@NonNull final ShowEvent showEvent)
         {
-            log( adFormat.getLabel() + " ad requested to show: " + adView.getLocation() );
+            log( adFormat.getLabel() + " ad requested to show: " + showEvent.getAd().getLocation() );
         }
 
         @Override
         public void onAdShown(@NonNull final ShowEvent showEvent, @Nullable final ShowError showError)
         {
-            String location = adView.getLocation();
+            String location = showEvent.getAd().getLocation();
             if ( showError != null )
             {
                 log( adFormat.getLabel() + " ad failed \"" + location + "\" to show with error: " + showError );
@@ -728,7 +728,7 @@ public class ChartboostMediationAdapter
         @Override
         public void onAdClicked(@NonNull final ClickEvent clickEvent, @Nullable final ClickError clickError)
         {
-            String location = adView.getLocation();
+            String location = clickEvent.getAd().getLocation();
             if ( clickError != null )
             {
                 log( "Failed to record " + adFormat.getLabel() + " ad click on \"" + location + "\" because of error: " + clickError );
@@ -743,7 +743,7 @@ public class ChartboostMediationAdapter
         @Override
         public void onImpressionRecorded(@NonNull final ImpressionEvent impressionEvent)
         {
-            log( adFormat.getLabel() + " ad impression tracked: " + adView.getLocation() );
+            log( adFormat.getLabel() + " ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
             // Passing extra info such as creative id supported in 9.15.0+
             if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( impressionEvent.getAdID() ) )
