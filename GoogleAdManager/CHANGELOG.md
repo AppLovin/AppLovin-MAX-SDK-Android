@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.1.0.2
+* Add support for app open ads.
+
 ## 21.1.0.1
 * Fix impression tracking for fullscreen ads.
 
