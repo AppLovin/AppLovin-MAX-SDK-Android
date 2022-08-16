@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10.0
+* Certified with BidMachine SDK 1.9.10.
+
 ## 1.9.4.3
 * Add BidMachine repository to Unity plugin.
 
