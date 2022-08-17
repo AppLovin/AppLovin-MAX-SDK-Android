@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.1.0
+* Certified with Yahoo Mobile SDK 1.1.1.
+
 ## 2.0.0.11
 * Update privacy settings before collecting signal.
 
