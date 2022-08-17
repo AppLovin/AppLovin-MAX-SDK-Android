@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.21.0
+* Certified with Mintegral SDK 16.2.21.
+
 ## 16.2.11.2
 * Add append node for `com.mbridge.msdk.oversea:dycreator` dependency.
 
