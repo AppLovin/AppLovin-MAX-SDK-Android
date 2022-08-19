@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10.2
+* Update Unity dependencies.
+
 ## 1.9.10.1
 * Update Unity dependencies.
 
