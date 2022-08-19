@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.2.1.0
+* Certified with Yandex SDK 5.2.1.
+
 ## 5.2.0.1
 * Update privacy settings before collecting signal.
 
