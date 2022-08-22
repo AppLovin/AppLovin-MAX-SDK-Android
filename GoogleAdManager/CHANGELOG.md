@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.1.0.3
+* Fix `NoClassDefFoundError` introduced in 21.1.0.2. 
+
 ## 21.1.0.2
 * Add support for app open ads.
 

@@ -3,8 +3,6 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,7 +18,6 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
-import com.applovin.mediation.adapter.MaxAppOpenAdapter;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxRewardedInterstitialAdapter;
@@ -87,7 +84,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
  */
 public class GoogleAdManagerMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxAppOpenAdapter, MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
+        implements MaxInterstitialAdapter, /* MaxAppOpenAdapter */ MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
     private static final AtomicBoolean initialized = new AtomicBoolean();
 
@@ -255,7 +252,7 @@ public class GoogleAdManagerMediationAdapter
 
     //region MaxAppOpenAdapter Methods
 
-    @Override
+    // @Override
     public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -303,7 +300,7 @@ public class GoogleAdManagerMediationAdapter
         } );
     }
 
-    @Override
+    // @Override
     public void showAppOpenAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
