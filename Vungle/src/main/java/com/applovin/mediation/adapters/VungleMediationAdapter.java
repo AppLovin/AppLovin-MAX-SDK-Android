@@ -1,19 +1,26 @@
 package com.applovin.mediation.adapters;
 
+import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
+
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -21,6 +28,8 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.vungle.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
@@ -29,6 +38,9 @@ import com.vungle.warren.BannerAdConfig;
 import com.vungle.warren.Banners;
 import com.vungle.warren.InitCallback;
 import com.vungle.warren.LoadAdCallback;
+import com.vungle.warren.NativeAd;
+import com.vungle.warren.NativeAdLayout;
+import com.vungle.warren.NativeAdListener;
 import com.vungle.warren.PlayAdCallback;
 import com.vungle.warren.Plugin;
 import com.vungle.warren.Vungle;
@@ -36,26 +48,41 @@ import com.vungle.warren.VungleApiClient;
 import com.vungle.warren.VungleBanner;
 import com.vungle.warren.VungleSettings;
 import com.vungle.warren.error.VungleException;
+import com.vungle.warren.ui.view.MediaView;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VungleMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
 {
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
 
     private VungleBanner adViewAd;
 
+    private VungleNativeAd vungleMaxNativeAd;
+
     // Explicit default constructor declaration
     public VungleMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
+    public void loadNativeAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxNativeAdAdapterListener maxNativeAdAdapterListener) {
+
+        //assume as is loaded
+        final String placementId = maxAdapterResponseParameters.getThirdPartyAdPlacementId();
+        vungleMaxNativeAd = new VungleNativeAd(activity, placementId);
+
+        vungleMaxNativeAd.loadAd(maxNativeAdAdapterListener);
+    }
+
+    @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        updateUserPrivacySettings( parameters );
+//        updateUserPrivacySettings( parameters );
 
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -63,13 +90,6 @@ public class VungleMediationAdapter
             log( "Initializing Vungle SDK with app id: " + appId + "..." );
 
             status = InitializationStatus.INITIALIZING;
-
-            // NOTE: Vungle's SDK will log error if setting COPPA state after it initializes
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
-            if ( isAgeRestrictedUser != null )
-            {
-                Vungle.updateUserCoppaStatus( isAgeRestrictedUser );
-            }
 
             Plugin.addWrapperInfo( VungleApiClient.WrapperFramework.max, getAdapterVersion() );
 
@@ -104,6 +124,8 @@ public class VungleMediationAdapter
             // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
             Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
 
+            updateUserPrivacySettings(parameters);
+
             // Note: Vungle requires the Application Context
             Vungle.init( appId, context, initCallback, settings );
         }
@@ -133,6 +155,11 @@ public class VungleMediationAdapter
         {
             adViewAd.destroyAd();
             adViewAd = null;
+        }
+
+        if (vungleMaxNativeAd !=null ) {
+            vungleMaxNativeAd.destroyAd();
+            vungleMaxNativeAd = null;
         }
     }
 
@@ -194,8 +221,6 @@ public class VungleMediationAdapter
 
             return;
         }
-
-        updateUserPrivacySettings( parameters );
         loadFullscreenAd( parameters, new LoadAdCallback()
         {
             @Override
@@ -346,6 +371,9 @@ public class VungleMediationAdapter
     {
         String bidResponse = parameters.getBidResponse();
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+
+        final Bundle serverParameters = parameters.getServerParameters();
+
         final String adFormatLabel = adFormat.getLabel();
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
@@ -371,7 +399,6 @@ public class VungleMediationAdapter
         AdConfig.AdSize adSize = vungleAdSize( adFormat );
         adConfig.setAdSize( adSize );
 
-        Bundle serverParameters = parameters.getServerParameters();
         if ( serverParameters.containsKey( "is_muted" ) )
         {
             adConfig.setMuted( serverParameters.getBoolean( "is_muted" ) );
@@ -391,7 +418,6 @@ public class VungleMediationAdapter
             return;
         }
 
-        updateUserPrivacySettings( parameters );
         LoadAdCallback loadAdCallback = new LoadAdCallback()
         {
             @Override
@@ -510,6 +536,13 @@ public class VungleMediationAdapter
             config.setMuted( serverParameters.getBoolean( "is_muted" ) );
         }
 
+        if ( serverParameters.containsKey( "app_orientation" ) )
+        {
+            // 0 = PORTRAIT, 1 = LANDSCAPE, 2 = ALL/AUTO_ROTATE
+            int orientation = serverParameters.getInt( "app_orientation" );
+            config.setAdOrientation(orientation);
+        }
+
         return config;
     }
 
@@ -538,6 +571,13 @@ public class VungleMediationAdapter
                 Vungle.Consent ccpaStatus = isDoNotSell ? Vungle.Consent.OPTED_OUT : Vungle.Consent.OPTED_IN;
                 Vungle.updateCCPAStatus( ccpaStatus );
             }
+        }
+
+        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+
+        if ( isAgeRestrictedUser != null && !Vungle.isInitialized())
+        {
+            Vungle.updateUserCoppaStatus( isAgeRestrictedUser );
         }
     }
 
@@ -921,4 +961,174 @@ public class VungleMediationAdapter
             // Deprecated callback
         }
     }
+
+    class VungleNativeAd
+    {
+        private NativeAd nativeAd;
+        public MediaView mediaView;
+        private NativeAdLayout nativeAdLayout;
+        private ImageView iconView;
+        private VungleMaxNativeAd vungleMaxNativeAd;
+
+        public VungleNativeAd(Activity activity, String placementId)
+        {
+            nativeAd = new NativeAd(activity, placementId);
+            mediaView = new MediaView(activity);
+            iconView = new ImageView(activity);
+            nativeAdLayout = new NativeAdLayout(activity);
+            nativeAdLayout.disableLifeCycleManagement(false);
+        }
+
+        public void loadAd(MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+        {
+            AdConfig adConfig = new AdConfig();
+
+            nativeAd.unregisterView();
+
+            nativeAd.loadAd(adConfig, new NativeAdListener()
+            {
+                @Override
+                public void onNativeAdLoaded(NativeAd nativeAd)
+                {
+                    runOnUiThread(() -> {
+                        vungleMaxNativeAd = new VungleMaxNativeAd(nativeAdLayout, mediaView, nativeAd,
+                                new MaxNativeAd.Builder()
+                                        .setAdFormat(MaxAdFormat.NATIVE)
+                                        .setTitle(nativeAd.getAdTitle())
+                                        .setBody(nativeAd.getAdBodyText())
+                                        .setMediaView(mediaView)
+                                        .setIconView(iconView)
+                                        .setCallToAction(nativeAd.getAdCallToActionText())
+                        );
+
+                        maxNativeAdAdapterListener.onNativeAdLoaded(vungleMaxNativeAd, null);
+                    });
+                }
+
+                @Override
+                public void onAdLoadError(String placementId, VungleException exception)
+                {
+                    maxNativeAdAdapterListener.onNativeAdLoadFailed(MaxAdapterError.NO_FILL);
+                }
+
+                @Override
+                public void onAdPlayError(String placementId, VungleException exception)
+                {
+
+                }
+
+                @Override
+                public void onAdImpression(String placementId) {
+                    maxNativeAdAdapterListener.onNativeAdDisplayed(null);
+                }
+
+                @Override
+                public void onAdClick(String placementId)
+                {
+                    maxNativeAdAdapterListener.onNativeAdClicked();
+                }
+
+                @Override
+                public void onAdLeftApplication(String placementId)
+                {
+
+                }
+
+                @Override
+                public void creativeId(String creativeId)
+                {
+
+                }
+            });
+        }
+
+        public void destroyAd()
+        {
+            if (nativeAdLayout != null)
+            {
+                nativeAdLayout.removeAllViews();
+                if (nativeAdLayout.getParent() != null)
+                {
+                    ((ViewGroup) nativeAdLayout.getParent()).removeView(nativeAdLayout);
+                }
+            }
+
+            if (mediaView != null)
+            {
+                mediaView.removeAllViews();
+                if (mediaView.getParent() != null)
+                {
+                    ((ViewGroup) mediaView.getParent()).removeView(mediaView);
+                }
+            }
+
+            if ( nativeAd != null)
+            {
+                nativeAd.unregisterView();
+                nativeAd.destroy();
+            }
+
+            if (vungleMaxNativeAd != null)
+            {
+                vungleMaxNativeAd.destroyAd();
+            }
+        }
+    }
+
+    private class VungleMaxNativeAd extends MaxNativeAd
+    {
+
+        NativeAd nativeAd;
+        MaxNativeAdView maxNativeAdView;
+        NativeAdLayout nativeAdLayout;
+        MediaView mediaView;
+
+        public VungleMaxNativeAd(NativeAdLayout nativeAdLayout, MediaView mediaView, NativeAd nativeAd, final Builder builder)
+        {
+            super( builder );
+            this.nativeAd = nativeAd;
+            this.mediaView = mediaView;
+            this.nativeAdLayout = nativeAdLayout;
+        }
+
+        public MaxNativeAdView getMaxNativeAdView()
+        {
+            return maxNativeAdView;
+        }
+
+        @Override
+        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        {
+            this.maxNativeAdView = maxNativeAdView;
+
+            List<View> clickableViews = new ArrayList<>();
+            clickableViews.add(getMaxNativeAdView().getCallToActionButton());
+            clickableViews.add(getMaxNativeAdView().getMainView());
+            clickableViews.add(mediaView);
+
+            ViewGroup mediaContentGroup = maxNativeAdView.getMediaContentViewGroup();
+
+            if (mediaContentGroup != null)
+            {
+                ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                mediaContentGroup.addView(nativeAdLayout, params);
+                if (mediaView.getParent() != null)
+                {
+                    ((ViewGroup)mediaView.getParent()).removeView(mediaView);
+                }
+                nativeAdLayout.addView(mediaView);
+            }
+
+            nativeAd.registerViewForInteraction(nativeAdLayout,
+                    mediaView,
+                    getMaxNativeAdView().getIconImageView(),
+                    clickableViews);
+        }
+
+        public void destroyAd()
+        {
+            maxNativeAdView.removeAllViews();
+        }
+    }
+
 }
