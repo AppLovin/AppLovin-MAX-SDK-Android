@@ -92,6 +92,12 @@ public class ManualNativeAdActivity
             {
                 logAnonymousCallback();
             }
+
+            @Override
+            public void onNativeAdExpired(final MaxAd ad)
+            {
+                logAnonymousCallback();
+            }
         } );
     }
 

@@ -81,6 +81,12 @@ public class ManualNativeLateBindingAdActivity
             {
                 logAnonymousCallback();
             }
+
+            @Override
+            public void onNativeAdExpired(final MaxAd nativeAd)
+            {
+                logAnonymousCallback();
+            }
         } );
     }
 
@@ -110,6 +116,18 @@ public class ManualNativeLateBindingAdActivity
     public void onShowAdClicked(View view)
     {
         MaxNativeAdView adView = createNativeAdView();
+
+        // Check if ad is expired before rendering
+        if ( nativeAd.getNativeAd().isExpired() )
+        {
+            // Destroy expired ad and load a new one
+            nativeAdLoader.destroy(nativeAd);
+            nativeAdLoader.loadAd();
+
+            showAdButton.setEnabled( false );
+            return;
+        }
+
         // Render the ad separately
         nativeAdLoader.render( adView, nativeAd );
         nativeAdLayout.addView( adView );
