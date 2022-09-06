@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.2.0.0
+* Certified with Google SDK 21.2.0.
+
 ## 21.1.0.2
 * Add support for app open ads.
 
