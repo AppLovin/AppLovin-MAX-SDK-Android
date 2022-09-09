@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
+import com.applovin.impl.sdk.utils.StringUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -21,6 +21,7 @@ import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxAppOpenAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
@@ -35,24 +36,41 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.bytedance.sdk.openadsdk.AdSlot;
-import com.bytedance.sdk.openadsdk.TTAdConfig;
-import com.bytedance.sdk.openadsdk.TTAdConstant;
-import com.bytedance.sdk.openadsdk.TTAdNative;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
-import com.bytedance.sdk.openadsdk.TTFeedAd;
-import com.bytedance.sdk.openadsdk.TTFullScreenVideoAd;
-import com.bytedance.sdk.openadsdk.TTImage;
-import com.bytedance.sdk.openadsdk.TTNativeAd;
-import com.bytedance.sdk.openadsdk.TTNativeExpressAd;
-import com.bytedance.sdk.openadsdk.TTRewardVideoAd;
+import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAd;
+import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdInteractionListener;
+import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdLoadListener;
+import com.bytedance.sdk.openadsdk.api.banner.PAGBannerRequest;
+import com.bytedance.sdk.openadsdk.api.banner.PAGBannerSize;
+import com.bytedance.sdk.openadsdk.api.init.PAGConfig;
+import com.bytedance.sdk.openadsdk.api.init.PAGSdk;
+import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialAd;
+import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialAdInteractionListener;
+import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialAdLoadListener;
+import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialRequest;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGNativeAd;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGNativeAdData;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGNativeAdInteractionListener;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGNativeAdLoadListener;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGNativeRequest;
+import com.bytedance.sdk.openadsdk.api.nativeAd.PAGVideoAdListener;
+import com.bytedance.sdk.openadsdk.api.open.PAGAppOpenAd;
+import com.bytedance.sdk.openadsdk.api.open.PAGAppOpenAdInteractionListener;
+import com.bytedance.sdk.openadsdk.api.open.PAGAppOpenAdLoadListener;
+import com.bytedance.sdk.openadsdk.api.open.PAGAppOpenRequest;
+import com.bytedance.sdk.openadsdk.api.reward.PAGRewardItem;
+import com.bytedance.sdk.openadsdk.api.reward.PAGRewardedAd;
+import com.bytedance.sdk.openadsdk.api.reward.PAGRewardedAdInteractionListener;
+import com.bytedance.sdk.openadsdk.api.reward.PAGRewardedAdLoadListener;
+import com.bytedance.sdk.openadsdk.api.reward.PAGRewardedRequest;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,7 +85,7 @@ import androidx.annotation.Nullable;
  */
 public class ByteDanceMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
+        implements MaxSignalProvider, MaxInterstitialAdapter,/* MaxAppOpenAdapter */ MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
     //region Error Code Map
     // Pangle error codes: https://partner.oceanengine.com/union/media/union/download/detail?id=5&docId=5de8daa6b1afac0012933137&osType=android
@@ -130,15 +148,16 @@ public class ByteDanceMediationAdapter
     private static final int                  DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
     private static final ExecutorService      executor                           = Executors.newCachedThreadPool();
 
-    private TTFullScreenVideoAd interstitialAd;
-    private TTRewardVideoAd     rewardedAd;
-    private TTNativeExpressAd   expressAdViewAd;
+    private PAGInterstitialAd interstitialAd;
+    private PAGAppOpenAd      appOpenAd;
+    private PAGRewardedAd     rewardedAd;
+    private PAGBannerAd       adViewAd;
+    private PAGNativeAd       nativeAd;
 
     private InterstitialAdListener interstitialAdListener;
+    private AppOpenAdListener      appOpenAdListener;
     private RewardedAdListener     rewardedAdListener;
     private NativeAdListener       nativeAdListener;
-
-    private TTFeedAd nativeAd;
 
     // Explicit default constructor declaration
     public ByteDanceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -153,17 +172,17 @@ public class ByteDanceMediationAdapter
             final String appId = serverParameters.getString( "app_id" );
             log( "Initializing SDK with app id: " + appId + "..." );
 
-            TTAdConfig.Builder builder = new TTAdConfig.Builder();
+            PAGConfig.Builder builder = new PAGConfig.Builder();
 
             // Set mediation provider
-            builder.data( createAdConfigData( serverParameters, true ) );
+            builder.setUserData( createAdConfigData( serverParameters, true ) );
 
             if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
             {
                 Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
                 if ( hasUserConsent != null )
                 {
-                    builder.setGDPR( hasUserConsent ? 1 : 0 );
+                    builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
                 }
             }
 
@@ -172,7 +191,7 @@ public class ByteDanceMediationAdapter
             Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
             if ( isAgeRestrictedUser != null )
             {
-                builder.coppa( isAgeRestrictedUser ? 1 : 0 );
+                builder.setChildDirected( isAgeRestrictedUser ? 1 : 0 );
             }
 
             if ( AppLovinSdk.VERSION_CODE >= 91100 )
@@ -180,16 +199,16 @@ public class ByteDanceMediationAdapter
                 Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
                 if ( isDoNotSell != null )
                 {
-                    builder.setCCPA( isDoNotSell ? 1 : 0 );
+                    builder.setDoNotSell( isDoNotSell ? 1 : 0 );
                 }
             }
 
-            TTAdConfig adConfig = builder.appId( appId )
-                    .debug( parameters.isTesting() )
+            PAGConfig adConfig = builder.appId( appId )
+                    .debugLog( parameters.isTesting() )
                     .supportMultiProcess( false )
                     .build();
 
-            TTAdSdk.init( getContext( activity ), adConfig, new TTAdSdk.InitCallback()
+            PAGSdk.init( getContext( activity ), adConfig, new PAGSdk.PAGInitCallback()
             {
                 @Override
                 public void success()
@@ -220,7 +239,7 @@ public class ByteDanceMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return TTAdSdk.getAdManager().getSDKVersion();
+        return PAGSdk.getSDKVersion();
     }
 
     @Override
@@ -235,13 +254,16 @@ public class ByteDanceMediationAdapter
         interstitialAdListener = null;
         interstitialAd = null;
 
+        appOpenAdListener = null;
+        appOpenAd = null;
+
         rewardedAdListener = null;
         rewardedAd = null;
 
-        if ( expressAdViewAd != null )
+        if ( adViewAd != null )
         {
-            expressAdViewAd.destroy();
-            expressAdViewAd = null;
+            adViewAd.destroy();
+            adViewAd = null;
         }
 
         nativeAd = null;
@@ -264,7 +286,7 @@ public class ByteDanceMediationAdapter
             return;
         }
 
-        String signal = TTAdSdk.getAdManager().getBiddingToken();
+        String signal = PAGSdk.getBiddingToken();
         callback.onSignalCollected( signal );
     }
 
@@ -277,25 +299,20 @@ public class ByteDanceMediationAdapter
     {
         String codeId = parameters.getThirdPartyAdPlacementId();
         String bidResponse = parameters.getBidResponse();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for code id \"" + codeId + "\"..." );
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "interstitial ad for code id \"" + codeId + "\"..." );
 
-        updateAdConfig( parameters );
+        PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
 
-        // NOTE: No privacy APIs to toggle before ad load
+        PAGInterstitialRequest request = new PAGInterstitialRequest();
 
-        AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
-                .setCodeId( codeId )
-                .setImageAcceptedSize( 1080, 1920 )
-                .setSupportDeepLink( true )
-                .setAdCount( 1 );
-
-        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        if ( isBidding )
         {
-            adSlotBuilder.withBid( bidResponse );
+            request.setAdString( bidResponse );
         }
 
         interstitialAdListener = new InterstitialAdListener( codeId, listener );
-        TTAdSdk.getAdManager().createAdNative( getContext( activity ) ).loadFullScreenVideoAd( adSlotBuilder.build(), interstitialAdListener );
+        PAGInterstitialAd.loadAd( codeId, request, interstitialAdListener );
     }
 
     @Override
@@ -304,8 +321,51 @@ public class ByteDanceMediationAdapter
         String codeId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for code id \"" + codeId + "\"..." );
 
-        interstitialAd.setFullScreenVideoAdInteractionListener( interstitialAdListener );
-        interstitialAd.showFullScreenVideoAd( activity );
+        interstitialAd.setAdInteractionListener( interstitialAdListener );
+        interstitialAd.show( activity );
+    }
+
+    //endregion
+
+    //region MaxAppOpenAdapter Methods
+
+    public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        String codeId = parameters.getThirdPartyAdPlacementId();
+        String bidResponse = parameters.getBidResponse();
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "app open ad for code id \"" + codeId + "\"..." );
+
+        PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
+
+        int appIconId = getContext( activity ).getApplicationInfo().icon;
+        if ( appIconId <= 0 )
+        {
+            log( "App icon resource id could not be found" );
+        }
+        else
+        {
+            PAGConfig.setAppIconId( appIconId );
+        }
+
+        PAGAppOpenRequest request = new PAGAppOpenRequest();
+
+        if ( isBidding )
+        {
+            request.setAdString( bidResponse );
+        }
+
+        appOpenAdListener = new AppOpenAdListener( codeId, listener );
+        PAGAppOpenAd.loadAd( codeId, request, appOpenAdListener );
+    }
+
+    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        String codeId = parameters.getThirdPartyAdPlacementId();
+        log( "Showing app open ad for code id \"" + codeId + "\"..." );
+
+        appOpenAd.setAdInteractionListener( appOpenAdListener );
+        appOpenAd.show( activity );
     }
 
     //endregion
@@ -317,27 +377,24 @@ public class ByteDanceMediationAdapter
     {
         String codeId = parameters.getThirdPartyAdPlacementId();
         String bidResponse = parameters.getBidResponse();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for code id \"" + codeId + "\"..." );
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "rewarded ad for code id \"" + codeId + "\"..." );
 
-        updateAdConfig( parameters );
+        PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
 
-        // NOTE: No privacy APIs to toggle before ad load
+        Map<String, Object> extraInfo = new HashMap<>();
+        extraInfo.put( "user_id", getWrappingSdk().getUserIdentifier() );
 
-        AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
-                .setCodeId( codeId )
-                .setImageAcceptedSize( 1080, 1920 )
-                .setSupportDeepLink( true )
-                .setAdCount( 1 )
-                // Rewarded Ad Params
-                .setUserID( getWrappingSdk().getUserIdentifier() );
+        PAGRewardedRequest request = new PAGRewardedRequest();
+        request.setExtraInfo( extraInfo );
 
-        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        if ( isBidding )
         {
-            adSlotBuilder.withBid( bidResponse );
+            request.setAdString( bidResponse );
         }
 
         rewardedAdListener = new RewardedAdListener( codeId, listener );
-        TTAdSdk.getAdManager().createAdNative( getContext( activity ) ).loadRewardVideoAd( adSlotBuilder.build(), rewardedAdListener );
+        PAGRewardedAd.loadAd( codeId, request, rewardedAdListener );
     }
 
     @Override
@@ -349,8 +406,8 @@ public class ByteDanceMediationAdapter
         // Configure userReward from server.
         configureReward( parameters );
 
-        rewardedAd.setRewardAdInteractionListener( rewardedAdListener );
-        rewardedAd.showRewardVideoAd( activity );
+        rewardedAd.setAdInteractionListener( rewardedAdListener );
+        rewardedAd.show( activity );
     }
 
     //endregion
@@ -363,32 +420,35 @@ public class ByteDanceMediationAdapter
         boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
         String bidResponse = parameters.getBidResponse();
         String codeId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for code id \"" + codeId + "\"..." );
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for code id \"" + codeId + "\"..." );
 
-        updateAdConfig( parameters );
+        PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
 
-        AppLovinSdkUtils.Size adSize = adFormat.getSize();
-        AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
-                .setCodeId( codeId )
-                .setExpressViewAcceptedSize( adSize.getWidth(), adSize.getHeight() )
-                .setSupportDeepLink( true )
-                .setAdCount( 1 );
-
-        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
-        {
-            adSlotBuilder.withBid( bidResponse );
-        }
-
-        TTAdNative adViewAd = TTAdSdk.getAdManager().createAdNative( getContext( activity ) );
         if ( isNative )
         {
+            PAGNativeRequest request = new PAGNativeRequest();
+
+            if ( isBidding )
+            {
+                request.setAdString( bidResponse );
+            }
+
             NativeAdViewListener nativeListener = new NativeAdViewListener( parameters, adFormat, activity, listener );
-            adViewAd.loadFeedAd( adSlotBuilder.build(), nativeListener );
+            PAGNativeAd.loadAd( codeId, request, nativeListener );
         }
         else
         {
+            AppLovinSdkUtils.Size adSize = adFormat.getSize();
+            PAGBannerRequest request = new PAGBannerRequest( new PAGBannerSize( adSize.getWidth(), adSize.getHeight() ) );
+
+            if ( isBidding )
+            {
+                request.setAdString( bidResponse );
+            }
+
             AdViewListener adViewListener = new AdViewListener( codeId, adFormat, listener );
-            adViewAd.loadBannerExpressAd( adSlotBuilder.build(), adViewListener );
+            PAGBannerAd.loadAd( codeId, request, adViewListener );
         }
     }
 
@@ -404,7 +464,7 @@ public class ByteDanceMediationAdapter
         String codeId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for code id \"" + codeId + "\"..." );
 
-        updateAdConfig( parameters );
+        PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
 
         // Minimum supported Android SDK version is 11.1.0+, previous version has `MaxNativeAdView` requiring an Activity context which might leak
         if ( AppLovinSdk.VERSION_CODE < 11010000 )
@@ -414,19 +474,15 @@ public class ByteDanceMediationAdapter
             return;
         }
 
-        AdSlot.Builder adSlotBuilder = new AdSlot.Builder()
-                .setCodeId( codeId )
-                .setImageAcceptedSize( 640, 320 )
-                .setSupportDeepLink( true )
-                .setAdCount( 1 );
+        PAGNativeRequest request = new PAGNativeRequest();
 
         if ( isBiddingAd )
         {
-            adSlotBuilder.withBid( bidResponse );
+            request.setAdString( bidResponse );
         }
 
         nativeAdListener = new NativeAdListener( parameters, getContext( activity ), listener );
-        TTAdSdk.getAdManager().createAdNative( getContext( activity ) ).loadFeedAd( adSlotBuilder.build(), nativeAdListener );
+        PAGNativeAd.loadAd( codeId, request, nativeAdListener );
     }
 
     //endregion
@@ -461,13 +517,6 @@ public class ByteDanceMediationAdapter
                 return new BitmapDrawable( resources, imageData );
             }
         };
-    }
-
-    private boolean isVideoMediaView(final int imageMode)
-    {
-        return ( imageMode == TTAdConstant.IMAGE_MODE_VIDEO ||
-                imageMode == TTAdConstant.IMAGE_MODE_VIDEO_SQUARE ||
-                imageMode == TTAdConstant.IMAGE_MODE_VIDEO_VERTICAL );
     }
 
     private static MaxAdapterError toMaxError(final int byteDanceErrorCode, final String byteDanceErrorMessage)
@@ -559,17 +608,10 @@ public class ByteDanceMediationAdapter
         }
     }
 
-    private void updateAdConfig(final MaxAdapterResponseParameters parameters)
-    {
-        TTAdConfig.Builder builder = new TTAdConfig.Builder();
-        builder.data( createAdConfigData( parameters.getServerParameters(), false ) );
-        TTAdSdk.updateAdConfig( builder.build() );
-    }
-
     //endregion
 
     private class InterstitialAdListener
-            implements TTAdNative.FullScreenVideoAdListener, TTFullScreenVideoAd.FullScreenVideoAdInteractionListener
+            implements PAGInterstitialAdLoadListener, PAGInterstitialAdInteractionListener
     {
         private final String                         codeId;
         private final MaxInterstitialAdapterListener listener;
@@ -581,11 +623,19 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onFullScreenVideoAdLoad(final TTFullScreenVideoAd ad)
+        public void onAdLoaded(final PAGInterstitialAd ad)
         {
-            interstitialAd = ad;
+            if ( ad == null )
+            {
+                log( "Interstitial ad" + "(" + codeId + ")" + " NO FILL'd" );
+                listener.onInterstitialAdLoadFailed( MaxAdapterError.NO_FILL );
+
+                return;
+            }
 
             log( "Interstitial ad loaded: " + codeId );
+            interstitialAd = ad;
+
             listener.onInterstitialAdLoaded();
         }
 
@@ -598,47 +648,88 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onFullScreenVideoCached()
-        {
-            log( "Interstitial ad cached: " + codeId );
-        }
-
-        @Override
-        public void onAdShow()
+        public void onAdShowed()
         {
             log( "Interstitial ad displayed: " + codeId );
             listener.onInterstitialAdDisplayed();
         }
 
         @Override
-        public void onAdVideoBarClick()
+        public void onAdClicked()
         {
             log( "Interstitial ad clicked: " + codeId );
             listener.onInterstitialAdClicked();
         }
 
         @Override
-        public void onAdClose()
+        public void onAdDismissed()
         {
             log( "Interstitial ad hidden: " + codeId );
             listener.onInterstitialAdHidden();
         }
+    }
 
-        @Override
-        public void onVideoComplete()
+    private class AppOpenAdListener
+            implements PAGAppOpenAdLoadListener, PAGAppOpenAdInteractionListener
+    {
+        private final String                    codeId;
+        private final MaxAppOpenAdapterListener listener;
+
+        AppOpenAdListener(final String codeId, final MaxAppOpenAdapterListener listener)
         {
-            log( "Interstitial ad video completed: " + codeId );
+            this.codeId = codeId;
+            this.listener = listener;
         }
 
         @Override
-        public void onSkippedVideo()
+        public void onAdLoaded(final PAGAppOpenAd ad)
         {
-            log( "Interstitial ad skipped: " + codeId );
+            if ( ad == null )
+            {
+                log( "App open ad" + "(" + codeId + ")" + " NO FILL'd" );
+                listener.onAppOpenAdLoadFailed( MaxAdapterError.NO_FILL );
+
+                return;
+            }
+
+            log( "App open ad loaded: " + codeId );
+            appOpenAd = ad;
+
+            listener.onAppOpenAdLoaded();
+        }
+
+        @Override
+        public void onError(final int code, final String message)
+        {
+            MaxAdapterError adapterError = toMaxError( code, message );
+            log( "App open ad (" + codeId + ") failed to load with error: " + adapterError );
+            listener.onAppOpenAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdShowed()
+        {
+            log( "App open ad displayed: " + codeId );
+            listener.onAppOpenAdDisplayed();
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( "App open ad clicked: " + codeId );
+            listener.onAppOpenAdClicked();
+        }
+
+        @Override
+        public void onAdDismissed()
+        {
+            log( "App open ad hidden: " + codeId );
+            listener.onAppOpenAdHidden();
         }
     }
 
     private class RewardedAdListener
-            implements TTAdNative.RewardVideoAdListener, TTRewardVideoAd.RewardAdInteractionListener
+            implements PAGRewardedAdLoadListener, PAGRewardedAdInteractionListener
     {
         private final String                     codeId;
         private final MaxRewardedAdapterListener listener;
@@ -652,11 +743,19 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onRewardVideoAdLoad(final TTRewardVideoAd ad)
+        public void onAdLoaded(final PAGRewardedAd ad)
         {
-            rewardedAd = ad;
+            if ( ad == null )
+            {
+                log( "Rewarded ad" + "(" + codeId + ")" + " NO FILL'd" );
+                listener.onRewardedAdLoadFailed( MaxAdapterError.NO_FILL );
+
+                return;
+            }
 
             log( "Rewarded ad loaded: " + codeId );
+            rewardedAd = ad;
+
             listener.onRewardedAdLoaded();
         }
 
@@ -669,13 +768,7 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onRewardVideoCached()
-        {
-            log( "Rewarded ad cached: " + codeId );
-        }
-
-        @Override
-        public void onAdShow()
+        public void onAdShowed()
         {
             log( "Rewarded ad displayed: " + codeId );
 
@@ -684,23 +777,32 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onVideoError()
-        {
-            log( "Rewarded ad failed to display: " + codeId );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
-        }
-
-        @Override
-        public void onAdVideoBarClick()
+        public void onAdClicked()
         {
             log( "Rewarded ad clicked: " + codeId );
             listener.onRewardedAdClicked();
         }
 
         @Override
-        public void onAdClose()
+        public void onUserEarnedReward(final PAGRewardItem rewardItem)
+        {
+            log( "Rewarded user with reward: " + rewardItem.getRewardAmount() + " " + rewardItem.getRewardName() );
+            hasGrantedReward = true;
+        }
+
+        @Override
+        public void onUserEarnedRewardFail(final int code, final String message)
+        {
+            log( "Failed to reward user with error: " + code + " " + message );
+            hasGrantedReward = false;
+        }
+
+        @Override
+        public void onAdDismissed()
         {
             log( "Rewarded ad hidden: " + codeId );
+
+            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
@@ -711,37 +813,10 @@ public class ByteDanceMediationAdapter
 
             listener.onRewardedAdHidden();
         }
-
-        @Override
-        public void onVideoComplete()
-        {
-            log( "Rewarded ad video completed: " + codeId );
-            listener.onRewardedAdVideoCompleted();
-        }
-
-        @Override
-        public void onRewardVerify(final boolean granted, final int amount, final String label, final int errorCode, final String errorMsg)
-        {
-            if ( granted )
-            {
-                log( "Rewarded user with reward: " + amount + " " + label );
-                hasGrantedReward = true;
-            }
-            else
-            {
-                log( "Failed to reward user with error: " + errorCode + " " + errorMsg );
-            }
-        }
-
-        @Override
-        public void onSkippedVideo()
-        {
-            log( "Rewarded ad video skipped: " + codeId );
-        }
     }
 
     private class AdViewListener
-            implements TTAdNative.NativeExpressAdListener, TTNativeExpressAd.ExpressAdInteractionListener
+            implements PAGBannerAdLoadListener, PAGBannerAdInteractionListener
     {
         private final String                   codeId;
         private final MaxAdFormat              adFormat;
@@ -755,23 +830,21 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onNativeExpressAdLoad(final List<TTNativeExpressAd> ads)
+        public void onAdLoaded(final PAGBannerAd ad)
         {
-            if ( ads == null || ads.isEmpty() )
+            if ( ad == null )
             {
-                log( "Native " + adFormat.getLabel() + " ad (" + codeId + ") failed to load: no fill" );
+                log( adFormat.getLabel() + " ad" + "(" + codeId + ")" + " NO FILL'd" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
             }
 
-            // Pangle still needs an extra `render()` step to fully load an ad.
-            log( adFormat.getLabel() + " ad (" + codeId + ") loaded with " + ads.size() + " ads" );
+            log( adFormat.getLabel() + " ad (" + codeId + ") loaded" );
+            adViewAd = ad;
 
-            expressAdViewAd = ads.get( 0 );
-            expressAdViewAd.setExpressInteractionListener( this );
-
-            expressAdViewAd.render();
+            adViewAd.setAdInteractionListener( this );
+            listener.onAdViewAdLoaded( ad.getBannerView() );
         }
 
         @Override
@@ -783,37 +856,29 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onRenderSuccess(final View view, final float width, final float height)
+        public void onAdShowed()
         {
-            log( adFormat.getLabel() + " ad loaded: " + codeId );
-            listener.onAdViewAdLoaded( view );
-        }
-
-        @Override
-        public void onRenderFail(final View view, final String message, final int code)
-        {
-            MaxAdapterError adapterError = toMaxError( code, message );
-            log( adFormat.getLabel() + " ad (" + codeId + ") failed to load with error: " + adapterError );
-            listener.onAdViewAdLoadFailed( adapterError );
-        }
-
-        @Override
-        public void onAdShow(final View view, final int type)
-        {
-            log( adFormat.getLabel() + " ad shown: " + codeId );
+            log( adFormat.getLabel() + " ad displayed: " + codeId );
             listener.onAdViewAdDisplayed();
         }
 
         @Override
-        public void onAdClicked(final View view, final int type)
+        public void onAdClicked()
         {
             log( adFormat.getLabel() + " ad clicked: " + codeId );
             listener.onAdViewAdClicked();
         }
+
+        @Override
+        public void onAdDismissed()
+        {
+            log( adFormat.getLabel() + " ad hidden: " + codeId );
+            listener.onAdViewAdHidden();
+        }
     }
 
     private class NativeAdViewListener
-            implements TTAdNative.FeedAdListener, TTNativeAd.AdInteractionListener, TTFeedAd.VideoAdListener
+            implements PAGNativeAdLoadListener, PAGNativeAdInteractionListener, PAGVideoAdListener
     {
         final String                   codeId;
         final Bundle                   serverParameters;
@@ -831,11 +896,11 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onFeedAdLoad(final List<TTFeedAd> ads)
+        public void onAdLoaded(final PAGNativeAd nativeAdViewAd)
         {
-            if ( ads == null || ads.size() == 0 )
+            if ( nativeAdViewAd == null )
             {
-                log( "Native " + adFormat.getLabel() + " ad (" + codeId + ") failed to load: no fill" );
+                log( "Native " + adFormat.getLabel() + "ad" + "(" + codeId + ")" + " NO FILL'd" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -843,7 +908,7 @@ public class ByteDanceMediationAdapter
 
             log( "Native " + adFormat.getLabel() + " ad loaded: " + codeId + ". Preparing assets..." );
 
-            final TTFeedAd nativeAdViewAd = ads.get( 0 );
+            final PAGNativeAdData nativeAdData = nativeAdViewAd.getNativeAdData();
             final ExecutorService executorServiceToUse;
             if ( AppLovinSdk.VERSION_CODE >= 11000000 )
             {
@@ -865,52 +930,25 @@ public class ByteDanceMediationAdapter
 
                     // Create image fetching tasks to run asynchronously in the background
                     Future<Drawable> iconDrawableFuture = null;
-                    if ( nativeAdViewAd.getIcon().isValid() )
+                    if ( nativeAdData.getIcon() != null && StringUtils.isValidString( nativeAdData.getIcon().getImageUrl() ) )
                     {
+                        final String imageUrl = nativeAdData.getIcon().getImageUrl();
                         // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
-                        log( "Adding native ad icon (" + nativeAdViewAd.getIcon().getImageUrl() + ") to queue to be fetched" );
+                        log( "Adding native ad icon (" + imageUrl + ") to queue to be fetched" );
 
-                        final String imageUrl = nativeAdViewAd.getIcon().getImageUrl();
                         iconDrawableFuture = ( AppLovinSdk.VERSION_CODE >= 11000000 )
                                 ? createDrawableFuture( imageUrl, resources )
                                 : executorServiceToUse.submit( createDrawableTask( imageUrl, resources ) );
                     }
 
-                    // Pangle's media view can be either a video or image (which they don't provide a view for)
-                    Future<Drawable> imageDrawableFuture = null;
-                    if ( isVideoMediaView( nativeAdViewAd.getImageMode() ) )
-                    {
-                        nativeAdViewAd.setVideoAdListener( NativeAdViewListener.this );
-                    }
-                    else if ( nativeAdViewAd.getImageList() != null && nativeAdViewAd.getImageList().size() > 0 )
-                    {
-                        final TTImage ttMediaImage = nativeAdViewAd.getImageList().get( 0 );
-                        if ( ttMediaImage.isValid() )
-                        {
-                            // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
-                            log( "Adding native ad media (" + ttMediaImage.getImageUrl() + ") to queue to be fetched" );
-
-                            final String imageUrl = ttMediaImage.getImageUrl();
-                            imageDrawableFuture = ( AppLovinSdk.VERSION_CODE >= 11000000 )
-                                    ? createDrawableFuture( imageUrl, resources )
-                                    : executorServiceToUse.submit( createDrawableTask( imageUrl, resources ) );
-                        }
-                    }
-
                     // Execute and timeout tasks if incomplete within the given time
                     int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
                     Drawable iconDrawable = null;
-                    Drawable mediaViewImageDrawable = null;
                     try
                     {
                         if ( iconDrawableFuture != null )
                         {
                             iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
-                        }
-
-                        if ( imageDrawableFuture != null )
-                        {
-                            mediaViewImageDrawable = imageDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
                         }
                     }
                     catch ( Throwable th )
@@ -919,19 +957,6 @@ public class ByteDanceMediationAdapter
                     }
 
                     final MaxNativeAd.MaxNativeAdImage icon = iconDrawable != null ? new MaxNativeAd.MaxNativeAdImage( iconDrawable ) : null;
-                    final View mediaView;
-                    if ( isVideoMediaView( nativeAdViewAd.getImageMode() ) )
-                    {
-                        mediaView = nativeAdViewAd.getAdView();
-                    }
-                    else
-                    {
-                        mediaView = new ImageView( context );
-                        if ( mediaViewImageDrawable != null )
-                        {
-                            ( (ImageView) mediaView ).setImageDrawable( mediaViewImageDrawable );
-                        }
-                    }
 
                     // Create MaxNativeAd after images are loaded from remote URLs
                     AppLovinSdkUtils.runOnUiThread( new Runnable()
@@ -943,12 +968,12 @@ public class ByteDanceMediationAdapter
 
                             MaxNativeAd maxNativeAd = new MaxNativeAd.Builder()
                                     .setAdFormat( adFormat )
-                                    .setTitle( nativeAdViewAd.getTitle() )
-                                    .setBody( nativeAdViewAd.getDescription() )
-                                    .setCallToAction( nativeAdViewAd.getButtonText() )
+                                    .setTitle( nativeAdData.getTitle() )
+                                    .setBody( nativeAdData.getDescription() )
+                                    .setCallToAction( nativeAdData.getButtonText() )
                                     .setIcon( icon )
-                                    .setMediaView( mediaView )
-                                    .setOptionsView( nativeAdViewAd.getAdLogoView() )
+                                    .setMediaView( nativeAdData.getMediaView() )
+                                    .setOptionsView( nativeAdData.getAdLogoView() )
                                     .build();
 
                             String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -993,7 +1018,8 @@ public class ByteDanceMediationAdapter
                                 creativeViews.add( maxNativeAdView.getCallToActionButton() );
                             }
 
-                            nativeAdViewAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, NativeAdViewListener.this );
+                            // Here dislikeView is null since it is optional
+                            nativeAdViewAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, NativeAdViewListener.this );
 
                             log( "Native " + adFormat.getLabel() + " ad fully loaded: " + codeId );
                             listener.onAdViewAdLoaded( maxNativeAdView );
@@ -1012,72 +1038,54 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onAdShow(final TTNativeAd ttNativeAd)
+        public void onAdShowed()
         {
             log( "Native " + adFormat.getLabel() + " ad displayed: " + codeId );
             listener.onAdViewAdDisplayed();
         }
 
         @Override
-        public void onAdClicked(final View view, final TTNativeAd ttNativeAd)
+        public void onAdClicked()
         {
-            // This callback is never called
             log( "Native " + adFormat.getLabel() + " ad clicked: " + codeId );
             listener.onAdViewAdClicked();
         }
 
         @Override
-        public void onAdCreativeClick(final View view, final TTNativeAd ttNativeAd)
-        {
-            log( "Native " + adFormat.getLabel() + " ad creative clicked: " + codeId );
-            listener.onAdViewAdClicked();
-        }
-
-        @Override
-        public void onVideoLoad(final TTFeedAd ad)
+        public void onVideoAdPlay()
         {
             log( "Native " + adFormat.getLabel() + " ad video loaded" );
         }
 
         @Override
-        public void onVideoError(final int errorCode, final int extraCode)
-        {
-            log( "Native " + adFormat.getLabel() + " ad video error: " + errorCode );
-        }
-
-        @Override
-        public void onVideoAdStartPlay(final TTFeedAd ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad video started playing" );
-        }
-
-        @Override
-        public void onVideoAdPaused(final TTFeedAd ad)
+        public void onVideoAdPaused()
         {
             log( "Native " + adFormat.getLabel() + " ad video paused" );
         }
 
         @Override
-        public void onVideoAdContinuePlay(final TTFeedAd ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad video continued" );
-        }
-
-        @Override
-        public void onProgressUpdate(final long current, final long duration)
-        {
-            log( "Native " + adFormat.getLabel() + " ad video progress updated (" + current + ") by duration (" + duration + ")" );
-        }
-
-        @Override
-        public void onVideoAdComplete(final TTFeedAd ad)
+        public void onVideoAdComplete()
         {
             log( "Native " + adFormat.getLabel() + " ad video completed" );
+        }
+
+        @Override
+        public void onVideoError()
+        {
+            log( "Native " + adFormat.getLabel() + " ad video error" );
+        }
+
+        @Override
+        public void onAdDismissed()
+        {
+            // This method won't be called until we implement `dislikeView` which is optional
+            log( "Native " + adFormat.getLabel() + " ad hidden: " + codeId );
+            listener.onAdViewAdHidden();
         }
     }
 
     private class NativeAdListener
-            implements TTAdNative.FeedAdListener, TTNativeAd.AdInteractionListener, TTFeedAd.VideoAdListener
+            implements PAGNativeAdLoadListener, PAGNativeAdInteractionListener, PAGVideoAdListener
     {
         final String                     codeId;
         final Bundle                     serverParameters;
@@ -1093,11 +1101,11 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void onFeedAdLoad(final List<TTFeedAd> ads)
+        public void onAdLoaded(final PAGNativeAd ad)
         {
-            if ( ads == null || ads.size() == 0 )
+            if ( ad == null )
             {
-                log( "Native ad (" + codeId + ") failed to load: no fill" );
+                log( "Native ad" + "(" + codeId + ")" + " NO FILL'd" );
                 listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -1105,14 +1113,14 @@ public class ByteDanceMediationAdapter
 
             log( "Native ad loaded: " + codeId + ". Preparing assets..." );
 
-            final TTFeedAd nativeAd = ads.get( 0 );
-            ByteDanceMediationAdapter.this.nativeAd = nativeAd;
+            final PAGNativeAdData nativeAdData = ad.getNativeAdData();
+            ByteDanceMediationAdapter.this.nativeAd = ad;
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
+            if ( isTemplateAd && TextUtils.isEmpty( nativeAdData.getTitle() ) )
             {
-                e( "Native ad (" + nativeAd + ") does not have required assets." );
+                e( "Native ad (" + ad + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                 return;
@@ -1126,44 +1134,23 @@ public class ByteDanceMediationAdapter
                 {
                     // Create image fetching tasks to run asynchronously in the background
                     Future<Drawable> iconDrawableFuture = null;
-                    if ( nativeAd.getIcon().isValid() )
+                    if ( nativeAdData.getIcon() != null && StringUtils.isValidString( nativeAdData.getIcon().getImageUrl() ) )
                     {
-                        // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
-                        log( "Adding native ad icon (" + nativeAd.getIcon().getImageUrl() + ") to queue to be fetched" );
-                        iconDrawableFuture = createDrawableFuture( nativeAd.getIcon().getImageUrl(), context.getResources() );
-                    }
+                        final String imageUrl = nativeAdData.getIcon().getImageUrl();
 
-                    // Pangle's media view can be either a video or image (which they don't provide a view for)
-                    Future<Drawable> imageDrawableFuture = null;
-                    if ( isVideoMediaView( nativeAd.getImageMode() ) )
-                    {
-                        nativeAd.setVideoAdListener( NativeAdListener.this );
-                    }
-                    else if ( nativeAd.getImageList() != null && nativeAd.getImageList().size() > 0 )
-                    {
-                        final TTImage ttMediaImage = nativeAd.getImageList().get( 0 );
-                        if ( ttMediaImage.isValid() )
-                        {
-                            // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
-                            log( "Adding native ad media (" + ttMediaImage.getImageUrl() + ") to queue to be fetched" );
-                            imageDrawableFuture = createDrawableFuture( ttMediaImage.getImageUrl(), context.getResources() );
-                        }
+                        // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
+                        log( "Adding native ad icon (" + imageUrl + ") to queue to be fetched" );
+                        iconDrawableFuture = createDrawableFuture( imageUrl, context.getResources() );
                     }
 
                     // Execute and timeout tasks if incomplete within the given time
                     int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
                     Drawable iconDrawable = null;
-                    Drawable mediaViewImageDrawable = null;
                     try
                     {
                         if ( iconDrawableFuture != null )
                         {
                             iconDrawable = iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
-                        }
-
-                        if ( imageDrawableFuture != null )
-                        {
-                            mediaViewImageDrawable = imageDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
                         }
                     }
                     catch ( Throwable th )
@@ -1172,7 +1159,6 @@ public class ByteDanceMediationAdapter
                     }
 
                     final MaxNativeAd.MaxNativeAdImage icon = iconDrawable != null ? new MaxNativeAd.MaxNativeAdImage( iconDrawable ) : null;
-                    final Drawable finalMediaViewImageDrawable = mediaViewImageDrawable;
 
                     // Create MaxNativeAd after images are loaded from remote URLs
                     AppLovinSdkUtils.runOnUiThread( new Runnable()
@@ -1180,35 +1166,16 @@ public class ByteDanceMediationAdapter
                         @Override
                         public void run()
                         {
-                            final View mediaView;
-                            if ( isVideoMediaView( nativeAd.getImageMode() ) )
-                            {
-                                mediaView = nativeAd.getAdView();
-                            }
-                            else if ( finalMediaViewImageDrawable != null )
-                            {
-                                mediaView = new ImageView( context );
-                                ( (ImageView) mediaView ).setImageDrawable( finalMediaViewImageDrawable );
-                            }
-                            else
-                            {
-                                mediaView = null;
-                            }
-
                             log( "Creating native ad with assets" );
 
                             MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                                     .setAdFormat( MaxAdFormat.NATIVE )
-                                    .setTitle( nativeAd.getTitle() )
-                                    .setBody( nativeAd.getDescription() )
-                                    .setCallToAction( nativeAd.getButtonText() )
+                                    .setTitle( nativeAdData.getTitle() )
+                                    .setBody( nativeAdData.getDescription() )
+                                    .setCallToAction( nativeAdData.getButtonText() )
                                     .setIcon( icon )
-                                    .setMediaView( mediaView )
-                                    .setOptionsView( nativeAd.getAdLogoView() );
-                            if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-                            {
-                                builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( finalMediaViewImageDrawable ) );
-                            }
+                                    .setMediaView( nativeAdData.getMediaView() )
+                                    .setOptionsView( nativeAdData.getAdLogoView() );
                             MaxNativeAd maxNativeAd = new MaxByteDanceNativeAd( builder );
 
                             log( "Native ad fully loaded: " + codeId );
@@ -1222,74 +1189,55 @@ public class ByteDanceMediationAdapter
         @Override
         public void onError(final int code, final String message)
         {
-            log( "Native ad (" + codeId + ") failed to load with error code (" + code + ") and message: " + message );
-
             MaxAdapterError adapterError = toMaxError( code, message );
+            log( "Native ad (" + codeId + ") failed to load with error: " + adapterError );
+
             listener.onNativeAdLoadFailed( adapterError );
         }
 
         @Override
-        public void onAdShow(final TTNativeAd ttNativeAd)
+        public void onAdShowed()
         {
             log( "Native ad displayed: " + codeId );
             listener.onNativeAdDisplayed( null );
         }
 
         @Override
-        public void onAdClicked(final View view, final TTNativeAd ttNativeAd)
+        public void onAdClicked()
         {
-            // This callback is never called
             log( "Native ad clicked: " + codeId );
             listener.onNativeAdClicked();
         }
 
         @Override
-        public void onAdCreativeClick(final View view, final TTNativeAd ttNativeAd)
-        {
-            log( "Native ad creative clicked: " + codeId );
-            listener.onNativeAdClicked();
-        }
-
-        @Override
-        public void onVideoLoad(final TTFeedAd ad)
-        {
-            log( "Native ad video loaded" );
-        }
-
-        @Override
-        public void onVideoError(final int errorCode, final int extraCode)
-        {
-            log( "Native ad video error: " + errorCode );
-        }
-
-        @Override
-        public void onVideoAdStartPlay(final TTFeedAd ad)
+        public void onVideoAdPlay()
         {
             log( "Native ad video started playing" );
         }
 
         @Override
-        public void onVideoAdPaused(final TTFeedAd ad)
+        public void onVideoAdPaused()
         {
             log( "Native ad video paused" );
         }
 
         @Override
-        public void onVideoAdContinuePlay(final TTFeedAd ad)
-        {
-            log( "Native ad video continued" );
-        }
-
-        @Override
-        public void onProgressUpdate(final long current, final long duration)
-        {
-            // Don't log - too spammy as it calls every x milliseconds
-        }
-
-        @Override
-        public void onVideoAdComplete(final TTFeedAd ad)
+        public void onVideoAdComplete()
         {
             log( "Native ad video completed" );
+        }
+
+        @Override
+        public void onVideoError()
+        {
+            log( "Native ad video error" );
+        }
+
+        @Override
+        public void onAdDismissed()
+        {
+            // This method won't be called until we implement `dislikeView` which is optional
+            log( "Native ad hidden: " + codeId );
         }
     }
 
@@ -1304,7 +1252,7 @@ public class ByteDanceMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            TTFeedAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
+            PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad view for interaction. Native ad is null" );
@@ -1336,7 +1284,8 @@ public class ByteDanceMediationAdapter
                 creativeViews.add( maxNativeAdView.getCallToActionButton() );
             }
 
-            nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, nativeAdListener );
+            // Here dislikeView is null since it is optional
+            nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
         }
     }
 }
