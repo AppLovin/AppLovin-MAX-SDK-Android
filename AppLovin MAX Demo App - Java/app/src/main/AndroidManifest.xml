@@ -12,8 +12,8 @@
         android:theme="@style/AppTheme">
 
         <meta-data
-            android:name="applovin.sdk.key"
-            android:value="SDK_KEY_HERE" />
+            <meta-data android:name="applovin.sdk.key"
+           android:value="t1HXm2_hunCt4ul3zh2l8fqhLyrkzQknt05UTA7V6zn1-L_39vayz8rKEKUERi_nR6OSHnnl6tCV_cXPprWoJP"/>
 
         <activity
             android:exported="true"
