@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.0.1
+* Removed `constraint-layout` dependency from adapter.
+
 ## 8.2.0.0
 * Certified with Nend SDK 8.2.0.
 

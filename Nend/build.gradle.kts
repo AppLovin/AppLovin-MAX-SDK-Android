@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 8
 private val versionMinor = 2
 private val versionPatch = 0
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -57,13 +57,6 @@ publishing {
                             appendNode("artifactId", "nend-sdk")
                             appendNode("version", libraryVersions["nend"])
                             appendNode("scope", "compile")
-                        }
-                        // Add constraint-layout dependency needed by Nend SDK: https://github.com/fan-ADN/nendSDK-Android-lib/blob/gh-pages/library/net/nend/android/nend-sdk/5.1.1/nend-sdk-5.1.1.pom
-                        appendNode("dependency").apply {
-                            appendNode("groupId", "com.android.support.constraint")
-                            appendNode("artifactId", "constraint-layout")
-                            appendNode("version", "1.1.3")
-                            appendNode("scope", "runtime")
                         }
                     }
                 }
