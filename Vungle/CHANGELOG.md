@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.12.0.1
+* Add support for native ads. Note: Contact your Vungle team for access to native format.
+* Add orientation support for fullscreen ads.
+
 ## 6.12.0.0
 * Certified with Vungle SDK 6.12.0.
 
