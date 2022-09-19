@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.41.1
+* Remove `mbBidInterstitialVideoHandler.isBidReady()` and `mbBidRewardVideoHandler.isBidReady()` checks for interstitial and rewarded bidding ads.
+
 ## 16.2.41.0
 * Certified with Mintegral SDK 16.2.41.
 

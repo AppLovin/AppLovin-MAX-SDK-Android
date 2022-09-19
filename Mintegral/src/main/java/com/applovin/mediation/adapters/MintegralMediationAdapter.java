@@ -275,30 +275,10 @@ public class MintegralMediationAdapter
 
             mbBidInterstitialVideoHandler.setInterstitialVideoListener( router.getInterstitialListener() );
 
-            if ( mbBidInterstitialVideoHandler.isBidReady() )
-            {
-                log( "A bidding interstitial ad is ready already" );
+            // Update mute state if configured by backend
+            if ( shouldUpdateMuteState ) mbBidInterstitialVideoHandler.playVideoMute( muteState );
 
-                // Passing extra info such as creative id supported in 9.15.0+
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( mbBidInterstitialVideoHandler.getRequestId() ) )
-                {
-                    Bundle extraInfo = new Bundle( 1 );
-                    extraInfo.putString( "creative_id", mbBidInterstitialVideoHandler.getRequestId() );
-
-                    router.onAdLoaded( mbUnitId, extraInfo );
-                }
-                else
-                {
-                    router.onAdLoaded( mbUnitId );
-                }
-            }
-            else
-            {
-                // Update mute state if configured by backend
-                if ( shouldUpdateMuteState ) mbBidInterstitialVideoHandler.playVideoMute( muteState );
-
-                mbBidInterstitialVideoHandler.loadFromBid( parameters.getBidResponse() );
-            }
+            mbBidInterstitialVideoHandler.loadFromBid( parameters.getBidResponse() );
         }
         else
         {
@@ -395,30 +375,10 @@ public class MintegralMediationAdapter
 
             mbBidRewardVideoHandler.setRewardVideoListener( router.getRewardedListener() );
 
-            if ( mbBidRewardVideoHandler.isBidReady() )
-            {
-                log( "A bidding rewarded ad is ready already" );
+            // Update mute state if configured by backend
+            if ( shouldUpdateMuteState ) mbBidRewardVideoHandler.playVideoMute( muteState );
 
-                // Passing extra info such as creative id supported in 9.15.0+
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( mbBidRewardVideoHandler.getRequestId() ) )
-                {
-                    Bundle extraInfo = new Bundle( 1 );
-                    extraInfo.putString( "creative_id", mbBidRewardVideoHandler.getRequestId() );
-
-                    router.onAdLoaded( mbUnitId, extraInfo );
-                }
-                else
-                {
-                    router.onAdLoaded( mbUnitId );
-                }
-            }
-            else
-            {
-                // Update mute state if configured by backend
-                if ( shouldUpdateMuteState ) mbBidRewardVideoHandler.playVideoMute( muteState );
-
-                mbBidRewardVideoHandler.loadFromBid( parameters.getBidResponse() );
-            }
+            mbBidRewardVideoHandler.loadFromBid( parameters.getBidResponse() );
         }
         else
         {
