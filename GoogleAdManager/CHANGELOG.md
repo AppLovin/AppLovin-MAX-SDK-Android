@@ -1,7 +1,11 @@
 # Changelog
 
+## 21.2.0.0
+* Certified with GoogleAdManager SDK 21.1.0.
+* Unity: Add assembly definition files.
+
 ## 21.1.0.3
-* Fix `NoClassDefFoundError` introduced in 21.1.0.2. 
+* Fix `NoClassDefFoundError` introduced in 21.1.0.2.
 
 ## 21.1.0.2
 * Add support for app open ads.
