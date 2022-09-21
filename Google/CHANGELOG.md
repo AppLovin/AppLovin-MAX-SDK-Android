@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.2.0.1
+* Unity: Add assembly definition files.
+
 ## 21.2.0.0
 * Certified with Google SDK 21.2.0.
 
