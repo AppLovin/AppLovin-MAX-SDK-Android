@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.2.0.2
+* App open updates.
+
 ## 21.2.0.1
 * Unity: Add assembly definition files.
 

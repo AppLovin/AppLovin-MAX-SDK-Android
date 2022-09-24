@@ -18,6 +18,7 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
+import com.applovin.mediation.adapter.MaxAppOpenAdapter;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxRewardedInterstitialAdapter;
@@ -91,13 +92,14 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
  */
 public class GoogleMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
+        implements MaxSignalProvider, MaxInterstitialAdapter, /* MaxAppOpenAdapter */ MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
 
     private InterstitialAd         interstitialAd;
     private AppOpenAd              appOpenAd;
+    private InterstitialAd         appOpenInterstitialAd;
     private RewardedInterstitialAd rewardedInterstitialAd;
     private RewardedAd             rewardedAd;
     private AdView                 adView;
@@ -105,6 +107,7 @@ public class GoogleMediationAdapter
     private NativeAdView           nativeAdView;
 
     private AppOpenAdListener              appOpenAdListener;
+    private AppOpenAdListener              appOpenInterstitialAdListener;
     private RewardedInterstitialAdListener rewardedInterstitialAdListener;
     private RewardedAdListener             rewardedAdListener;
 
@@ -191,6 +194,13 @@ public class GoogleMediationAdapter
             appOpenAd.setFullScreenContentCallback( null );
             appOpenAd = null;
             appOpenAdListener = null;
+        }
+
+        if ( appOpenInterstitialAd != null )
+        {
+            appOpenInterstitialAd.setFullScreenContentCallback( null );
+            appOpenInterstitialAd = null;
+            appOpenInterstitialAdListener = null;
         }
 
         if ( rewardedInterstitialAd != null )
@@ -333,64 +343,111 @@ public class GoogleMediationAdapter
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
-        log( "Loading app open ad: " + placementId + "..." );
+        boolean isInterstitial = parameters.getServerParameters().getBoolean( "is_inter_placement" );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "app open " + ( isInterstitial ? "interstitial " : "" ) + "ad: " + placementId + "..." );
 
         updateMuteState( parameters );
         setRequestConfiguration( parameters );
-        AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.APP_OPEN, parameters, activity );
         Context context = getContext( activity );
-        int orientation = AppLovinSdkUtils.getOrientation( context );
 
-        AppOpenAd.load( context, placementId, adRequest, orientation, new AppOpenAd.AppOpenAdLoadCallback()
+        if ( isInterstitial )
         {
-            @Override
-            public void onAdLoaded(final AppOpenAd ad)
+            AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.INTERSTITIAL, parameters, activity );
+            InterstitialAd.load( context, placementId, adRequest, new InterstitialAdLoadCallback()
             {
-                log( "App open ad loaded: " + placementId + "..." );
-
-                appOpenAd = ad;
-                appOpenAdListener = new AppOpenAdListener( placementId, listener );
-                ad.setFullScreenContentCallback( appOpenAdListener );
-
-                ResponseInfo responseInfo = appOpenAd.getResponseInfo();
-                String responseId = responseInfo != null ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdkUtils.isValidString( responseId ) )
+                @Override
+                public void onAdLoaded(@NonNull final InterstitialAd ad)
                 {
-                    Bundle extraInfo = new Bundle( 1 );
-                    extraInfo.putString( "creative_id", responseId );
+                    log( "App open interstitial ad loaded: " + placementId + "..." );
 
-                    listener.onAppOpenAdLoaded( extraInfo );
+                    appOpenInterstitialAd = ad;
+                    appOpenInterstitialAdListener = new AppOpenAdListener( placementId, listener );
+                    appOpenInterstitialAd.setFullScreenContentCallback( appOpenInterstitialAdListener );
+
+                    ResponseInfo responseInfo = appOpenInterstitialAd.getResponseInfo();
+                    String responseId = responseInfo != null ? responseInfo.getResponseId() : null;
+                    if ( AppLovinSdkUtils.isValidString( responseId ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", responseId );
+
+                        listener.onAppOpenAdLoaded( extraInfo );
+                    }
+                    else
+                    {
+                        listener.onAppOpenAdLoaded();
+                    }
                 }
-                else
+
+                @Override
+                public void onAdFailedToLoad(@NonNull final LoadAdError loadAdError)
                 {
-                    listener.onAppOpenAdLoaded();
+                    MaxAdapterError adapterError = toMaxError( loadAdError );
+                    log( "App open interstitial ad (" + placementId + ") failed to load with error: " + adapterError );
+                    listener.onAppOpenAdLoadFailed( adapterError );
                 }
-            }
-
-            @Override
-            public void onAdFailedToLoad(final LoadAdError loadAdError)
+            } );
+        }
+        else
+        {
+            AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.APP_OPEN, parameters, activity );
+            int orientation = AppLovinSdkUtils.getOrientation( context );
+            AppOpenAd.load( context, placementId, adRequest, orientation, new AppOpenAd.AppOpenAdLoadCallback()
             {
-                MaxAdapterError adapterError = toMaxError( loadAdError );
-                log( "App open ad (" + placementId + ") failed to load with error: " + adapterError );
-                listener.onAppOpenAdLoadFailed( adapterError );
-            }
-        } );
+                @Override
+                public void onAdLoaded(@NonNull final AppOpenAd ad)
+                {
+                    log( "App open ad loaded: " + placementId + "..." );
+
+                    appOpenAd = ad;
+                    appOpenAdListener = new AppOpenAdListener( placementId, listener );
+                    ad.setFullScreenContentCallback( appOpenAdListener );
+
+                    ResponseInfo responseInfo = appOpenAd.getResponseInfo();
+                    String responseId = responseInfo != null ? responseInfo.getResponseId() : null;
+                    if ( AppLovinSdkUtils.isValidString( responseId ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", responseId );
+
+                        listener.onAppOpenAdLoaded( extraInfo );
+                    }
+                    else
+                    {
+                        listener.onAppOpenAdLoaded();
+                    }
+                }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull final LoadAdError loadAdError)
+                {
+                    MaxAdapterError adapterError = toMaxError( loadAdError );
+                    log( "App open ad (" + placementId + ") failed to load with error: " + adapterError );
+                    listener.onAppOpenAdLoadFailed( adapterError );
+                }
+            } );
+        }
     }
 
     // @Override
     public void showAppOpenAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Showing app open ad: " + placementId + "..." );
+        boolean isInterstitial = parameters.getServerParameters().getBoolean( "is_inter_placement" );
+        log( "Showing app open " + ( isInterstitial ? "interstitial " : "" ) + "ad: " + placementId + "..." );
 
-        if ( appOpenAd != null )
+        if ( appOpenInterstitialAd != null )
+        {
+            appOpenInterstitialAd.show( activity );
+        }
+        else if ( appOpenAd != null )
         {
             appOpenAd.show( activity );
         }
         else
         {
             log( "App open ad failed to show: " + placementId );
-            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onAppOpenAdLoadFailed( new MaxAdapterError( -4205, "Ad display failed" ) );
         }
     }
 
