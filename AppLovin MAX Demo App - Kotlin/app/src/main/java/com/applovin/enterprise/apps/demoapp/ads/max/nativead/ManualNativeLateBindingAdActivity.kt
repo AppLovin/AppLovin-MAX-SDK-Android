@@ -70,8 +70,9 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
                 logAnonymousCallback()
             }
 
-            override fun onNativeAdExpired(nativeAd: MaxAd?) {
+            override fun onNativeAdExpired(ad: MaxAd?) {
                 logAnonymousCallback()
+                nativeAdLoader.loadAd()
             }
         })
     }
