@@ -69,6 +69,11 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
             override fun onNativeAdClicked(ad: MaxAd) {
                 logAnonymousCallback()
             }
+
+            override fun onNativeAdExpired(ad: MaxAd?) {
+                logAnonymousCallback()
+                nativeAdLoader.loadAd()
+            }
         })
     }
 
@@ -93,6 +98,15 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
 
     fun showAd(view: View) {
         val adView = createNativeAdView()
+
+        if (nativeAd!!.nativeAd!!.isExpired) {
+            nativeAdLoader.destroy(nativeAd)
+            nativeAdLoader.loadAd()
+
+            showAdButton.isEnabled = false
+            return
+        }
+
         // Render the ad separately
         nativeAdLoader.render(adView, nativeAd)
         nativeAdLayout.addView(adView)
