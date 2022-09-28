@@ -165,6 +165,7 @@ public class LineMediationAdapter
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
+        // NOTE: LINE's SDK requires the same Activity instance used to initialize an interstitial ad to be the SAME as the one used to show it
         if ( activityRef.get() != activity )
         {
             log( "Display error: Activity instance used in interstitial ad initialization is different from activity instance being used to display ad." );
@@ -196,6 +197,7 @@ public class LineMediationAdapter
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
+        // NOTE: LINE's SDK requires the same Activity instance used to initialize a rewarded ad to be the SAME as the one used to show it
         if ( activityRef.get() != activity )
         {
             log( "Display error: Activity instance used in rewarded ad initialization is different from activity instance being used to display ad." );

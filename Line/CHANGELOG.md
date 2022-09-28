@@ -1,5 +1,8 @@
 # Changelog
 
+## 2022.2.16.1
+* Add comment stating that FiveAd's SDK requires that same `activity` instance used to initialize an interstitial or rewarded ad needs to be the SAME one used to show it.
+
 ## 2022.2.16.0
 * Certified with FiveAd SDK 2.4.20220216.
 
