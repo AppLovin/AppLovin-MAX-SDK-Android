@@ -2,7 +2,16 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -12,6 +21,7 @@ import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -19,6 +29,8 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.yandex.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
@@ -34,6 +46,16 @@ import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.MobileAds;
 import com.yandex.mobile.ads.interstitial.InterstitialAd;
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener;
+import com.yandex.mobile.ads.nativeads.MediaView;
+import com.yandex.mobile.ads.nativeads.NativeAd;
+import com.yandex.mobile.ads.nativeads.NativeAdAssets;
+import com.yandex.mobile.ads.nativeads.NativeAdEventListener;
+import com.yandex.mobile.ads.nativeads.NativeAdException;
+import com.yandex.mobile.ads.nativeads.NativeAdLoadListener;
+import com.yandex.mobile.ads.nativeads.NativeAdLoader;
+import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration;
+import com.yandex.mobile.ads.nativeads.NativeAdView;
+import com.yandex.mobile.ads.nativeads.NativeAdViewBinder;
 import com.yandex.mobile.ads.rewarded.Reward;
 import com.yandex.mobile.ads.rewarded.RewardedAd;
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
@@ -51,15 +73,20 @@ import androidx.annotation.Nullable;
  */
 public class YandexMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
+
+    // Required parameters given by Yandex
+    private static final Map<String, String> adRequestParameters = new HashMap<>( 3 );
 
     private static InitializationStatus status;
 
     private InterstitialAd interstitialAd;
     private RewardedAd     rewardedAd;
     private BannerAdView   adView;
+    private NativeAd       nativeAd;
+    private NativeAdView   nativeAdView;
 
     // Explicit default constructor declaration
     public YandexMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -98,6 +125,9 @@ public class YandexMediationAdapter
             adView.destroy();
             adView = null;
         }
+
+        nativeAd = null;
+        nativeAdView = null;
     }
 
     @Override
@@ -135,6 +165,10 @@ public class YandexMediationAdapter
         {
             onCompletionListener.onCompletion( status, null );
         }
+
+        adRequestParameters.put( "adapter_network_name", "applovin" );
+        adRequestParameters.put( "adapter_version", getAdapterVersion() );
+        adRequestParameters.put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
     }
 
     //endregion
@@ -176,8 +210,7 @@ public class YandexMediationAdapter
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
-        String bidResponse = parameters.getBidResponse();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
         updateUserConsent( parameters );
 
@@ -211,7 +244,7 @@ public class YandexMediationAdapter
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading rewarded ad for placement: " + placementId + "..." );
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
 
         updateUserConsent( parameters );
 
@@ -249,7 +282,7 @@ public class YandexMediationAdapter
     {
         final String adFormatLabel = adFormat.getLabel();
         final String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + adFormatLabel + " ad for placement: " + placementId + "..." );
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
 
         updateUserConsent( parameters );
 
@@ -259,6 +292,34 @@ public class YandexMediationAdapter
         adView.setBannerAdEventListener( new AdViewListener( adFormatLabel, listener ) );
 
         adView.loadAd( createAdRequest( parameters ) );
+    }
+
+    //endregion
+
+    //region MaxNativeAdapter
+
+    @Override
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    {
+        final String placementId = parameters.getThirdPartyAdPlacementId();
+        final String bidResponse = parameters.getBidResponse();
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
+
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context applicationContext = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
+        updateUserConsent( parameters );
+
+        NativeAdLoader nativeAdLoader = new NativeAdLoader( applicationContext );
+        nativeAdLoader.setNativeAdLoadListener( new NativeAdListener( parameters, applicationContext, listener ) );
+
+        final NativeAdRequestConfiguration nativeAdRequestConfiguration = new NativeAdRequestConfiguration.Builder( placementId )
+                .setBiddingData( bidResponse )
+                .setParameters( adRequestParameters )
+                .setShouldLoadImagesAutomatically( true ) // images will be loaded before ad is ready
+                .build();
+
+        nativeAdLoader.loadAd( nativeAdRequestConfiguration );
     }
 
     //endregion
@@ -295,12 +356,6 @@ public class YandexMediationAdapter
 
     private AdRequest createAdRequest(MaxAdapterResponseParameters parameters)
     {
-        // Required parameters given by Yandex
-        Map<String, String> adRequestParameters = new HashMap<>( 3 );
-        adRequestParameters.put( "adapter_network_name", "applovin" );
-        adRequestParameters.put( "adapter_version", getAdapterVersion() );
-        adRequestParameters.put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
-
         return new AdRequest.Builder()
                 .setBiddingData( parameters.getBidResponse() )
                 .setParameters( adRequestParameters )
@@ -585,4 +640,164 @@ public class YandexMediationAdapter
     }
 
     //endregion
+
+    private class NativeAdListener
+            implements NativeAdLoadListener, NativeAdEventListener
+    {
+        private final String                     placementId;
+        private final Bundle                     serverParameters;
+        private final Context                    applicationContext;
+        private final MaxNativeAdAdapterListener listener;
+
+        private NativeAdListener(final MaxAdapterResponseParameters parameters, final Context context, final MaxNativeAdAdapterListener listener)
+        {
+            this.placementId = parameters.getThirdPartyAdPlacementId();
+            this.serverParameters = parameters.getServerParameters();
+            this.applicationContext = context;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad loaded: " + placementId );
+
+            YandexMediationAdapter.this.nativeAd = nativeAd;
+            nativeAd.setNativeAdEventListener( this );
+
+            final NativeAdAssets assets = nativeAd.getAdAssets();
+
+            final String templateName = BundleUtils.getString( "template", "", serverParameters );
+            final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+            if ( isTemplateAd && TextUtils.isEmpty( assets.getTitle() ) )
+            {
+                e( "Native ad (" + nativeAd + ") does not have required assets." );
+                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+
+                return;
+            }
+
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Drawable iconDrawable = null;
+                    if ( assets.getIcon() != null )
+                    {
+                        iconDrawable = new BitmapDrawable( applicationContext.getResources(), assets.getIcon().getBitmap() );
+                    }
+
+                    LinearLayout disclaimerSponsoredOptionsViewContainer = new LinearLayout( applicationContext );
+                    TextView disclaimer = new TextView( applicationContext );
+                    TextView sponsored = new TextView( applicationContext );
+
+                    disclaimer.setText( assets.getWarning() );
+                    sponsored.setText( assets.getSponsored() );
+                    disclaimerSponsoredOptionsViewContainer.addView( disclaimer ); // new TextView as disclaimer view
+                    disclaimerSponsoredOptionsViewContainer.addView( sponsored ); // new TextView as sponsored view
+                    disclaimerSponsoredOptionsViewContainer.addView( new ImageView( applicationContext ) ); // new ImageView as options view
+
+                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( MaxAdFormat.NATIVE )
+                            .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
+                            .setTitle( assets.getTitle() )
+                            .setAdvertiser( assets.getDomain() )
+                            .setBody( assets.getBody() )
+                            .setMediaView( new MediaView( applicationContext ) ) // Yandex requires rendering MediaView with their own bind method
+                            .setOptionsView( disclaimerSponsoredOptionsViewContainer )
+                            .setCallToAction( assets.getCallToAction() );
+
+                    MaxNativeAd maxNativeAd = new MaxYandexNativeAd( builder );
+
+                    listener.onNativeAdLoaded( maxNativeAd, null );
+                }
+            } );
+        }
+
+        @Override
+        public void onAdFailedToLoad(@NonNull final AdRequestError adRequestError)
+        {
+            MaxAdapterError adapterError = toMaxError( adRequestError );
+            log( "Native ad (" + placementId + ") failed to load with error: " + adapterError );
+            listener.onNativeAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onImpression(@Nullable final ImpressionData impressionData)
+        {
+            log( "Native ad (" + placementId + ") shown" );
+            listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( "Native ad (" + placementId + ") clicked" );
+            listener.onNativeAdClicked();
+        }
+
+        @Override
+        public void onLeftApplication()
+        {
+            log( "Native ad (" + placementId + ") left application" );
+        }
+
+        @Override
+        public void onReturnedToApplication()
+        {
+            log( "Native ad (" + placementId + ") returned to application" );
+        }
+    }
+
+    private class MaxYandexNativeAd
+            extends MaxNativeAd
+    {
+        public MaxYandexNativeAd(final Builder builder)
+        {
+            super( builder );
+        }
+
+        @Override
+        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        {
+            if ( YandexMediationAdapter.this.nativeAd == null )
+            {
+                e( "Failed to register native ad views: native ad is null." );
+                return;
+            }
+
+            nativeAdView = new NativeAdView( maxNativeAdView.getContext() );
+
+            // The Yandex Native Ad View needs to be wrapped around the main native ad view to get impressions.
+            View mainView = maxNativeAdView.getMainView();
+            maxNativeAdView.removeView( mainView );
+            nativeAdView.addView( mainView );
+            maxNativeAdView.addView( nativeAdView );
+
+            LinearLayout disclaimerSponsoredOptionsViewContainer = (LinearLayout) maxNativeAdView.getOptionsContentViewGroup().getChildAt( 0 );
+
+            final NativeAdViewBinder binder = new NativeAdViewBinder.Builder( nativeAdView )
+                    .setIconView( maxNativeAdView.getIconImageView() )
+                    .setTitleView( maxNativeAdView.getTitleTextView() )
+                    .setDomainView( maxNativeAdView.getAdvertiserTextView() )
+                    .setBodyView( maxNativeAdView.getBodyTextView() )
+                    .setMediaView( (MediaView) getMediaView() )
+                    .setWarningView( (TextView) disclaimerSponsoredOptionsViewContainer.getChildAt( 0 ) )
+                    .setSponsoredView( (TextView) disclaimerSponsoredOptionsViewContainer.getChildAt( 1 ) )
+                    .setFeedbackView( (ImageView) disclaimerSponsoredOptionsViewContainer.getChildAt( 2 ) )
+                    .setCallToActionView( maxNativeAdView.getCallToActionButton() )
+                    .build();
+
+            try
+            {
+                YandexMediationAdapter.this.nativeAd.bindNativeAd( binder );
+                nativeAdView.setVisibility( View.VISIBLE );
+            }
+            catch ( NativeAdException exception )
+            {
+                e( "Failed to register native ad views.", exception );
+            }
+        }
+    }
 }
