@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.3.1.0
+* Certified with Yandex SDK 5.3.1.
+
 ## 5.3.0.1
 * Add support for native ads.
 
