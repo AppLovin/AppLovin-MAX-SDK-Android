@@ -59,7 +59,6 @@ public class LineMediationAdapter
     private FiveAdVideoReward       rewardedAd;
     private FiveAdCustomLayout      adView;
     private FiveAdNative            nativeAd;
-    private WeakReference<Activity> activityRef;
 
     public LineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -154,7 +153,6 @@ public class LineMediationAdapter
         log( "Loading interstitial ad for slot id: " + slotId + "..." );
 
         interstitialAd = new FiveAdInterstitial( activity, slotId );
-        activityRef = new WeakReference<>( activity );
 
         InterstitialListener interstitialListener = new InterstitialListener( listener );
         interstitialAd.setLoadListener( interstitialListener );
@@ -165,14 +163,6 @@ public class LineMediationAdapter
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        // NOTE: LINE's SDK requires the same Activity instance used to initialize an interstitial ad to be the SAME as the one used to show it
-        if ( activityRef.get() != activity )
-        {
-            log( "Display error: Activity instance used in interstitial ad initialization is different from activity instance being used to display ad." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
-            return;
-        }
-
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
 
@@ -186,7 +176,6 @@ public class LineMediationAdapter
         log( "Loading rewarded ad for slot id: " + slotId + "..." );
 
         rewardedAd = new FiveAdVideoReward( activity, slotId );
-        activityRef = new WeakReference<>( activity );
 
         RewardedListener rewardedListener = new RewardedListener( listener );
         rewardedAd.setLoadListener( rewardedListener );
@@ -197,14 +186,6 @@ public class LineMediationAdapter
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        // NOTE: LINE's SDK requires the same Activity instance used to initialize a rewarded ad to be the SAME as the one used to show it
-        if ( activityRef.get() != activity )
-        {
-            log( "Display error: Activity instance used in rewarded ad initialization is different from activity instance being used to display ad." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
-            return;
-        }
-
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for slot id: " + slotId + "..." );
 
@@ -274,7 +255,7 @@ public class LineMediationAdapter
                 thirdPartySdkErrorMessage = "Please try again in a stable network environment.";
                 break;
             case NO_AD:
-                adapterError = MaxAdapterError.AD_NOT_READY;
+                adapterError = MaxAdapterError.NO_FILL;
                 thirdPartySdkErrorMessage = "Ad was not ready at display time. Please try again.";
                 break;
             case BAD_APP_ID:

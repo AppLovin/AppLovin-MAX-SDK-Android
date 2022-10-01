@@ -1,5 +1,9 @@
 # Changelog
 
+## 2022.2.16.2
+* Remove checks to enable initializing and showing interstitial and rewarded ads using different `activity` instances.
+* Update error code mapping for `NO_AD`.
+
 ## 2022.2.16.1
 * Add comment stating that FiveAd's SDK requires that same `activity` instance used to initialize an interstitial or rewarded ad needs to be the SAME one used to show it.
 
