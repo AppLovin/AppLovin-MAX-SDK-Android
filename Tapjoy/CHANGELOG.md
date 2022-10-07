@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.11.0.0
+* Certified with Tapjoy SDK 12.11.0.
+
 ## 12.10.0.2
 * Set `Tapjoy.optOutAdvertisingID(...)` to `true` if COPPA, to comply with Google Families Program rules.
 
