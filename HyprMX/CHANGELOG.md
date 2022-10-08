@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.3.1
+* Set consent based on a mix of 'hasUserConsent', 'ageRestrictedUser' and 'doNotSell' values.
+
 ## 6.0.3.0
 * Certified with HyprMX SDK 6.0.3.
 

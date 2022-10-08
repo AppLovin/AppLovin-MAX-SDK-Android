@@ -23,7 +23,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParamet
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.hyprmx.android.sdk.banner.HyprMXBannerListener;
 import com.hyprmx.android.sdk.banner.HyprMXBannerSize;
@@ -246,12 +245,22 @@ public class HyprMXMediationAdapter
         }
     }
 
+    //region Helper Methods
+
     private ConsentStatus getConsentStatus(final MaxAdapterParameters parameters)
     {
         Boolean hasUserConsent = parameters.hasUserConsent();
-        if ( hasUserConsent != null )
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
+        Boolean isDoNotSell = parameters.isDoNotSell();
+
+        // isTrue/isFalse/isNull to match the spec from HyprMX while avoiding NPEs
+        if ( ( isNull( isDoNotSell ) || isFalse( isDoNotSell ) ) && isTrue( hasUserConsent ) && isFalse( isAgeRestrictedUser ) )
         {
-            return hasUserConsent ? ConsentStatus.CONSENT_GIVEN : ConsentStatus.CONSENT_DECLINED;
+            return ConsentStatus.CONSENT_GIVEN;
+        }
+        else if ( isTrue( isDoNotSell ) || isFalse( hasUserConsent ) || isTrue( isAgeRestrictedUser ) )
+        {
+            return ConsentStatus.CONSENT_DECLINED;
         }
         else
         {
@@ -259,13 +268,26 @@ public class HyprMXMediationAdapter
         }
     }
 
+    private boolean isTrue(Boolean privacyConsent)
+    {
+        return privacyConsent != null && privacyConsent;
+    }
+
+    private boolean isFalse(Boolean privacyConsent)
+    {
+        return privacyConsent != null && !privacyConsent;
+    }
+
+    private boolean isNull(Boolean privacyConsent)
+    {
+        return privacyConsent == null;
+    }
+
     private void updateUserConsent(final MaxAdapterResponseParameters parameters)
     {
         // NOTE: HyprMX requested to always set GDPR regardless of region.
         HyprMX.INSTANCE.setConsentStatus( getConsentStatus( parameters ) );
     }
-
-    //region Helper Methods
 
     private Placement createFullscreenAd(final String placementId, final PlacementListener listener)
     {
