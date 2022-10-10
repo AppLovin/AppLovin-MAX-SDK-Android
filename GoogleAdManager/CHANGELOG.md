@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.3.0.0
+* Certified with GoogleAdManager SDK 21.3.0.
+
 ## 21.2.0.0
 * Certified with GoogleAdManager SDK 21.2.0.
 * Unity: Add assembly definition files.
