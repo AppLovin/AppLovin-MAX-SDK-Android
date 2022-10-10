@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.3.0.0
+* Certified with Google SDK 21.3.0.
+
 ## 21.2.0.2
 * App open updates.
 
