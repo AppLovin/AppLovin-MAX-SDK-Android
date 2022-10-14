@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10.3
+* Add CCPA support.
+
 ## 1.9.10.2
 * Update Unity dependencies.
 

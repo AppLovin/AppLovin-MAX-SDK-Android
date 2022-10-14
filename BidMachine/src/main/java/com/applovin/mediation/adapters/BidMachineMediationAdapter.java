@@ -33,6 +33,7 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -355,6 +356,16 @@ public class BidMachineMediationAdapter
         else if ( state == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
         {
             BidMachine.setSubjectToGDPR( false );
+        }
+
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
+        {
+            BidMachine.setUSPrivacyString( isDoNotSell ? "1YY-" : "1YN-" );
+        }
+        else
+        {
+            BidMachine.setUSPrivacyString( "1---" );
         }
     }
 
