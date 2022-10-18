@@ -140,7 +140,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
         }
 
         inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val textView: TextView = itemView.findViewById(R.id.textView)
+            val textView: TextView = itemView.findViewById(R.id.text_view)
         }
     }
 

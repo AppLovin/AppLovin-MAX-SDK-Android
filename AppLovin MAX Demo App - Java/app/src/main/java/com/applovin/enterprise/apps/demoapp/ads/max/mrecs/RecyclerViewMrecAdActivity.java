@@ -210,7 +210,7 @@ public class RecyclerViewMrecAdActivity
             {
                 super( itemView );
 
-                this.textView = itemView.findViewById( R.id.textView );
+                this.textView = itemView.findViewById( R.id.text_view );
             }
         }
     }

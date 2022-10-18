@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:padding="8dp"
+    android:layout_height="wrap_content"
     android:maxHeight="300dp"
-    android:layout_height="wrap_content">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/icon_image_view"
@@ -13,13 +13,14 @@
         android:layout_height="50dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@mipmap/ic_launcher"/>
+        tools:src="@mipmap/ic_launcher" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:background="@android:color/holo_green_dark"
         android:padding="2dp"
         android:text="Ad"
@@ -35,7 +36,7 @@
         android:layout_height="25dp"
         android:layout_marginBottom="8dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/advertiser_textView"
+        app:layout_constraintBottom_toTopOf="@+id/advertiser_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/title_text_view"
@@ -46,16 +47,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/text_view"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Title" />
 
     <TextView
-        android:id="@+id/advertiser_textView"
+        android:id="@+id/advertiser_text_view"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/icon_image_view"
         app:layout_constraintEnd_toEndOf="parent"
