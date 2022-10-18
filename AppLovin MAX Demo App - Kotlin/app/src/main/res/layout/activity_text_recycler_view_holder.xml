@@ -7,9 +7,9 @@
     android:paddingBottom="10dp">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:paddingHorizontal="8dp" />
 </LinearLayout>

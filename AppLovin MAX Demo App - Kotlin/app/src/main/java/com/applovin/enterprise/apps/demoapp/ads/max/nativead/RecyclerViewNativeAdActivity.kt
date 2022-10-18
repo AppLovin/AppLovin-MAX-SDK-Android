@@ -3,7 +3,6 @@ package com.applovin.enterprise.apps.demoapp.ads.max.nativead
 import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -75,7 +74,7 @@ class RecyclerViewNativeAdActivity : AppCompatActivity() {
         }
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val textView: TextView = itemView.findViewById(R.id.textView)
+            val textView: TextView = itemView.findViewById(R.id.text_view)
         }
 
     }
