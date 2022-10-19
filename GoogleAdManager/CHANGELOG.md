@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.3.0.1
+* Add ability to set [publisher provided id](https://support.google.com/admanager/answer/2880055) via local extra parameters by calling `setLocalExtraParameter("ppid", String)`.
+
 ## 21.3.0.0
 * Certified with GoogleAdManager SDK 21.3.0.
 

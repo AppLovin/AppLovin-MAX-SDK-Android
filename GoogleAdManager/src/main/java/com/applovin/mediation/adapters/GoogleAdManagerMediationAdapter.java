@@ -709,6 +709,12 @@ public class GoogleAdManagerMediationAdapter
                 }
             }
 
+            Object publisherProvidedId = localExtraParameters.get( "ppid" );
+            if ( publisherProvidedId instanceof String )
+            {
+                requestBuilder.setPublisherProvidedId( (String) publisherProvidedId );
+            }
+
             Object customTargetingDataObject = localExtraParameters.get( "custom_targeting" );
             if ( customTargetingDataObject instanceof Map )
             {
