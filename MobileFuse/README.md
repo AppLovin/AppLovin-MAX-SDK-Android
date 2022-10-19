@@ -1,0 +1,1 @@
+# MobileFuse Adapter
