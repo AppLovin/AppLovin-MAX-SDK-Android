@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.3.0.2
+* Remove redundant client side check for setting user consent.
+
 ## 21.3.0.1
 * Add ability to set [publisher provided id](https://support.google.com/admanager/answer/2880055) via local extra parameters by calling `setLocalExtraParameter("ppid", String)`.
 
