@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.9.2
+* Add support for native ad view ads.
+
 ## 10.0.9.1
 * Add impression callbacks for banners, MRECs, interstitials and rewarded ads and update `onAdImpressed()` to `onAdImpression()` for native ads.
 
