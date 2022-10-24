@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0.1
+* Add support for native ad view ads.
+* Call `NativeAd.clear` when destroying adapter instance.
+* Update `activity == null` error message to "Missing Activity"
+
 ## 2.2.0.0
 * Certified with Yahoo Mobile SDK 1.2.0
 

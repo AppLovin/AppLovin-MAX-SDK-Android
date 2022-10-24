@@ -149,7 +149,14 @@ public class VerizonAdsMediationAdapter
             inlineAdView = null;
         }
 
-        nativeAd = null;
+        if ( nativeAd != null )
+        {
+            // Do not call `.destroy`. Calling it causes issues when reusing the same `MaxNativeAdView`.
+            // This can be reproduced by testing max native manual ads since that activity reuses the `MaxNativeAdView`.
+            // iOS uses both `.clear` and `.destroy` since it doesn't cause any issues.
+            nativeAd.clear();
+            nativeAd = null;
+        }
     }
 
     //region MAX Signal Provider Methods
@@ -280,29 +287,62 @@ public class VerizonAdsMediationAdapter
     {
         String bidResponse = parameters.getBidResponse();
         String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " for placement: '" + placementId + "'..." );
+        final Bundle serverParameters = parameters.getServerParameters();
+        final boolean isNative = serverParameters.getBoolean( "is_native" );
+
+        log( "Loading " + ( isNative ? " native " : " " ) + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " for placement: '" + placementId + "'..." );
 
         updatePrivacyStates( parameters );
         updateLocationCollectionEnabled( parameters );
 
-        AdSize adSize = toAdSize( adFormat );
-        AdViewListener adViewListener = new AdViewListener( listener );
-        inlineAdView = new InlineAdView( activity, placementId, adViewListener );
+        RequestMetadata requestMetadata = createRequestMetadata( bidResponse );
 
-        RequestMetadata requestMetadata = createRequestMetadata( parameters.getBidResponse() );
-        final InlinePlacementConfig config = new InlinePlacementConfig( placementId, requestMetadata, Collections.singletonList( adSize ) );
-
-        ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
-        activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
-
-        runOnUiThread( new Runnable()
+        if ( isNative )
         {
-            @Override
-            public void run()
+            if ( activity == null )
             {
-                inlineAdView.load( config );
+                e( "Native " + adFormat.getLabel() + " ad (" + placementId + ") failed to load: activity reference is null..." );
+                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
+
+                return;
             }
-        } );
+
+            Context context = getContext( activity );
+
+            NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( serverParameters, activity, adFormat, listener );
+            nativeAd = new NativeAd( context, placementId, nativeAdViewListener );
+
+            final NativePlacementConfig config = new NativePlacementConfig( placementId, requestMetadata, NATIVE_AD_AD_TYPES );
+
+            runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    nativeAd.load( config );
+                }
+            } );
+        }
+        else
+        {
+            AdSize adSize = toAdSize( adFormat );
+            AdViewListener adViewListener = new AdViewListener( listener );
+            inlineAdView = new InlineAdView( activity, placementId, adViewListener );
+
+            final InlinePlacementConfig config = new InlinePlacementConfig( placementId, requestMetadata, Collections.singletonList( adSize ) );
+
+            ActivityStateManager activityStateManager = YASAds.getActivityStateManager();
+            activityStateManager.setState( activity, ActivityStateManager.ActivityState.RESUMED );
+
+            runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    inlineAdView.load( config );
+                }
+            } );
+        }
     }
 
     //endregion
@@ -325,7 +365,7 @@ public class VerizonAdsMediationAdapter
         if ( activity == null )
         {
             e( "Native ad (" + placementId + ") failed to load: activity reference is null..." );
-            listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
+            listener.onNativeAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
 
             return;
         }
@@ -481,6 +521,34 @@ public class VerizonAdsMediationAdapter
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
+    {
+        if ( AppLovinSdk.VERSION_CODE < 9140000 )
+        {
+            log( "Native ads with media views are only supported on MAX SDK version 9.14.0 and above. Default native template will be used." );
+            return new MaxNativeAdView( maxNativeAd, activity );
+        }
+
+        if ( AppLovinSdk.VERSION_CODE < 11010000 )
+        {
+            if ( AppLovinSdk.VERSION_CODE < 9140500 && templateName.contains( "vertical" ) )
+            {
+                log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default native template will be used." );
+            }
+
+            return new MaxNativeAdView( maxNativeAd, templateName, activity );
+        }
+
+        return new MaxNativeAdView( maxNativeAd, templateName, getContext( activity ) );
+    }
+
+    private String getValidTemplateName(final String templateName)
+    {
+        if ( AppLovinSdkUtils.isValidString( templateName ) ) return templateName;
+
+        return AppLovinSdk.VERSION_CODE < 9140500 ? "no_body_banner_template" : "media_banner_template";
     }
 
     //endregion
@@ -771,6 +839,178 @@ public class VerizonAdsMediationAdapter
         }
     }
 
+    private class NativeAdViewListener
+            implements NativeAd.NativeAdListener
+    {
+        private final Bundle                   serverParameters;
+        private final WeakReference<Activity>  activityRef;
+        private final MaxAdFormat              adFormat;
+        private final MaxAdViewAdapterListener listener;
+
+        private NativeAdViewListener(final Bundle serverParameters, final Activity activity, final MaxAdFormat adFormat, final MaxAdViewAdapterListener listener)
+        {
+            this.serverParameters = serverParameters;
+            this.activityRef = new WeakReference<>( activity );
+            this.adFormat = adFormat;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onLoaded(final NativeAd nativeAd)
+        {
+            runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    log( "Native " + adFormat.getLabel() + " ad loaded: " + nativeAd.getPlacementId() );
+
+                    final Activity activity = activityRef.get();
+                    if ( activity == null )
+                    {
+                        e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") failed to load: activity reference is null when ad is loaded" );
+                        listener.onAdViewAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
+
+                        return;
+                    }
+
+                    String title = null;
+                    String body = null;
+                    String advertiser = null;
+                    String callToAction = null;
+
+                    NativeTextComponent titleComponent = (NativeTextComponent) nativeAd.getComponent( "title" );
+                    if ( titleComponent != null ) title = titleComponent.getText();
+                    if ( TextUtils.isEmpty( title ) )
+                    {
+                        e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
+                        listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+
+                        return;
+                    }
+
+                    NativeTextComponent advertiserComponent = (NativeTextComponent) nativeAd.getComponent( "disclaimer" );
+                    if ( advertiserComponent != null ) advertiser = advertiserComponent.getText();
+
+                    NativeTextComponent bodyComponent = (NativeTextComponent) nativeAd.getComponent( "body" );
+                    if ( bodyComponent != null ) body = bodyComponent.getText();
+
+                    NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
+                    if ( ctaComponent != null ) callToAction = ctaComponent.getText();
+
+                    // NOTE: Yahoo's SDK only returns ImageView with the image pre-cached, we cannot use the 'getUri()' getter
+                    // since it is un-cached and our SDK will attempt to re-cache it, and we do not support passing ImageView for custom native
+                    MaxNativeAd.MaxNativeAdImage iconImage = null;
+                    NativeImageComponent iconComponent = (NativeImageComponent) nativeAd.getComponent( "iconImage" );
+                    if ( iconComponent != null )
+                    {
+                        ImageView iconView = new ImageView( activity );
+                        iconComponent.prepareView( iconView );
+
+                        Drawable drawable = iconView.getDrawable();
+                        if ( drawable != null )
+                        {
+                            iconImage = new MaxNativeAd.MaxNativeAdImage( drawable );
+                        }
+                    }
+
+                    View mediaView = null;
+                    NativeVideoComponent nativeVideoComponent = (NativeVideoComponent) nativeAd.getComponent( "video" );
+                    NativeImageComponent nativeImageComponent = (NativeImageComponent) nativeAd.getComponent( "mainImage" );
+
+                    // If video is available, use that
+                    if ( nativeVideoComponent != null )
+                    {
+                        mediaView = new VideoPlayerView( activity );
+                        nativeVideoComponent.prepareView( (VideoPlayerView) mediaView );
+                    }
+                    else if ( nativeImageComponent != null )
+                    {
+                        mediaView = new ImageView( activity );
+                        nativeImageComponent.prepareView( (ImageView) mediaView );
+                    }
+
+                    VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
+
+                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( adFormat )
+                            .setTitle( title )
+                            .setBody( body )
+                            .setAdvertiser( advertiser )
+                            .setCallToAction( callToAction )
+                            .setIcon( iconImage )
+                            .setMediaView( mediaView );
+
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
+
+                    String templateName = BundleUtils.getString( "template", "", serverParameters );
+                    String validTemplateName = getValidTemplateName( templateName );
+                    MaxNativeAdView maxNativeAdView = createMaxNativeAdView( maxNativeAd, validTemplateName, activity );
+                    maxNativeAd.prepareViewForInteraction( maxNativeAdView );
+
+                    CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
+                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
+                    {
+                        Bundle extraInfo = new Bundle( 1 );
+                        extraInfo.putString( "creative_id", creativeInfo.getCreativeId() );
+
+                        listener.onAdViewAdLoaded( maxNativeAdView, extraInfo );
+                    }
+                    else
+                    {
+                        listener.onAdViewAdLoaded( maxNativeAdView );
+                    }
+                }
+            } );
+        }
+
+        @Override
+        public void onLoadFailed(final NativeAd nativeAd, final ErrorInfo errorInfo)
+        {
+            MaxAdapterError adapterError = toMaxError( errorInfo );
+            log( "Native " + adFormat.getLabel() + " ad factory (" + nativeAd.getPlacementId() + ") failed to load with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onError(final NativeAd nativeAd, final ErrorInfo errorInfo)
+        {
+            MaxAdapterError adapterError = toMaxError( errorInfo );
+            log( "Native " + adFormat.getLabel() + " ad (" + nativeAd.getPlacementId() + ") failed to load with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onClicked(final NativeAd nativeAd, final NativeComponent nativeComponent)
+        {
+            log( "Native " + adFormat.getLabel() + " ad clicked" );
+            listener.onAdViewAdClicked();
+        }
+
+        @Override
+        public void onAdLeftApplication(final NativeAd nativeAd)
+        {
+            log( "Native " + adFormat.getLabel() + " ad left application" );
+        }
+
+        @Override
+        public void onClosed(final NativeAd nativeAd)
+        {
+            log( "Native " + adFormat.getLabel() + " ad closed" );
+        }
+
+        @Override
+        public void onEvent(final NativeAd nativeAd, final String source, final String eventId, final Map<String, Object> arguments)
+        {
+            log( "Native event from source: " + source + " with event ID: " + eventId + " and arguments: " + arguments );
+
+            if ( AD_IMPRESSION_EVENT_ID.equals( eventId ) )
+            {
+                listener.onAdViewAdDisplayed( null );
+            }
+        }
+    }
+
     private class NativeAdListener
             implements NativeAd.NativeAdListener
     {
@@ -795,6 +1035,15 @@ public class VerizonAdsMediationAdapter
                 {
                     log( "Native ad loaded: " + nativeAd.getPlacementId() );
 
+                    final Activity activity = activityRef.get();
+                    if ( activity == null )
+                    {
+                        e( "Native ad (" + nativeAd + ") failed to load: activity reference is null when ad is loaded" );
+                        listener.onNativeAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
+
+                        return;
+                    }
+
                     String title = null;
                     String body = null;
                     String advertiser = null;
@@ -811,15 +1060,6 @@ public class VerizonAdsMediationAdapter
 
                     NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
                     if ( ctaComponent != null ) callToAction = ctaComponent.getText();
-
-                    final Activity activity = activityRef.get();
-                    if ( activity == null )
-                    {
-                        e( "Native ad (" + nativeAd + ") failed to load: activity reference is null when ad is loaded" );
-                        listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                        return;
-                    }
 
                     // NOTE: Yahoo's SDK only returns ImageView with the image pre-cached, we cannot use the 'getUri()' getter
                     // since it is un-cached and our SDK will attempt to re-cache it, and we do not support passing ImageView for custom native
