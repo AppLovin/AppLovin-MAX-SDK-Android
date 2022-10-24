@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.3.0.2
+* Fix silent exception thrown during signal collection for app open ads.
+
 ## 21.3.0.1
 * Remove redundant client side check for setting user consent.
 

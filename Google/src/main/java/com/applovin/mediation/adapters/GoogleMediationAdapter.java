@@ -18,7 +18,6 @@ import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
-import com.applovin.mediation.adapter.MaxAppOpenAdapter;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxRewardedInterstitialAdapter;
@@ -38,7 +37,6 @@ import com.applovin.mediation.adapters.google.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdError;
@@ -780,7 +778,7 @@ public class GoogleMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
+            return AdFormat.UNKNOWN;
         }
     }
 
