@@ -897,10 +897,10 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdLoadSucceeded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
+        public void onAdLoadSucceeded(final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
         {
-            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill.
-            if ( nativeAd == null || nativeAd != inMobiNative )
+            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `inMobiNative` could be null if the user cannot get fill.
+            if ( nativeAd == null || inMobiNative == null || nativeAd != inMobiNative )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: no fill" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
@@ -1072,10 +1072,10 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdLoadSucceeded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
+        public void onAdLoadSucceeded(final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
         {
-            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `ad` could be null if the user cannot get fill.
-            if ( nativeAd == null || nativeAd != inMobiNative )
+            // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `inMobiNative` could be null if the user cannot get fill.
+            if ( nativeAd == null || inMobiNative == null || nativeAd != inMobiNative )
             {
                 log( "Native ad failed to load: no fill" );
                 listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
@@ -1085,9 +1085,9 @@ public class InMobiMediationAdapter
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getAdTitle() ) )
+            if ( isTemplateAd && TextUtils.isEmpty( inMobiNative.getAdTitle() ) )
             {
-                e( "Native ad (" + nativeAd + ") does not have required assets." );
+                e( "Native ad (" + inMobiNative + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
@@ -1102,7 +1102,7 @@ public class InMobiMediationAdapter
                 {
                     Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIconUrl(), serverParameters, context );
 
-                    handleNativeAdLoaded( nativeAd, adMetaInfo, iconDrawable, context );
+                    handleNativeAdLoaded( inMobiNative, adMetaInfo, iconDrawable, context );
                 }
             } );
         }
