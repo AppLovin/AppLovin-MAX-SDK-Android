@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.0.9.1
+* Remove initialization status check before collecting signal.
+
 ## 4.7.0.9.0
 * Certified with ByteDance SDK 4.7.0.9.
 

@@ -277,15 +277,6 @@ public class ByteDanceMediationAdapter
     {
         log( "Collecting signal..." );
 
-        if ( status != InitializationStatus.INITIALIZED_SUCCESS )
-        {
-            String errorMessage = "Could not collect signal. SDK not initialized.";
-            log( errorMessage );
-            callback.onSignalCollectionFailed( errorMessage );
-
-            return;
-        }
-
         String signal = PAGSdk.getBiddingToken();
         callback.onSignalCollected( signal );
     }
