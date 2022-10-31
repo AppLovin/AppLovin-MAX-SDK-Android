@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.1.0
+* Certified with InMobi SDK 10.1.1.
+
 ## 10.0.9.3
 * Fix NPE caused due to calling `InMobiNative.getAdTitle()` on a `null` native ad instance.
 
