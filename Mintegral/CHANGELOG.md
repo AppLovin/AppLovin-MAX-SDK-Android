@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.2.61.1
+* Add support for native ad view ads.
+* Add additional details for ad display failures.
+
 ## 16.2.61.0
 * Certified with Mintegral SDK 16.2.61.
 
