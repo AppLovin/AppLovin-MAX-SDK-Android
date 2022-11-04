@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.16.1.0
+* Certified with Verve SDK 2.16.1.
+* Add additional details for ad display failures.
+
 ## 2.16.0.0
 * Certified with Verve SDK 2.16.0.
 
