@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.16.0.0
+* Certified with MyTarget SDK 5.16.0.
+* Add additional details for ad display failures.
+
 ## 5.15.5.0
 * Certified with MyTarget SDK 5.15.5.
 
