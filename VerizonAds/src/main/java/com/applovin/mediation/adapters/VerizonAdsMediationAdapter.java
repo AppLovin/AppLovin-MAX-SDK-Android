@@ -220,7 +220,7 @@ public class VerizonAdsMediationAdapter
         if ( interstitialAd == null )
         {
             log( "Unable to show interstitial - no ad loaded" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
 
             return;
         }
@@ -269,7 +269,7 @@ public class VerizonAdsMediationAdapter
         if ( rewardedAd == null )
         {
             log( "Unable to show rewarded ad - no ad loaded" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
 
             return;
         }
@@ -299,6 +299,14 @@ public class VerizonAdsMediationAdapter
 
         if ( isNative )
         {
+            if ( AppLovinSdk.VERSION_CODE < 11_05_05_00 )
+            {
+                e( "Failing ad load for AppLovin SDK < 11.5.5 since native ad view ad templates don't have some assets required by Yahoo SDK on older AppLovin SDKs." );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.UNSPECIFIED );
+
+                return;
+            }
+
             if ( activity == null )
             {
                 e( "Native " + adFormat.getLabel() + " ad (" + placementId + ") failed to load: activity reference is null..." );
@@ -523,32 +531,20 @@ public class VerizonAdsMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
-    {
-        if ( AppLovinSdk.VERSION_CODE < 9140000 )
-        {
-            log( "Native ads with media views are only supported on MAX SDK version 9.14.0 and above. Default native template will be used." );
-            return new MaxNativeAdView( maxNativeAd, activity );
-        }
-
-        if ( AppLovinSdk.VERSION_CODE < 11010000 )
-        {
-            if ( AppLovinSdk.VERSION_CODE < 9140500 && templateName.contains( "vertical" ) )
-            {
-                log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default native template will be used." );
-            }
-
-            return new MaxNativeAdView( maxNativeAd, templateName, activity );
-        }
-
-        return new MaxNativeAdView( maxNativeAd, templateName, getContext( activity ) );
-    }
-
     private String getValidTemplateName(final String templateName)
     {
-        if ( AppLovinSdkUtils.isValidString( templateName ) ) return templateName;
+        if ( AppLovinSdkUtils.isValidString( templateName ) )
+        {
+            // Since all of the leader templates and the templates containing "media", have the
+            // requisite assets, we can just use the same templateName.
+            if ( templateName.contains( "media" ) || templateName.contains( "leader" ) ) return templateName;
 
-        return AppLovinSdk.VERSION_CODE < 9140500 ? "no_body_banner_template" : "media_banner_template";
+            return templateName.contains( "vertical" ) ? "vertical_media_banner_template" : "media_banner_template";
+        }
+
+        // We can just return the banner template, because for an MREC
+        // it would by default use the MREC template which is compatible
+        return "media_banner_template";
     }
 
     //endregion
@@ -944,8 +940,7 @@ public class VerizonAdsMediationAdapter
                     MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
-                    String validTemplateName = getValidTemplateName( templateName );
-                    MaxNativeAdView maxNativeAdView = createMaxNativeAdView( maxNativeAd, validTemplateName, activity );
+                    MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, getValidTemplateName( templateName ), getContext( activity ) );
                     maxNativeAd.prepareViewForInteraction( maxNativeAdView );
 
                     CreativeInfo creativeInfo = nativeAd.getCreativeInfo();

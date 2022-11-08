@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.0.2
+* Fix native ad view ad impression issue due to missing assets in templates on older AppLovin SDKs. Yahoo native ad view ads now require AppLovin SDK version 11.5.5+.
+* Add additional details for ad display failures.
+
 ## 2.2.0.1
 * Add support for native ad view ads.
 * Call `NativeAd.clear` when destroying adapter instance.
