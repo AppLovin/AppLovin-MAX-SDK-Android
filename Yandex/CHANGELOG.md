@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.4.0.0
+* Certified with Yandex SDK 5.4.0.
+* Add additional details for ad display failures.
+
 ## 5.3.2.0
 * Certified with Yandex SDK 5.3.2.
 
