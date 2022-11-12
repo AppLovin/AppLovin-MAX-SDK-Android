@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.2.5.0.1
+* Add support for banners and MRECs.
+* Add additional details for ad display failures.
+
 ## 7.2.5.0.0
 * Certified with IronSource SDK 7.2.5.
 

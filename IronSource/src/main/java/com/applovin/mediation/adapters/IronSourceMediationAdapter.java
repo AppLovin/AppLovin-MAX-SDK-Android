@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
+import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
+import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -16,8 +19,11 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.ironsource.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.ironsource.mediationsdk.ISBannerSize;
+import com.ironsource.mediationsdk.ISDemandOnlyBannerLayout;
 import com.ironsource.mediationsdk.IronSource;
 import com.ironsource.mediationsdk.logger.IronSourceError;
+import com.ironsource.mediationsdk.sdk.ISDemandOnlyBannerListener;
 import com.ironsource.mediationsdk.sdk.ISDemandOnlyInterstitialListener;
 import com.ironsource.mediationsdk.sdk.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.utils.IronSourceUtils;
@@ -29,12 +35,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IronSourceMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter
+        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
     private static final IronSourceRouter ROUTER      = new IronSourceRouter();
     private static final AtomicBoolean    INITIALIZED = new AtomicBoolean();
 
-    private String mRouterPlacementIdentifier;
+    private String                   mRouterPlacementIdentifier;
+    private ISDemandOnlyBannerLayout adView;
 
     private static final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
     {
@@ -180,7 +187,7 @@ public class IronSourceMediationAdapter
         else
         {
             log( "Unable to show ironSource interstitial - no ad loaded for instance ID: " + instanceId );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -226,8 +233,23 @@ public class IronSourceMediationAdapter
         else
         {
             log( "Unable to show ironSource rewarded - no ad loaded..." );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
+    }
+
+    @Override
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    {
+        setPrivacySettings( parameters );
+
+        final String instanceId = parameters.getThirdPartyAdPlacementId();
+
+        log( "Loading " + adFormat.getLabel() + " ad for instance ID: " + instanceId );
+
+        adView = IronSource.createBannerForDemandOnly( activity, toISBannerSize( adFormat ) );
+        adView.setBannerDemandOnlyListener( new AdViewListener( listener ) );
+
+        IronSource.loadISDemandOnlyBanner( activity, adView, instanceId );
     }
 
     private void setPrivacySettings(final MaxAdapterParameters parameters)
@@ -264,7 +286,7 @@ public class IronSourceMediationAdapter
         if ( adFormats == null || adFormats.isEmpty() )
         {
             // Default to initialize all ad formats if backend doesn't send down which ones to initialize
-            return new IronSource.AD_UNIT[] { IronSource.AD_UNIT.INTERSTITIAL, IronSource.AD_UNIT.REWARDED_VIDEO };
+            return new IronSource.AD_UNIT[] { IronSource.AD_UNIT.INTERSTITIAL, IronSource.AD_UNIT.REWARDED_VIDEO, IronSource.AD_UNIT.BANNER };
         }
 
         List<IronSource.AD_UNIT> adFormatsToInitialize = new ArrayList<>();
@@ -278,7 +300,32 @@ public class IronSourceMediationAdapter
             adFormatsToInitialize.add( IronSource.AD_UNIT.REWARDED_VIDEO );
         }
 
+        if ( adFormats.contains( "banner" ) )
+        {
+            adFormatsToInitialize.add( IronSource.AD_UNIT.BANNER );
+        }
+
         return adFormatsToInitialize.toArray( new IronSource.AD_UNIT[adFormatsToInitialize.size()] );
+    }
+
+    private ISBannerSize toISBannerSize(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return ISBannerSize.BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return ISBannerSize.LARGE; // Note: LARGE is 320x90 - leaders weren't supported at the time of implementation.
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return ISBannerSize.RECTANGLE;
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+        }
     }
 
     private static class IronSourceRouter
@@ -514,6 +561,52 @@ public class IronSourceMediationAdapter
         private static String getRewardedVideoRouterIdentifier(final String instanceId)
         {
             return instanceId + "-" + IronSource.AD_UNIT.REWARDED_VIDEO.toString();
+        }
+    }
+
+    private class AdViewListener
+            implements ISDemandOnlyBannerListener
+    {
+        private final MaxAdViewAdapterListener listener;
+
+        AdViewListener(final MaxAdViewAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBannerAdLoaded(final String instanceId)
+        {
+            log( "AdView loaded for instance ID: " + instanceId );
+            listener.onAdViewAdLoaded( adView );
+        }
+
+        @Override
+        public void onBannerAdLoadFailed(String instanceId, IronSourceError ironSourceError)
+        {
+            MaxAdapterError adapterError = IronSourceRouter.toMaxError( ironSourceError );
+            log( "AdView ad failed to load for instance ID: " + instanceId + " with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onBannerAdShown(String instanceId)
+        {
+            log( "AdView ad displayed for instance ID: " + instanceId );
+            listener.onAdViewAdDisplayed();
+        }
+
+        @Override
+        public void onBannerAdClicked(String instanceId)
+        {
+            log( "AdView ad clicked for instance ID: " + instanceId );
+            listener.onAdViewAdClicked();
+        }
+
+        @Override
+        public void onBannerAdLeftApplication(String instanceId)
+        {
+            log( "AdView ad left application for instance ID: " + instanceId );
         }
     }
 }
