@@ -1243,14 +1243,14 @@ public class ByteDanceMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
+            final PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad view for interaction. Native ad is null" );
                 return;
             }
 
-            List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
@@ -1269,14 +1269,21 @@ public class ByteDanceMediationAdapter
             }
 
             // CTA button is considered a creative view
-            List<View> creativeViews = new ArrayList<>();
+            final List<View> creativeViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
             {
                 creativeViews.add( maxNativeAdView.getCallToActionButton() );
             }
 
-            // Here dislikeView is null since it is optional
-            nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
+            executor.submit( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    // Here dislikeView is null since it is optional
+                    nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
+                }
+            } );
         }
     }
 }
