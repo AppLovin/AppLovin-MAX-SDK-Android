@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.2.1.0
+* Certified with Fyber SDK 8.2.1.
+* Add additional details for ad display failures.
+
 ## 8.2.0.0
 * Certified with Fyber SDK 8.2.0.
 
