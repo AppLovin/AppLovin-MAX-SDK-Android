@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.12.0.3
+* Update error code mapping
+* Add additional details for ad display failures.
+
 ## 6.12.0.2
 * Add support for app open ads.
 
