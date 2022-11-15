@@ -102,7 +102,7 @@ public class DataseatMediationAdapter
         else
         {
             log( "Unable to show interstitial - ad not ready." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -148,7 +148,7 @@ public class DataseatMediationAdapter
         else
         {
             log( "Unable to show rewarded ad - ad not ready." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -163,6 +163,9 @@ public class DataseatMediationAdapter
             case VIDEO_AD_DOWNLOAD_ERROR:
             case BID_FAILED_CONNECTION:
                 adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case NETWORK_LOAD_TIMEOUT:
+                adapterError = MaxAdapterError.TIMEOUT;
                 break;
             case BANNER_AD_LOAD_ERROR:
             case FULLSCREEN_AD_LOAD_ERROR:

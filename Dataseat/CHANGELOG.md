@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.12.3
+* Update error code mapping for SDK error reports.
+* Add additional details for ad display failures.
+
 ## 1.0.12.2
 * Update ad display failed error code.
 
