@@ -33,7 +33,6 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -53,6 +52,7 @@ import io.bidmachine.banner.BannerView;
 import io.bidmachine.interstitial.InterstitialAd;
 import io.bidmachine.interstitial.InterstitialListener;
 import io.bidmachine.interstitial.InterstitialRequest;
+import io.bidmachine.models.AuctionResult;
 import io.bidmachine.nativead.NativeAd;
 import io.bidmachine.nativead.NativeListener;
 import io.bidmachine.nativead.NativeRequest;
@@ -61,7 +61,6 @@ import io.bidmachine.rewarded.RewardedAd;
 import io.bidmachine.rewarded.RewardedListener;
 import io.bidmachine.rewarded.RewardedRequest;
 import io.bidmachine.utils.BMError;
-import io.bidmachine.models.AuctionResult;
 
 public class BidMachineMediationAdapter
         extends MediationAdapterBase
@@ -199,7 +198,7 @@ public class BidMachineMediationAdapter
         if ( !interstitialAd.canShow() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
 
             return;
         }
@@ -237,7 +236,7 @@ public class BidMachineMediationAdapter
         if ( !rewardedAd.canShow() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
 
             return;
         }
@@ -294,6 +293,7 @@ public class BidMachineMediationAdapter
                 maxAdapterError = MaxAdapterError.BAD_REQUEST;
                 break;
             case BMError.SERVER:
+            case BMError.HB_NETWORK:
                 maxAdapterError = MaxAdapterError.SERVER_ERROR;
                 break;
             case BMError.NO_CONTENT:
@@ -304,6 +304,7 @@ public class BidMachineMediationAdapter
                 maxAdapterError = MaxAdapterError.AD_EXPIRED;
                 break;
             case BMError.INTERNAL:
+            case BMError.DESTROYED:
                 maxAdapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
         }

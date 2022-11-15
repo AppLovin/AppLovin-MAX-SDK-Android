@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.10.4
+* Update error code mapping for SDK error reports.
+* Add additional details for ad display failures.
+
 ## 1.9.10.3
 * Add CCPA support.
 
