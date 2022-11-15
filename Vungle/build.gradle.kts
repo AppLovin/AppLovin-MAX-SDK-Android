@@ -5,8 +5,8 @@ plugins {
 
 private val versionMajor = 6
 private val versionMinor = 12
-private val versionPatch = 0
-private val versionAdapterPatch = 2
+private val versionPatch = 1
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -20,7 +20,8 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.vungle:publisher-sdk-android:${libraryVersions["vungle"]}")
+    //implementation("com.vungle:publisher-sdk-android:${libraryVersions["vungle"]}")
+    implementation("com.github.vungle:vungle-android-sdk:6.12.1-RC3")
 }
 
 publishing {
