@@ -378,7 +378,8 @@ public class YandexMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+            final AppLovinSdkUtils.Size appLovinSize = adFormat.getSize();
+            return AdSize.flexibleSize(appLovinSize.getWidth(), appLovinSize.getHeight());
         }
     }
 
