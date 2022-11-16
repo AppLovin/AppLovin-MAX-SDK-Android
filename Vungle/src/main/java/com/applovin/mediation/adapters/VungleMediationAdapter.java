@@ -85,13 +85,6 @@ public class VungleMediationAdapter
 
             status = InitializationStatus.INITIALIZING;
 
-            // NOTE: Vungle's SDK will log error if setting COPPA state after it initializes
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
-            if ( isAgeRestrictedUser != null )
-            {
-                Vungle.updateUserCoppaStatus( isAgeRestrictedUser );
-            }
-
             Plugin.addWrapperInfo( VungleApiClient.WrapperFramework.max, getAdapterVersion() );
 
             VungleSettings settings = new VungleSettings.Builder().disableBannerRefresh().build();
@@ -704,6 +697,12 @@ public class VungleMediationAdapter
                 Vungle.Consent ccpaStatus = isDoNotSell ? Vungle.Consent.OPTED_OUT : Vungle.Consent.OPTED_IN;
                 Vungle.updateCCPAStatus( ccpaStatus );
             }
+        }
+
+        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        if ( isAgeRestrictedUser != null )
+        {
+            Vungle.updateUserCoppaStatus( isAgeRestrictedUser );
         }
     }
 
