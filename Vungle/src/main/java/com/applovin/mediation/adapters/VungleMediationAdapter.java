@@ -270,6 +270,7 @@ public class VungleMediationAdapter
 
     //region MaxAppOpenAdapter
 
+    @Override
     public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         String bidResponse = parameters.getBidResponse();
@@ -331,6 +332,7 @@ public class VungleMediationAdapter
         } );
     }
 
+    @Override
     public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         String bidResponse = parameters.getBidResponse();
