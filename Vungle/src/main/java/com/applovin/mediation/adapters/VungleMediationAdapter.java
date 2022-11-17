@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -598,7 +598,7 @@ public class VungleMediationAdapter
         updateUserPrivacySettings( parameters );
 
         final Context applicationContext = getContext( activity );
-        nativeAd = new NativeAd( applicationContext, placementId );
+        nativeAd = new NativeAd( activity, placementId );
 
         AdConfig adConfig = new AdConfig();
 
@@ -1352,11 +1352,33 @@ public class VungleMediationAdapter
                 return;
             }
 
+            if (!nativeAd.canPlayAd()) {
+                e("Failed to play native ad or native ad is registered.");
+                return;
+            }
+
+            View mediaView = getMediaView();
+            if (mediaView == null) {
+                e("Failed to register native ad views: mediaView is null.");
+                return;
+            }
+
+            nativeAd.setAdOptionsRootView(maxNativeAdView);
+
             NativeAdLayout nativeAdLayout = new NativeAdLayout( maxNativeAdView.getContext() );
             View mainView = maxNativeAdView.getMainView();
             maxNativeAdView.removeView( mainView );
             nativeAdLayout.addView( mainView );
             maxNativeAdView.addView( nativeAdLayout );
+
+            if (mediaView.getParent() != null) {
+                ((ViewGroup) mediaView.getParent()).removeView(mediaView);
+            }
+            ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+            if (contentViewGroup != null) {
+                contentViewGroup.removeAllViews();
+                contentViewGroup.addView(mediaView);
+            }
 
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
@@ -1384,7 +1406,7 @@ public class VungleMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) getMediaView(), (ImageView) getIconView(), clickableViews );
+            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
         }
     }
 }
