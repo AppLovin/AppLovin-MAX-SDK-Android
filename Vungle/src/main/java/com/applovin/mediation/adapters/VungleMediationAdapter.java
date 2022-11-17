@@ -1367,8 +1367,10 @@ public class VungleMediationAdapter
                     ((ViewGroup) mediaView.getParent()).removeView(mediaView);
                 }
                 ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
-                contentViewGroup.removeAllViews();
-                contentViewGroup.addView(mediaView);
+                if (contentViewGroup != null) {
+                    contentViewGroup.removeAllViews();
+                    contentViewGroup.addView(mediaView);
+                }
             }
 
             final List<View> clickableViews = new ArrayList<>();
