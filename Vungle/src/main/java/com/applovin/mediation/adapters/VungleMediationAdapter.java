@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -1353,6 +1352,17 @@ public class VungleMediationAdapter
                 return;
             }
 
+            if (!nativeAd.canPlayAd()) {
+                e("Failed to play native ad or native ad is registered.");
+                return;
+            }
+
+            View mediaView = getMediaView();
+            if (mediaView == null) {
+                e("Failed to register native ad views: mediaView is null.");
+                return;
+            }
+
             nativeAd.setAdOptionsRootView(maxNativeAdView);
 
             NativeAdLayout nativeAdLayout = new NativeAdLayout( maxNativeAdView.getContext() );
@@ -1361,16 +1371,13 @@ public class VungleMediationAdapter
             nativeAdLayout.addView( mainView );
             maxNativeAdView.addView( nativeAdLayout );
 
-            View mediaView = getMediaView();
-            if (mediaView != null) {
-                if (mediaView.getParent() != null) {
-                    ((ViewGroup) mediaView.getParent()).removeView(mediaView);
-                }
-                ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
-                if (contentViewGroup != null) {
-                    contentViewGroup.removeAllViews();
-                    contentViewGroup.addView(mediaView);
-                }
+            if (mediaView.getParent() != null) {
+                ((ViewGroup) mediaView.getParent()).removeView(mediaView);
+            }
+            ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+            if (contentViewGroup != null) {
+                contentViewGroup.removeAllViews();
+                contentViewGroup.addView(mediaView);
             }
 
             final List<View> clickableViews = new ArrayList<>();
@@ -1399,7 +1406,7 @@ public class VungleMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) getMediaView(), (ImageView) getIconView(), clickableViews );
+            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
         }
     }
 }
