@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.8.0
+* Certified with ByteDance SDK 4.8.0.8.
+
 ## 4.8.0.5.1
 * Fix `registerViewForInteraction()` ANR when rendering native ad.
 
