@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -598,7 +599,7 @@ public class VungleMediationAdapter
         updateUserPrivacySettings( parameters );
 
         final Context applicationContext = getContext( activity );
-        nativeAd = new NativeAd( applicationContext, placementId );
+        nativeAd = new NativeAd( activity, placementId );
 
         AdConfig adConfig = new AdConfig();
 
@@ -1352,11 +1353,23 @@ public class VungleMediationAdapter
                 return;
             }
 
+            nativeAd.setAdOptionsRootView(maxNativeAdView);
+
             NativeAdLayout nativeAdLayout = new NativeAdLayout( maxNativeAdView.getContext() );
             View mainView = maxNativeAdView.getMainView();
             maxNativeAdView.removeView( mainView );
             nativeAdLayout.addView( mainView );
             maxNativeAdView.addView( nativeAdLayout );
+
+            View mediaView = getMediaView();
+            if (mediaView != null) {
+                if (mediaView.getParent() != null) {
+                    ((ViewGroup) mediaView.getParent()).removeView(mediaView);
+                }
+                ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+                contentViewGroup.removeAllViews();
+                contentViewGroup.addView(mediaView);
+            }
 
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
