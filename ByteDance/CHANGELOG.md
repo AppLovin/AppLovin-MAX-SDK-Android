@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.8.1
+* Roll back offloading `registerViewForInteraction()` onto bg thread to prevent ANR due to proclaimed clickability issues.
+
 ## 4.8.0.8.0
 * Certified with ByteDance SDK 4.8.0.8.
 

@@ -1275,15 +1275,8 @@ public class ByteDanceMediationAdapter
                 creativeViews.add( maxNativeAdView.getCallToActionButton() );
             }
 
-            executor.submit( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    // Here dislikeView is null since it is optional
-                    nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
-                }
-            } );
+            // Here dislikeView is null since it is optional
+            nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
         }
     }
 }
