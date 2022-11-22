@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10.5
+* Support for native ads in external plugins (e.g. React Native).
+
 ## 1.9.10.4
 * Update error code mapping for SDK error reports.
 * Add additional details for ad display failures.

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -33,7 +34,9 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -772,14 +775,7 @@ public class BidMachineMediationAdapter
         @Override
         public void prepareViewForInteraction(MaxNativeAdView maxNativeAdView)
         {
-            NativeAd nativeAd = BidMachineMediationAdapter.this.nativeAd;
-            if ( nativeAd == null )
-            {
-                e( "Failed to register native ad views: native ad is null." );
-                return;
-            }
-
-            final Set<View> clickableViews = new HashSet<>();
+            final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
@@ -802,7 +798,36 @@ public class BidMachineMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            nativeAd.registerView( maxNativeAdView, iconImageView, (NativeMediaView) getMediaView(), clickableViews );
+            prepareForInteraction( clickableViews, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
+            NativeAd nativeAd = BidMachineMediationAdapter.this.nativeAd;
+            if ( nativeAd == null )
+            {
+                e( "Failed to register native ad views: native ad is null." );
+                return false;
+            }
+
+            d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+
+            final Set<View> clickableViewSet = new HashSet<>( clickableViews );
+
+            ImageView iconImageView = null;
+            for ( final View clickableView : clickableViews )
+            {
+                if ( clickableView instanceof ImageView )
+                {
+                    iconImageView = (ImageView) clickableView;
+                    break;
+                }
+            }
+
+            nativeAd.registerView( container, iconImageView, (NativeMediaView) getMediaView(), clickableViewSet );
+
+            return true;
         }
     }
 }
