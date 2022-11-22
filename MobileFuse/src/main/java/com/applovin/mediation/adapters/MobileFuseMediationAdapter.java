@@ -92,8 +92,11 @@ public class MobileFuseMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        Context context = ( activity != null ) ? activity : getApplicationContext();
+
         MobileFuseBiddingTokenRequest tokenRequest = new MobileFuseBiddingTokenRequest( MobileFuse.getPrivacyPreferences(), parameters.isTesting() );
-        MobileFuseBiddingTokenProvider.getToken( tokenRequest, activity, new TokenGeneratorListener()
+        MobileFuseBiddingTokenProvider.getToken( tokenRequest, context, new TokenGeneratorListener()
         {
             @Override
             public void onTokenGenerated(@NonNull final String signal)
