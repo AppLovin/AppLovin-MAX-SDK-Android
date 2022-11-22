@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.16.0.1
+* Support for native ads in external plugins (e.g. React Native).
+
 ## 5.16.0.0
 * Certified with MyTarget SDK 5.16.0.
 * Add additional details for ad display failures.
