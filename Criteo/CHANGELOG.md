@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.8.1.1
+* Support for native ads in external plugins (e.g. React Native).
+* Add additional details for ad display failures.
+
 ## 4.8.1.0
 * Certified with Criteo SDK 4.8.1.
 

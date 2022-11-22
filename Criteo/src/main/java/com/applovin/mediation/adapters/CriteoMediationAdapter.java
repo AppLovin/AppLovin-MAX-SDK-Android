@@ -51,6 +51,7 @@ import com.criteo.publisher.model.NativeAdUnit;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,7 +74,7 @@ public class CriteoMediationAdapter
     private CriteoBannerView   bannerView;
     private CriteoInterstitial interstitialAd;
     private CriteoNativeAd     nativeAd;
-    private MaxNativeAdView    nativeAdView;
+    private ViewGroup          nativeAdContainer;
     private View               renderedView;
 
     public CriteoMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -152,10 +153,10 @@ public class CriteoMediationAdapter
             bannerView = null;
         }
 
-        if ( nativeAdView != null )
+        if ( nativeAdContainer != null )
         {
-            nativeAdView.removeView( renderedView );
-            nativeAdView = null;
+            nativeAdContainer.removeView( renderedView );
+            nativeAdContainer = null;
             renderedView = null;
         }
 
@@ -211,7 +212,7 @@ public class CriteoMediationAdapter
         else
         {
             e( "Interstitial ad failed to show: " + placementId );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -607,18 +608,28 @@ public class CriteoMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            prepareForInteraction( null, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
             final CriteoNativeAd nativeAd = CriteoMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad view: native ad is null." );
-                return;
+                return false;
             }
 
-            nativeAdView = maxNativeAdView;
+            nativeAdContainer = container;
+
+            d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
             // Criteo internally registers impression and click tracking logic via this call
             renderedView = nativeAd.createNativeRenderedView( getApplicationContext(), null );
-            nativeAdView.addView( renderedView );
+            nativeAdContainer.addView( renderedView );
+
+            return true;
         }
     }
 }
