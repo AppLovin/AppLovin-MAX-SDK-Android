@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.12.0.4
+* Update to pass the correct icon view to register.
+
 ## 6.12.0.3
 * Update error code mapping
 * Add additional details for ad display failures.

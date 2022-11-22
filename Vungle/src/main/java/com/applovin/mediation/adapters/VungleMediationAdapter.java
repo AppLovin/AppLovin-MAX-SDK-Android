@@ -1386,7 +1386,7 @@ public class VungleMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) getMediaView(), (ImageView) getIconView(), clickableViews );
+            nativeAd.registerViewForInteraction( nativeAdLayout, (MediaView) getMediaView(), maxNativeAdView.getIconImageView(), clickableViews );
         }
     }
 }
