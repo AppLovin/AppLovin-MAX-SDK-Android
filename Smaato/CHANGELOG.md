@@ -1,5 +1,9 @@
 # Changelog
 
+## 21.8.5.1
+* Support for native ads in external plugins (e.g. React Native).
+* Add additional details for ad display failures.
+
 ## 21.8.5.0
 * Certified with Smaato SDK 21.8.5.
 
