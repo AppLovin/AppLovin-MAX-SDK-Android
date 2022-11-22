@@ -1,5 +1,8 @@
 # Changelog
 
+## 2022.2.16.3
+* Support for native ads in external plugins (e.g. React Native).
+
 ## 2022.2.16.2
 * Remove checks to enable initializing and showing interstitial and rewarded ads using different `activity` instances.
 * Update error code mapping for `NO_AD`.
