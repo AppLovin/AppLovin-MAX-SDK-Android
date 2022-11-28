@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -1063,6 +1063,26 @@ public class VungleMediationAdapter
                 return;
             }
 
+            if (!nativeAd.canPlayAd()) {
+                e("Failed to play native ad or native ad is registered.");
+                return;
+            }
+
+            View mediaView = getMediaView();
+            if (mediaView == null) {
+                e("Failed to register native ad views: mediaView is null.");
+                return;
+            }
+
+            if (mediaView.getParent() != null) {
+                ((ViewGroup) mediaView.getParent()).removeView(mediaView);
+            }
+            ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+            if (contentViewGroup != null) {
+                contentViewGroup.removeAllViews();
+                contentViewGroup.addView(mediaView);
+            }
+
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
@@ -1089,7 +1109,7 @@ public class VungleMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) getMediaView(), (ImageView) getIconView(), clickableViews );
+            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
         }
     }
 }
