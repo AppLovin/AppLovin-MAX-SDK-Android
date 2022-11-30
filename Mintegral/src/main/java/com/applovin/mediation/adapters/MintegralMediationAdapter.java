@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -125,7 +126,7 @@ public class MintegralMediationAdapter
     private MBBidNativeHandler            mbBidNativeHandler;
     private MBBidNativeHandler            mbBidNativeAdViewHandler;
     private Campaign                      nativeAdCampaign;
-    private MaxNativeAdView               maxNativeAdView;
+    private ViewGroup                     nativeAdContainer;
     private List<View>                    clickableViews;
 
     static
@@ -231,7 +232,7 @@ public class MintegralMediationAdapter
 
         if ( mbBidNativeHandler != null )
         {
-            mbBidNativeHandler.unregisterView( maxNativeAdView, clickableViews, nativeAdCampaign );
+            mbBidNativeHandler.unregisterView( nativeAdContainer, clickableViews, nativeAdCampaign );
             mbBidNativeHandler.bidRelease();
             mbBidNativeHandler.setAdListener( null );
             mbBidNativeHandler = null;
@@ -239,7 +240,7 @@ public class MintegralMediationAdapter
 
         if ( mbBidNativeAdViewHandler != null )
         {
-            mbBidNativeAdViewHandler.unregisterView( maxNativeAdView, clickableViews, nativeAdCampaign );
+            mbBidNativeAdViewHandler.unregisterView( nativeAdContainer, clickableViews, nativeAdCampaign );
             mbBidNativeAdViewHandler.bidRelease();
             mbBidNativeAdViewHandler.setAdListener( null );
             mbBidNativeAdViewHandler = null;
@@ -718,6 +719,25 @@ public class MintegralMediationAdapter
         }
     }
 
+    private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
+    {
+        if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
+        {
+            List<View> clickableViews = new ArrayList<View>( 5 );
+            if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
+            if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
+            if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
+            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
+            if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
+
+            return clickableViews;
+        }
+        else
+        {
+            return maxNativeAdView.getClickableViews();
+        }
+    }
+
     private static class MintegralMediationAdapterRouter
             extends MediationAdapterRouter
     {
@@ -1042,7 +1062,7 @@ public class MintegralMediationAdapter
                             final String templateName = BundleUtils.getString( "template", "", serverParameters );
                             MaxNativeAdView maxNativeAdView = createMaxNativeAdViewWithNativeAd( maxMintegralNativeAd, templateName, context );
 
-                            maxMintegralNativeAd.prepareViewForInteraction( maxNativeAdView );
+                            maxMintegralNativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
                             listener.onAdViewAdLoaded( maxNativeAdView );
                         }
                     } );
@@ -1331,46 +1351,27 @@ public class MintegralMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            prepareForInteraction( MintegralMediationAdapter.this.getClickableViews( maxNativeAdView ), maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
             final Campaign nativeAdCampaign = MintegralMediationAdapter.this.nativeAdCampaign;
             if ( nativeAdCampaign == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
-                return;
+                return false;
             }
 
-            final List<View> clickableViews = new ArrayList<>();
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
+            d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-            if ( getFormat() == MaxAdFormat.NATIVE )
-            {
-                mbBidNativeHandler.registerView( maxNativeAdView, clickableViews, nativeAdCampaign );
-            }
-            else
-            {
-                mbBidNativeAdViewHandler.registerView( maxNativeAdView, clickableViews, nativeAdCampaign );
-            }
+            mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
 
-            MintegralMediationAdapter.this.maxNativeAdView = maxNativeAdView;
+            MintegralMediationAdapter.this.nativeAdContainer = container;
             MintegralMediationAdapter.this.clickableViews = clickableViews;
+
+            return true;
         }
     }
 }

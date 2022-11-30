@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.61.2
+* Support for native ads in external plugins (e.g. React Native).
+
 ## 16.2.61.1
 * Add support for native ad view ads.
 * Add additional details for ad display failures.

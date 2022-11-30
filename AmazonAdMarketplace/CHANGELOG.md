@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.6.2.0
+* Certified with APS SDK 9.6.2.
+* Add additional details for ad display failures.
+
 ## 9.5.7.0
 * Certified with APS SDK 9.5.7.
 

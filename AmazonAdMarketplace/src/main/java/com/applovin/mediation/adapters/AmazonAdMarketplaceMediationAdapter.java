@@ -335,7 +335,7 @@ public class AmazonAdMarketplaceMediationAdapter
         else
         {
             e( "Interstitial ad is null" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad is null" ) );
         }
     }
 
@@ -375,7 +375,7 @@ public class AmazonAdMarketplaceMediationAdapter
         else
         {
             e( "Rewarded ad is null" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad is null" ) );
         }
     }
 

@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -56,6 +58,7 @@ import com.smaato.sdk.rewarded.RewardedRequestError;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -312,7 +315,7 @@ public class SmaatoMediationAdapter
         else
         {
             log( "Interstitial not ready." );
-            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -379,7 +382,7 @@ public class SmaatoMediationAdapter
         else
         {
             log( "Rewarded ad not ready." );
-            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -677,17 +680,27 @@ public class SmaatoMediationAdapter
         private MaxSmaatoNativeAd(final Builder builder) { super( builder ); }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView nativeAdView)
+        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        {
+            prepareForInteraction( null, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             NativeAdRenderer nativeAdRenderer = SmaatoMediationAdapter.this.nativeAdRenderer;
             if ( nativeAdRenderer == null )
             {
                 e( "Failed to register native ad view for interaction. Native ad renderer is null" );
-                return;
+                return false;
             }
 
-            nativeAdRenderer.registerForImpression( nativeAdView );
-            nativeAdRenderer.registerForClicks( nativeAdView );
+            d( "Preparing views for interaction with container: " + container );
+
+            nativeAdRenderer.registerForImpression( container );
+            nativeAdRenderer.registerForClicks( container );
+
+            return true;
         }
     }
 

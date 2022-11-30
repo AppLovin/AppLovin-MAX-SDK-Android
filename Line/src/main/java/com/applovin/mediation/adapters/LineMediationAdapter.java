@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -55,10 +57,10 @@ public class LineMediationAdapter
 {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
-    private FiveAdInterstitial      interstitialAd;
-    private FiveAdVideoReward       rewardedAd;
-    private FiveAdCustomLayout      adView;
-    private FiveAdNative            nativeAd;
+    private FiveAdInterstitial interstitialAd;
+    private FiveAdVideoReward  rewardedAd;
+    private FiveAdCustomLayout adView;
+    private FiveAdNative       nativeAd;
 
     public LineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -1001,13 +1003,6 @@ public class LineMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            FiveAdNative nativeAd = LineMediationAdapter.this.nativeAd;
-            if ( nativeAd == null )
-            {
-                e( "Failed to register native ad views: native ad is null." );
-                return;
-            }
-
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
@@ -1034,7 +1029,34 @@ public class LineMediationAdapter
                 clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
 
-            nativeAd.registerViews( maxNativeAdView, maxNativeAdView.getIconImageView(), clickableViews );
+            prepareForInteraction( clickableViews, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
+            FiveAdNative nativeAd = LineMediationAdapter.this.nativeAd;
+            if ( nativeAd == null )
+            {
+                e( "Failed to register native ad views: native ad is null." );
+                return false;
+            }
+
+            d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+
+            ImageView iconImageView = null;
+            for ( final View clickableView : clickableViews )
+            {
+                if ( clickableView instanceof ImageView )
+                {
+                    iconImageView = (ImageView) clickableView;
+                    break;
+                }
+            }
+
+            nativeAd.registerViews( container, iconImageView, clickableViews );
+
+            return true;
         }
     }
 }

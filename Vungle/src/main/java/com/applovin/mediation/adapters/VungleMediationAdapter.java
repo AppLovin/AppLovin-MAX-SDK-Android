@@ -256,7 +256,7 @@ public class VungleMediationAdapter
         }
 
         log( "Interstitial ad not ready" );
-        listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+        listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
     }
 
     //endregion
@@ -350,7 +350,7 @@ public class VungleMediationAdapter
         }
 
         log( "App open ad not ready" );
-        listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+        listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "App open ad not ready" ) );
     }
 
     //endregion
@@ -446,7 +446,7 @@ public class VungleMediationAdapter
         }
 
         log( "Rewarded ad not ready" );
-        listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+        listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
     }
 
     //endregion
@@ -800,6 +800,7 @@ public class VungleMediationAdapter
             case VungleException.CONFIGURATION_ERROR:
             case VungleException.INCORRECT_BANNER_API_USAGE:
             case VungleException.INCORRECT_DEFAULT_API_USAGE:
+            case VungleException.INCORRECT_DEFAULT_API_USAGE_NATIVE:
             case VungleException.INVALID_SIZE:
             case VungleException.MISSING_HBP_EVENT_ID:
             case VungleException.NETWORK_PERMISSIONS_NOT_GRANTED:
@@ -824,6 +825,8 @@ public class VungleMediationAdapter
                 break;
             case VungleException.AD_UNABLE_TO_PLAY:
             case VungleException.OPERATION_CANCELED:
+            case VungleException.CREATIVE_ERROR:
+            case VungleException.OUT_OF_MEMORY:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
             case VungleException.AD_FAILED_TO_DOWNLOAD:

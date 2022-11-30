@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.12.0.1
+* Support for native ads in external plugins (e.g. React Native).
+* Add additional details for ad display failures.
+
 ## 6.12.0.0
 * Certified with Facebook SDK 6.12.0.
 

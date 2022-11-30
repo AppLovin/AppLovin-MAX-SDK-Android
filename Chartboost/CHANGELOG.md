@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.1.1.1
+* Update error code mapping for SDK error reports.
+* Add additional details for ad display failures.
+
 ## 9.1.1.0
 * Certified with Chartboost SDK 9.1.1.
 
