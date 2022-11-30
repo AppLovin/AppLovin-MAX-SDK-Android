@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.9.0
+* Certified with ByteDance SDK 4.8.0.9.
+
 ## 4.8.0.8.2
 * Support for native ads in external plugins (e.g. React Native).
 
