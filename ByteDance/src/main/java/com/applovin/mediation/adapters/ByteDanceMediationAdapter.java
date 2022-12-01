@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.impl.sdk.utils.StringUtils;
@@ -1243,13 +1244,6 @@ public class ByteDanceMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
-            if ( nativeAd == null )
-            {
-                e( "Failed to register native ad view for interaction. Native ad is null" );
-                return;
-            }
-
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
@@ -1268,22 +1262,25 @@ public class ByteDanceMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            // CTA button is considered a creative view
-            final List<View> creativeViews = new ArrayList<>();
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
+            prepareForInteraction( clickableViews, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
+            final PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
+            if ( nativeAd == null )
             {
-                creativeViews.add( maxNativeAdView.getCallToActionButton() );
+                e( "Failed to register native ad view for interaction. Native ad is null" );
+                return false;
             }
 
-            executor.submit( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    // Here dislikeView is null since it is optional
-                    nativeAd.registerViewForInteraction( maxNativeAdView, clickableViews, creativeViews, null, nativeAdListener );
-                }
-            } );
+            d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+
+            // Here creativeViews and dislikeView are null since they are optional
+            nativeAd.registerViewForInteraction( container, clickableViews, null, null, nativeAdListener );
+
+            return true;
         }
     }
 }

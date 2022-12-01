@@ -126,7 +126,7 @@ public class NendMediationAdapter
         if ( !interstitialVideo.isLoaded() )
         {
             log( "Interstitial ad has not loaded" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
 
             return;
         }
@@ -174,7 +174,7 @@ public class NendMediationAdapter
         if ( !rewardedVideo.isLoaded() )
         {
             log( "Rewarded ad has not loaded" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
 
             return;
         }
@@ -494,8 +494,13 @@ public class NendMediationAdapter
         }
         else if ( nendErrorCode == NendAdView.NendError.AD_SIZE_DIFFERENCES )
         {
-            // From the developer: "Difference in ad sized"
+            // From the developer: "Difference in ad size"
             adapterError = MaxAdapterError.INTERNAL_ERROR;
+        }
+        else if ( nendErrorCode == NendAdView.NendError.UNSUPPORTED_DEVICE )
+        {
+            // From the developer: "Unsupported device type"
+             adapterError = MaxAdapterError.INTERNAL_ERROR;
         }
         else
         {

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.16.1.1
+* Update adapter error code mapping.
+
 ## 2.16.1.0
 * Certified with Verve SDK 2.16.1.
 * Add additional details for ad display failures.

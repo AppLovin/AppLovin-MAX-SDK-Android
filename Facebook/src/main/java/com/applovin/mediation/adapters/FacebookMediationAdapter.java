@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -261,7 +262,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show interstitial - no ad loaded..." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -403,7 +404,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show rewarded interstitial ad - no ad loaded..." );
-            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded Interstitial ad not ready" ) );
         }
     }
 
@@ -455,7 +456,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show rewarded ad - no ad loaded..." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -1262,13 +1263,6 @@ public class FacebookMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final NativeAdBase nativeAd = ( mNativeAd != null ) ? mNativeAd : mNativeBannerAd;
-            if ( nativeAd == null )
-            {
-                e( "Failed to register native ad views: native ad is null." );
-                return;
-            }
-
             final List<View> clickableViews = new ArrayList<>();
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
@@ -1295,32 +1289,51 @@ public class FacebookMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
-            runOnUiThread( new Runnable()
+            prepareForInteraction( clickableViews, maxNativeAdView );
+        }
+
+        // @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
+            final NativeAdBase nativeAd = ( mNativeAd != null ) ? mNativeAd : mNativeBannerAd;
+            if ( nativeAd == null )
             {
-                @Override
-                public void run()
+                e( "Failed to register native ad views: native ad is null." );
+                return false;
+            }
+
+            ImageView iconImageView = null;
+            for ( final View clickableView : clickableViews )
+            {
+                if ( clickableView instanceof ImageView )
                 {
-                    if ( nativeAd instanceof NativeBannerAd )
-                    {
-                        if ( maxNativeAdView.getIconImageView() != null )
-                        {
-                            ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, maxNativeAdView.getIconImageView(), clickableViews );
-                        }
-                        else if ( getMediaView() != null )
-                        {
-                            ( (NativeBannerAd) nativeAd ).registerViewForInteraction( maxNativeAdView, (ImageView) getMediaView(), clickableViews );
-                        }
-                        else
-                        {
-                            e( "Failed to register native ad view for interaction: icon image view and media view are null" );
-                        }
-                    }
-                    else
-                    {
-                        ( (NativeAd) nativeAd ).registerViewForInteraction( maxNativeAdView, (MediaView) getMediaView(), (MediaView) getIconView(), clickableViews );
-                    }
+                    iconImageView = (ImageView) clickableView;
+                    break;
                 }
-            } );
+            }
+
+            if ( nativeAd instanceof NativeBannerAd )
+            {
+                if ( iconImageView != null )
+                {
+                    ( (NativeBannerAd) nativeAd ).registerViewForInteraction( container, iconImageView, clickableViews );
+                }
+                else if ( getMediaView() != null )
+                {
+                    ( (NativeBannerAd) nativeAd ).registerViewForInteraction( container, (ImageView) getMediaView(), clickableViews );
+                }
+                else
+                {
+                    e( "Failed to register native ad view for interaction: icon image view and media view are null" );
+                    return false;
+                }
+            }
+            else
+            {
+                ( (NativeAd) nativeAd ).registerViewForInteraction( container, (MediaView) getMediaView(), iconImageView, clickableViews );
+            }
+
+            return true;
         }
     }
 }

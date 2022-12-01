@@ -1,5 +1,12 @@
 # Changelog
 
+## 10.1.2.1
+* Support for native ads in external plugins (e.g. React Native).
+
+## 10.1.2.0
+* Certified with InMobi SDK 10.1.2.
+* Add additional details for ad display failures.
+
 ## 10.1.1.0
 * Certified with InMobi SDK 10.1.1.
 

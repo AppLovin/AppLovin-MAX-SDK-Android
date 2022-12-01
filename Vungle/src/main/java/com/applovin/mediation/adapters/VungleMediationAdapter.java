@@ -560,6 +560,8 @@ public class VungleMediationAdapter
                 break;
             case VungleException.AD_UNABLE_TO_PLAY:
             case VungleException.OPERATION_CANCELED:
+            case VungleException.CREATIVE_ERROR:
+            case VungleException.OUT_OF_MEMORY:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
             case VungleException.AD_FAILED_TO_DOWNLOAD:

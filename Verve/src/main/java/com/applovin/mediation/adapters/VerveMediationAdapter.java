@@ -337,6 +337,10 @@ public class VerveMediationAdapter
                     break;
                 case INVALID_ASSET:
                 case UNSUPPORTED_ASSET:
+                case MRAID_PLAYER_ERROR:
+                case VAST_PLAYER_ERROR:
+                case ERROR_TRACKING_URL:
+                case ERROR_TRACKING_JS:
                     adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                     break;
                 case PARSER_ERROR:
@@ -346,6 +350,7 @@ public class VerveMediationAdapter
                 case INVALID_AD:
                 case INVALID_ZONE_ID:
                 case INVALID_SIGNAL_DATA:
+                case INVALID_URL:
                     adapterError = MaxAdapterError.BAD_REQUEST;
                     break;
                 case NOT_INITIALISED:
@@ -359,6 +364,14 @@ public class VerveMediationAdapter
                     break;
                 case INTERNAL_ERROR:
                     adapterError = MaxAdapterError.INTERNAL_ERROR;
+                    break;
+                case DISABLED_FORMAT:
+                case DISABLED_RENDERING_ENGINE:
+                case ERROR_LOADING_FEEDBACK: 
+                    adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                    break;
+                case EXPIRED_AD:
+                    adapterError = MaxAdapterError.AD_EXPIRED;
                     break;
             }
         }

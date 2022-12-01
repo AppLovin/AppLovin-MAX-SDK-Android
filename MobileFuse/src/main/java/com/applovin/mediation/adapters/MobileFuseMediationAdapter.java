@@ -31,6 +31,7 @@ import com.mobilefuse.sdk.internal.TokenGeneratorListener;
 import com.mobilefuse.sdk.privacy.MobileFusePrivacyPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class MobileFuseMediationAdapter
         extends MediationAdapterBase
@@ -86,14 +87,14 @@ public class MobileFuseMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final @Nullable Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
         updatePrivacyPreferences( parameters );
 
         MobileFuseBiddingTokenRequest tokenRequest = new MobileFuseBiddingTokenRequest( MobileFuse.getPrivacyPreferences(), parameters.isTesting() );
-        MobileFuseBiddingTokenProvider.getToken( tokenRequest, activity, new TokenGeneratorListener()
+        MobileFuseBiddingTokenProvider.getToken( tokenRequest, getApplicationContext(), new TokenGeneratorListener()
         {
             @Override
             public void onTokenGenerated(@NonNull final String signal)
@@ -133,7 +134,7 @@ public class MobileFuseMediationAdapter
         if ( !interstitialAd.isLoaded() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
             return;
         }
 
@@ -162,7 +163,7 @@ public class MobileFuseMediationAdapter
         if ( rewardedAd.isLoaded() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
             return;
         }
 
