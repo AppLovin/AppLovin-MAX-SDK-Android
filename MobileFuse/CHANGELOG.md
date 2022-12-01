@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.2.0
+* Certified with MobileFuse SDK 1.3.2.
+
 ## 1.3.1.1
 * Ensure that the `Context` passed in signal collection is never null.
 * Add additional details for ad display failures.
