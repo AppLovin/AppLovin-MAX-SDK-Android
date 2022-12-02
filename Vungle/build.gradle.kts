@@ -3,9 +3,9 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 6
-private val versionMinor = 12
-private val versionPatch = 1
+private val versionMajor = 7
+private val versionMinor = 0
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -20,7 +20,8 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.vungle:publisher-sdk-android:${libraryVersions["vungle"]}")
+    //implementation("com.vungle:publisher-sdk-android:${libraryVersions["vungle"]}")
+    implementation("com.github.vungle:vng-android-sdk:e1c598ff18") //Dec 2
 }
 
 publishing {
