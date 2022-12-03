@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.11.1.0
+* Certified with Tapjoy SDK 12.11.1.
+* Add additional details for ad display failures.
+
 ## 12.11.0.0
 * Certified with Tapjoy SDK 12.11.0.
 
