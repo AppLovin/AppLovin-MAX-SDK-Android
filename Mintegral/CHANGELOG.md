@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.3.11.0
+* Certified with Mintegral SDK 16.3.11.
+
 ## 16.2.61.2
 * Support for native ads in external plugins (e.g. React Native).
 
