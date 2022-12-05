@@ -2,6 +2,7 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -65,6 +66,10 @@ public class AmazonAdMarketplaceMediationAdapter
     // Contains mapping of encoded bid id -> mediation hints / bid info
     private static final Map<String, MediationHints> mediationHintsCache     = new HashMap<>();
     private static final Object                      mediationHintsCacheLock = new Object();
+
+    // Contains mapping of ad format -> crid
+    private static final Map<MaxAdFormat, String> creativeIds     = new HashMap<>();
+    private static final Object                   creativeIdsLock = new Object();
 
     private DTBAdView         adView;
     private DTBAdInterstitial interstitialAd;
@@ -164,7 +169,10 @@ public class AmazonAdMarketplaceMediationAdapter
 
                 if ( adResponseObj instanceof DTBAdResponse )
                 {
-                    processAdResponse( parameters, (DTBAdResponse) adResponseObj, callback );
+                    DTBAdResponse adResponse = (DTBAdResponse) adResponseObj;
+
+                    setCreativeId( adFormat, adResponse.getCrid() );
+                    processAdResponse( parameters, adResponse, callback );
                 }
                 else // AdError
                 {
@@ -207,6 +215,7 @@ public class AmazonAdMarketplaceMediationAdapter
 
                 d( "Signal collected for ad loader: " + dtbAdResponse.getAdLoader() );
 
+                setCreativeId( adFormat, dtbAdResponse.getCrid() );
                 processAdResponse( parameters, dtbAdResponse, callback );
             }
 
@@ -292,7 +301,7 @@ public class AmazonAdMarketplaceMediationAdapter
         // Paranoia
         if ( mediationHints != null )
         {
-            adView = new DTBAdView( getContext( activity ), new AdViewListener( listener ) );
+            adView = new DTBAdView( getContext( activity ), new AdViewListener( adFormat, listener ) );
             adView.fetchAd( mediationHints.value );
         }
         else
@@ -407,16 +416,41 @@ public class AmazonAdMarketplaceMediationAdapter
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
-    
+
+    private void setCreativeId(final MaxAdFormat adFormat, final String creativeId)
+    {
+        synchronized ( creativeIdsLock )
+        {
+            creativeIds.put( adFormat, creativeId );
+        }
+    }
+
+    private Bundle createExtraInfo(final MaxAdFormat adFormat)
+    {
+        String creativeId;
+        synchronized ( creativeIdsLock )
+        {
+            creativeId = creativeIds.get( adFormat );
+        }
+
+        if ( TextUtils.isEmpty( creativeId ) ) return null;
+
+        Bundle extraInfo = new Bundle( 1 );
+        extraInfo.putString( "creative_id", creativeId );
+        return extraInfo;
+    }
+
     //endregion
 
     private class AdViewListener
             implements DTBAdBannerListener
     {
+        private final MaxAdFormat              adFormat;
         private final MaxAdViewAdapterListener listener;
 
-        private AdViewListener(final MaxAdViewAdapterListener listener)
+        private AdViewListener(final MaxAdFormat adFormat, final MaxAdViewAdapterListener listener)
         {
+            this.adFormat = adFormat;
             this.listener = listener;
         }
 
@@ -424,7 +458,9 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdLoaded(final View view)
         {
             d( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( view );
+
+            Bundle extraInfo = createExtraInfo( adFormat );
+            listener.onAdViewAdLoaded( view, extraInfo );
         }
 
         @Override
@@ -483,7 +519,9 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdLoaded(final View view)
         {
             d( "Interstitial loaded" );
-            listener.onInterstitialAdLoaded();
+
+            Bundle extraInfo = createExtraInfo( MaxAdFormat.INTERSTITIAL );
+            listener.onInterstitialAdLoaded( extraInfo );
         }
 
         @Override
@@ -548,7 +586,9 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdLoaded(final View view)
         {
             d( "Rewarded ad loaded" );
-            listener.onRewardedAdLoaded();
+
+            Bundle extraInfo = createExtraInfo( MaxAdFormat.REWARDED );
+            listener.onRewardedAdLoaded( extraInfo );
         }
 
         @Override

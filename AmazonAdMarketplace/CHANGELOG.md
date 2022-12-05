@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.6.2.1
+* Add support for passing creative id to AppLovin SDK.
+
 ## 9.6.2.0
 * Certified with APS SDK 9.6.2.
 * Add additional details for ad display failures.
