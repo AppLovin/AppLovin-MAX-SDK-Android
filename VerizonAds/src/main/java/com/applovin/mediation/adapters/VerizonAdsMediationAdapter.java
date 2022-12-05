@@ -18,6 +18,7 @@ import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
@@ -937,7 +938,7 @@ public class VerizonAdsMediationAdapter
                             .setIcon( iconImage )
                             .setMediaView( mediaView );
 
-                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( null, activity, builder );
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
                     MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, getValidTemplateName( templateName ), getContext( activity ) );
@@ -1131,7 +1132,7 @@ public class VerizonAdsMediationAdapter
                         builder.setMediaContentAspectRatio( mediaViewAspectRatio );
                     }
 
-                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( listener, activity, builder );
 
                     CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
                     Bundle extraInfo = new Bundle( 1 );
@@ -1195,13 +1196,36 @@ public class VerizonAdsMediationAdapter
     private class MaxYahooNativeAd
             extends MaxNativeAd
     {
-        private final WeakReference<Activity> activityRef;
+        private final MaxNativeAdAdapterListener listener;
+        private final WeakReference<Activity>    activityRef;
 
-        private MaxYahooNativeAd(final Activity activity, final Builder builder)
+        private MaxYahooNativeAd(final MaxNativeAdAdapterListener listener, final Activity activity, final Builder builder)
         {
             super( builder );
 
+            this.listener = listener;
             this.activityRef = new WeakReference<>( activity );
+        }
+
+        // @Override
+        public boolean isContainerClickable()
+        {
+            return true;
+        }
+
+        // @Override
+        public void performClick()
+        {
+            final NativeAd nativeAd = VerizonAdsMediationAdapter.this.nativeAd;
+            if ( nativeAd == null )
+            {
+                e( "Failed to perform click: Native ad is null." );
+                return;
+            }
+
+            d( "Performing click..." );
+            listener.onNativeAdClicked();
+            nativeAd.invokeDefaultAction();
         }
 
         @Override
