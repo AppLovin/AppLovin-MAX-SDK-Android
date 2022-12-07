@@ -379,7 +379,7 @@ public class VungleMediationAdapter
 
         Context context = getContext(activity);
         AdConfig adConfig = createAdConfig(parameters.getServerParameters(), context);
-        nativeAd = new NativeAd(context, placementId, adConfig);
+        nativeAd = new NativeAd(activity, placementId, adConfig);
         nativeAd.setAdListener(new VngMaxNativeAdListener(parameters, context, listener));
         nativeAd.load(isBiddingAd ? bidResponse : null);
     }
