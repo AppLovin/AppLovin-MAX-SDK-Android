@@ -10,7 +10,7 @@ import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
-import kotlinx.android.synthetic.main.activity_layout_editor_banner_ad.*
+import com.applovin.mediation.ads.MaxAdView
 
 
 /**
@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_layout_editor_banner_ad.*
  */
 class LayoutEditorBannerAdActivity : BaseAdActivity(),
         MaxAdViewAdListener, MaxAdRevenueListener {
+    private lateinit var bannerAdView: MaxAdView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_layout_editor_banner_ad)
@@ -27,6 +28,7 @@ class LayoutEditorBannerAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
+        bannerAdView = findViewById(R.id.bannerAdView)
         bannerAdView.setListener(this)
         bannerAdView.setRevenueListener(this)
 

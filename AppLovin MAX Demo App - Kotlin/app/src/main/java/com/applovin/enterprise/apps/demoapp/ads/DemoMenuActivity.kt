@@ -9,19 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.TextView
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
-import kotlinx.android.synthetic.main.activity_list.*
 
 
 abstract class DemoMenuActivity : AppCompatActivity()
 {
+    protected lateinit var list_view: ListView
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
+        list_view = findViewById(R.id.list_view)
         setupListViewFooter()
         setupListViewContents(getListViewContents())
     }

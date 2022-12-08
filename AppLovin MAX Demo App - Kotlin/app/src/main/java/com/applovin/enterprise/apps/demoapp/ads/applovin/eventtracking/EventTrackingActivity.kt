@@ -14,7 +14,7 @@ import com.applovin.sdk.AppLovinEventParameters
 import com.applovin.sdk.AppLovinEventService
 import com.applovin.sdk.AppLovinEventTypes
 import com.applovin.sdk.AppLovinSdk
-import kotlinx.android.synthetic.main.activity_list.*
+import android.widget.ListView
 import java.lang.Long
 
 import com.applovin.enterprise.apps.demoapp.R
@@ -181,6 +181,7 @@ class EventTrackingActivity : AppCompatActivity()
                           )
                 )
         )
+        val list_view = findViewById<ListView>(R.id.list_view)
 
         list_view.adapter = object : ArrayAdapter<EventItem>(this, android.R.layout.simple_list_item_1, events)
         {

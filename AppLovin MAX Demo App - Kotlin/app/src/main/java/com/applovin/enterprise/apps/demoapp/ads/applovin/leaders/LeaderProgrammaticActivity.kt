@@ -2,6 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.applovin.leaders
 
 import android.os.Bundle
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
@@ -11,7 +12,6 @@ import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_leader_programmatic.*
 
 class LeaderProgrammaticActivity : BaseAdActivity(),
         AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
@@ -31,9 +31,11 @@ class LeaderProgrammaticActivity : BaseAdActivity(),
         adView.setAdClickListener(this)
 
         adView.id = ViewCompat.generateViewId()
+        val load_button = findViewById<Button>(R.id.load_button)
         load_button.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created banner into our container
+        val leader_programmatic_layout = findViewById<ConstraintLayout>(R.id.leader_programmatic_layout)
         leader_programmatic_layout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 90)))
 
         val constraintSet = ConstraintSet()

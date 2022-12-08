@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.RecyclerView
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
@@ -28,11 +30,8 @@ import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter
-import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
 import com.applovin.sdk.AppLovinSdkUtils
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -79,12 +78,14 @@ class MainActivity : AppCompatActivity(),
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         val recyclerViewAdapter = MainRecyclerViewAdapter(generateMainListItems(), this, this)
         val manager = LinearLayoutManager(this)
         val decoration = DividerItemDecoration(this, manager.orientation)
 
+        val mainRecyclerView = findViewById<RecyclerView>(R.id.mainRecyclerView)
         mainRecyclerView.apply {
             setHasFixedSize(true)
             layoutManager = manager

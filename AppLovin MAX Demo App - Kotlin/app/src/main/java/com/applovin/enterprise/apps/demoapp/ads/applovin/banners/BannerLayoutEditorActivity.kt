@@ -1,6 +1,7 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.banners
 
 import android.os.Bundle
+import android.widget.Button
 import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
@@ -10,7 +11,6 @@ import com.applovin.sdk.AppLovinAd
 import com.applovin.sdk.AppLovinAdClickListener
 import com.applovin.sdk.AppLovinAdDisplayListener
 import com.applovin.sdk.AppLovinAdLoadListener
-import kotlinx.android.synthetic.main.activity_banner_layout_editor.*
 
 class BannerLayoutEditorActivity : BaseAdActivity(),
         AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
@@ -21,12 +21,14 @@ class BannerLayoutEditorActivity : BaseAdActivity(),
         setContentView(R.layout.activity_banner_layout_editor)
 
         setupCallbacksRecyclerView()
+        val ad_view = findViewById<AppLovinAdView>(R.id.ad_view)
 
         ad_view.setAdLoadListener(this)
         ad_view.setAdDisplayListener(this)
         ad_view.setAdViewEventListener(this)
         ad_view.setAdClickListener(this)
 
+        val load_button = findViewById<Button>(R.id.load_button)
         load_button.setOnClickListener { ad_view.loadNextAd() }
 
         // Load an ad!
