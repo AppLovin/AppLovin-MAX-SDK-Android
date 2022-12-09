@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.LayoutInflater
@@ -17,13 +16,13 @@ import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 
 abstract class DemoMenuActivity : AppCompatActivity()
 {
-    protected lateinit var list_view: ListView
+    protected lateinit var listView: ListView
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
-        list_view = findViewById(R.id.list_view)
+        listView = findViewById(R.id.list_view)
         setupListViewFooter()
         setupListViewContents(getListViewContents())
     }
@@ -51,9 +50,9 @@ abstract class DemoMenuActivity : AppCompatActivity()
                 return row
             }
         }
-        list_view.adapter = listAdapter
+        listView.adapter = listAdapter
 
-        list_view.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             if (items[position].intent != null)
                 startActivity(items[position].intent)
         }

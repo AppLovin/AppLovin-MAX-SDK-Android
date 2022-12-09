@@ -22,17 +22,17 @@ class MRecLayoutEditorActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        val ad_view = findViewById<AppLovinAdView>(R.id.ad_view)
-        ad_view.setAdLoadListener(this)
-        ad_view.setAdDisplayListener(this)
-        ad_view.setAdViewEventListener(this)
-        ad_view.setAdClickListener(this)
+        val adView = findViewById<AppLovinAdView>(R.id.ad_view)
+        adView.setAdLoadListener(this)
+        adView.setAdDisplayListener(this)
+        adView.setAdViewEventListener(this)
+        adView.setAdClickListener(this)
 
-        val ad_load_button = findViewById<Button>(R.id.ad_load_button)
-        ad_load_button.setOnClickListener { ad_view.loadNextAd() }
+        val adLoadButton = findViewById<Button>(R.id.ad_load_button)
+        adLoadButton.setOnClickListener { adView.loadNextAd() }
 
         // Load an ad!
-        ad_view.loadNextAd()
+        adView.loadNextAd()
 
         //
         // Please note that the AppLovinAdView CAN AUTOMATICALLY invoke loadNextAd() upon inflation from layout

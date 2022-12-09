@@ -33,18 +33,18 @@ class BannerProgrammaticActivity : BaseAdActivity(),
         adView.setAdClickListener(this)
 
         adView.id = ViewCompat.generateViewId()
-        val load_button = findViewById<Button>(R.id.load_button)
-        load_button.setOnClickListener { adView.loadNextAd() }
+        val loadButton = findViewById<Button>(R.id.load_button)
+        loadButton.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created banner into our container
-        val banner_programmatic_content_layout =
+        val bannerProgrammaticContentLayout =
             findViewById<ConstraintLayout>(R.id.banner_programmatic_content_layout)
-        banner_programmatic_content_layout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 50)))
+        bannerProgrammaticContentLayout.addView(adView, ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, AppLovinSdkUtils.dpToPx(this, 50)))
 
         val constraintSet = ConstraintSet()
-        constraintSet.clone(banner_programmatic_content_layout)
+        constraintSet.clone(bannerProgrammaticContentLayout)
         constraintSet.connect(adView.id, ConstraintSet.BOTTOM, R.id.banner_programmatic_content_layout, ConstraintSet.BOTTOM, 0)
-        constraintSet.applyTo(banner_programmatic_content_layout)
+        constraintSet.applyTo(bannerProgrammaticContentLayout)
 
         // Load an ad!
         adView.loadNextAd()

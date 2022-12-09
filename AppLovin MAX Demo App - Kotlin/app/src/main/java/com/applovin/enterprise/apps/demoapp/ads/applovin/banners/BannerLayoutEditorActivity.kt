@@ -21,18 +21,18 @@ class BannerLayoutEditorActivity : BaseAdActivity(),
         setContentView(R.layout.activity_banner_layout_editor)
 
         setupCallbacksRecyclerView()
-        val ad_view = findViewById<AppLovinAdView>(R.id.ad_view)
+        val adView = findViewById<AppLovinAdView>(R.id.ad_view)
 
-        ad_view.setAdLoadListener(this)
-        ad_view.setAdDisplayListener(this)
-        ad_view.setAdViewEventListener(this)
-        ad_view.setAdClickListener(this)
+        adView.setAdLoadListener(this)
+        adView.setAdDisplayListener(this)
+        adView.setAdViewEventListener(this)
+        adView.setAdClickListener(this)
 
-        val load_button = findViewById<Button>(R.id.load_button)
-        load_button.setOnClickListener { ad_view.loadNextAd() }
+        val loadButton = findViewById<Button>(R.id.load_button)
+        loadButton.setOnClickListener { adView.loadNextAd() }
 
         // Load an ad!
-        ad_view.loadNextAd()
+        adView.loadNextAd()
 
         //
         // Please note that the AppLovinAdView CAN AUTOMATICALLY invoke loadNextAd() upon inflation from layout

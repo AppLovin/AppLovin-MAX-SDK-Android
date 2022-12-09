@@ -181,9 +181,9 @@ class EventTrackingActivity : AppCompatActivity()
                           )
                 )
         )
-        val list_view = findViewById<ListView>(R.id.list_view)
+        val listView = findViewById<ListView>(R.id.list_view)
 
-        list_view.adapter = object : ArrayAdapter<EventItem>(this, android.R.layout.simple_list_item_1, events)
+        listView.adapter = object : ArrayAdapter<EventItem>(this, android.R.layout.simple_list_item_1, events)
         {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
             {
@@ -208,6 +208,6 @@ class EventTrackingActivity : AppCompatActivity()
             val eventName = event.name
             title = eventName
         }
-        list_view.onItemClickListener = itemClickListener
+        listView.onItemClickListener = itemClickListener
     }
 }
