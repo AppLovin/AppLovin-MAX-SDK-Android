@@ -23,6 +23,7 @@ class RewardedVideosActivity : BaseAdActivity(),
         // You need to preload each rewarded video before it can be displayed
         val loadButton = findViewById<Button>(R.id.loadButton)
         showButton = findViewById(R.id.showButton)
+
         loadButton.setOnClickListener {
             showButton.isEnabled = false
 

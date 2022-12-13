@@ -21,6 +21,7 @@ class BannerLayoutEditorActivity : BaseAdActivity(),
         setContentView(R.layout.activity_banner_layout_editor)
 
         setupCallbacksRecyclerView()
+
         val adView = findViewById<AppLovinAdView>(R.id.ad_view)
 
         adView.setAdLoadListener(this)

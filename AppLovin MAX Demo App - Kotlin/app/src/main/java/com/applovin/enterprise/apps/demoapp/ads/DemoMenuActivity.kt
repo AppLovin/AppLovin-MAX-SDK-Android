@@ -17,12 +17,14 @@ import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 abstract class DemoMenuActivity : AppCompatActivity()
 {
     protected lateinit var listView: ListView
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
         listView = findViewById(R.id.list_view)
+
         setupListViewFooter()
         setupListViewContents(getListViewContents())
     }

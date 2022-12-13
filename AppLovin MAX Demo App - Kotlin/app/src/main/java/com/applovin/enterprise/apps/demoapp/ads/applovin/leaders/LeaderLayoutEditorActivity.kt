@@ -30,7 +30,6 @@ class LeaderLayoutEditorActivity : BaseAdActivity(),
         adView.setAdClickListener(this)
 
         val loadButton = findViewById<Button>(R.id.load_button)
-
         loadButton.setOnClickListener { adView.loadNextAd() }
 
         // Load an ad!

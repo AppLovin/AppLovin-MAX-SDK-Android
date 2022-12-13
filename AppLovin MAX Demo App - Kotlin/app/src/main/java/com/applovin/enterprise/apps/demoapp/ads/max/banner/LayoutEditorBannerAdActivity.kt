@@ -20,7 +20,7 @@ import com.applovin.mediation.ads.MaxAdView
  */
 class LayoutEditorBannerAdActivity : BaseAdActivity(),
         MaxAdViewAdListener, MaxAdRevenueListener {
-    private lateinit var bannerAdView: MaxAdView
+    private lateinit var adView: MaxAdView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_layout_editor_banner_ad)
@@ -28,17 +28,18 @@ class LayoutEditorBannerAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        bannerAdView = findViewById(R.id.bannerAdView)
-        bannerAdView.setListener(this)
-        bannerAdView.setRevenueListener(this)
+        adView = findViewById(R.id.bannerAdView)
 
-        bannerAdView.loadAd()
+        adView.setListener(this)
+        adView.setRevenueListener(this)
+
+        adView.loadAd()
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        bannerAdView.destroy()
+        adView.destroy()
     }
 
     //region MAX Ad Listener

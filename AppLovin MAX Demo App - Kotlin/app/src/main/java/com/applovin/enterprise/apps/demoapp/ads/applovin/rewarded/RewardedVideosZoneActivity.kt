@@ -19,6 +19,7 @@ class RewardedVideosZoneActivity : BaseAdActivity(),
         setContentView(R.layout.activity_rewarded_videos)
 
         setupCallbacksRecyclerView()
+
         val loadButton = findViewById<Button>(R.id.loadButton)
         showButton = findViewById<Button>(R.id.showButton)
 

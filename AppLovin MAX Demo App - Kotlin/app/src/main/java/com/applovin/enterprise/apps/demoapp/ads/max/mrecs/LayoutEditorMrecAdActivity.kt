@@ -20,7 +20,7 @@ import com.applovin.mediation.ads.MaxAdView
  * Created by Andrew Tian on 2020-01-14.
  */
 class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdRevenueListener {
-    private lateinit var mrecAdView: MaxAdView
+    private lateinit var adView: MaxAdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,12 +28,12 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         setTitle(R.string.activity_layout_editor_mrecs)
         setupCallbacksRecyclerView()
 
-        mrecAdView = findViewById<MaxAdView>(R.id.mrec_ad_view)
-        mrecAdView.setListener(this)
-        mrecAdView.setRevenueListener(this)
+        adView = findViewById<MaxAdView>(R.id.mrec_ad_view)
+        adView.setListener(this)
+        adView.setRevenueListener(this)
 
         // Load the first ad.
-        mrecAdView.loadAd()
+        adView.loadAd()
     }
 
     //region MAX Ad Listener

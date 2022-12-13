@@ -12,6 +12,7 @@ class InterstitialManualLoadingActivity : BaseAdActivity(),
 {
     private var currentAd: AppLovinAd? = null
     private lateinit var showButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -28,6 +29,7 @@ class InterstitialManualLoadingActivity : BaseAdActivity(),
 
         val loadButton = findViewById<Button>(R.id.loadButton)
         showButton = findViewById(R.id.showButton)
+
         loadButton.setOnClickListener {
             showButton.isEnabled = false
 

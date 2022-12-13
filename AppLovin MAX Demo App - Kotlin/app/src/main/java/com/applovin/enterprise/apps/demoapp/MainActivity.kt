@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity(),
         val manager = LinearLayoutManager(this)
         val decoration = DividerItemDecoration(this, manager.orientation)
 
-        val mainRecyclerView = findViewById<RecyclerView>(R.id.mainRecyclerView)
-        mainRecyclerView.apply {
+        val recyclerView = findViewById<RecyclerView>(R.id.mainRecyclerView)
+        recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = manager
             addItemDecoration(decoration)

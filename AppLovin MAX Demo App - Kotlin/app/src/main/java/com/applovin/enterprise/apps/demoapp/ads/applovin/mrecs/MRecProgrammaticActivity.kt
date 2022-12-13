@@ -37,19 +37,18 @@ class MRecProgrammaticActivity : BaseAdActivity(),
         mrecLoadButton.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created MRec into our container and center.
-        val mrecProgrammaticContentLayout =
-            findViewById<ConstraintLayout>(R.id.mrec_programmatic_content_layout)
-        mrecProgrammaticContentLayout.addView(adView)
+        val contentLayout = findViewById<ConstraintLayout>(R.id.mrec_programmatic_content_layout)
+        contentLayout.addView(adView)
 
         val constraintSet = ConstraintSet()
-        constraintSet.clone(mrecProgrammaticContentLayout)
+        constraintSet.clone(contentLayout)
         constraintSet.constrainHeight(adView.id, heightPx)
         constraintSet.constrainWidth(adView.id, widthPx)
         constraintSet.connect(adView.id, ConstraintSet.LEFT, R.id.mrec_programmatic_content_layout, ConstraintSet.LEFT, 0)
         constraintSet.connect(adView.id, ConstraintSet.RIGHT, R.id.mrec_programmatic_content_layout, ConstraintSet.RIGHT, 0)
         constraintSet.connect(adView.id, ConstraintSet.TOP, R.id.mrec_programmatic_content_layout, ConstraintSet.TOP, 0)
 
-        constraintSet.applyTo(mrecProgrammaticContentLayout)
+        constraintSet.applyTo(contentLayout)
 
         // Load an ad!
         adView.loadNextAd()
