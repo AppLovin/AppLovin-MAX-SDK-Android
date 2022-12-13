@@ -99,7 +99,8 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     fun showAd(view: View) {
         val adView = createNativeAdView()
 
-        if (nativeAd!!.nativeAd!!.isExpired) {
+        // Check if ad is expired before rendering
+        if (true == nativeAd?.nativeAd?.isExpired) {
             nativeAdLoader.destroy(nativeAd)
             nativeAdLoader.loadAd()
 
