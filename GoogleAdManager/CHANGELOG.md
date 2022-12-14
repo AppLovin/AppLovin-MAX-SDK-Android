@@ -1,5 +1,9 @@
 # Changelog
 
+## 21.4.0.0
+* Certified with GoogleAdManager SDK 21.4.0.
+* Add additional details for ad display failures.
+
 ## 21.3.0.2
 * Remove redundant client side check for setting user consent.
 
