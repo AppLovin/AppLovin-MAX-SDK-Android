@@ -12,6 +12,8 @@ import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.*
 import com.applovin.mediation.ads.MaxRewardedAd
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * [android.app.Activity] used to show AppLovin MAX rewarded ads.
@@ -21,7 +23,7 @@ import java.util.concurrent.TimeUnit
 class RewardedAdActivity : BaseAdActivity(),
         MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
-    private var retryAttempt = 0.0
+    private var retryAttempt = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +53,7 @@ class RewardedAdActivity : BaseAdActivity(),
         logCallback()
 
         // Reset retry attempt
-        retryAttempt = 0.0
+        retryAttempt = 0
     }
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
@@ -60,7 +62,7 @@ class RewardedAdActivity : BaseAdActivity(),
         // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
 
         retryAttempt++
-        val delayMillis = TimeUnit.SECONDS.toMillis(Math.pow(2.0, Math.min(6.0, retryAttempt)).toLong())
+        val delayMillis = TimeUnit.SECONDS.toMillis(2.0.pow(min(6, retryAttempt)).toLong())
 
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }

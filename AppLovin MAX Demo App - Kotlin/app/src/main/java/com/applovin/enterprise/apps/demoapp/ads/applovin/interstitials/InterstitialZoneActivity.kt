@@ -1,16 +1,18 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials
 
 import android.os.Bundle
+import android.widget.Button
 import com.applovin.adview.AppLovinInterstitialAd
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_interstitial_manual_loading.*
 
 class InterstitialZoneActivity : BaseAdActivity(),
         AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
 {
     private var currentAd: AppLovinAd? = null
+    private lateinit var showButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -24,6 +26,9 @@ class InterstitialZoneActivity : BaseAdActivity(),
         interstitialAdDialog.setAdDisplayListener(this)
         interstitialAdDialog.setAdClickListener(this)
         interstitialAdDialog.setAdVideoPlaybackListener(this) // This will only ever be used if you have video ads enabled.
+
+        val loadButton = findViewById<Button>(R.id.loadButton)
+        showButton = findViewById(R.id.showButton)
 
         loadButton.setOnClickListener {
             showButton.isEnabled = false

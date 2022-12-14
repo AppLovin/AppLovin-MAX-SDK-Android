@@ -1,6 +1,7 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
@@ -10,7 +11,6 @@ import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_mrec_programmatic.*
 
 class MRecProgrammaticActivity : BaseAdActivity(),
     AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdViewEventListener, AppLovinAdClickListener
@@ -33,20 +33,22 @@ class MRecProgrammaticActivity : BaseAdActivity(),
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
         adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
 
-        mrec_load_button.setOnClickListener { adView.loadNextAd() }
+        val mrecLoadButton = findViewById<Button>(R.id.mrec_load_button)
+        mrecLoadButton.setOnClickListener { adView.loadNextAd() }
 
         // Add programmatically created MRec into our container and center.
-        mrec_programmatic_content_layout.addView(adView)
+        val contentLayout = findViewById<ConstraintLayout>(R.id.mrec_programmatic_content_layout)
+        contentLayout.addView(adView)
 
         val constraintSet = ConstraintSet()
-        constraintSet.clone(mrec_programmatic_content_layout)
+        constraintSet.clone(contentLayout)
         constraintSet.constrainHeight(adView.id, heightPx)
         constraintSet.constrainWidth(adView.id, widthPx)
         constraintSet.connect(adView.id, ConstraintSet.LEFT, R.id.mrec_programmatic_content_layout, ConstraintSet.LEFT, 0)
         constraintSet.connect(adView.id, ConstraintSet.RIGHT, R.id.mrec_programmatic_content_layout, ConstraintSet.RIGHT, 0)
         constraintSet.connect(adView.id, ConstraintSet.TOP, R.id.mrec_programmatic_content_layout, ConstraintSet.TOP, 0)
 
-        constraintSet.applyTo(mrec_programmatic_content_layout)
+        constraintSet.applyTo(contentLayout)
 
         // Load an ad!
         adView.loadNextAd()

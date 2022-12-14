@@ -5,7 +5,7 @@
     android:id="@+id/banner_programmatic_content_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerProgrammaticActivity">
+    tools:context=".ads.applovin.banners.BannerProgrammaticActivity">
 
     <Button
         android:id="@+id/load_button"

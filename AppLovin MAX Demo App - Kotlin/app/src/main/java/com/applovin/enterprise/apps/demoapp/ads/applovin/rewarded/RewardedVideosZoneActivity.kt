@@ -1,16 +1,17 @@
 package com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded
 
 import android.os.Bundle
+import android.widget.Button
 import com.applovin.adview.AppLovinIncentivizedInterstitial
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.sdk.*
-import kotlinx.android.synthetic.main.activity_rewarded_videos.*
 
 class RewardedVideosZoneActivity : BaseAdActivity(),
         AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener
 {
     private var incentivizedInterstitial: AppLovinIncentivizedInterstitial? = null
+    private lateinit var showButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -18,6 +19,9 @@ class RewardedVideosZoneActivity : BaseAdActivity(),
         setContentView(R.layout.activity_rewarded_videos)
 
         setupCallbacksRecyclerView()
+
+        val loadButton = findViewById<Button>(R.id.loadButton)
+        showButton = findViewById<Button>(R.id.showButton)
 
         // You need to preload each rewarded video before it can be displayed
         loadButton.setOnClickListener {

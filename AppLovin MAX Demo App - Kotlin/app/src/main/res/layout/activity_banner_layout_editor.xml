@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerLayoutEditorActivity">
+    tools:context=".ads.applovin.banners.BannerLayoutEditorActivity">
 
     <!-- To automatically load an ad, add the next the next two lines into the <com.applovin.adview.AppLovinAdView> element -->
     <!--xmlns:demo="http://schemas.applovin.com/android/1.0"-->
