@@ -1,5 +1,9 @@
 # Changelog
 
+## 21.4.0.0
+* Certified with Google SDK 21.4.0.
+* Add additional details for ad display failures.
+
 ## 21.3.0.2
 * Fix silent exception thrown during signal collection for app open ads.
 

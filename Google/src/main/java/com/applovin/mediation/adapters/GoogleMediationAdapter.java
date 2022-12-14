@@ -328,7 +328,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Interstitial ad failed to show: " + placementId );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -428,12 +428,13 @@ public class GoogleMediationAdapter
     }
 
     // @Override
-    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxAppOpenAdapterListener listener)
+    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
         boolean isInterstitial = parameters.getServerParameters().getBoolean( "is_inter_placement" );
         log( "Showing app open " + ( isInterstitial ? "interstitial " : "" ) + "ad: " + placementId + "..." );
 
+        // Shows ad with null activity properly as tested in SDK version 21.1.0
         if ( appOpenInterstitialAd != null )
         {
             appOpenInterstitialAd.show( activity );
@@ -445,7 +446,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "App open ad failed to show: " + placementId );
-            listener.onAppOpenAdLoadFailed( new MaxAdapterError( -4205, "Ad display failed" ) );
+            listener.onAppOpenAdLoadFailed( new MaxAdapterError( -4205, "Ad display failed", 0, "App open ad not ready" ) );
         }
     }
 
@@ -522,7 +523,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Rewarded interstitial ad failed to show: " + placementId );
-            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded Interstitial ad not ready" ) );
         }
     }
 
@@ -600,7 +601,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "Rewarded ad failed to show: " + placementId );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
