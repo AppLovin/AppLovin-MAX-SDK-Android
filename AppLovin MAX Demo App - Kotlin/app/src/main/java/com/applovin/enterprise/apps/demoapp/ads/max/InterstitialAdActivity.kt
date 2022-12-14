@@ -25,7 +25,7 @@ import kotlin.math.pow
 class InterstitialAdActivity : BaseAdActivity(),
         MaxAdListener, MaxAdRevenueListener {
     private lateinit var interstitialAd: MaxInterstitialAd
-    private var retryAttempt : Int = 0
+    private var retryAttempt = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

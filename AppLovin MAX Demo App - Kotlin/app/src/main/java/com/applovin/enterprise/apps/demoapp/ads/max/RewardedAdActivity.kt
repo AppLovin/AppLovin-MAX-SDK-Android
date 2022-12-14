@@ -23,7 +23,7 @@ import kotlin.math.pow
 class RewardedAdActivity : BaseAdActivity(),
         MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
-    private var retryAttempt: Int = 0
+    private var retryAttempt = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
