@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.2.2
+* Add CCPA support.
+
 ## 10.1.2.1
 * Support for native ads in external plugins (e.g. React Native).
 
