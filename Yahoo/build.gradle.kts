@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 2
 private val versionMinor = 2
 private val versionPatch = 0
-private val versionAdapterPatch = 2
+private val versionAdapterPatch = 4
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:${libraryVersions["verizonAds"]}")
+    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:${libraryVersions["yahoo"]}")
     compileOnly("com.android.support:support-annotations:+")
 }
 
@@ -35,7 +35,7 @@ publishing {
             pom.withXml {
                 asNode().apply {
                     appendNode("name", libraryArtifactId)
-                    appendNode("description", "Verizon Ads adapter for AppLovin MAX mediation")
+                    appendNode("description", "Yahoo adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
                             .appendNode("license").apply {

@@ -1,1 +1,1 @@
-# Verizon Ads Adapter
+# Yahoo Adapter
