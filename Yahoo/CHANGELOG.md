@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.5
+* Certified with Yahoo Mobile SDK 1.3.0.
+
 ## 2.2.0.4
 * Add adapter class name `YahooMediationAdapter`.
 
