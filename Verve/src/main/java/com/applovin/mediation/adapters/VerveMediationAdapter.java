@@ -244,14 +244,10 @@ public class VerveMediationAdapter
 
         UserDataManager userDataManager = HyBid.getUserDataManager();
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = parameters.hasUserConsent();
+        if ( hasUserConsent != null && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABGDPRConsentString() ) )
         {
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABGDPRConsentString() ) )
-            {
-                userDataManager.setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
-            }
-            else { /* Don't do anything if huc value not set */ }
+            userDataManager.setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
         }
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic

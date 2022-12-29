@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.16.2.1
+* Remove `consentDialogState` guard.
+
 ## 2.16.2.0
 * Certified with Verve SDK 2.16.2.
 
