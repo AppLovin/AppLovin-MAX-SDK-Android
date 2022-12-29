@@ -178,13 +178,10 @@ public class ByteDanceMediationAdapter
             // Set mediation provider
             builder.setUserData( createAdConfigData( serverParameters, true ) );
 
-            if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            if ( hasUserConsent != null )
             {
-                Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-                if ( hasUserConsent != null )
-                {
-                    builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
-                }
+                builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
             }
 
             // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic

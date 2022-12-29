@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.9.0.6.1
+* Remove `consentDialogState` guard.
+
 ## 4.9.0.6.0
 * Certified with ByteDance SDK 4.9.0.6.
 
