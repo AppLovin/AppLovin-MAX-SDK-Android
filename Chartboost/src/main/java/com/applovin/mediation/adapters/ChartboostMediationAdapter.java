@@ -284,14 +284,11 @@ public class ChartboostMediationAdapter
 
     private void updateConsentStatus(MaxAdapterParameters parameters, Context applicationContext)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                DataUseConsent gdprConsent = new GDPR( hasUserConsent ? GDPR.GDPR_CONSENT.BEHAVIORAL : GDPR.GDPR_CONSENT.NON_BEHAVIORAL );
-                Chartboost.addDataUseConsent( applicationContext, gdprConsent );
-            }
+            DataUseConsent gdprConsent = new GDPR( hasUserConsent ? GDPR.GDPR_CONSENT.BEHAVIORAL : GDPR.GDPR_CONSENT.NON_BEHAVIORAL );
+            Chartboost.addDataUseConsent( applicationContext, gdprConsent );
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )

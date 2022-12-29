@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.1.1.2
+* Remove `consentDialogState` guard.
+
 ## 9.1.1.1
 * Update error code mapping for SDK error reports.
 * Add additional details for ad display failures.
