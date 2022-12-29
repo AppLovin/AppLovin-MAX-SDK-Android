@@ -563,13 +563,10 @@ public class InneractiveMediationAdapter
     {
         InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                InneractiveAdManager.setGdprConsent( hasUserConsent );
-            }
+            InneractiveAdManager.setGdprConsent( hasUserConsent );
         }
         else
         {
