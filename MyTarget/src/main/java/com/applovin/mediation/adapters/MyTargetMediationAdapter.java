@@ -292,13 +292,10 @@ public class MyTargetMediationAdapter
             MyTargetPrivacy.setUserAgeRestricted( isAgeRestrictedUser );
         }
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                MyTargetPrivacy.setUserConsent( hasUserConsent );
-            }
+            MyTargetPrivacy.setUserConsent( hasUserConsent );
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
