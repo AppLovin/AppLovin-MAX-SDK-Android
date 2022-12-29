@@ -1,5 +1,8 @@
 # Changelog
 
+## 2022.2.16.4
+* Remove `consentDialogState` guard.
+
 ## 2022.2.16.3
 * Support for native ads in external plugins (e.g. React Native).
 
