@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.4.0.1
+* Remove `consentDialogState` guard.
+
 ## 5.4.0.0
 * Certified with OguryPresage SDK 5.4.0.
 * Add additional details for ad display failures.

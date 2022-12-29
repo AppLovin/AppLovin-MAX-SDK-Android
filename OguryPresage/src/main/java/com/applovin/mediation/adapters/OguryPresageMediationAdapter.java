@@ -216,13 +216,10 @@ public class OguryPresageMediationAdapter
     //region Helper Methods
     private void updateUserConsent(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
-            }
+            OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
         }
     }
 
