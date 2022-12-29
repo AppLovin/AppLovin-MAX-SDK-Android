@@ -684,14 +684,11 @@ public class VungleMediationAdapter
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                Vungle.Consent consentStatus = hasUserConsent ? Vungle.Consent.OPTED_IN : Vungle.Consent.OPTED_OUT;
-                Vungle.updateConsentStatus( consentStatus, "" );
-            }
+            Vungle.Consent consentStatus = hasUserConsent ? Vungle.Consent.OPTED_IN : Vungle.Consent.OPTED_OUT;
+            Vungle.updateConsentStatus( consentStatus, "" );
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )

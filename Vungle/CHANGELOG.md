@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.12.0.5
+* Remove `consentDialogState` guard.
+
 ## 6.12.0.4
 * Update to pass the correct icon view to register.
 
