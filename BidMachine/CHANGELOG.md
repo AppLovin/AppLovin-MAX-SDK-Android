@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.5.0
+* Certified with BidMachine SDK 2.1.5.
+* Remove deprecated `onAdShown()` callbacks.
+
 ## 1.9.10.5
 * Support for native ads in external plugins (e.g. React Native).
 

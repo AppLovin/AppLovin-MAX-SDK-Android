@@ -415,12 +415,6 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdShown(@NonNull InterstitialAd interstitialAd)
-        {
-            log( "Interstitial ad shown" );
-        }
-
-        @Override
         public void onAdShowFailed(@NonNull InterstitialAd interstitialAd, @NonNull BMError bmError)
         {
             MaxAdapterError maxAdapterError = toMaxError( bmError );
@@ -491,12 +485,6 @@ public class BidMachineMediationAdapter
             MaxAdapterError maxAdapterError = toMaxError( bmError );
             log( "Rewarded ad failed to load with error (" + maxAdapterError + ")" );
             listener.onRewardedAdLoadFailed( maxAdapterError );
-        }
-
-        @Override
-        public void onAdShown(@NonNull RewardedAd rewardedAd)
-        {
-            log( "Rewarded ad shown" );
         }
 
         @Override
@@ -585,12 +573,6 @@ public class BidMachineMediationAdapter
             MaxAdapterError maxAdapterError = toMaxError( bmError );
             log( "AdView ad failed to load with error (" + maxAdapterError + ")" );
             listener.onAdViewAdLoadFailed( maxAdapterError );
-        }
-
-        @Override
-        public void onAdShown(@NonNull BannerView bannerView)
-        {
-            log( "AdView ad shown" );
         }
 
         @Override
@@ -700,12 +682,6 @@ public class BidMachineMediationAdapter
             MaxAdapterError maxAdapterError = toMaxError( bmError );
             log( "Native ad failed to load with error (" + maxAdapterError + ")" );
             listener.onNativeAdLoadFailed( maxAdapterError );
-        }
-
-        @Override
-        public void onAdShown(@NonNull NativeAd nativeAd)
-        {
-            log( "Native ad shown" );
         }
 
         @Override
