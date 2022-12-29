@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.2.6.0.1
+* Remove `consentDialogState` guard.
+
 ## 7.2.6.0.0
 * Certified with IronSource SDK 7.2.6.
 
