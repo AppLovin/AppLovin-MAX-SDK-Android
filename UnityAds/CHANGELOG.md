@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.5.0.1
+* Remove `consentDialogState` guard.
+
 ## 4.5.0.0
 * Certified with UnityAds SDK 4.5.0.
 

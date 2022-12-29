@@ -471,14 +471,11 @@ public class UnityAdsMediationAdapter
     {
         MetaData privacyMetaData = new MetaData( context );
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                privacyMetaData.set( "gdpr.consent", hasUserConsent );
-                privacyMetaData.commit();
-            }
+            privacyMetaData.set( "gdpr.consent", hasUserConsent );
+            privacyMetaData.commit();
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )
