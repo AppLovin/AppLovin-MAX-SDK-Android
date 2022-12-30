@@ -64,11 +64,11 @@ class TemplateNativeAdActivity : BaseAdActivity() {
                 logAnonymousCallback()
             }
 
-            override fun onNativeAdClicked(ad: MaxAd) {
+            override fun onNativeAdImpressionRecorded(ad: MaxAd) {
                 logAnonymousCallback()
             }
 
-            override fun onNativeAdImpression(ad: MaxAd) {
+            override fun onNativeAdClicked(ad: MaxAd) {
                 logAnonymousCallback()
             }
 

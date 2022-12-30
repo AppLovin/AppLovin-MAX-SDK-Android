@@ -88,13 +88,13 @@ public class ManualNativeAdActivity
             }
 
             @Override
-            public void onNativeAdClicked(final MaxAd ad)
+            public void onNativeAdImpressionRecorded(final MaxAd ad)
             {
                 logAnonymousCallback();
             }
 
             @Override
-            public void onNativeAdImpression(final MaxAd ad)
+            public void onNativeAdClicked(final MaxAd ad)
             {
                 logAnonymousCallback();
             }
