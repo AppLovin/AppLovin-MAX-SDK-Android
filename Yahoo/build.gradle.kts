@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 2
 private val versionMinor = 2
 private val versionPatch = 0
-private val versionAdapterPatch = 5
+private val versionAdapterPatch = 6
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -57,7 +57,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.yahoo.mobile.ads")
                                 appendNode("artifactId", "android-yahoo-mobile-sdk")
-                                appendNode("version", libraryVersions["verizonAds"])
+                                appendNode("version", libraryVersions["yahoo"])
                                 appendNode("scope", "compile")
                             }
                 }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.6
+* Fix an issue where Yahoo Mobile SDK is not being pulled in by Gradle.
+
 ## 2.2.0.5
 * Certified with Yahoo Mobile SDK 1.3.0.
 
