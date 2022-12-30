@@ -77,6 +77,10 @@ class ManualNativeAdActivity : BaseAdActivity() {
                 logAnonymousCallback()
             }
 
+            override fun onNativeAdImpressionRecorded(ad: MaxAd) {
+                logAnonymousCallback()
+            }
+
             override fun onNativeAdClicked(ad: MaxAd) {
                 logAnonymousCallback()
             }
