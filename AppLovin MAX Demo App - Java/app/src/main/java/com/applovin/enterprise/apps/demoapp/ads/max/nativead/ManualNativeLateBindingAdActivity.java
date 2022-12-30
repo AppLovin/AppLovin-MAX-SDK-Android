@@ -83,6 +83,12 @@ public class ManualNativeLateBindingAdActivity
             }
 
             @Override
+            public void onNativeAdImpression(final MaxAd ad)
+            {
+                logAnonymousCallback();
+            }
+
+            @Override
             public void onNativeAdExpired(final MaxAd ad)
             {
                 logAnonymousCallback();

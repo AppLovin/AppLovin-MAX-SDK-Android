@@ -82,6 +82,12 @@ public class TemplateNativeAdActivity
             }
 
             @Override
+            public void onNativeAdImpression(final MaxAd ad)
+            {
+                logAnonymousCallback();
+            }
+
+            @Override
             public void onNativeAdExpired(final MaxAd nativeAd)
             {
                 logAnonymousCallback();
