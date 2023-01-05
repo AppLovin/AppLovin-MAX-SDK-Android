@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.6.2.2
+* Fix using incorrect mediation hints when same price point is used for different ad formats.
+
 ## 9.6.2.1
 * Add support for passing creative id to AppLovin SDK.
 
