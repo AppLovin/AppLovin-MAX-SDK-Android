@@ -1534,6 +1534,11 @@ public class GoogleMediationAdapter
                         builder.setMediaContentAspectRatio( mediaContentAspectRatio );
                     }
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( nativeAd.getStarRating() );
+                    }
+
                     MaxNativeAd maxNativeAd = new MaxGoogleNativeAd( builder );
 
                     ResponseInfo responseInfo = nativeAd.getResponseInfo();
