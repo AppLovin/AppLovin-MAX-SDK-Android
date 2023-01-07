@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.3.41.1
+* Add support for star ratings in manual native ads (Android only support).
+
 ## 16.3.41.0
 * Certified with Mintegral SDK 16.3.41.
 

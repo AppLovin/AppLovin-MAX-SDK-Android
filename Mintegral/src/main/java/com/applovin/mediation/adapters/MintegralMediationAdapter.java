@@ -1332,6 +1332,12 @@ public class MintegralMediationAdapter
                                 builder.setMainImage( mainImage );
                             }
 
+                            if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                            {
+                                // Only Android supports star rating for now
+                                builder.setStarRating( campaign.getRating() );
+                            }
+
                             final MaxNativeAd maxNativeAd = new MaxMintegralNativeAd( builder );
                             listener.onNativeAdLoaded( maxNativeAd, null );
                         }
