@@ -76,7 +76,7 @@ public class YahooMediationAdapter
     private static final String VIDEO_COMPLETED_EVENT_ID = "onVideoComplete";
     private static final String AD_IMPRESSION_EVENT_ID   = "adImpression";
 
-    public static final String[] NATIVE_AD_AD_TYPES = new String[] { "simpleImage", "simpleVideo" };
+    public static final  String[] NATIVE_AD_AD_TYPES  = new String[] { "simpleImage", "simpleVideo" };
 
     // Ad objects
     private InterstitialAd interstitialAd;
@@ -504,6 +504,17 @@ public class YahooMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), yahooErrorCode, yahooError.getDescription() );
+    }
+
+    private static Double tryParseDouble(final String doubleString)
+    {
+        try
+        {
+            return Double.parseDouble( doubleString );
+        }
+        catch ( Throwable ignored ) { }
+
+        return null;
     }
 
     private AdSize toAdSize(final MaxAdFormat adFormat)
@@ -1044,6 +1055,7 @@ public class YahooMediationAdapter
                     String body = null;
                     String advertiser = null;
                     String callToAction = null;
+                    Double starRating = null;
 
                     NativeTextComponent titleComponent = (NativeTextComponent) nativeAd.getComponent( "title" );
                     if ( titleComponent != null ) title = titleComponent.getText();
@@ -1056,6 +1068,12 @@ public class YahooMediationAdapter
 
                     NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
                     if ( ctaComponent != null ) callToAction = ctaComponent.getText();
+
+                    NativeTextComponent starRatingComponent = (NativeTextComponent) nativeAd.getComponent( "rating" );
+                    if ( starRatingComponent != null )
+                    {
+                        starRating = tryParseDouble( starRatingComponent.getText() );
+                    }
 
                     // NOTE: Yahoo's SDK only returns ImageView with the image pre-cached, we cannot use the 'getUri()' getter
                     // since it is un-cached and our SDK will attempt to re-cache it, and we do not support passing ImageView for custom native
@@ -1130,6 +1148,11 @@ public class YahooMediationAdapter
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
                     {
                         builder.setMediaContentAspectRatio( mediaViewAspectRatio );
+                    }
+
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( starRating );
                     }
 
                     MaxNativeAd maxNativeAd = new MaxYahooNativeAd( listener, activity, builder );

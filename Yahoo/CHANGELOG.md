@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.7
+* Add support for star ratings in manual native ads. 
+
 ## 2.2.0.6
 * Fix an issue where Yahoo Mobile SDK is not being pulled in by Gradle.
 
