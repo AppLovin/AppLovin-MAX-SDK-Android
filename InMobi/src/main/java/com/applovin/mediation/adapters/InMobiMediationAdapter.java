@@ -1157,6 +1157,11 @@ public class InMobiMediationAdapter
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                             .setCallToAction( inMobiNative.getAdCtaText() );
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( (double) inMobiNative.getAdRating() );
+                    }
+
                     final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, MaxAdFormat.NATIVE );
                     if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
                     {
