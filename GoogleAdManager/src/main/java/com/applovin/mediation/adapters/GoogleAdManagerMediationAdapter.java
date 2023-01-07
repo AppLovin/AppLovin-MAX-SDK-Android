@@ -1367,6 +1367,11 @@ public class GoogleAdManagerMediationAdapter
                         builder.setMediaContentAspectRatio( mediaContentAspectRatio );
                     }
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( nativeAd.getStarRating() );
+                    }
+
                     MaxNativeAd maxNativeAd = new MaxGoogleAdManagerNativeAd( builder );
 
                     ResponseInfo responseInfo = nativeAd.getResponseInfo();

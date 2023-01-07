@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.4.0.1
+* Add support for star ratings in manual native ads.
+
 ## 21.4.0.0
 * Certified with GoogleAdManager SDK 21.4.0.
 * Add additional details for ad display failures.
