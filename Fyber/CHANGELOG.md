@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.1.2
+* Implement `InneractiveAdManager.currentAudienceIsAChild()` API to set if end user is COPPA.
+
 ## 8.2.1.1
 * Remove `consentDialogState` guard.
 

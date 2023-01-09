@@ -71,6 +71,13 @@ public class InneractiveMediationAdapter
         {
             status = InitializationStatus.INITIALIZING;
 
+            // NOTE: Digital Turbine requires that we set this API once per app session, before the SDK is initialized.
+            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            if ( isAgeRestrictedUser != null && isAgeRestrictedUser )
+            {
+                InneractiveAdManager.currentAudienceIsAChild();
+            }
+
             final String appId = parameters.getServerParameters().getString( "app_id", null );
             log( "Initializing Inneractive SDK with app id: " + appId + "..." );
 
