@@ -300,12 +300,12 @@ public class BidMachineMediationAdapter
                 maxAdapterError = MaxAdapterError.SERVER_ERROR;
                 break;
             case BMError.NO_CONTENT:
-            case BMError.BAD_CONTENT:
                 maxAdapterError = MaxAdapterError.NO_FILL;
                 break;
             case BMError.EXPIRED:
                 maxAdapterError = MaxAdapterError.AD_EXPIRED;
                 break;
+            case BMError.BAD_CONTENT:
             case BMError.INTERNAL:
             case BMError.DESTROYED:
                 maxAdapterError = MaxAdapterError.INTERNAL_ERROR;
@@ -346,20 +346,10 @@ public class BidMachineMediationAdapter
             BidMachine.setCoppa( isAgeRestrictedUser );
         }
 
-        AppLovinSdkConfiguration.ConsentDialogState state = getWrappingSdk().getConfiguration().getConsentDialogState();
-        if ( state == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = parameters.hasUserConsent();
+        if ( hasUserConsent != null )
         {
-            BidMachine.setSubjectToGDPR( true );
-
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                BidMachine.setConsentConfig( hasUserConsent, null );
-            }
-        }
-        else if ( state == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
-        {
-            BidMachine.setSubjectToGDPR( false );
+            BidMachine.setConsentConfig( hasUserConsent, null );
         }
 
         Boolean isDoNotSell = parameters.isDoNotSell();

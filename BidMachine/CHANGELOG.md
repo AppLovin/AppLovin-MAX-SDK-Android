@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.5.1
+* Map `BMError.BAD_CONTENT` to `MaxAdapterError.INTERNAL_ERROR` instead of `MaxAdapterError.NO_FILL`.
+* Remove `consentDialogState` guard.
+
 ## 2.1.5.0
 * Certified with BidMachine SDK 2.1.5.
 * Remove deprecated `onAdShown()` callbacks.
