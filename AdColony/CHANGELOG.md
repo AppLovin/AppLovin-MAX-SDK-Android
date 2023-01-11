@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.8.0.3
+* Add additional details for ad display failures.
+* Remove `consentDialogState` guard.
+
 ## 4.8.0.2
 * Update privacy settings before collecting signal.
 
