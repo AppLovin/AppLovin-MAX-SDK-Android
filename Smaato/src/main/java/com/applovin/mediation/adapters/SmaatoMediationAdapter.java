@@ -38,7 +38,7 @@ import com.smaato.sdk.core.Config;
 import com.smaato.sdk.core.SmaatoSdk;
 import com.smaato.sdk.core.lifecycle.Lifecycling;
 import com.smaato.sdk.core.log.LogLevel;
-import com.smaato.sdk.core.repository.AdRequestParams;
+import com.smaato.sdk.core.ad.AdRequestParams;
 import com.smaato.sdk.iahb.InAppBid;
 import com.smaato.sdk.iahb.InAppBiddingException;
 import com.smaato.sdk.iahb.SmaatoSdkInAppBidding;
@@ -727,7 +727,7 @@ public class SmaatoMediationAdapter
         private boolean hasGrantedReward;
 
         @Override
-        void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener) {}
+        void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener) { }
 
         public InterstitialAd getInterstitialAd(final String placementId)
         {
@@ -806,7 +806,10 @@ public class SmaatoMediationAdapter
         }
 
         @Override
-        public void onAdOpened(@NonNull final InterstitialAd interstitialAd) {}
+        public void onAdOpened(@NonNull final InterstitialAd interstitialAd)
+        {
+            log( "Interstitial opened" );
+        }
 
         @Override
         public void onAdClicked(final InterstitialAd interstitialAd)
