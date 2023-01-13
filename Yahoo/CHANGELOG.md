@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.8
+* Fix Mediation Debugger not able to load native ads in test mode.
+
 ## 2.2.0.7
 * Add support for star ratings in manual native ads. 
 
