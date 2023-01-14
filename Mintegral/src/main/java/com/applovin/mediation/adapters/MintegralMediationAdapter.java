@@ -171,6 +171,13 @@ public class MintegralMediationAdapter
                 }
             }
 
+            // Has to be _before_ their SDK init as well
+            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            if ( isAgeRestrictedUser != null )
+            {
+                mBridgeSDK.setCoppaStatus( context, isAgeRestrictedUser );
+            }
+
             // Mintegral Docs - "It is recommended to use the API in the main thread"
             final Map<String, String> map = mBridgeSDK.getMBConfigurationMap( appId, appKey );
             mBridgeSDK.init( map, context );

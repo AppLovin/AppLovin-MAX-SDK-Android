@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.3.51.1
+* Add COPPA support.
+
 ## 16.3.51.0
 * Certified with Mintegral SDK 16.3.51.
 
