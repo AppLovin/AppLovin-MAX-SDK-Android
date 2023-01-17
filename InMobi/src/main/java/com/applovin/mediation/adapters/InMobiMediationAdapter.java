@@ -442,19 +442,10 @@ public class InMobiMediationAdapter
 
         try
         {
-            if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            if ( hasUserConsent != null )
             {
-                consentObject.put( KEY_PARTNER_GDPR_APPLIES, 1 );
-
-                Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-                if ( hasUserConsent != null )
-                {
-                    consentObject.put( KEY_PARTNER_GDPR_CONSENT, hasUserConsent );
-                }
-            }
-            else if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
-            {
-                consentObject.put( KEY_PARTNER_GDPR_APPLIES, 0 );
+                consentObject.put( KEY_PARTNER_GDPR_CONSENT, hasUserConsent );
             }
         }
         catch ( JSONException ex )
