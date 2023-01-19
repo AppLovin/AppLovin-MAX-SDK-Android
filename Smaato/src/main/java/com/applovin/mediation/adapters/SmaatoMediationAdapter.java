@@ -38,7 +38,7 @@ import com.smaato.sdk.core.Config;
 import com.smaato.sdk.core.SmaatoSdk;
 import com.smaato.sdk.core.lifecycle.Lifecycling;
 import com.smaato.sdk.core.log.LogLevel;
-import com.smaato.sdk.core.ad.AdRequestParams;
+import com.smaato.sdk.core.repository.AdRequestParams;
 import com.smaato.sdk.iahb.InAppBid;
 import com.smaato.sdk.iahb.InAppBiddingException;
 import com.smaato.sdk.iahb.SmaatoSdkInAppBidding;
