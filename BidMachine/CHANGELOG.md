@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.6.0
+* Certified with BidMachine SDK 2.1.6.
+
 ## 2.1.5.1
 * Map `BMError.BAD_CONTENT` to `MaxAdapterError.INTERNAL_ERROR` instead of `MaxAdapterError.NO_FILL`.
 * Remove `consentDialogState` guard.
