@@ -71,6 +71,10 @@ public class AmazonAdMarketplaceMediationAdapter
     private static final Map<MaxAdFormat, String> creativeIds     = new HashMap<>();
     private static final Object                   creativeIdsLock = new Object();
 
+    // Contains mapping of ad format -> amazon hashed bidder identifier / amznp
+    private static final Map<MaxAdFormat, String> hashedBidderIds     = new HashMap<>();
+    private static final Object                   hashedBidderIdsLock = new Object();
+
     private DTBAdView         adView;
     private DTBAdInterstitial interstitialAd;
     private DTBAdInterstitial rewardedAd;
@@ -257,6 +261,16 @@ public class AmazonAdMarketplaceMediationAdapter
                 runOnUiThreadDelayed( new CleanupMediationHintsTask( mediationHintsCacheId, mediationHints ), mediationHintsCacheCleanupDelayMillis );
             }
 
+            String hashedBidderId;
+            if ( adFormat.isAdViewAd() )
+            {
+                hashedBidderId = String.valueOf( adResponse.getDefaultDisplayAdsRequestCustomParams().get( "amznp" ) );
+            }
+            else // Fullscreen ads except static interstitials. `getDefaultDisplayAdsRequestCustomParams()` for static interstitials
+            {
+                hashedBidderId = String.valueOf( adResponse.getDefaultVideoAdsRequestCustomParams().get( "amznp" ) );
+            }
+            setHashedBidderId( adFormat, hashedBidderId );
             setCreativeId( adFormat, adResponse.getCrid() );
 
             d( "Successfully loaded encoded bid id: " + encodedBidId );
@@ -430,18 +444,39 @@ public class AmazonAdMarketplaceMediationAdapter
         }
     }
 
+    private void setHashedBidderId(final MaxAdFormat adFormat, final String hashedBidderId)
+    {
+        synchronized ( hashedBidderIdsLock )
+        {
+            hashedBidderIds.put( adFormat, hashedBidderId );
+        }
+    }
+
     private Bundle createExtraInfo(final MaxAdFormat adFormat)
     {
-        String creativeId;
+        Bundle extraInfo = new Bundle( 2 );
+
         synchronized ( creativeIdsLock )
         {
-            creativeId = creativeIds.get( adFormat );
+            String creativeId = creativeIds.get( adFormat );
+            if ( AppLovinSdkUtils.isValidString( creativeId ) )
+            {
+                extraInfo.putString( "creative_id", creativeId );
+            }
         }
 
-        if ( TextUtils.isEmpty( creativeId ) ) return null;
+        synchronized ( hashedBidderIdsLock )
+        {
+            String hashedBidderId = hashedBidderIds.get( adFormat );
+            if ( AppLovinSdkUtils.isValidString( hashedBidderId ) )
+            {
+                Bundle adValues = new Bundle( 1 );
+                adValues.putString( "amazon_hashed_bidder_id", hashedBidderId );
 
-        Bundle extraInfo = new Bundle( 1 );
-        extraInfo.putString( "creative_id", creativeId );
+                extraInfo.putBundle( "ad_values", adValues );
+            }
+        }
+
         return extraInfo;
     }
 
