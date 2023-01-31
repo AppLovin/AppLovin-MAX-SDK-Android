@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.5.0.0
+* Certified with Google SDK 21.5.0.
+
 ## 21.4.0.1
 * Add support for star ratings in manual native ads.
 
