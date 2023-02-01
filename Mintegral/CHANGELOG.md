@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.3.51.2
+* Fix crash when preparing views for interaction for native ad view ads.
+
 ## 16.3.51.1
 * Add COPPA support.
 

@@ -1379,7 +1379,14 @@ public class MintegralMediationAdapter
 
             d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-            mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+            if ( getFormat() == MaxAdFormat.NATIVE )
+            {
+                mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+            }
+            else
+            {
+                mbBidNativeAdViewHandler.registerView( container, clickableViews, nativeAdCampaign );
+            }
 
             MintegralMediationAdapter.this.nativeAdContainer = container;
             MintegralMediationAdapter.this.clickableViews = clickableViews;
