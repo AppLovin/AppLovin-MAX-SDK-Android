@@ -14,7 +14,7 @@
 
         <meta-data
             android:name="applovin.sdk.key"
-            android:value="SDK_KEY_HERE" />
+            android:value="0WnSSlDKI4cbhIiyko0qTHnZe5QIuGP9zTOZUGNm8eLNx8P3yu3EaDoZgFWS20GEPhOrSEz4kllWNP6EeSpfvs" />
 
         <activity
             android:exported="true"

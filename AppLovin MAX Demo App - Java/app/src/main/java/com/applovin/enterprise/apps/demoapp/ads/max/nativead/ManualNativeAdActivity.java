@@ -8,9 +8,11 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
+import com.applovin.impl.mediation.model.MediatedNativeAd;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxError;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
@@ -44,11 +46,12 @@ public class ManualNativeAdActivity
                 .setIconImageViewId( R.id.icon_image_view )
                 .setMediaContentViewGroupId( R.id.media_view_container )
                 .setOptionsContentViewGroupId( R.id.options_view )
+                .setStarRatingContentViewGroupId( R.id.applovin_native_star_rating_view)    //is this the same as star_rating_view
                 .setCallToActionButtonId( R.id.cta_button )
                 .build();
         nativeAdView = new MaxNativeAdView( binder, this );
 
-        nativeAdLoader = new MaxNativeAdLoader( "YOUR_AD_UNIT_ID", this );
+        nativeAdLoader = new MaxNativeAdLoader( "79b382e8609988b1", this );
         nativeAdLoader.setRevenueListener( ad -> {
             logAnonymousCallback();
 
@@ -75,6 +78,13 @@ public class ManualNativeAdActivity
 
                 // Save ad for cleanup.
                 nativeAd = ad;
+
+
+                MaxNativeAd mediatedNativeAd = ad.getNativeAd();
+                if ( mediatedNativeAd != null && mediatedNativeAd.getStarRating() == null )
+                {
+                    nativeAdView.getStarRatingContentViewGroup().setVisibility( View.GONE );
+                }
 
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews();
