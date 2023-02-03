@@ -9,14 +9,18 @@ import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
+import com.applovin.impl.mediation.model.MediatedNativeAd;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxError;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener;
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder;
 
+
 import androidx.annotation.Nullable;
+import lombok.val;
 
 public class ManualNativeAdActivity
         extends BaseAdActivity
@@ -44,6 +48,7 @@ public class ManualNativeAdActivity
                 .setIconImageViewId( R.id.icon_image_view )
                 .setMediaContentViewGroupId( R.id.media_view_container )
                 .setOptionsContentViewGroupId( R.id.options_view )
+                .setStarRatingContentViewGroupId( R.id.star_rating_view)
                 .setCallToActionButtonId( R.id.cta_button )
                 .build();
         nativeAdView = new MaxNativeAdView( binder, this );
@@ -75,6 +80,13 @@ public class ManualNativeAdActivity
 
                 // Save ad for cleanup.
                 nativeAd = ad;
+
+                val mediatedNativeAd = ad.getNativeAd();
+                if ( mediatedNativeAd != null && mediatedNativeAd.getStarRating() == null )
+                {
+                    nativeAdView.getStarRatingContentViewGroup().setVisibility( View.GONE );
+                }
+
 
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews();

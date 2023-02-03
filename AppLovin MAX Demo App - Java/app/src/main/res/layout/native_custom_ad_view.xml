@@ -67,6 +67,14 @@
         app:layout_constraintTop_toBottomOf="@+id/title_text_view"
         tools:text="Advertiser" />
 
+    <FrameLayout
+        android:id="@+id/star_rating_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/advertiser_text_view"
+        app:layout_constraintStart_toStartOf="@id/text_view"
+        app:layout_constraintTop_toBottomOf="@id/text_view" />
+
     <TextView
         android:id="@+id/body_text_view"
         android:layout_width="match_parent"
