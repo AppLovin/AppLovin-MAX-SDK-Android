@@ -9,9 +9,11 @@ import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
+import com.applovin.impl.mediation.model.MediatedNativeAd;
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdListener
 import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
@@ -122,6 +124,7 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
                 .setIconImageViewId(R.id.icon_image_view)
                 .setMediaContentViewGroupId(R.id.media_view_container)
                 .setOptionsContentViewGroupId(R.id.options_view)
+                .setStarRatingContentViewGroupId( R.id.star_rating_view)
                 .setCallToActionButtonId(R.id.cta_button)
                 .build()
         return MaxNativeAdView(binder, this)
