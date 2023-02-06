@@ -4,9 +4,9 @@ plugins {
 }
 
 private val versionMajor = 2022
-private val versionMinor = 2
-private val versionPatch = 16
-private val versionAdapterPatch = 4
+private val versionMinor = 12
+private val versionPatch = 26
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
