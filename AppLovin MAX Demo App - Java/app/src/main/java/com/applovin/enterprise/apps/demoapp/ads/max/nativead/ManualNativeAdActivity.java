@@ -18,7 +18,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder;
 
-
 import androidx.annotation.Nullable;
 import lombok.val;
 
