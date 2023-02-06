@@ -16,7 +16,6 @@
             android:name="applovin.sdk.key"
             android:value="SDK_KEY_HERE" />
 
-
         <activity
             android:exported="true"
             android:name="com.applovin.enterprise.apps.demoapp.SplashActivity"
@@ -145,6 +144,5 @@
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
             android:label="@string/title_activity_event_tracking" />
-
     </application>
 </manifest>
