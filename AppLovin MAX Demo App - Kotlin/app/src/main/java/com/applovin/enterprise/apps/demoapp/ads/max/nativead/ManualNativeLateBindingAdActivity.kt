@@ -35,7 +35,7 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
         showAdButton = findViewById(R.id.show_ad_button)
         setupCallbacksRecyclerView()
 
-        nativeAdLoader = MaxNativeAdLoader("2ae08312099b9acb", this)
+        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
         nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd?) {
                 logAnonymousCallback()
