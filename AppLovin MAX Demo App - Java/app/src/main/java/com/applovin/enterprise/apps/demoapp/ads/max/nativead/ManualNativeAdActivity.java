@@ -87,7 +87,6 @@ public class ManualNativeAdActivity
                     nativeAdView.getStarRatingContentViewGroup().setVisibility( View.GONE );
                 }
 
-
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews();
                 nativeAdLayout.addView( nativeAdView );
