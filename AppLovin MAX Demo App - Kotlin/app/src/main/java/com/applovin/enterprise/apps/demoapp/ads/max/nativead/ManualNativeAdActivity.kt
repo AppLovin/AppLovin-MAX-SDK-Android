@@ -18,9 +18,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdLoader
 import com.applovin.mediation.nativeAds.MaxNativeAdView
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder
 
-import lombok.`val`
-
-
 class ManualNativeAdActivity : BaseAdActivity() {
     private lateinit var nativeAdLoader: MaxNativeAdLoader
     private lateinit var nativeAdView: MaxNativeAdView
