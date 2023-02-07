@@ -6,7 +6,7 @@ android {
     compileSdkVersion 31
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 31
         versionCode 10000
         versionName "1.0"
