@@ -56,16 +56,26 @@
     <TextView
         android:id="@+id/advertiser_text_view"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/icon_image_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/icon_image_view"
         app:layout_constraintTop_toBottomOf="@+id/title_text_view"
-        tools:text="Advertiser" />
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="Advertiser"
+        tools:textSize="12sp" />
+
+    <FrameLayout
+        android:id="@+id/star_rating_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toTopOf="@id/advertiser_text_view"
+        app:layout_constraintStart_toStartOf="@id/text_view"
+        app:layout_constraintTop_toBottomOf="@id/text_view" />
 
     <TextView
         android:id="@+id/body_text_view"
