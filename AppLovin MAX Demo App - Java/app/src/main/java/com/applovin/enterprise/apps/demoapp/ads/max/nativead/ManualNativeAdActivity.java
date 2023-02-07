@@ -78,12 +78,6 @@ public class ManualNativeAdActivity
                 // Save ad for cleanup.
                 nativeAd = ad;
 
-                MaxNativeAd mediatedNativeAd = ad.getNativeAd();
-                if ( mediatedNativeAd != null && mediatedNativeAd.getStarRating() == null )
-                {
-                    nativeAdView.getStarRatingContentViewGroup().setVisibility( View.GONE );
-                }
-
                 // Add ad view to view.
                 nativeAdLayout.removeAllViews();
                 nativeAdLayout.addView( nativeAdView );
