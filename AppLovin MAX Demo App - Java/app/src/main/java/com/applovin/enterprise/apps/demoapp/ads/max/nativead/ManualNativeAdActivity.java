@@ -19,7 +19,6 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.mediation.nativeAds.MaxNativeAdViewBinder;
 
 import androidx.annotation.Nullable;
-import lombok.val;
 
 public class ManualNativeAdActivity
         extends BaseAdActivity
@@ -80,7 +79,7 @@ public class ManualNativeAdActivity
                 // Save ad for cleanup.
                 nativeAd = ad;
 
-                val mediatedNativeAd = ad.getNativeAd();
+                MaxNativeAd mediatedNativeAd = ad.getNativeAd();
                 if ( mediatedNativeAd != null && mediatedNativeAd.getStarRating() == null )
                 {
                     nativeAdView.getStarRatingContentViewGroup().setVisibility( View.GONE );
