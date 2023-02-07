@@ -107,3 +107,4 @@ class ManualNativeAdActivity : BaseAdActivity() {
         nativeAdLoader.loadAd(nativeAdView)
     }
 }
+
