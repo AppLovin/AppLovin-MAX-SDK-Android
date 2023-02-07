@@ -9,7 +9,6 @@ import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
-import com.applovin.impl.mediation.model.MediatedNativeAd;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
