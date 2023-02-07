@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.9
+* Certified with Yahoo Mobile SDK 1.4.0.
+
 ## 2.2.0.8
 * Fix Mediation Debugger not able to load native ads in test mode.
 
