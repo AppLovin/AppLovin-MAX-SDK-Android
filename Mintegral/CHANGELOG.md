@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.3.61.0
+* Certified with Mintegral SDK 16.3.61.
+
 ## 16.3.51.2
 * Fix crash when preparing views for interaction for native ad view ads.
 
