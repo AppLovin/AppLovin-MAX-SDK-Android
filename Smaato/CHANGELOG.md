@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.0.1.2
+* Remove setting of non-https traffic.
+
 ## 22.0.1.1
 * Downgrade Smaato SDK to 21.8.6, due to impression tracking issue in version 22.0.1.
 

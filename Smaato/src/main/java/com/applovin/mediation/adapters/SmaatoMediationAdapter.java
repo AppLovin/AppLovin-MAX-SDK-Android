@@ -109,7 +109,6 @@ public class SmaatoMediationAdapter
 
             final Config config = Config.builder()
                     .setLogLevel( parameters.isTesting() ? LogLevel.DEBUG : LogLevel.ERROR )
-                    .setHttpsOnly( parameters.getServerParameters().getBoolean( "https_only" ) )
                     .build();
 
             // NOTE: `getContext()` will always return an application context, so it is safe to cast.
