@@ -2,6 +2,7 @@
     <string name="app_name">AppLovin Demo App</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
+    <string name="activity_app_open">App Open Ads</string>
     <string name="activity_rewarded">Rewarded Ads</string>
     <string name="activity_programmatic_banners">Programmatic Banner Ads</string>
     <string name="activity_layout_editor_banners">Layout Editor Banner Ads</string>
@@ -18,6 +19,11 @@
     <string name="title_activity_interstitial_basic_integration">Basic Integration</string>
     <string name="title_activity_interstitial_manual_loading">Manual Loading</string>
     <string name="title_activity_interstitial_zone_integration">Zone Integration</string>
+
+    <string name="title_activity_app_open_list">App Open</string>
+    <string name="title_activity_app_open_basic_integration">Basic Integration</string>
+    <string name="title_activity_app_open_manual_loading">Manual Loading</string>
+    <string name="title_activity_app_open_zone_integration">Zone Integration</string>
 
     <string name="title_activity_rewarded_videos_list">Rewarded Videos</string>
     <string name="title_activity_rewarded_videos_basic_integration">Basic Integration</string>
