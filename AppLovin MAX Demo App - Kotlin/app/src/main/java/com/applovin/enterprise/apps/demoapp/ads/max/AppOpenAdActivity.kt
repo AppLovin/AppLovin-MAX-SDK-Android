@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.max
 
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
@@ -13,19 +12,20 @@ import com.applovin.mediation.MaxAdListener
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxAppOpenAd
-import java.util.concurrent.TimeUnit
-import kotlin.math.min
-import kotlin.math.pow
 
+/**
+ * [android.app.Activity] used to show AppLovin MAX App Open ads.
+ * <p>
+ * Created by avileung on 2023-02-10.
+ */
 class AppOpenAdActivity : BaseAdActivity(),
         MaxAdListener, MaxAdRevenueListener {
     private lateinit var appOpenAd: MaxAppOpenAd
-    private var retryAttempt = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView( R.layout.activity_app_open_ad_ )
-        setTitle( R.string.activity_app_open )
+        setContentView(R.layout.activity_app_open_ad_)
+        setTitle(R.string.activity_app_open)
 
         setupCallbacksRecyclerView()
 
@@ -49,20 +49,10 @@ class AppOpenAdActivity : BaseAdActivity(),
     override fun onAdLoaded(ad: MaxAd?) {
         // App Open ad is ready to be shown. AppOpenAd.isReady() will now return 'true'.
         logCallback()
-
-        // Reset retry attempt
-        retryAttempt = 0
     }
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
         logCallback()
-
-        // App Open ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
-
-        retryAttempt++
-        val delayMillis = TimeUnit.SECONDS.toMillis(2.0.pow(min(6, retryAttempt)).toLong())
-
-        Handler().postDelayed({ appOpenAd.loadAd() }, delayMillis)
     }
 
     override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {

@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.max;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 
 import com.adjust.sdk.Adjust;
@@ -15,13 +14,17 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAppOpenAd;
 
-import java.util.concurrent.TimeUnit;
-
+/**
+ * An {@link android.app.Activity} used to show AppLovin MAX App Open ads.
+ * <p>
+ * Created by avileung on 2023-02-10.
+ */
 public class AppOpenAdActivity
         extends BaseAdActivity
         implements MaxAdListener, MaxAdRevenueListener
 {
     private MaxAppOpenAd appOpenAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -48,50 +51,19 @@ public class AppOpenAdActivity
         }
     }
 
+    //region MAX Ad Listener
+
     @Override
     public void onAdLoaded(final MaxAd ad)
     {
-        // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
+        // App Open ad is ready to be shown. appOpenAd.isReady() will now return 'true'.
         logCallback();
-
-//        // Reset retry attempt
-//        retryAttempt = 0;
-
     }
-
-    @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
-
-    @Override
-    public void onAdHidden(final MaxAd ad)
-    {
-        logCallback();
-
-        // Interstitial Ad is hidden. Pre-load the next ad
-        appOpenAd.loadAd();
-    }
-
-    @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
 
     @Override
     public void onAdLoadFailed(final String adUnitId, final MaxError error)
     {
         logCallback();
-
-//        // Interstitial ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
-//
-//        //retryAttempt++;
-//        //long delayMillis = TimeUnit.SECONDS.toMillis( (long) Math.pow( 2, Math.min( 6, retryAttempt ) ) );
-//
-//        new Handler().postDelayed( new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-//                interstitialAd.loadAd();
-//            }
-//        }, delayMillis );
     }
 
     @Override
@@ -99,9 +71,28 @@ public class AppOpenAdActivity
     {
         logCallback();
 
-        // Interstitial ad failed to display. We recommend loading the next ad.
+        // appOpen ad failed to display. We recommend loading the next ad.
         appOpenAd.loadAd();
     }
+
+    @Override
+    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+
+    @Override
+    public void onAdClicked(final MaxAd ad) { logCallback(); }
+
+    @Override
+    public void onAdHidden(final MaxAd ad)
+    {
+        logCallback();
+
+        // appOpen Ad is hidden. Pre-load the next ad
+        appOpenAd.loadAd();
+    }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
 
     @Override
     public void onAdRevenuePaid(final MaxAd ad)
@@ -116,4 +107,6 @@ public class AppOpenAdActivity
 
         Adjust.trackAdRevenue( adjustAdRevenue );
     }
+
+    //endregion
 }
