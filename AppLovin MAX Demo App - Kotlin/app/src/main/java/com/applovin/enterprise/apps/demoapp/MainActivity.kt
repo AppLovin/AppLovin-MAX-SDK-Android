@@ -36,11 +36,13 @@ import com.applovin.sdk.AppLovinSdkUtils
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
-        MainRecyclerViewAdapter.OnMainListItemClickListener {
+        MainRecyclerViewAdapter.OnMainListItemClickListener
+{
 
     private lateinit var muteToggleMenuItem: MenuItem
 
-    private fun generateMainListItems(): List<ListItem> {
+    private fun generateMainListItems(): List<ListItem>
+    {
         val items: MutableList<ListItem> =
                 ArrayList()
         items.add(SectionHeader("APPLOVIN"))
@@ -48,11 +50,13 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)))
 
         // Add "Leaders" menu item for tablets
-        if (AppLovinSdkUtils.isTablet(this)) {
+        if (AppLovinSdkUtils.isTablet(this))
+        {
             items.add(DemoMenuItem("Leaders", Intent(this, LeaderDemoMenuActivity::class.java)))
         }
         // Add "Banners" menu item for phones
-        else {
+        else
+        {
             items.add(DemoMenuItem("Banners", Intent(this, BannerDemoMenuActivity::class.java)))
         }
 
@@ -72,7 +76,8 @@ class MainActivity : AppCompatActivity(),
         return items
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -95,19 +100,25 @@ class MainActivity : AppCompatActivity(),
         checkSdkKey()
     }
 
-    override fun onItemClicked(item: ListItem) {
-        if (item is DemoMenuItem) {
-            if (item.intent != null) {
+    override fun onItemClicked(item: ListItem)
+    {
+        if (item is DemoMenuItem)
+        {
+            if (item.intent != null)
+            {
                 startActivity(item.intent);
-            } else if (item.runnable != null) {
+            } else if (item.runnable != null)
+            {
                 item.runnable.run();
             }
         }
     }
 
-    private fun checkSdkKey() {
+    private fun checkSdkKey()
+    {
         val sdkKey = AppLovinSdk.getInstance(applicationContext).sdkKey
-        if ("YOUR_SDK_KEY".equals(sdkKey, ignoreCase = true)) {
+        if ("YOUR_SDK_KEY".equals(sdkKey, ignoreCase = true))
+        {
             AlertDialog.Builder(this)
                     .setTitle("ERROR")
                     .setMessage("Please update your sdk key in the manifest file.")
@@ -122,13 +133,15 @@ class MainActivity : AppCompatActivity(),
     /**
      * Toggling the sdk mute setting will affect whether your video ads begin in a muted state or not.
      */
-    private fun toggleMute() {
+    private fun toggleMute()
+    {
         val sdk = AppLovinSdk.getInstance(applicationContext)
         sdk.settings.isMuted = !sdk.settings.isMuted
         muteToggleMenuItem.icon = getMuteIconForCurrentSdkMuteSetting()
     }
 
-    private fun getMuteIconForCurrentSdkMuteSetting(): Drawable {
+    private fun getMuteIconForCurrentSdkMuteSetting(): Drawable
+    {
         val sdk = AppLovinSdk.getInstance(applicationContext)
         val drawableId = if (sdk.settings.isMuted) R.drawable.mute else R.drawable.unmute
 
@@ -140,12 +153,14 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean
+    {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean
+    {
         muteToggleMenuItem = menu.findItem(R.id.action_toggle_mute).apply {
             icon = getMuteIconForCurrentSdkMuteSetting()
         }
@@ -153,8 +168,10 @@ class MainActivity : AppCompatActivity(),
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_toggle_mute) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        if (item.itemId == R.id.action_toggle_mute)
+        {
             toggleMute()
         }
 
