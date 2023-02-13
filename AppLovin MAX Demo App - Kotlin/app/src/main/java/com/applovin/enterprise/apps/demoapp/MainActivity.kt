@@ -9,10 +9,10 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
 import com.applovin.enterprise.apps.demoapp.ads.AppOpenAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
@@ -107,7 +107,8 @@ class MainActivity : AppCompatActivity(),
             if (item.intent != null)
             {
                 startActivity(item.intent);
-            } else if (item.runnable != null)
+            }
+            else if (item.runnable != null)
             {
                 item.runnable.run();
             }
@@ -145,9 +146,12 @@ class MainActivity : AppCompatActivity(),
         val sdk = AppLovinSdk.getInstance(applicationContext)
         val drawableId = if (sdk.settings.isMuted) R.drawable.mute else R.drawable.unmute
 
-        if (Build.VERSION.SDK_INT >= 22) {
+        if (Build.VERSION.SDK_INT >= 22)
+        {
             return resources.getDrawable(drawableId, theme)
-        } else {
+        }
+        else
+        {
             @Suppress("DEPRECATION")
             return resources.getDrawable(drawableId)
         }

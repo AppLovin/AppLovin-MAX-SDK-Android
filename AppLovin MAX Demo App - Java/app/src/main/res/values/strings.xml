@@ -20,11 +20,6 @@
     <string name="title_activity_interstitial_manual_loading">Manual Loading</string>
     <string name="title_activity_interstitial_zone_integration">Zone Integration</string>
 
-    <string name="title_activity_app_open_list">App Open</string>
-    <string name="title_activity_app_open_basic_integration">Basic Integration</string>
-    <string name="title_activity_app_open_manual_loading">Manual Loading</string>
-    <string name="title_activity_app_open_zone_integration">Zone Integration</string>
-
     <string name="title_activity_rewarded_videos_list">Rewarded Videos</string>
     <string name="title_activity_rewarded_videos_basic_integration">Basic Integration</string>
     <string name="title_activity_rewarded_videos_zone_integration">Zone Integration</string>
