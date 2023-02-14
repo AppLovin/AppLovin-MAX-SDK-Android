@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.2.0
+* Certified with Fyber SDK 8.2.2.
+
 ## 8.2.1.2
 * Implement `InneractiveAdManager.currentAudienceIsAChild()` API to set if end user is COPPA.
 
