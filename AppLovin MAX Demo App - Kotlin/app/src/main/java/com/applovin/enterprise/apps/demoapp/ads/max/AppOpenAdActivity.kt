@@ -24,7 +24,7 @@ class AppOpenAdActivity : BaseAdActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_app_open_ad_)
+        setContentView(R.layout.activity_app_open_ad)
         setTitle(R.string.activity_app_open)
 
         setupCallbacksRecyclerView()

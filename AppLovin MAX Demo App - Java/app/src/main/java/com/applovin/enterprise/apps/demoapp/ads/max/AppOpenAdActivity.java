@@ -29,7 +29,7 @@ public class AppOpenAdActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_app_open_ad_ );
+        setContentView( R.layout.activity_app_open_ad );
         setTitle( R.string.activity_app_open );
 
         setupCallbacksRecyclerView();
@@ -71,7 +71,7 @@ public class AppOpenAdActivity
     {
         logCallback();
 
-        // appOpen ad failed to display. We recommend loading the next ad.
+        // App Open ad failed to display. We recommend loading the next ad.
         appOpenAd.loadAd();
     }
 
@@ -86,7 +86,7 @@ public class AppOpenAdActivity
     {
         logCallback();
 
-        // appOpen Ad is hidden. Pre-load the next ad
+        // App Open ad is hidden. Pre-load the next ad
         appOpenAd.loadAd();
     }
 
