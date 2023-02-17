@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
+import com.applovin.enterprise.apps.demoapp.ads.AppOpenAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
         items.add(SectionHeader("MAX"))
         items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
+        items.add(DemoMenuItem("App Open Ads", Intent(this, AppOpenAdActivity::class.java)))
         items.add(DemoMenuItem("Rewarded", Intent(this, RewardedAdActivity::class.java)))
         items.add(DemoMenuItem("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(DemoMenuItem("MRECs", Intent(this, MrecAdActivity::class.java)))

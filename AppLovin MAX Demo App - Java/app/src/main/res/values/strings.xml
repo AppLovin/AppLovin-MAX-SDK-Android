@@ -2,6 +2,7 @@
     <string name="app_name">AppLovin Demo App</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
+    <string name="activity_app_open">App Open Ads</string>
     <string name="activity_rewarded">Rewarded Ads</string>
     <string name="activity_programmatic_banners">Programmatic Banner Ads</string>
     <string name="activity_layout_editor_banners">Layout Editor Banner Ads</string>
