@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.7.0.0
+* Certified with AmazonAdMarketplace SDK 9.7.0.
+
 ## 9.6.2.3
 * Add support for passing Amazon hashed bidder ID (`amznp`) in `onAdLoaded` callback via `getAdValue( "amazon_hashed_bidder_id" )`. NOTE: The value is not available for static interstitials. AppLovin MAX SDK v11.7.0+ is required.
 
