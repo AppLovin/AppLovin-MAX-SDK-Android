@@ -1,5 +1,8 @@
 # Changelog
 
+## 2023.2.15.0
+* Certified with Line SDK 2.6.20230215.
+
 ## 2022.12.26.0
 * Certified with Line SDK 2.5.20221226.
 
