@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.6.0.0
+* Certified with UnityAds SDK 4.6.0.
+
 ## 4.5.0.2
 * Include a random ID for every interstitial and rewarded ad request to improve fill and tracking.
 
