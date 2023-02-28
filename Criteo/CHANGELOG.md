@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.9.2.0
+* Certified with Criteo SDK 4.9.2.
+
 ## 4.9.1.1
 * Fix crash `NullPointerException: Attempt to invoke virtual method 'android.content.Context android.content.Context.getApplicationContext()' on a null object reference`
 
