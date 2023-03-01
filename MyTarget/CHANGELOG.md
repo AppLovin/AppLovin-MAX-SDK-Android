@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.16.4.0
+* Certified with MyTarget SDK 5.16.4.
+
 ## 5.16.3.1
 * Remove `consentDialogState` guard.
 
