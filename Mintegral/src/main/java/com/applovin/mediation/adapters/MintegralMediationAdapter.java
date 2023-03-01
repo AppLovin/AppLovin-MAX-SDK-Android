@@ -263,7 +263,19 @@ public class MintegralMediationAdapter
     {
         log( "Collecting signal..." );
 
-        final String signal = BidManager.getBuyerUid( getContext( activity ) );
+        HashMap<String, String> info = new HashMap<>();
+        info.put( BidConstants.BID_FILTER_KEY_PLACEMENT_ID, BundleUtils.getString( "placement_id", "", parameters.getServerParameters() ) );
+        info.put( BidConstants.BID_FILTER_KEY_UNIT_ID, parameters.getAdUnitId() );
+        info.put( BidConstants.BID_FILTER_KEY_AD_TYPE, toMintegralAdType( parameters.getAdFormat() ) );
+
+        // Returns an empty string, if request is to be filtered
+        String signal = BidManager.getBuyerUid( getContext( activity ), info );
+        if ( TextUtils.isEmpty( signal ) )
+        {
+            callback.onSignalCollectionFailed( null );
+            return;
+        }
+
         callback.onSignalCollected( signal );
     }
 
@@ -662,6 +674,32 @@ public class MintegralMediationAdapter
         {
             return executor;
         }
+    }
+
+    private static String toMintegralAdType(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_INTERSTITIAL_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_REWARD_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.APP_OPEN )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_SPLASH;
+        }
+        else if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.NATIVE )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_NATIVE;
+        }
+
+        return "";
     }
 
     private static MaxAdapterError toMaxError(final String mintegralError)
