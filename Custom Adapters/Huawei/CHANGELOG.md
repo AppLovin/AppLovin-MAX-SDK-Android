@@ -1,5 +1,8 @@
 # Changelog
 
+## 13.4.61.302.0
+* Certified with Huawei SDK 3.4.61.302.
+
 ## 13.4.61.300.0
 * Certified with Huawei SDK 3.4.61.300.
 
