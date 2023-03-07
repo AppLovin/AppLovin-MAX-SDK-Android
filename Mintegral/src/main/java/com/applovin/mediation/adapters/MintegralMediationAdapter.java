@@ -35,6 +35,7 @@ import com.mbridge.msdk.MBridgeSDK;
 import com.mbridge.msdk.interstitialvideo.out.InterstitialVideoListener;
 import com.mbridge.msdk.interstitialvideo.out.MBBidInterstitialVideoHandler;
 import com.mbridge.msdk.interstitialvideo.out.MBInterstitialVideoHandler;
+import com.mbridge.msdk.mbbid.out.BidConstants;
 import com.mbridge.msdk.mbbid.out.BidManager;
 import com.mbridge.msdk.nativex.view.MBMediaView;
 import com.mbridge.msdk.out.BannerAdListener;
@@ -263,7 +264,12 @@ public class MintegralMediationAdapter
     {
         log( "Collecting signal..." );
 
-        final String signal = BidManager.getBuyerUid( getContext( activity ) );
+        HashMap<String, String> info = new HashMap<>();
+        info.put( BidConstants.BID_FILTER_KEY_PLACEMENT_ID, BundleUtils.getString( "placement_id", "", parameters.getServerParameters() ) );
+        info.put( BidConstants.BID_FILTER_KEY_UNIT_ID, parameters.getAdUnitId() );
+        info.put( BidConstants.BID_FILTER_KEY_AD_TYPE, toMintegralAdType( parameters.getAdFormat() ) );
+
+        String signal = BidManager.getBuyerUid( getContext( activity ), info );
         callback.onSignalCollected( signal );
     }
 
@@ -662,6 +668,32 @@ public class MintegralMediationAdapter
         {
             return executor;
         }
+    }
+
+    private static String toMintegralAdType(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_INTERSTITIAL_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_REWARD_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.APP_OPEN )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_SPLASH;
+        }
+        else if ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER || adFormat == MaxAdFormat.MREC )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.NATIVE )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_NATIVE;
+        }
+
+        return "-1";
     }
 
     private static MaxAdapterError toMaxError(final String mintegralError)
