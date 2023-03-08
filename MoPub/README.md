@@ -1,1 +1,0 @@
-# MoPub Adapter
