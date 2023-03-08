@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.13.7.0
+* Certified with Facebook SDK 6.13.7.
+
 ## 6.12.0.2
 * Add guard for `java.lang.IllegalArgumentException: Invalid set of clickable views` crash.
 
