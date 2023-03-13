@@ -646,7 +646,17 @@ public class GoogleMediationAdapter
             adView.setAdListener( new AdViewListener( placementId, adFormat, listener ) );
 
             // Check if adaptive banner sizes should be used
-            boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+            boolean isAdaptiveBanner;
+            if ( isBiddingAd )
+            {
+                // Temporarily manually disable adaptive banner traffic for Google bidding until they resolve sizing issue
+                isAdaptiveBanner = false;
+            }
+            else
+            {
+                isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+            }
+
             adView.setAdSize( toAdSize( adFormat, isAdaptiveBanner, context ) );
 
             adView.loadAd( adRequest );
@@ -824,16 +834,17 @@ public class GoogleMediationAdapter
             // Requested by Google for signal collection
             networkExtras.putString( "query_info_type", isDv360Bidding ? "requester_type_3" : "requester_type_2" );
 
-            if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
-            {
-                Object isAdaptiveBanner = parameters.getLocalExtraParameters().get( "adaptive_banner" );
-                if ( isAdaptiveBanner instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBanner ) )
-                {
-                    AdSize adaptiveAdSize = toAdSize( adFormat, true, context );
-                    networkExtras.putInt( "adaptive_banner_w", adaptiveAdSize.getWidth() );
-                    networkExtras.putInt( "adaptive_banner_h", adaptiveAdSize.getHeight() );
-                }
-            }
+            // Temporarily manually disable adaptive banner traffic for Google bidding until they resolve sizing issue
+            //            if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
+            //            {
+            //                Object isAdaptiveBanner = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+            //                if ( isAdaptiveBanner instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBanner ) )
+            //                {
+            //                    AdSize adaptiveAdSize = toAdSize( adFormat, true, context );
+            //                    networkExtras.putInt( "adaptive_banner_w", adaptiveAdSize.getWidth() );
+            //                    networkExtras.putInt( "adaptive_banner_h", adaptiveAdSize.getHeight() );
+            //                }
+            //            }
 
             if ( parameters instanceof MaxAdapterResponseParameters )
             {

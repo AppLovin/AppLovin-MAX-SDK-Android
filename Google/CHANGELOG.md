@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.5.0.1
+* Temporarily disable adaptive banner traffic for Google bidding until they resolve sizing issue.
+
 ## 21.5.0.0
 * Certified with Google SDK 21.5.0.
 
