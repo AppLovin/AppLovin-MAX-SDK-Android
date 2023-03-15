@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.0.0.0
+* Certified with Vungle SDK 7.0.0.
+
 ## 6.12.1.0
 * Certified with Vungle SDK 6.12.1.
 
