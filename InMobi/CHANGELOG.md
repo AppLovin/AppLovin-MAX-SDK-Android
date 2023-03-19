@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.3.2
+* Certified with InMobi SDK 10.1.3.
+
 ## 10.1.3.1
 * Downgrade to InMobi SDK 10.1.2 to avoid crash: `IllegalStateException: Calling View methods on another thread than the UI thread`.
 
