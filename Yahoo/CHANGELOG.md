@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.10
+* Certified with Yahoo Mobile SDK 1.4.1.
+
 ## 2.2.0.9
 * Certified with Yahoo Mobile SDK 1.4.0.
 
