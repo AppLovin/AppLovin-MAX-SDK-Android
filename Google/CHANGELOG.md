@@ -1,5 +1,8 @@
 # Changelog
 
+## 21.5.0.3
+* Fix potential NPE on custom adaptive banner width object.
+
 ## 21.5.0.2
 * Add support for custom adaptive banner widths.
 

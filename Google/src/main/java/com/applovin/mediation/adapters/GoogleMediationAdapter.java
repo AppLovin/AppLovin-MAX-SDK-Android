@@ -770,7 +770,7 @@ public class GoogleMediationAdapter
             {
                 return (int) widthObj;
             }
-            else
+            else if ( widthObj != null )
             {
                 e( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
             }
