@@ -657,7 +657,7 @@ public class GoogleMediationAdapter
                 isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
             }
 
-            adView.setAdSize( toAdSize( adFormat, isAdaptiveBanner, context ) );
+            adView.setAdSize( toAdSize( adFormat, isAdaptiveBanner, parameters, context ) );
 
             adView.loadAd( adRequest );
         }
@@ -734,19 +734,16 @@ public class GoogleMediationAdapter
                                     googleAdsError.getMessage() );
     }
 
-    private AdSize toAdSize(final MaxAdFormat adFormat, boolean isAdaptiveBanner, final Context context)
+    private AdSize toAdSize(final MaxAdFormat adFormat,
+                            final boolean isAdaptiveBanner,
+                            final MaxAdapterParameters parameters,
+                            final Context context)
     {
         if ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER )
         {
             if ( isAdaptiveBanner )
             {
-                WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-                Display display = windowManager.getDefaultDisplay();
-                DisplayMetrics outMetrics = new DisplayMetrics();
-                display.getMetrics( outMetrics );
-                int screenWidthDp = AppLovinSdkUtils.pxToDp( context, outMetrics.widthPixels );
-
-                return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, screenWidthDp );
+                return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, getAdaptiveBannerWidth( parameters, context ) );
             }
             else
             {
@@ -761,6 +758,30 @@ public class GoogleMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private int getAdaptiveBannerWidth(final MaxAdapterParameters parameters, final Context context)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
+            if ( widthObj instanceof Integer )
+            {
+                return (int) widthObj;
+            }
+            else
+            {
+                e( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
+            }
+        }
+
+        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics( outMetrics );
+
+        return AppLovinSdkUtils.pxToDp( context, outMetrics.widthPixels );
     }
 
     private AdFormat toAdFormat(final MaxAdapterSignalCollectionParameters parameters)
@@ -837,10 +858,10 @@ public class GoogleMediationAdapter
             // Temporarily manually disable adaptive banner traffic for Google bidding until they resolve sizing issue
             //            if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 && adFormat.isAdViewAd() )
             //            {
-            //                Object isAdaptiveBanner = parameters.getLocalExtraParameters().get( "adaptive_banner" );
-            //                if ( isAdaptiveBanner instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBanner ) )
+            //                Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+            //                if ( isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj ) )
             //                {
-            //                    AdSize adaptiveAdSize = toAdSize( adFormat, true, context );
+            //                    AdSize adaptiveAdSize = toAdSize( adFormat, true, parameters, context );
             //                    networkExtras.putInt( "adaptive_banner_w", adaptiveAdSize.getWidth() );
             //                    networkExtras.putInt( "adaptive_banner_h", adaptiveAdSize.getHeight() );
             //                }
