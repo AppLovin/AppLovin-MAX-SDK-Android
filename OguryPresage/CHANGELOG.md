@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.5.0.1
+* Add support for IAB's TCFv2 GDPR consent string. Note that you must be on the AppLovin MAX SDK v11.4.3+ and use a TCFv2-compliant framework which stores the consent string in SharedPreferences via the `IABTCF_TCString` key to use this feature.
+
 ## 5.5.0.0
 * Certified with OguryPresage SDK 5.5.0.
 
