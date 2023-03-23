@@ -264,12 +264,26 @@ public class MintegralMediationAdapter
     {
         log( "Collecting signal..." );
 
-        HashMap<String, String> info = new HashMap<>();
-        info.put( BidConstants.BID_FILTER_KEY_PLACEMENT_ID, BundleUtils.getString( "placement_id", "", parameters.getServerParameters() ) );
-        info.put( BidConstants.BID_FILTER_KEY_UNIT_ID, parameters.getAdUnitId() );
-        info.put( BidConstants.BID_FILTER_KEY_AD_TYPE, toMintegralAdType( parameters.getAdFormat() ) );
+        String adUnitId = parameters.getAdUnitId();
+        String signal;
 
-        String signal = BidManager.getBuyerUid( getContext( activity ), info );
+        if ( AppLovinSdkUtils.isValidString( adUnitId ) )
+        {
+            Bundle credentials = BundleUtils.getBundle( "credentials", Bundle.EMPTY, parameters.getServerParameters() );
+            Bundle adUnitCredentials = BundleUtils.getBundle( adUnitId, Bundle.EMPTY, credentials );
+
+            Map<String, String> info = new HashMap<>( 3 );
+            info.put( BidConstants.BID_FILTER_KEY_PLACEMENT_ID, BundleUtils.getString( "placement_id", "", adUnitCredentials ) );
+            info.put( BidConstants.BID_FILTER_KEY_UNIT_ID, BundleUtils.getString( "ad_unit_id", "", adUnitCredentials ) );
+            info.put( BidConstants.BID_FILTER_KEY_AD_TYPE, toMintegralAdType( parameters.getAdFormat() ) );
+
+            signal = BidManager.getBuyerUid( getContext( activity ), info );
+        }
+        else
+        {
+            signal = BidManager.getBuyerUid( getContext( activity ) );
+        }
+
         callback.onSignalCollected( signal );
     }
 

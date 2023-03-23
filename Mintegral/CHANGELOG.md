@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.4.11.1
+* Pass in extra data for signal collection.
+
 ## 16.4.11.0
 * Certified with Mintegral SDK 16.4.11.
 
