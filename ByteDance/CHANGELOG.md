@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.0.1.1.0
+* Certified with ByteDance SDK 5.0.1.1.
+
 ## 5.0.0.9.0
 * Certified with ByteDance SDK 5.0.0.9.
 
