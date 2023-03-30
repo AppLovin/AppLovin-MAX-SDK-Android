@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.3.3
+* Fix `ClassCastException` that occurs when the parent view of `mediaView` is not of type `FrameLayout` for native ads.
+
 ## 10.1.3.2
 * Certified with InMobi SDK 10.1.3.
 
