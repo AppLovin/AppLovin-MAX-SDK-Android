@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.3.0
+* Certified with MobileFuse SDK 1.4.3.
+
 ## 1.4.2.1
 * Add support for interstitial, rewarded, native and native ad view ads.
 
