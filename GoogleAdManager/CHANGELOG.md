@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.0.0.0
+* Certified with GoogleAdManager SDK 22.0.0.
+
 ## 21.5.0.2
 * Fix potential NPE on custom adaptive banner width object.
 
