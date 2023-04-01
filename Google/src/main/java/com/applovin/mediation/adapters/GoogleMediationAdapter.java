@@ -166,8 +166,7 @@ public class GoogleMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return status != null ? String.valueOf( MobileAds.getVersion() ) :
-                getAdapterVersion().substring( 0, getAdapterVersion().lastIndexOf( '.' ) );
+        return String.valueOf( MobileAds.getVersion() );
     }
 
     @Override
