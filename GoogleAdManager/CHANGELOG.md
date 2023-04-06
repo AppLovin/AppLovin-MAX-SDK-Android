@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.0.0.2
+* Re-certified with GoogleAdManager SDK 22.0.0.
+* Remove client-side setting of test device ids.
+
 ## 22.0.0.1
 * Downgrade to GoogleAdManager SDK 21.5.0 due to crashes with Fyber SDK 8.2.2.
 

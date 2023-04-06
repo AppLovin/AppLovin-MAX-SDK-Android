@@ -647,14 +647,6 @@ public class GoogleAdManagerMediationAdapter
             requestConfigurationBuilder.setTagForChildDirectedTreatment( ageRestrictedUserTag );
         }
 
-        Bundle serverParameters = parameters.getServerParameters();
-        String testDevicesString = serverParameters.getString( "test_device_ids", null );
-        if ( !TextUtils.isEmpty( testDevicesString ) )
-        {
-            String[] testDeviceList = testDevicesString.split( "," );
-            requestConfigurationBuilder.setTestDeviceIds( Arrays.asList( testDeviceList ) );
-        }
-
         MobileAds.setRequestConfiguration( requestConfigurationBuilder.build() );
     }
 
