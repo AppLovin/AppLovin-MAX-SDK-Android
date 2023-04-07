@@ -1,25 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.applovin.mediation.adapters.tapjoy">
-
-    <!-- Optionally used by Tapjoy -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <application>
-        <activity
-            android:name="com.tapjoy.TJAdUnitActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
-        <activity
-            android:name="com.tapjoy.mraid.view.ActionHandler"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
-        <activity
-            android:name="com.tapjoy.mraid.view.Browser"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
-        <activity
-            android:name="com.tapjoy.TJContentActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-    </application>
+    <!--Note: We don't need to add the permissions and activities for this adapter. Tapjoy SDK's AndroidManifest adds the required permissions and activities.-->
 </manifest>
