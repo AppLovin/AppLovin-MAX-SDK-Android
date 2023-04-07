@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.1
+* Add support for native ad view ads.
+
 ## 22.1.0.0
 * Certified with Smaato SDK 22.1.0.
 

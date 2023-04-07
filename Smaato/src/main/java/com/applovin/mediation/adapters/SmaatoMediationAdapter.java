@@ -57,6 +57,7 @@ import com.smaato.sdk.rewarded.RewardedInterstitialAd;
 import com.smaato.sdk.rewarded.RewardedRequestError;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public class SmaatoMediationAdapter
                     .build();
 
             // NOTE: `getContext()` will always return an application context, so it is safe to cast.
-            Application application = (Application) getContext( activity );
+            final Application application = (Application) getContext( activity );
 
             SmaatoSdk.init( application, config, pubId );
 
@@ -146,7 +147,7 @@ public class SmaatoMediationAdapter
         updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
-        String signal = SmaatoSdk.collectSignals( getContext( activity ) );
+        final String signal = SmaatoSdk.collectSignals( getContext( activity ) );
         callback.onSignalCollected( signal );
     }
 
@@ -176,81 +177,60 @@ public class SmaatoMediationAdapter
     {
         final String bidResponse = parameters.getBidResponse();
         final String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad for placement: " + placementId + "..." );
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for placement: " + placementId + "..." );
 
         updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
-        adView = new BannerView( getContext( activity ) );
-        adView.setAutoReloadInterval( AutoReloadInterval.DISABLED );
-
-        adView.setEventListener( new BannerView.EventListener()
+        if ( isNative )
         {
-            @Override
-            public void onAdLoaded(@NonNull final BannerView bannerView)
+            if ( activity == null )
             {
-                log( "AdView loaded" );
+                log( "Native " + adFormat.getLabel() + " ad load failed: Activity is null" );
 
-                // Passing extra info such as creative id supported in 9.15.0+
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( bannerView.getCreativeId() ) )
-                {
-                    Bundle extraInfo = new Bundle( 1 );
-                    extraInfo.putString( "creative_id", bannerView.getCreativeId() );
-
-                    listener.onAdViewAdLoaded( adView, extraInfo );
-                }
-                else
-                {
-                    listener.onAdViewAdLoaded( adView );
-                }
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull final BannerView bannerView, @NonNull final BannerError bannerError)
-            {
-                log( "AdView load failed to load with error: " + bannerError );
-
-                final MaxAdapterError error = toMaxError( bannerError );
+                final MaxAdapterError error = new MaxAdapterError( -5601, "No Activity" );
                 listener.onAdViewAdLoadFailed( error );
+
+                return;
             }
 
-            @Override
-            public void onAdImpression(@NonNull final BannerView bannerView)
-            {
-                log( "AdView displayed" );
-                listener.onAdViewAdDisplayed();
-            }
-
-            @Override
-            public void onAdClicked(@NonNull final BannerView bannerView)
-            {
-                log( "AdView clicked" );
-                listener.onAdViewAdClicked();
-            }
-
-            @Override
-            public void onAdTTLExpired(@NonNull final BannerView bannerView)
-            {
-                log( "AdView ad expired" );
-            }
-        } );
-
-        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
-        {
-            AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
-            if ( adRequestParams != null && adRequestParams.getUBUniqueId() != null ) // We must null check the ID
-            {
-                adView.loadAd( placementId, toAdSize( adFormat ), adRequestParams );
-            }
-            else
+            final NativeAdRequest nativeAdRequest = createNativeAdRequest( placementId, bidResponse );
+            if ( nativeAdRequest == null )
             {
                 log( adFormat.getLabel() + " ad load failed: ad request null with invalid bid response" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+
+                return;
             }
+
+            final NativeAdViewListener nativeListener = new NativeAdViewListener( parameters, adFormat, getContext( activity ), listener );
+            NativeAd.loadAd( Lifecycling.of( activity ), nativeAdRequest, nativeListener );
         }
         else
         {
-            adView.loadAd( placementId, toAdSize( adFormat ) );
+            adView = new BannerView( getContext( activity ) );
+            adView.setAutoReloadInterval( AutoReloadInterval.DISABLED );
+            adView.setEventListener( new AdViewListener( listener ) );
+
+            if ( isBiddingAd )
+            {
+                final AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
+                if ( adRequestParams != null && adRequestParams.getUBUniqueId() != null ) // We must null check the ID
+                {
+                    adView.loadAd( placementId, toAdSize( adFormat ), adRequestParams );
+                }
+                else
+                {
+                    log( adFormat.getLabel() + " ad load failed: ad request null with invalid bid response" );
+                    listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                }
+            }
+            else
+            {
+                adView.loadAd( placementId, toAdSize( adFormat ) );
+            }
         }
     }
 
@@ -281,7 +261,7 @@ public class SmaatoMediationAdapter
 
         if ( AppLovinSdkUtils.isValidString( bidResponse ) )
         {
-            AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
+            final AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
             if ( adRequestParams != null && adRequestParams.getUBUniqueId() != null ) // We must null check the ID
             {
                 Interstitial.loadAd( placementId, ROUTER, adRequestParams );
@@ -345,7 +325,7 @@ public class SmaatoMediationAdapter
 
         if ( AppLovinSdkUtils.isValidString( bidResponse ) )
         {
-            AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
+            final AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
             if ( adRequestParams != null && adRequestParams.getUBUniqueId() != null ) // We must null check the ID
             {
                 RewardedInterstitial.loadAd( placementId, ROUTER, adRequestParams );
@@ -392,15 +372,16 @@ public class SmaatoMediationAdapter
     // @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
-        String bidResponse = parameters.getBidResponse();
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
+        final String bidResponse = parameters.getBidResponse();
+        final String placementId = parameters.getThirdPartyAdPlacementId();
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
 
         if ( activity == null )
         {
             log( "Native ad load failed: Activity is null" );
 
-            MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
+            final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
             listener.onNativeAdLoadFailed( error );
 
             return;
@@ -409,10 +390,14 @@ public class SmaatoMediationAdapter
         updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
-        NativeAdRequest nativeAdRequest = NativeAdRequest.builder()
-                .adSpaceId( placementId )
-                .shouldReturnUrlsForImageAssets( false )
-                .build();
+        final NativeAdRequest nativeAdRequest = createNativeAdRequest( placementId, bidResponse );
+        if ( nativeAdRequest == null )
+        {
+            log( "Native ad load failed: ad request null with invalid bid response" );
+            listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+
+            return;
+        }
 
         NativeAd.loadAd( Lifecycling.of( activity ), nativeAdRequest, new NativeAdListener( parameters, getContext( activity ), listener ) );
     }
@@ -426,8 +411,8 @@ public class SmaatoMediationAdapter
     {
         if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
         {
-            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            final Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
             if ( isLocationCollectionEnabledObj instanceof Boolean )
             {
                 log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
@@ -441,13 +426,14 @@ public class SmaatoMediationAdapter
     {
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        final Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
         if ( isAgeRestrictedUser != null )
         {
             SmaatoSdk.setCoppa( isAgeRestrictedUser );
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
     {
         try
@@ -560,6 +546,247 @@ public class SmaatoMediationAdapter
         return AdRequestParams.builder().setUBUniqueId( token ).build();
     }
 
+    private NativeAdRequest createNativeAdRequest(final String placementId, final String bidResponse)
+    {
+        final NativeAdRequest.Builder adRequestBuilder = NativeAdRequest.builder()
+                .adSpaceId( placementId )
+                .shouldReturnUrlsForImageAssets( false );
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            final AdRequestParams adRequestParams = createBiddingAdRequestParams( bidResponse );
+            if ( adRequestParams == null || adRequestParams.getUBUniqueId() == null ) return null;
+
+            adRequestBuilder.uniqueUBId( adRequestParams.getUBUniqueId() );
+        }
+
+        return adRequestBuilder.build();
+    }
+
+    private static List<View> getClickableViews(final MaxNativeAd maxNativeAd, final MaxNativeAdView maxNativeAdView)
+    {
+        final List<View> clickableViews = new ArrayList<>();
+        if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
+        {
+            clickableViews.add( maxNativeAdView.getTitleTextView() );
+        }
+        if ( AppLovinSdkUtils.isValidString( maxNativeAd.getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+        {
+            clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
+        }
+        if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
+        {
+            clickableViews.add( maxNativeAdView.getBodyTextView() );
+        }
+        if ( AppLovinSdkUtils.isValidString( maxNativeAd.getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
+        {
+            clickableViews.add( maxNativeAdView.getCallToActionButton() );
+        }
+        if ( maxNativeAd.getIcon() != null && maxNativeAdView.getIconImageView() != null )
+        {
+            clickableViews.add( maxNativeAdView.getIconImageView() );
+        }
+        final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+        if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
+        {
+            clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
+        }
+
+        return clickableViews;
+    }
+
+    //endregion
+
+    //region Ad View Listener
+
+    private class AdViewListener
+            implements BannerView.EventListener
+    {
+        private final MaxAdViewAdapterListener listener;
+
+        AdViewListener(final MaxAdViewAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull final BannerView bannerView)
+        {
+            log( "AdView loaded" );
+
+            // Passing extra info such as creative id supported in 9.15.0+
+            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( bannerView.getCreativeId() ) )
+            {
+                final Bundle extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", bannerView.getCreativeId() );
+
+                listener.onAdViewAdLoaded( adView, extraInfo );
+            }
+            else
+            {
+                listener.onAdViewAdLoaded( adView );
+            }
+        }
+
+        @Override
+        public void onAdFailedToLoad(@NonNull final BannerView bannerView, @NonNull final BannerError bannerError)
+        {
+            log( "AdView load failed to load with error: " + bannerError );
+
+            final MaxAdapterError error = toMaxError( bannerError );
+            listener.onAdViewAdLoadFailed( error );
+        }
+
+        @Override
+        public void onAdImpression(@NonNull final BannerView bannerView)
+        {
+            log( "AdView displayed" );
+            listener.onAdViewAdDisplayed();
+        }
+
+        @Override
+        public void onAdClicked(@NonNull final BannerView bannerView)
+        {
+            log( "AdView clicked" );
+            listener.onAdViewAdClicked();
+        }
+
+        @Override
+        public void onAdTTLExpired(@NonNull final BannerView bannerView)
+        {
+            log( "AdView ad expired" );
+        }
+    }
+
+    //endregion
+
+    //region Native Ad View Listener
+
+    private class NativeAdViewListener
+            implements NativeAd.Listener
+    {
+        final String                   placementId;
+        final Bundle                   serverParameters;
+        final MaxAdFormat              adFormat;
+        final Context                  context;
+        final MaxAdViewAdapterListener listener;
+
+        public NativeAdViewListener(final MaxAdapterResponseParameters parameters,
+                                    final MaxAdFormat adFormat,
+                                    final Context context,
+                                    final MaxAdViewAdapterListener listener)
+        {
+            placementId = parameters.getThirdPartyAdPlacementId();
+            serverParameters = parameters.getServerParameters();
+            this.adFormat = adFormat;
+            this.context = context;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull final NativeAd nativeAd, @NonNull final NativeAdRenderer renderer)
+        {
+            log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
+
+            // Save the renderer in order to register the native ad view later.
+            nativeAdRenderer = renderer;
+
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    final NativeAdAssets assets = renderer.getAssets();
+                    if ( TextUtils.isEmpty( assets.title() ) )
+                    {
+                        e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
+                        listener.onAdViewAdLoadFailed( new MaxAdapterError( 5400, "Missing Native Ad Assets" ) );
+
+                        return;
+                    }
+
+                    MaxNativeAd.MaxNativeAdImage iconMaxNativeAdImage = null;
+                    if ( assets.icon() != null && assets.icon().drawable() != null )
+                    {
+                        iconMaxNativeAdImage = new MaxNativeAd.MaxNativeAdImage( assets.icon().drawable() );
+                    }
+
+                    ImageView maxNativeAdMediaView = null;
+                    if ( assets.images().size() > 0 )
+                    {
+                        NativeAdAssets.Image image = assets.images().get( 0 );
+                        if ( image.drawable() != null )
+                        {
+                            maxNativeAdMediaView = new ImageView( context );
+                            maxNativeAdMediaView.setImageDrawable( image.drawable() );
+                        }
+                    }
+
+                    final String templateName = getValidTemplateName( BundleUtils.getString( "template", "", serverParameters ) );
+                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( adFormat )
+                            .setTitle( assets.title() )
+                            .setAdvertiser( assets.sponsored() )
+                            .setBody( assets.text() )
+                            .setCallToAction( assets.cta() )
+                            .setIcon( iconMaxNativeAdImage )
+                            .setMediaView( maxNativeAdMediaView );
+                    final MaxNativeAd maxNativeAd = new MaxSmaatoNativeAd( builder );
+                    final MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
+
+                    maxNativeAd.prepareForInteraction( getClickableViews( maxNativeAd, maxNativeAdView ), maxNativeAdView );
+
+                    log( "Native " + adFormat.getLabel() + " ad fully loaded: " + placementId );
+                    listener.onAdViewAdLoaded( maxNativeAdView );
+                }
+            } );
+        }
+
+        @Override
+        public void onAdFailedToLoad(@NonNull final NativeAd nativeAd, @NonNull final NativeAdError error)
+        {
+            MaxAdapterError adapterError = toMaxError( error );
+            log( "Native " + adFormat.getLabel() + " ad (" + placementId + ") failed to load with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpressed(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native " + adFormat.getLabel() + " ad shown: " + placementId );
+            listener.onAdViewAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdClicked(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native " + adFormat.getLabel() + " ad clicked: " + placementId );
+            listener.onAdViewAdClicked();
+        }
+
+        @Override
+        public void onTtlExpired(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native " + adFormat.getLabel() + " ad expired" );
+        }
+
+        private String getValidTemplateName(final String templateName)
+        {
+            if ( AppLovinSdkUtils.isValidString( templateName ) )
+            {
+                if ( templateName.contains( "media" ) || templateName.contains( "leader" ) )
+                {
+                    return templateName;
+                }
+                else if ( templateName.contains( "vertical" ) )
+                {
+                    return ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
+                }
+            }
+
+            return "media_banner_template";
+        }
+    }
+
     //endregion
 
     //region Native Ad Listener
@@ -594,9 +821,9 @@ public class SmaatoMediationAdapter
                 @Override
                 public void run()
                 {
-                    NativeAdAssets assets = renderer.getAssets();
-                    String templateName = BundleUtils.getString( "template", "", serverParameters );
-                    boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+                    final NativeAdAssets assets = renderer.getAssets();
+                    final String templateName = BundleUtils.getString( "template", "", serverParameters );
+                    final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
                     if ( isTemplateAd && TextUtils.isEmpty( assets.title() ) )
                     {
                         e( "Native ad (" + nativeAd + ") does not have required assets." );
@@ -624,19 +851,19 @@ public class SmaatoMediationAdapter
                         }
                     }
 
-                    MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                    final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
-                            .setIcon( maxNativeAdIcon )
                             .setTitle( assets.title() )
                             .setAdvertiser( assets.sponsored() )
                             .setBody( assets.text() )
-                            .setMediaView( maxNativeAdMediaView )
-                            .setCallToAction( assets.cta() );
+                            .setCallToAction( assets.cta() )
+                            .setIcon( maxNativeAdIcon )
+                            .setMediaView( maxNativeAdMediaView );
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
                     {
                         builder.setMainImage( maxNativeMainImage );
                     }
-                    MaxNativeAd maxNativeAd = new MaxSmaatoNativeAd( builder );
+                    final MaxNativeAd maxNativeAd = new MaxSmaatoNativeAd( builder );
 
                     log( "Native ad fully loaded: " + placementId );
                     listener.onNativeAdLoaded( maxNativeAd, null );
@@ -647,7 +874,7 @@ public class SmaatoMediationAdapter
         @Override
         public void onAdFailedToLoad(@NonNull final NativeAd nativeAd, @NonNull final NativeAdError error)
         {
-            MaxAdapterError adapterError = toMaxError( error );
+            final MaxAdapterError adapterError = toMaxError( error );
             log( "Native ad (" + placementId + ") failed to load with error: " + adapterError );
             listener.onNativeAdLoadFailed( adapterError );
         }
@@ -678,16 +905,18 @@ public class SmaatoMediationAdapter
     {
         private MaxSmaatoNativeAd(final Builder builder) { super( builder ); }
 
+        @SuppressWarnings("deprecation")
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            prepareForInteraction( null, maxNativeAdView );
+            final List<View> clickableViews = SmaatoMediationAdapter.getClickableViews( this, maxNativeAdView );
+            prepareForInteraction( clickableViews, maxNativeAdView );
         }
 
         // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
-            NativeAdRenderer nativeAdRenderer = SmaatoMediationAdapter.this.nativeAdRenderer;
+            final NativeAdRenderer nativeAdRenderer = SmaatoMediationAdapter.this.nativeAdRenderer;
             if ( nativeAdRenderer == null )
             {
                 e( "Failed to register native ad view for interaction. Native ad renderer is null" );
@@ -697,7 +926,8 @@ public class SmaatoMediationAdapter
             d( "Preparing views for interaction with container: " + container );
 
             nativeAdRenderer.registerForImpression( container );
-            nativeAdRenderer.registerForClicks( container );
+            nativeAdRenderer.registerForClicks( container );      // Doesn't make the entire container clickable on its own.
+            nativeAdRenderer.registerForClicks( clickableViews ); // Necessary to make CTA and other items clickable.
 
             return true;
         }
@@ -784,7 +1014,7 @@ public class SmaatoMediationAdapter
                     interstitialAds.remove( placementId );
                 }
 
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", interstitialError.ordinal(), interstitialError.name() );
+                final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", interstitialError.ordinal(), interstitialError.name() );
                 onAdDisplayFailed( placementId, adapterError );
             }
         }
@@ -905,7 +1135,7 @@ public class SmaatoMediationAdapter
                     rewardedAds.remove( placementId );
                 }
 
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", rewardedError.ordinal(), rewardedError.name() );
+                final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", rewardedError.ordinal(), rewardedError.name() );
                 onAdDisplayFailed( placementId, adapterError );
             }
         }
@@ -974,7 +1204,7 @@ public class SmaatoMediationAdapter
             // Passing extra info such as creative id supported in 9.15.0+
             if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
             {
-                Bundle extraInfo = new Bundle( 1 );
+                final Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
 
                 onAdLoaded( placementId, extraInfo );
