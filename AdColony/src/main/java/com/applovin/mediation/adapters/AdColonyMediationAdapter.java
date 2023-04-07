@@ -169,7 +169,7 @@ public class AdColonyMediationAdapter
         if ( loadedInterstitialAd == null )
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
 
             return;
         }
@@ -188,7 +188,7 @@ public class AdColonyMediationAdapter
         if ( !success )
         {
             log( "Interstitial ad failed to display" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad failed to display" ) );
         }
     }
 
@@ -222,7 +222,7 @@ public class AdColonyMediationAdapter
         if ( loadedRewardedAd == null )
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
 
             return;
         }
@@ -310,19 +310,10 @@ public class AdColonyMediationAdapter
         //
 
         // Set user consent state
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            options.setPrivacyFrameworkRequired( AdColonyAppOptions.GDPR, true );
-
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                options.setPrivacyConsentString( AdColonyAppOptions.GDPR, hasUserConsent ? "1" : "0" );
-            }
-        }
-        else if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
-        {
-            options.setPrivacyFrameworkRequired( AdColonyAppOptions.GDPR, false );
+            options.setPrivacyConsentString( AdColonyAppOptions.GDPR, hasUserConsent ? "1" : "0" );
         }
 
         //

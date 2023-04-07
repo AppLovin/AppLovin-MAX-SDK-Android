@@ -1289,6 +1289,13 @@ public class FacebookMediationAdapter
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
             }
 
+            // To avoid `java.lang.IllegalArgumentException: Invalid set of clickable views` with size=0
+            if ( clickableViews.isEmpty() )
+            {
+                e( "No clickable views to prepare" );
+                return;
+            }
+
             prepareForInteraction( clickableViews, maxNativeAdView );
         }
 
@@ -1299,6 +1306,13 @@ public class FacebookMediationAdapter
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
+                return false;
+            }
+
+            // To avoid `java.lang.IllegalArgumentException: Invalid set of clickable views` with size=0
+            if ( clickableViews.isEmpty() )
+            {
+                e( "No clickable views to prepare" );
                 return false;
             }
 

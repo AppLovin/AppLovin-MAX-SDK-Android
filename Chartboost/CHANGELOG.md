@@ -1,5 +1,14 @@
 # Changelog
 
+## 9.2.1.0
+* Certified with Chartboost SDK 9.2.1.
+
+## 9.2.0.0
+* Certified with Chartboost SDK 9.2.0.
+
+## 9.1.1.2
+* Remove `consentDialogState` guard.
+
 ## 9.1.1.1
 * Update error code mapping for SDK error reports.
 * Add additional details for ad display failures.

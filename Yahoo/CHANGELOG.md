@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.2.0.10
+* Certified with Yahoo Mobile SDK 1.4.1.
+
+## 2.2.0.9
+* Certified with Yahoo Mobile SDK 1.4.0.
+
+## 2.2.0.8
+* Fix Mediation Debugger not able to load native ads in test mode.
+
+## 2.2.0.7
+* Add support for star ratings in manual native ads. 
+
+## 2.2.0.6
+* Fix an issue where Yahoo Mobile SDK is not being pulled in by Gradle.
+
+## 2.2.0.5
+* Certified with Yahoo Mobile SDK 1.3.0.
+
+## 2.2.0.4
+* Add adapter class name `YahooMediationAdapter`.
+
+## 2.2.0.3
+* Add support for container clickability (supported in SDK v11.6.0+).
+
 ## 2.2.0.2
 * Fix native ad view ad impression issue due to missing assets in templates on older AppLovin SDKs. Yahoo native ad view ads now require AppLovin SDK version 11.5.5+.
 * Add additional details for ad display failures.

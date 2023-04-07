@@ -26,7 +26,7 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParamet
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
-import com.applovin.mediation.adapters.verizonads.BuildConfig;
+import com.applovin.mediation.adapters.yahoo.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
@@ -65,7 +65,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 /**
  * Created by santoshbagadi on 2/27/19.
  */
-public class VerizonAdsMediationAdapter
+public class YahooMediationAdapter
         extends MediationAdapterBase
         implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
 {
@@ -76,7 +76,7 @@ public class VerizonAdsMediationAdapter
     private static final String VIDEO_COMPLETED_EVENT_ID = "onVideoComplete";
     private static final String AD_IMPRESSION_EVENT_ID   = "adImpression";
 
-    public static final String[] NATIVE_AD_AD_TYPES = new String[] { "simpleImage", "simpleVideo" };
+    public static final  String[] NATIVE_AD_AD_TYPES  = new String[] { "simpleImage", "simpleVideo" };
 
     // Ad objects
     private InterstitialAd interstitialAd;
@@ -84,7 +84,7 @@ public class VerizonAdsMediationAdapter
     private InlineAdView   inlineAdView;
     private NativeAd       nativeAd;
 
-    public VerizonAdsMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
+    public YahooMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
@@ -104,7 +104,8 @@ public class VerizonAdsMediationAdapter
             InitializationStatus status = initialized ? InitializationStatus.INITIALIZED_SUCCESS : InitializationStatus.INITIALIZED_FAILURE;
             onCompletionListener.onCompletion( status, null );
 
-            // ...GDPR settings, which is part of verizon Ads SDK data, should be established after initialization and prior to making any ad requests... (https://sdk.verizonmedia.com/gdpr-coppa.html)
+            // ...GDPR settings, which is part of Yahoo SDK data, should be established after initialization and prior to making any ad requests...
+            // (https://sdk.yahooinc.com/yahoo-ads/publisher-privacy.html#general-data-protection-regulation-gdpr)
             updatePrivacyStates( parameters );
             updateLocationCollectionEnabled( parameters );
         }
@@ -172,7 +173,7 @@ public class VerizonAdsMediationAdapter
         String signal = YASAds.getBiddingToken( getContext( activity ) );
         if ( signal == null )
         {
-            callback.onSignalCollectionFailed( "Yahoo Mobile SDK not initialized; failed to return a bid." );
+            callback.onSignalCollectionFailed( "Yahoo SDK not initialized; failed to return a bid." );
             return;
         }
 
@@ -484,11 +485,11 @@ public class VerizonAdsMediationAdapter
         return builder.build();
     }
 
-    private static MaxAdapterError toMaxError(final ErrorInfo verizonAdsError)
+    private static MaxAdapterError toMaxError(final ErrorInfo yahooError)
     {
-        final int verizonErrorCode = verizonAdsError.getErrorCode();
+        final int yahooErrorCode = yahooError.getErrorCode();
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-        switch ( verizonErrorCode )
+        switch ( yahooErrorCode )
         {
             case YASAds.ERROR_NO_FILL:
                 adapterError = MaxAdapterError.NO_FILL;
@@ -502,7 +503,18 @@ public class VerizonAdsMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), verizonErrorCode, verizonAdsError.getDescription() );
+        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), yahooErrorCode, yahooError.getDescription() );
+    }
+
+    private static Double tryParseDouble(final String doubleString)
+    {
+        try
+        {
+            return Double.parseDouble( doubleString );
+        }
+        catch ( Throwable ignored ) { }
+
+        return null;
     }
 
     private AdSize toAdSize(final MaxAdFormat adFormat)
@@ -564,7 +576,7 @@ public class VerizonAdsMediationAdapter
         {
             log( "Interstitial ad loaded" );
 
-            VerizonAdsMediationAdapter.this.interstitialAd = interstitialAd;
+            YahooMediationAdapter.this.interstitialAd = interstitialAd;
 
             CreativeInfo creativeInfo = interstitialAd.getCreativeInfo();
             if ( AppLovinSdk.VERSION_CODE >= 9150000 && creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
@@ -651,7 +663,7 @@ public class VerizonAdsMediationAdapter
         {
             log( "Interstitial ad loaded" );
 
-            VerizonAdsMediationAdapter.this.rewardedAd = rewardedAd;
+            YahooMediationAdapter.this.rewardedAd = rewardedAd;
 
             CreativeInfo creativeInfo = rewardedAd.getCreativeInfo();
             if ( AppLovinSdk.VERSION_CODE >= 9150000 && creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
@@ -752,7 +764,7 @@ public class VerizonAdsMediationAdapter
         {
             log( "AdView loaded: " + inlineAdView.getPlacementId() );
 
-            VerizonAdsMediationAdapter.this.inlineAdView = inlineAdView;
+            YahooMediationAdapter.this.inlineAdView = inlineAdView;
 
             CreativeInfo creativeInfo = inlineAdView.getCreativeInfo();
             if ( AppLovinSdk.VERSION_CODE >= 9150000 && creativeInfo != null && AppLovinSdkUtils.isValidString( creativeInfo.getCreativeId() ) )
@@ -926,7 +938,7 @@ public class VerizonAdsMediationAdapter
                         nativeImageComponent.prepareView( (ImageView) mediaView );
                     }
 
-                    VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
+                    YahooMediationAdapter.this.nativeAd = nativeAd;
 
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( adFormat )
@@ -937,7 +949,7 @@ public class VerizonAdsMediationAdapter
                             .setIcon( iconImage )
                             .setMediaView( mediaView );
 
-                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( null, activity, builder );
 
                     String templateName = BundleUtils.getString( "template", "", serverParameters );
                     MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, getValidTemplateName( templateName ), getContext( activity ) );
@@ -1043,6 +1055,7 @@ public class VerizonAdsMediationAdapter
                     String body = null;
                     String advertiser = null;
                     String callToAction = null;
+                    Double starRating = null;
 
                     NativeTextComponent titleComponent = (NativeTextComponent) nativeAd.getComponent( "title" );
                     if ( titleComponent != null ) title = titleComponent.getText();
@@ -1055,6 +1068,12 @@ public class VerizonAdsMediationAdapter
 
                     NativeTextComponent ctaComponent = (NativeTextComponent) nativeAd.getComponent( "callToAction" );
                     if ( ctaComponent != null ) callToAction = ctaComponent.getText();
+
+                    NativeTextComponent starRatingComponent = (NativeTextComponent) nativeAd.getComponent( "rating" );
+                    if ( starRatingComponent != null )
+                    {
+                        starRating = tryParseDouble( starRatingComponent.getText() );
+                    }
 
                     // NOTE: Yahoo's SDK only returns ImageView with the image pre-cached, we cannot use the 'getUri()' getter
                     // since it is un-cached and our SDK will attempt to re-cache it, and we do not support passing ImageView for custom native
@@ -1110,7 +1129,7 @@ public class VerizonAdsMediationAdapter
                         return;
                     }
 
-                    VerizonAdsMediationAdapter.this.nativeAd = nativeAd;
+                    YahooMediationAdapter.this.nativeAd = nativeAd;
 
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
@@ -1131,7 +1150,12 @@ public class VerizonAdsMediationAdapter
                         builder.setMediaContentAspectRatio( mediaViewAspectRatio );
                     }
 
-                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( activity, builder );
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( starRating );
+                    }
+
+                    MaxNativeAd maxNativeAd = new MaxYahooNativeAd( listener, activity, builder );
 
                     CreativeInfo creativeInfo = nativeAd.getCreativeInfo();
                     Bundle extraInfo = new Bundle( 1 );
@@ -1195,19 +1219,42 @@ public class VerizonAdsMediationAdapter
     private class MaxYahooNativeAd
             extends MaxNativeAd
     {
-        private final WeakReference<Activity> activityRef;
+        private final MaxNativeAdAdapterListener listener;
+        private final WeakReference<Activity>    activityRef;
 
-        private MaxYahooNativeAd(final Activity activity, final Builder builder)
+        private MaxYahooNativeAd(final MaxNativeAdAdapterListener listener, final Activity activity, final Builder builder)
         {
             super( builder );
 
+            this.listener = listener;
             this.activityRef = new WeakReference<>( activity );
+        }
+
+        // @Override
+        public boolean isContainerClickable()
+        {
+            return true;
+        }
+
+        // @Override
+        public void performClick()
+        {
+            final NativeAd nativeAd = YahooMediationAdapter.this.nativeAd;
+            if ( nativeAd == null )
+            {
+                e( "Failed to perform click: Native ad is null." );
+                return;
+            }
+
+            d( "Performing click..." );
+            listener.onNativeAdClicked();
+            nativeAd.invokeDefaultAction();
         }
 
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final NativeAd nativeAd = VerizonAdsMediationAdapter.this.nativeAd;
+            final NativeAd nativeAd = YahooMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad view for interaction. Native ad is null." );
@@ -1261,3 +1308,4 @@ public class VerizonAdsMediationAdapter
 
     //endregion
 }
+

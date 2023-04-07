@@ -98,13 +98,10 @@ public class LineMediationAdapter
             //
             // GDPR options
             //
-            if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            if ( hasUserConsent != null )
             {
-                Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-                if ( hasUserConsent != null )
-                {
-                    config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
-                }
+                config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
             }
 
             //

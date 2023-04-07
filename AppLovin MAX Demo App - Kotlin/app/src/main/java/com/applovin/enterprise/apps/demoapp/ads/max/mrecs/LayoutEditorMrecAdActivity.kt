@@ -11,7 +11,7 @@ import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxAdViewAdListener
 import com.applovin.mediation.MaxError
-import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
+import com.applovin.mediation.ads.MaxAdView
 
 /**
  * An [android.app.Activity] used to show AppLovin MAX MREC ads created in the Layout Editor.
@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_layout_editor_mrec_ad.*
  * Created by Andrew Tian on 2020-01-14.
  */
 class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdRevenueListener {
+    private lateinit var adView: MaxAdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +28,12 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         setTitle(R.string.activity_layout_editor_mrecs)
         setupCallbacksRecyclerView()
 
-        mrec_ad_view.setListener(this)
-        mrec_ad_view.setRevenueListener(this)
+        adView = findViewById<MaxAdView>(R.id.mrec_ad_view)
+        adView.setListener(this)
+        adView.setRevenueListener(this)
 
         // Load the first ad.
-        mrec_ad_view.loadAd()
+        adView.loadAd()
     }
 
     //region MAX Ad Listener

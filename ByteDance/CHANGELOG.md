@@ -1,5 +1,44 @@
 # Changelog
 
+## 5.1.0.7.0
+* Certified with ByteDance SDK 5.1.0.7.
+
+## 5.1.0.6.0
+* Certified with ByteDance SDK 5.1.0.6.
+
+## 5.0.1.1.0
+* Certified with ByteDance SDK 5.0.1.1.
+
+## 5.0.0.9.0
+* Certified with ByteDance SDK 5.0.0.9.
+
+## 5.0.0.8.0
+* Certified with ByteDance SDK 5.0.0.8.
+
+## 5.0.0.6.0
+* Certified with ByteDance SDK 5.0.0.6.
+
+## 4.9.0.9.0
+* Certified with ByteDance SDK 4.9.0.9.
+
+## 4.9.0.8.0
+* Certified with ByteDance SDK 4.9.0.8.
+
+## 4.9.0.7.0
+* Certified with ByteDance SDK 4.9.0.7.
+
+## 4.9.0.6.1
+* Remove `consentDialogState` guard.
+
+## 4.9.0.6.0
+* Certified with ByteDance SDK 4.9.0.6.
+
+## 4.8.1.0.0
+* Certified with ByteDance SDK 4.8.1.0.
+
+## 4.8.0.9.0
+* Certified with ByteDance SDK 4.8.0.9.
+
 ## 4.8.0.8.2
 * Support for native ads in external plugins (e.g. React Native).
 

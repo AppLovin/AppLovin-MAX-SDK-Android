@@ -1,5 +1,14 @@
 # Changelog
 
+## 2023.2.15.0
+* Certified with Line SDK 2.6.20230215.
+
+## 2022.12.26.0
+* Certified with Line SDK 2.5.20221226.
+
+## 2022.2.16.4
+* Remove `consentDialogState` guard.
+
 ## 2022.2.16.3
 * Support for native ads in external plugins (e.g. React Native).
 

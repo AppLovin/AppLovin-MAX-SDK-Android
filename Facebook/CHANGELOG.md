@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.13.7.0
+* Certified with Facebook SDK 6.13.7.
+
+## 6.12.0.2
+* Add guard for `java.lang.IllegalArgumentException: Invalid set of clickable views` crash.
+
 ## 6.12.0.1
 * Support for native ads in external plugins (e.g. React Native).
 * Add additional details for ad display failures.

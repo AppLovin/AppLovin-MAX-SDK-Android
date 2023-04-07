@@ -21,48 +21,51 @@ import com.applovin.sdk.AppLovinSdkUtils
  * Created by Andrew Tian on 2020-01-14.
  */
 class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdRevenueListener {
-    private var adView: MaxAdView? = null
+    private lateinit var adView: MaxAdView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_programmatic_mrec_ad)
         setTitle(R.string.activity_programmatic_mrecs)
+
         setupCallbacksRecyclerView()
+
         adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
 
-        adView!!.setListener(this)
-        adView!!.setRevenueListener(this)
+        adView.setListener(this)
+        adView.setRevenueListener(this)
 
-        adView!!.id = ViewCompat.generateViewId()
+        adView.id = ViewCompat.generateViewId()
         val widthPx = AppLovinSdkUtils.dpToPx(this, 300)
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
-        adView!!.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
+        adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
 
         // Need to set the background or background color for MRECs to be fully functional.
-        adView!!.setBackgroundColor(Color.BLACK)
+        adView.setBackgroundColor(Color.BLACK)
 
         // Set up constraints
-        val constraintLayout =
-                findViewById<ConstraintLayout>(R.id.main_constraint_layout)
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.main_constraint_layout)
         constraintLayout.id = ViewCompat.generateViewId()
         constraintLayout.addView(adView)
+
         val constraintSet = ConstraintSet()
         constraintSet.clone(constraintLayout)
-        constraintSet.constrainHeight(adView!!.id, heightPx)
-        constraintSet.constrainWidth(adView!!.id, widthPx)
+        constraintSet.constrainHeight(adView.id, heightPx)
+        constraintSet.constrainWidth(adView.id, widthPx)
+
         constraintSet.connect(
-                adView!!.id,
+                adView.id,
                 ConstraintSet.LEFT,
                 constraintLayout.id,
                 ConstraintSet.LEFT
         )
         constraintSet.connect(
-                adView!!.id,
+                adView.id,
                 ConstraintSet.RIGHT,
                 constraintLayout.id,
                 ConstraintSet.RIGHT
         )
         constraintSet.connect(
-                adView!!.id,
+                adView.id,
                 ConstraintSet.TOP,
                 constraintLayout.id,
                 ConstraintSet.TOP
@@ -70,7 +73,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         constraintSet.applyTo(constraintLayout)
 
         // Load the first ad.
-        adView!!.loadAd()
+        adView.loadAd()
     }
 
     //region MAX Ad Listener

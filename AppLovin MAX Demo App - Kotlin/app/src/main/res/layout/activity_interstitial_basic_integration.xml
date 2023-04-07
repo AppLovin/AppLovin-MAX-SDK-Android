@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="16dp"
-    tools:context="com.applovin.apps.kotlindemoapp.interstitials.InterstitialBasicIntegrationActivity">
+    tools:context=".ads.applovin.interstitials.InterstitialBasicIntegrationActivity">
 
     <Button
         android:id="@+id/showButton"

@@ -122,7 +122,7 @@ public class ManualNativeLateBindingAdActivity
         if ( nativeAd.getNativeAd() != null && nativeAd.getNativeAd().isExpired() )
         {
             // Destroy expired ad and load a new one
-            nativeAdLoader.destroy(nativeAd);
+            nativeAdLoader.destroy( nativeAd );
             nativeAdLoader.loadAd();
 
             showAdButton.setEnabled( false );
@@ -144,6 +144,7 @@ public class ManualNativeLateBindingAdActivity
                 .setIconImageViewId( R.id.icon_image_view )
                 .setMediaContentViewGroupId( R.id.media_view_container )
                 .setOptionsContentViewGroupId( R.id.options_view )
+                .setStarRatingContentViewGroupId( R.id.star_rating_view )
                 .setCallToActionButtonId( R.id.cta_button )
                 .build();
         return new MaxNativeAdView( binder, this );

@@ -35,6 +35,7 @@ import com.mbridge.msdk.MBridgeSDK;
 import com.mbridge.msdk.interstitialvideo.out.InterstitialVideoListener;
 import com.mbridge.msdk.interstitialvideo.out.MBBidInterstitialVideoHandler;
 import com.mbridge.msdk.interstitialvideo.out.MBInterstitialVideoHandler;
+import com.mbridge.msdk.mbbid.out.BidConstants;
 import com.mbridge.msdk.mbbid.out.BidManager;
 import com.mbridge.msdk.nativex.view.MBMediaView;
 import com.mbridge.msdk.out.BannerAdListener;
@@ -171,6 +172,13 @@ public class MintegralMediationAdapter
                 }
             }
 
+            // Has to be _before_ their SDK init as well
+            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            if ( isAgeRestrictedUser != null )
+            {
+                mBridgeSDK.setCoppaStatus( context, isAgeRestrictedUser );
+            }
+
             // Mintegral Docs - "It is recommended to use the API in the main thread"
             final Map<String, String> map = mBridgeSDK.getMBConfigurationMap( appId, appKey );
             mBridgeSDK.init( map, context );
@@ -256,7 +264,26 @@ public class MintegralMediationAdapter
     {
         log( "Collecting signal..." );
 
-        final String signal = BidManager.getBuyerUid( getContext( activity ) );
+        String adUnitId = parameters.getAdUnitId();
+        String signal;
+
+        if ( AppLovinSdkUtils.isValidString( adUnitId ) )
+        {
+            Bundle credentials = BundleUtils.getBundle( "credentials", Bundle.EMPTY, parameters.getServerParameters() );
+            Bundle adUnitCredentials = BundleUtils.getBundle( adUnitId, Bundle.EMPTY, credentials );
+
+            Map<String, String> info = new HashMap<>( 3 );
+            info.put( BidConstants.BID_FILTER_KEY_PLACEMENT_ID, BundleUtils.getString( "placement_id", "", adUnitCredentials ) );
+            info.put( BidConstants.BID_FILTER_KEY_UNIT_ID, BundleUtils.getString( "ad_unit_id", "", adUnitCredentials ) );
+            info.put( BidConstants.BID_FILTER_KEY_AD_TYPE, toMintegralAdType( parameters.getAdFormat() ) );
+
+            signal = BidManager.getBuyerUid( getContext( activity ), info );
+        }
+        else
+        {
+            signal = BidManager.getBuyerUid( getContext( activity ) );
+        }
+
         callback.onSignalCollected( signal );
     }
 
@@ -655,6 +682,32 @@ public class MintegralMediationAdapter
         {
             return executor;
         }
+    }
+
+    private static String toMintegralAdType(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_INTERSTITIAL_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_REWARD_VIDEO;
+        }
+        else if ( adFormat == MaxAdFormat.APP_OPEN )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_SPLASH;
+        }
+        else if ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER || adFormat == MaxAdFormat.MREC )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.NATIVE )
+        {
+            return BidConstants.BID_FILTER_VALUE_AD_TYPE_NATIVE;
+        }
+
+        return "-1";
     }
 
     private static MaxAdapterError toMaxError(final String mintegralError)
@@ -1332,6 +1385,12 @@ public class MintegralMediationAdapter
                                 builder.setMainImage( mainImage );
                             }
 
+                            if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                            {
+                                // Only Android supports star rating for now
+                                builder.setStarRating( campaign.getRating() );
+                            }
+
                             final MaxNativeAd maxNativeAd = new MaxMintegralNativeAd( builder );
                             listener.onNativeAdLoaded( maxNativeAd, null );
                         }
@@ -1366,7 +1425,14 @@ public class MintegralMediationAdapter
 
             d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-            mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+            if ( getFormat() == MaxAdFormat.NATIVE )
+            {
+                mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+            }
+            else
+            {
+                mbBidNativeAdViewHandler.registerView( container, clickableViews, nativeAdCampaign );
+            }
 
             MintegralMediationAdapter.this.nativeAdContainer = container;
             MintegralMediationAdapter.this.clickableViews = clickableViews;

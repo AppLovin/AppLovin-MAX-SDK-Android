@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.LayoutEditorMrecAdActivity">
+    tools:context=".ads.max.mrecs.LayoutEditorMrecAdActivity">
 
     <com.applovin.mediation.ads.MaxAdView
         android:id="@+id/mrec_ad_view"

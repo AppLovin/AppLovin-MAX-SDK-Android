@@ -1,5 +1,26 @@
 # Changelog
 
+## 22.1.0.0
+* Certified with Smaato SDK 22.1.0.
+
+## 22.0.3.0
+* Certified with Smaato SDK 22.0.3.
+
+## 22.0.2.0
+* Certified with Smaato SDK 22.0.2.
+
+## 22.0.1.2
+* Remove setting of non-https traffic.
+
+## 22.0.1.1
+* Downgrade Smaato SDK to 21.8.6, due to impression tracking issue in version 22.0.1.
+
+## 22.0.1.0
+* Certified with Smaato SDK 22.0.1.
+
+## 21.8.6.0
+* Certified with Smaato SDK 21.8.6.
+
 ## 21.8.5.1
 * Support for native ads in external plugins (e.g. React Native).
 * Add additional details for ad display failures.

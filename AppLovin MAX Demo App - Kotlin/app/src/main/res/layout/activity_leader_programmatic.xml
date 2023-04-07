@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/leader_programmatic_layout"
-    tools:context=".leaders.LeaderProgrammaticActivity">
+    tools:context=".ads.applovin.leaders.LeaderProgrammaticActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/callbacksRecyclerView"

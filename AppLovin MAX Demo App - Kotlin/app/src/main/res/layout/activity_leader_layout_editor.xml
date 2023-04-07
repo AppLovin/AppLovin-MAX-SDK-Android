@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".leaders.LeaderLayoutEditorActivity">
+    tools:context=".ads.applovin.leaders.LeaderLayoutEditorActivity">
 
     <!-- For leaderboards, you must specify the "LEADER" attribute -->
     <Button

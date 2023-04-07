@@ -1,5 +1,26 @@
 # Changelog
 
+## 10.1.3.3
+* Fix `ClassCastException` that occurs when the parent view of `mediaView` is not of type `FrameLayout` for native ads.
+
+## 10.1.3.2
+* Certified with InMobi SDK 10.1.3.
+
+## 10.1.3.1
+* Downgrade to InMobi SDK 10.1.2 to avoid crash: `IllegalStateException: Calling View methods on another thread than the UI thread`.
+
+## 10.1.3.0
+* Certified with InMobi SDK 10.1.3.
+
+## 10.1.2.4
+* Remove `consentDialogState` guard.
+
+## 10.1.2.3
+* Add support for star ratings in manual native ads.
+
+## 10.1.2.2
+* Add CCPA support.
+
 ## 10.1.2.1
 * Support for native ads in external plugins (e.g. React Native).
 

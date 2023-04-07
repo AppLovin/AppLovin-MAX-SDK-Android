@@ -13,7 +13,7 @@ To get started with the demo apps, follow the instructions below:
 1. Open your desired project in Android Studio: `DemoApp-Java` or `DemoApp-Kotlin`.
 2. Verify that the dependency `implementation 'com.applovin:applovin-sdk:+'` is included in your `build.gradle (Module: app)`.
 3. Update the `applovin.sdk.key` value in `AndroidManifest.xml` file with your AppLovin SDK key associated with your account.
-4. Update the package with your own unique identifier associated with the application you will create (or already created, if it is an existing app) in the MAX dashboard.
+4. Update the package with your own unique identifier associated with the application you will create (or already created, if it is an existing app) in the MAX dashboard in your `build.gradle (Module: app)`.
 5. Update the unique MAX ad unit id value within each ad's activity code. Each ad format will correspond to a unique MAX ad unit ID you created in the AppLovin dashboard for the package used before. 
 
 <img src="https://user-images.githubusercontent.com/20387467/116483017-20195500-a83b-11eb-9440-d2fd7ac06a96.jpg" width="350" height="700" />
@@ -31,4 +31,4 @@ To get started with the demo apps, follow the instructions below:
 | -5601         | Indicates the provided `Activity` instance has been garbage collected while the AppLovin MAX SDK attempts to re-load an expired ad. |
 
 ## Support
-We recommend using GitHub to file issues. For feature requests, improvements, questions or any other integration issues using MAX Mediation by AppLovin, contact us via our support page https://monetization-support.applovin.com/hc/en-us.
+For feature requests, improvements, questions or any other integration issues using MAX Mediation by AppLovin, contact us via our support page https://monetization-support.applovin.com/hc/en-us.

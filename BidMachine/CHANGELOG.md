@@ -1,5 +1,34 @@
 # Changelog
 
+## 2.1.12.0
+* Certified with BidMachine SDK 2.1.12.
+
+## 2.1.11.0
+* Certified with BidMachine SDK 2.1.11.
+
+## 2.1.10.0
+* Certified with BidMachine SDK 2.1.10.
+
+## 2.1.9.0
+* Certified with BidMachine SDK 2.1.9.
+
+## 2.1.8.0
+* Certified with BidMachine SDK 2.1.8.
+
+## 2.1.7.0
+* Certified with BidMachine SDK 2.1.7.
+
+## 2.1.6.0
+* Certified with BidMachine SDK 2.1.6.
+
+## 2.1.5.1
+* Map `BMError.BAD_CONTENT` to `MaxAdapterError.INTERNAL_ERROR` instead of `MaxAdapterError.NO_FILL`.
+* Remove `consentDialogState` guard.
+
+## 2.1.5.0
+* Certified with BidMachine SDK 2.1.5.
+* Remove deprecated `onAdShown()` callbacks.
+
 ## 1.9.10.5
 * Support for native ads in external plugins (e.g. React Native).
 
@@ -39,3 +68,4 @@
 
 ## 1.9.3.0
 * Initial commit.
+* Minimum AppLovin MAX SDK version 11.4.0.

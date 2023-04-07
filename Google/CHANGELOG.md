@@ -1,5 +1,34 @@
 # Changelog
 
+## 22.0.0.2
+* Re-certified with GoogleAdManager SDK 22.0.0.
+* Remove client-side setting of test device ids.
+
+## 22.0.0.1
+* Downgrade to Google SDK 21.5.0 due to crashes with Fyber SDK 8.2.2.
+
+## 22.0.0.0
+* Certified with Google SDK 22.0.0.
+
+## 21.5.0.3
+* Fix potential NPE on custom adaptive banner width object.
+
+## 21.5.0.2
+* Add support for custom adaptive banner widths.
+
+## 21.5.0.1
+* Temporarily disable adaptive banner traffic for Google bidding until they resolve sizing issue.
+
+## 21.5.0.0
+* Certified with Google SDK 21.5.0.
+
+## 21.4.0.1
+* Add support for star ratings in manual native ads.
+
+## 21.4.0.0
+* Certified with Google SDK 21.4.0.
+* Add additional details for ad display failures.
+
 ## 21.3.0.2
 * Fix silent exception thrown during signal collection for app open ads.
 

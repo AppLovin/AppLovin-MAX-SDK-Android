@@ -1,8 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.applovin.mediation.adapters.mopub">
-
-    <!-- Remove the ACCESS_COARSE_LOCATION permission which is present in MoPub's AndroidManifest.xml.-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
-
-</manifest>

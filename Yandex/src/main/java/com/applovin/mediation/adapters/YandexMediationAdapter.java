@@ -328,13 +328,10 @@ public class YandexMediationAdapter
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                MobileAds.setUserConsent( hasUserConsent );
-            }
+            MobileAds.setUserConsent( hasUserConsent );
         }
     }
 

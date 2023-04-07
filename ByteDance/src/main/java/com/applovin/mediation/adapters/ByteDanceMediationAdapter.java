@@ -35,7 +35,6 @@ import com.applovin.mediation.adapters.bytedance.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAd;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdInteractionListener;
@@ -178,13 +177,10 @@ public class ByteDanceMediationAdapter
             // Set mediation provider
             builder.setUserData( createAdConfigData( serverParameters, true ) );
 
-            if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            if ( hasUserConsent != null )
             {
-                Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-                if ( hasUserConsent != null )
-                {
-                    builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
-                }
+                builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
             }
 
             // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic

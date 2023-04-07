@@ -3,17 +3,15 @@ plugins {
     id("maven-publish")
 }
 
-// Note: the mopub-sdk version must be manually updated in the Unity Dependenies.xml until we have support for it in the scripts.
-// We cannot add the dependencies here in the pom, as they require the transitive flag.
-private val versionMajor = 5
-private val versionMinor = 16
-private val versionPatch = 4
-private val versionAdapterPatch = 0
+private val versionMajor = 2
+private val versionMinor = 2
+private val versionPatch = 0
+private val versionAdapterPatch = 10
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
 
-val libraryArtifactId by extra("mopub-adapter")
+val libraryArtifactId by extra("verizonads-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
@@ -22,19 +20,22 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.mopub:mopub-sdk:${libraryVersions["mopub"]}@aar") {
-        isTransitive = true
-    }
+    implementation("com.yahoo.mobile.ads:android-yahoo-mobile-sdk:${libraryVersions["yahoo"]}")
+    compileOnly("com.android.support:support-annotations:+")
+}
+
+repositories {
+    maven { url = uri("https://artifactory.yahooinc.com/artifactory/maven/") }
 }
 
 publishing {
     publications {
         create<MavenPublication>(extra["publicationName"] as String) {
-            // The publication doesn't know about our dependencies, so we have to manually add them to the pom
+            //The publication doesn't know about our dependencies, so we have to manually add them to the pom
             pom.withXml {
                 asNode().apply {
                     appendNode("name", libraryArtifactId)
-                    appendNode("description", "MoPub adapter for AppLovin MAX mediation")
+                    appendNode("description", "Yahoo adapter for AppLovin MAX mediation")
                     appendNode("url", "https://www.applovin.com/")
                     appendNode("licenses")
                             .appendNode("license").apply {
@@ -51,16 +52,14 @@ publishing {
                                 appendNode("name", "AppLovin")
                                 appendNode("url", "https://www.applovin.com")
                             }
-                    // MoPub does not allow for transitive dependencies as it depends on dependencies hosted on external repos
-                    // publisher has to include the lines in their build.gradle files:
-                    /*
-                    dependencies {
-                        ...
-                        implementation("com.mopub:mopub-sdk:5.4.0@aar") {
-                            transitive = true
-                        }
-                    }
-                    */
+                    // Add Verizon Ads SDK to list of dependencies.
+                    appendNode("dependencies")
+                            .appendNode("dependency").apply {
+                                appendNode("groupId", "com.yahoo.mobile.ads")
+                                appendNode("artifactId", "android-yahoo-mobile-sdk")
+                                appendNode("version", libraryVersions["yahoo"])
+                                appendNode("scope", "compile")
+                            }
                 }
             }
         }

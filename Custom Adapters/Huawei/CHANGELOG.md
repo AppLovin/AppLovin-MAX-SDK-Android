@@ -1,5 +1,16 @@
 # Changelog
 
+## 13.4.61.302.0
+* Certified with Huawei SDK 3.4.61.302.
+
+## 13.4.61.300.0
+* Certified with Huawei SDK 3.4.61.300.
+
+## 13.4.54.300.3
+* Use local scope copy of native ad while preparing view.
+* Add additional details for ad display failures.
+* Remove `consentDialogState` guard.
+
 ## 13.4.54.300.2
 * Add support for returning the main image asset in `MaxNativeAd` for native ads.
 

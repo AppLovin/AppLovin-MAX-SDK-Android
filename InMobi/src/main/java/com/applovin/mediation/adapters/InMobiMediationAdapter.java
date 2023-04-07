@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -442,19 +443,10 @@ public class InMobiMediationAdapter
 
         try
         {
-            if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            if ( hasUserConsent != null )
             {
-                consentObject.put( KEY_PARTNER_GDPR_APPLIES, 1 );
-
-                Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-                if ( hasUserConsent != null )
-                {
-                    consentObject.put( KEY_PARTNER_GDPR_CONSENT, hasUserConsent );
-                }
-            }
-            else if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
-            {
-                consentObject.put( KEY_PARTNER_GDPR_APPLIES, 0 );
+                consentObject.put( KEY_PARTNER_GDPR_CONSENT, hasUserConsent );
             }
         }
         catch ( JSONException ex )
@@ -491,6 +483,15 @@ public class InMobiMediationAdapter
         if ( isAgeRestrictedUser != null )
         {
             extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
+        }
+
+        if ( AppLovinSdk.VERSION_CODE >= 9_11_00 )
+        {
+            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
+            if ( isDoNotSell != null )
+            {
+                extras.put( "do_not_sell", isDoNotSell ? "1" : "0" );
+            }
         }
 
         return extras;
@@ -1148,6 +1149,11 @@ public class InMobiMediationAdapter
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                             .setCallToAction( inMobiNative.getAdCtaText() );
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
+                    {
+                        builder.setStarRating( (double) inMobiNative.getAdRating() );
+                    }
+
                     final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, MaxAdFormat.NATIVE );
                     if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
                     {
@@ -1248,11 +1254,8 @@ public class InMobiMediationAdapter
                 return false;
             }
 
-            // We don't provide the aspect ratio for InMobi's media view since the media view is rendered after the ad is rendered
+            // We don't provide the aspect ratio for InMobi's media view since the media view is rendered after the ad is rendered.
             final FrameLayout mediaView = (FrameLayout) getMediaView();
-            final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams( FrameLayout.LayoutParams.MATCH_PARENT,
-                                                                                  FrameLayout.LayoutParams.MATCH_PARENT );
-            mediaView.setLayoutParams( params );
             mediaView.post( new Runnable()
             {
                 @Override
@@ -1260,22 +1263,24 @@ public class InMobiMediationAdapter
                 {
                     int primaryViewWidth = mediaView.getWidth();
 
-                    // NOTE: InMobi's SDK returns primary view with a height that does not fit a banner, so scale media smaller specifically for horizontal banners (and not leaders/MRECs)
-                    if ( format == MaxAdFormat.BANNER && mediaView.getWidth() > mediaView.getHeight() )
+                    final boolean isHorizontalBanner = ( format == MaxAdFormat.BANNER ) && ( mediaView.getWidth() > mediaView.getHeight() );
+
+                    // For horizontal banners before AppLovin SDK version 11.6.0, scale primary view appropriately.
+                    if ( AppLovinSdk.VERSION_CODE < 11_06_00_00 && isHorizontalBanner )
                     {
                         primaryViewWidth = (int) ( mediaView.getHeight() * ( 16.0 / 9.0 ) );
-                        // FrameLayout don't have gravity layout param, and layout_gravity not supported programmatically
-                        // We need to calculate left margin to center the primaryView in our mediaView (horizontal banner only)
-                        params.leftMargin = ( mediaView.getWidth() - primaryViewWidth ) / 2;
-                        mediaView.setLayoutParams( params );
                     }
-                    final View primaryView = nativeAd.getPrimaryViewOfWidth( mediaView.getContext(),
-                                                                             null,
-                                                                             mediaView,
-                                                                             primaryViewWidth );
+
+                    final View primaryView = nativeAd.getPrimaryViewOfWidth( mediaView.getContext(), null, mediaView, primaryViewWidth );
                     if ( primaryView == null ) return;
 
                     mediaView.addView( primaryView );
+
+                    // For horizontal banners before AppLovin SDK version 11.6.0, center primary view.
+                    if ( AppLovinSdk.VERSION_CODE < 11_06_00_00 && isHorizontalBanner )
+                    {
+                        ( (FrameLayout.LayoutParams) primaryView.getLayoutParams() ).gravity = Gravity.CENTER;
+                    }
                 }
             } );
 
@@ -1302,7 +1307,7 @@ public class InMobiMediationAdapter
                 }
             };
 
-            // InMobi does not provide a method to bind views with landing url, so we need to do it manually
+            // InMobi does not provide a method to bind views with landing url, so we need to do it manually.
             for ( View clickableView : clickableViews )
             {
                 if ( clickableView != null ) clickableView.setOnClickListener( clickListener );

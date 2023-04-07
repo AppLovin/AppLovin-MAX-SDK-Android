@@ -242,7 +242,7 @@ public class CriteoMediationAdapter
             @Override
             public void run()
             {
-                bannerView = new CriteoBannerView( activity.getApplicationContext(), new BannerAdUnit( placementId, toAdSize( adFormat ) ) );
+                bannerView = new CriteoBannerView( getApplicationContext(), new BannerAdUnit( placementId, toAdSize( adFormat ) ) );
                 bannerView.setCriteoBannerAdListener( new AdViewListener( placementId, adFormat, listener ) );
                 bannerView.loadAdWithDisplayData( parameters.getBidResponse() );
             }

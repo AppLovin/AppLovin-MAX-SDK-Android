@@ -33,7 +33,7 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
         showAdButton = findViewById(R.id.show_ad_button)
         setupCallbacksRecyclerView()
 
-        nativeAdLoader = MaxNativeAdLoader("2ae08312099b9acb", this)
+        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
         nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd?) {
                 logAnonymousCallback()
@@ -99,7 +99,8 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
     fun showAd(view: View) {
         val adView = createNativeAdView()
 
-        if (nativeAd!!.nativeAd!!.isExpired) {
+        // Check if ad is expired before rendering
+        if (true == nativeAd?.nativeAd?.isExpired) {
             nativeAdLoader.destroy(nativeAd)
             nativeAdLoader.loadAd()
 
@@ -121,6 +122,7 @@ class ManualNativeLateBindingAdActivity : BaseAdActivity() {
                 .setIconImageViewId(R.id.icon_image_view)
                 .setMediaContentViewGroupId(R.id.media_view_container)
                 .setOptionsContentViewGroupId(R.id.options_view)
+                .setStarRatingContentViewGroupId(R.id.star_rating_view)
                 .setCallToActionButtonId(R.id.cta_button)
                 .build()
         return MaxNativeAdView(binder, this)

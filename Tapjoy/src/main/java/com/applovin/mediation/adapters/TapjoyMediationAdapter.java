@@ -173,7 +173,7 @@ public class TapjoyMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -220,7 +220,7 @@ public class TapjoyMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -240,18 +240,10 @@ public class TapjoyMediationAdapter
             Tapjoy.optOutAdvertisingID( context, isAgeRestrictedUser );
         }
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            tjPrivacyPolicy.setSubjectToGDPR( true );
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                tjPrivacyPolicy.setUserConsent( hasUserConsent ? "1" : "0" );
-            }
-        }
-        else if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.DOES_NOT_APPLY )
-        {
-            tjPrivacyPolicy.setSubjectToGDPR( false );
+            tjPrivacyPolicy.setUserConsent( hasUserConsent ? "1" : "0" );
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )

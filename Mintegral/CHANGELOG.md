@@ -1,5 +1,53 @@
 # Changelog
 
+## 16.4.21.0
+* Certified with Mintegral SDK 16.4.21.
+
+## 16.4.11.1
+* Pass in extra data for signal collection.
+
+## 16.4.11.0
+* Certified with Mintegral SDK 16.4.11.
+
+## 16.3.91.1
+* Pass in extra data for signal collection.
+
+## 16.3.91.0
+* Certified with Mintegral SDK 16.3.91.
+
+## 16.3.81.0
+* Certified with Mintegral SDK 16.3.81.
+
+## 16.3.71.0
+* Certified with Mintegral SDK 16.3.71.
+
+## 16.3.61.0
+* Certified with Mintegral SDK 16.3.61.
+
+## 16.3.51.2
+* Fix crash when preparing views for interaction for native ad view ads.
+
+## 16.3.51.1
+* Add COPPA support.
+
+## 16.3.51.0
+* Certified with Mintegral SDK 16.3.51.
+
+## 16.3.41.1
+* Add support for star ratings in manual native ads (Android only support).
+
+## 16.3.41.0
+* Certified with Mintegral SDK 16.3.41.
+
+## 16.3.31.0
+* Certified with Mintegral SDK 16.3.31.
+
+## 16.3.21.0
+* Certified with Mintegral SDK 16.3.21.
+
+## 16.3.11.0
+* Certified with Mintegral SDK 16.3.11.
+
 ## 16.2.61.2
 * Support for native ads in external plugins (e.g. React Native).
 

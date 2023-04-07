@@ -57,7 +57,7 @@
 * Certified with Vungle SDK 6.10.3.
 
 ## 6.10.2.1
-* Fix centering of banner ads.
+* Fix centering of banner ads. 
 * Remove `checkExistence()` call from adapter.
 
 ## 6.10.2.0
@@ -172,13 +172,13 @@
 
 ## 6.3.24.3
 * Bundle in Unity Plugin `/Assets/MaxSdk/Plugins/Android/Shared Dependencies` the following Android dependencies:
-  1. `converter-gson.jar`
-  2. `common.jar`
-  3. `fetch.jar`
-  4. `gson.jar`
-  5. `okhttp.jar`
-  6. `okio.jar`
-  7. `retrofit.jar`
+    1. `converter-gson.jar`
+    2. `common.jar`
+    3. `fetch.jar`
+    4. `gson.jar`
+    5. `okhttp.jar`
+    6. `okio.jar`
+    7. `retrofit.jar`
 
 ## 6.3.24.2
 * Use unique package name in Android Manifest.

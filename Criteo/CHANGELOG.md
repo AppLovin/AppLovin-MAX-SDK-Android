@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.9.2.0
+* Certified with Criteo SDK 4.9.2.
+
+## 4.9.1.1
+* Fix crash `NullPointerException: Attempt to invoke virtual method 'android.content.Context android.content.Context.getApplicationContext()' on a null object reference`
+
+## 4.9.1.0
+* Certified with Criteo SDK 4.9.1.
+
+## 4.9.0.0
+* Certified with Criteo SDK 4.9.0.
+
 ## 4.8.1.1
 * Support for native ads in external plugins (e.g. React Native).
 * Add additional details for ad display failures.
@@ -39,3 +51,4 @@
 ## 4.6.0.0
 * Initial Commit.
 * Certified with Criteo SDK 4.6.0.
+* Minimum AppLovin MAX SDK version 11.1.3.

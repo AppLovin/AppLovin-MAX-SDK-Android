@@ -3,8 +3,8 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 21
-private val versionMinor = 3
+private val versionMajor = 22
+private val versionMinor = 0
 private val versionPatch = 0
 private val versionAdapterPatch = 2
 

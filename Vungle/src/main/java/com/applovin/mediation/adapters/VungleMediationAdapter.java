@@ -34,7 +34,6 @@ import com.applovin.mediation.adapters.vungle.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.vungle.ads.AdConfig;
 import com.vungle.ads.BannerAd;
@@ -315,7 +314,7 @@ public class VungleMediationAdapter
         final String adFormatLabel = adFormat.getLabel();
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
 
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
@@ -398,16 +397,13 @@ public class VungleMediationAdapter
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting("hasUserConsent", parameters);
+        if (hasUserConsent != null)
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                VunglePrivacySettings.setGDPRStatus( hasUserConsent, "" );
-            }
+            VunglePrivacySettings.setGDPRStatus(hasUserConsent, "");
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        if ( AppLovinSdk.VERSION_CODE >= 9_11_00 )
         {
             Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
             if ( isDoNotSell != null )
@@ -435,7 +431,7 @@ public class VungleMediationAdapter
         catch ( Exception exception )
         {
             log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
+            return ( AppLovinSdk.VERSION_CODE >= 9_14_00_00 ) ? null : false;
         }
     }
 
@@ -556,6 +552,25 @@ public class VungleMediationAdapter
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), vungleErrorCode, vungleError.getLocalizedMessage() );
     }
 
+    private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
+    {
+        if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
+        {
+            List<View> clickableViews = new ArrayList<View>( 5 );
+            if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
+            if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
+            if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
+            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
+            if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
+
+            return clickableViews;
+        }
+        else
+        {
+            return maxNativeAdView.getClickableViews();
+        }
+    }
+
     //endregion
 
     //region VngMaxInterstitialAdListener
@@ -587,7 +602,7 @@ public class VungleMediationAdapter
             log( "Interstitial ad displayed" );
             String creativeId = baseAd.getCreativeId();
             // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( creativeId ) )
+            if ( AppLovinSdk.VERSION_CODE >= 9_15_00_00 && AppLovinSdkUtils.isValidString( creativeId ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
@@ -665,7 +680,7 @@ public class VungleMediationAdapter
             log( "App open ad displayed" );
             String creativeId = baseAd.getCreativeId();
             // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( creativeId ) )
+            if ( AppLovinSdk.VERSION_CODE >= 9_15_00_00 && AppLovinSdkUtils.isValidString( creativeId ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
@@ -747,7 +762,7 @@ public class VungleMediationAdapter
             log( "Rewarded ad displayed" );
             String creativeId = baseAd.getCreativeId();
             // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( creativeId ) )
+            if ( AppLovinSdk.VERSION_CODE >= 9_15_00_00 && AppLovinSdkUtils.isValidString( creativeId ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
@@ -855,7 +870,7 @@ public class VungleMediationAdapter
             log( adFormatLabel + " ad displayed" );
             String creativeId = baseAd.getCreativeId();
             // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( creativeId ) )
+            if ( AppLovinSdk.VERSION_CODE >= 9_15_00_00 && AppLovinSdkUtils.isValidString( creativeId ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
@@ -1200,33 +1215,7 @@ public class VungleMediationAdapter
                 contentViewGroup.addView(mediaView);
             }
 
-            final List<View> clickableViews = new ArrayList<>();
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
+            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), VungleMediationAdapter.this.getClickableViews( maxNativeAdView ) );
         }
     }
 }

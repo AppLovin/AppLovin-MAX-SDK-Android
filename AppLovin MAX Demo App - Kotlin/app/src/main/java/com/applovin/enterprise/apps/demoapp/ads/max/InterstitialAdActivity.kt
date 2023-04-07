@@ -14,6 +14,8 @@ import com.applovin.mediation.MaxAdRevenueListener
 import com.applovin.mediation.MaxError
 import com.applovin.mediation.ads.MaxInterstitialAd
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * [android.app.Activity] used to show AppLovin MAX interstitial ads.
@@ -23,7 +25,7 @@ import java.util.concurrent.TimeUnit
 class InterstitialAdActivity : BaseAdActivity(),
         MaxAdListener, MaxAdRevenueListener {
     private lateinit var interstitialAd: MaxInterstitialAd
-    private var retryAttempt = 0.0
+    private var retryAttempt = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +56,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         logCallback()
 
         // Reset retry attempt
-        retryAttempt = 0.0
+        retryAttempt = 0
     }
 
     override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
@@ -63,7 +65,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         // Interstitial ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
 
         retryAttempt++
-        val delayMillis = TimeUnit.SECONDS.toMillis(Math.pow(2.0, Math.min(6.0, retryAttempt)).toLong())
+        val delayMillis = TimeUnit.SECONDS.toMillis(2.0.pow(min(6, retryAttempt)).toLong())
 
         Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
     }

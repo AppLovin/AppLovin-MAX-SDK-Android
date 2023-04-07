@@ -1,1 +1,0 @@
-# Verizon Ads Adapter

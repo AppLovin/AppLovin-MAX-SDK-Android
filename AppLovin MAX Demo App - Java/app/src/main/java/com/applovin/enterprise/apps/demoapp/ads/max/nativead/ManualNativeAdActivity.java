@@ -44,6 +44,7 @@ public class ManualNativeAdActivity
                 .setIconImageViewId( R.id.icon_image_view )
                 .setMediaContentViewGroupId( R.id.media_view_container )
                 .setOptionsContentViewGroupId( R.id.options_view )
+                .setStarRatingContentViewGroupId( R.id.star_rating_view )
                 .setCallToActionButtonId( R.id.cta_button )
                 .build();
         nativeAdView = new MaxNativeAdView( binder, this );

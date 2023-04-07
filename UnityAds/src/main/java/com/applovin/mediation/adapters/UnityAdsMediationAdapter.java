@@ -152,11 +152,8 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
-        // Bidding ads need a random ID associated with each load and show
-        if ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) )
-        {
-            biddingAdId = UUID.randomUUID().toString();
-        }
+        // Every ad needs a random ID associated with each load and show
+        biddingAdId = UUID.randomUUID().toString();
 
         // Note: Most load callbacks are also fired in onUnityAdsPlacementStateChanged() but not all, we need these callbacks to catch all load errors.
         UnityAds.load( placementId, createAdLoadOptions( parameters ), new IUnityAdsLoadListener()
@@ -223,11 +220,8 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
-        // Bidding ads need a random ID associated with each load and show
-        if ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) )
-        {
-            biddingAdId = UUID.randomUUID().toString();
-        }
+        // Every ad needs a random ID associated with each load and show
+        biddingAdId = UUID.randomUUID().toString();
 
         // Note: Most load callbacks are also fired in onUnityAdsPlacementStateChanged() but not all, we need these callbacks to catch all load errors.
         UnityAds.load( placementId, createAdLoadOptions( parameters ), new IUnityAdsLoadListener()
@@ -352,10 +346,14 @@ public class UnityAdsMediationAdapter
         UnityAdsLoadOptions options = new UnityAdsLoadOptions();
 
         String bidResponse = parameters.getBidResponse();
-        if ( AppLovinSdkUtils.isValidString( bidResponse ) && AppLovinSdkUtils.isValidString( biddingAdId ) )
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            options.setAdMarkup( bidResponse );
+        }
+
+        if ( AppLovinSdkUtils.isValidString( biddingAdId ) )
         {
             options.setObjectId( biddingAdId );
-            options.setAdMarkup( bidResponse );
         }
 
         return options;
@@ -471,14 +469,11 @@ public class UnityAdsMediationAdapter
     {
         MetaData privacyMetaData = new MetaData( context );
 
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                privacyMetaData.set( "gdpr.consent", hasUserConsent );
-                privacyMetaData.commit();
-            }
+            privacyMetaData.set( "gdpr.consent", hasUserConsent );
+            privacyMetaData.commit();
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 91100 )

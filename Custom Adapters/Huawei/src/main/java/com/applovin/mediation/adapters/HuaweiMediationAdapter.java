@@ -228,7 +228,7 @@ public class HuaweiMediationAdapter
         else
         {
             e( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -274,7 +274,7 @@ public class HuaweiMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -371,14 +371,11 @@ public class HuaweiMediationAdapter
 
     private void updateConsentStatus(MaxAdapterParameters parameters, Context applicationContext)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = parameters.hasUserConsent();
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                ConsentStatus gdprConsent = hasUserConsent ? ConsentStatus.PERSONALIZED : ConsentStatus.NON_PERSONALIZED;
-                Consent.getInstance( applicationContext ).setConsentStatus( gdprConsent );
-            }
+            ConsentStatus gdprConsent = hasUserConsent ? ConsentStatus.PERSONALIZED : ConsentStatus.NON_PERSONALIZED;
+            Consent.getInstance( applicationContext ).setConsentStatus( gdprConsent );
         }
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
@@ -753,6 +750,7 @@ public class HuaweiMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
+            final NativeAd nativeAd = HuaweiMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );

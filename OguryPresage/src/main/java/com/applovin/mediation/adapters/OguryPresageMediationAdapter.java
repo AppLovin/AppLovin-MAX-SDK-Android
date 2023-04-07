@@ -17,7 +17,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.ogurypresage.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.ogury.cm.OguryChoiceManagerExternal;
 import com.ogury.core.OguryError;
@@ -216,13 +215,18 @@ public class OguryPresageMediationAdapter
     //region Helper Methods
     private void updateUserConsent(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
+            if ( parameters.getConsentString() != null )
             {
-                OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
+                OguryChoiceManagerExternal.TcfV2.setConsent( parameters.getConsentString(), new Integer[0] );
             }
+        }
+
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
+        {
+            OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
         }
     }
 

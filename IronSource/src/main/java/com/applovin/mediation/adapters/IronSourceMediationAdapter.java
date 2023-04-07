@@ -254,13 +254,10 @@ public class IronSourceMediationAdapter
 
     private void setPrivacySettings(final MaxAdapterParameters parameters)
     {
-        if ( getWrappingSdk().getConfiguration().getConsentDialogState() == AppLovinSdkConfiguration.ConsentDialogState.APPLIES )
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
-            if ( hasUserConsent != null )
-            {
-                IronSource.setConsent( hasUserConsent );
-            }
+            IronSource.setConsent( hasUserConsent );
         }
     }
 
