@@ -33,10 +33,8 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.adcolony.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -127,13 +125,12 @@ public class AdColonyMediationAdapter
             final String appId = parameters.getServerParameters().getString( "app_id" );
             log( "Initializing AdColony SDK with app id: " + appId + "..." );
 
-            final String[] zoneIds = getZoneIds( parameters );
             final AdColonyAppOptions options = getOptions( parameters );
 
             // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
             Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
 
-            final boolean initialized = AdColony.configure( application, options, appId, zoneIds );
+            final boolean initialized = AdColony.configure( application, options, appId );
 
             status = initialized ? InitializationStatus.INITIALIZED_SUCCESS : InitializationStatus.INITIALIZED_FAILURE;
         }
@@ -274,24 +271,6 @@ public class AdColonyMediationAdapter
     private boolean isAdColonyConfigured()
     {
         return !AdColony.getSDKVersion().isEmpty();
-    }
-
-    /**
-     * Gets a String array of zone ids from the server parameters.
-     * Note that the SDK converts string arrays into an ArrayList to be stored in the server parameters Bundle.
-     */
-    private String[] getZoneIds(MaxAdapterParameters parameters)
-    {
-        final List<String> rawZoneIds = parameters.getServerParameters().getStringArrayList( "zone_ids" );
-        if ( rawZoneIds == null || rawZoneIds.size() == 0 ) return new String[0];
-
-        final String[] zoneIds = new String[rawZoneIds.size()];
-        for ( int i = 0; i < rawZoneIds.size(); i++ )
-        {
-            zoneIds[i] = rawZoneIds.get( i );
-        }
-
-        return zoneIds;
     }
 
     private AdColonyAppOptions getOptions(final MaxAdapterParameters parameters)

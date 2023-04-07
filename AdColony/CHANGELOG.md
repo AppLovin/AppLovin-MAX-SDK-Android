@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.8.0.4
+* Upgraded `AdColony.configure()` to no longer use deprecated `zoneIDs` parameter.
+
 ## 4.8.0.3
 * Add additional details for ad display failures.
 * Remove `consentDialogState` guard.
