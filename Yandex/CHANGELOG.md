@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.6.0.0
+* Certified with Yandex SDK 5.6.0.
+
 ## 5.4.1.1
 * Remove `consentDialogState` guard.
 
