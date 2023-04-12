@@ -1427,11 +1427,25 @@ public class MintegralMediationAdapter
 
             if ( getFormat() == MaxAdFormat.NATIVE )
             {
-                mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+                if ( mbBidNativeHandler != null )
+                {
+                    mbBidNativeHandler.registerView( container, clickableViews, nativeAdCampaign );
+                }
+                else
+                {
+                    e( "Failed to register native ad views: mbBidNativeHandler is null." );
+                }
             }
             else
             {
-                mbBidNativeAdViewHandler.registerView( container, clickableViews, nativeAdCampaign );
+                if ( mbBidNativeAdViewHandler != null )
+                {
+                    mbBidNativeAdViewHandler.registerView( container, clickableViews, nativeAdCampaign );
+                }
+                else
+                {
+                    e( "Failed to register native ad views: mbBidNativeAdViewHandler is null." );
+                }
             }
 
             MintegralMediationAdapter.this.nativeAdContainer = container;

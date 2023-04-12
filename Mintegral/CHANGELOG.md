@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.4.31.1
+* Fix NPE that occurs when `mbBidNativeHandler` or `mbBidNativeAdViewHandler` is `null` on native or native ad view ad loads.
+
 ## 16.4.31.0
 * Certified with Mintegral SDK 16.4.31.
 
