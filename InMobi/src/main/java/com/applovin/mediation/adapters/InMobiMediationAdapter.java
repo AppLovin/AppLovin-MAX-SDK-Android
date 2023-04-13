@@ -37,7 +37,6 @@ import com.applovin.mediation.adapters.inmobi.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.inmobi.ads.AdMetaInfo;
 import com.inmobi.ads.InMobiAdRequestStatus;
@@ -117,6 +116,13 @@ public class InMobiMediationAdapter
         callback.onSignalCollected( signal );
     }
 
+    // @Override
+    public Boolean shouldInitializeOnUiThread()
+    {
+        // InMobi requires SDK to be initialized on UI thread.
+        return true;
+    }
+
     @Override
     public void onDestroy()
     {
@@ -144,34 +150,44 @@ public class InMobiMediationAdapter
             final String accountId = parameters.getServerParameters().getString( "account_id" );
             log( "Initializing InMobi SDK with account id: " + accountId + "..." );
 
-            Context context = getContext( activity );
+            final Context context = getContext( activity );
 
             status = InitializationStatus.INITIALIZING;
 
             updateAgeRestrictedUser( parameters );
 
-            JSONObject consentObject = getConsentJSONObject( parameters );
-            InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
+            final JSONObject consentObject = getConsentJSONObject( parameters );
+
+            Runnable initializeSdkRunnable = new Runnable()
             {
                 @Override
-                public void onInitializationComplete(@Nullable final Error error)
+                public void run()
                 {
-                    if ( error != null )
+                    InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
                     {
-                        log( "InMobi SDK initialization failed with error: " + error.getMessage() );
+                        @Override
+                        public void onInitializationComplete(@Nullable final Error error)
+                        {
+                            if ( error != null )
+                            {
+                                log( "InMobi SDK initialization failed with error: " + error.getMessage() );
 
-                        status = InitializationStatus.INITIALIZED_FAILURE;
-                        onCompletionListener.onCompletion( status, error.getMessage() );
-                    }
-                    else
-                    {
-                        log( "InMobi SDK successfully initialized." );
+                                status = InitializationStatus.INITIALIZED_FAILURE;
+                                onCompletionListener.onCompletion( status, error.getMessage() );
+                            }
+                            else
+                            {
+                                log( "InMobi SDK successfully initialized." );
 
-                        status = InitializationStatus.INITIALIZED_SUCCESS;
-                        onCompletionListener.onCompletion( status, null );
-                    }
+                                status = InitializationStatus.INITIALIZED_SUCCESS;
+                                onCompletionListener.onCompletion( status, null );
+                            }
+                        }
+                    } );
                 }
-            } );
+            };
+
+            initializeSdkOnUiThread( initializeSdkRunnable );
 
             InMobiSdk.LogLevel logLevel = parameters.isTesting() ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.ERROR;
             InMobiSdk.setLogLevel( logLevel );
@@ -412,6 +428,19 @@ public class InMobiMediationAdapter
     //endregion
 
     //region Helper Methods
+
+    private void initializeSdkOnUiThread(final Runnable initializeRunnable)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_09_00_00 )
+        {
+            // The `shouldInitializeOnUiThread` setting is added in SDK version 11.9.0. So, the SDK should already be running this on UI thread.
+            initializeRunnable.run();
+        }
+        else
+        {
+            AppLovinSdkUtils.runOnUiThread( initializeRunnable );
+        }
+    }
 
     private InMobiInterstitial createFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, Activity activity)
     {

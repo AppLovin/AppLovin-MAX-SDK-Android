@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.3.4
+* Initialize InMobi SDK on UI thread to avoid crash: `IllegalStateException: Calling View methods on another thread than the UI thread`.
+
 ## 10.1.3.3
 * Fix `ClassCastException` that occurs when the parent view of `mediaView` is not of type `FrameLayout` for native ads.
 
