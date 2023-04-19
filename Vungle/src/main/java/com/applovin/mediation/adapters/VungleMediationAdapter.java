@@ -162,6 +162,7 @@ public class VungleMediationAdapter
         updateUserPrivacySettings( parameters );
 
         String signal = VungleAds.getBiddingToken( getContext(activity) );
+        signal = signal == null ? "" : signal;
         callback.onSignalCollected( signal );
     }
 
@@ -207,7 +208,7 @@ public class VungleMediationAdapter
             interstitialAd.play();
         } else {
             log("Interstitial ad not ready");
-            listener.onInterstitialAdDisplayFailed(new MaxAdapterError(-4205, "Ad Display Failed"));
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -253,7 +254,7 @@ public class VungleMediationAdapter
             appOpenAd.play();
         } else {
             log( "App open ad not ready" );
-            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "App open ad not ready" ) );
         }
     }
 
@@ -299,7 +300,7 @@ public class VungleMediationAdapter
             rewardedAd.play();
         } else {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -397,10 +398,10 @@ public class VungleMediationAdapter
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
     {
-        Boolean hasUserConsent = getPrivacySetting("hasUserConsent", parameters);
-        if (hasUserConsent != null)
+        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        if ( hasUserConsent != null )
         {
-            VunglePrivacySettings.setGDPRStatus(hasUserConsent, "");
+            VunglePrivacySettings.setGDPRStatus( hasUserConsent, "" );
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 9_11_00 )
@@ -498,6 +499,20 @@ public class VungleMediationAdapter
         return Configuration.ORIENTATION_UNDEFINED;
     }
 
+    private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
+    {
+        List<View> clickableViews = new ArrayList<View>( 6 );
+        if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
+        if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
+        if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
+        if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
+        if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
+        final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+        if ( mediaContentView != null ) clickableViews.add( mediaContentView );
+
+        return clickableViews;
+    }
+
     private static MaxAdapterError toMaxError(final VungleError vungleError)
     {
         final int vungleErrorCode = vungleError.getCode();
@@ -550,25 +565,6 @@ public class VungleMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), vungleErrorCode, vungleError.getLocalizedMessage() );
-    }
-
-    private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
-    {
-        if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
-        {
-            List<View> clickableViews = new ArrayList<View>( 5 );
-            if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
-            if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
-            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
-            if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
-
-            return clickableViews;
-        }
-        else
-        {
-            return maxNativeAdView.getClickableViews();
-        }
     }
 
     //endregion
@@ -638,17 +634,17 @@ public class VungleMediationAdapter
         @Override
         public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("Interstitial ad failed to display with error: " + error);
-            listener.onInterstitialAdDisplayFailed(error);
+            MaxAdapterError error = toMaxError( e );
+            log( "Interstitial ad failed to display with error: " + error );
+            listener.onInterstitialAdDisplayFailed( error );
         }
 
         @Override
         public void onAdFailedToLoad(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("Interstitial ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error);
-            listener.onInterstitialAdLoadFailed(error);
+            MaxAdapterError error = toMaxError( e );
+            log( "Interstitial ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error );
+            listener.onInterstitialAdLoadFailed( error );
         }
     }
     //endregion
@@ -716,16 +712,16 @@ public class VungleMediationAdapter
         @Override
         public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("App open ad failed to display with error: " + error);
-            listener.onAppOpenAdDisplayFailed(error);
+            MaxAdapterError error = toMaxError( e );
+            log( "App open ad failed to display with error: " + error );
+            listener.onAppOpenAdDisplayFailed( error );
         }
 
         @Override
         public void onAdFailedToLoad(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("App open ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error);
+            MaxAdapterError error = toMaxError( e );
+            log( "App open ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error );
             listener.onAppOpenAdLoadFailed( error );
         }
     }
@@ -817,16 +813,16 @@ public class VungleMediationAdapter
         @Override
         public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("Rewarded ad failed to display with error: " + error);
-            listener.onRewardedAdDisplayFailed(error);
+            MaxAdapterError error = toMaxError( e );
+            log( "Rewarded ad failed to display with error: " + error );
+            listener.onRewardedAdDisplayFailed( error );
         }
 
         @Override
         public void onAdFailedToLoad(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log("Rewarded ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error);
+            MaxAdapterError error = toMaxError( e );
+            log( "Rewarded ad for placement " + baseAd.getPlacementId() + " failed to load with error: " + error );
             listener.onRewardedAdLoadFailed( error );
         }
     }
@@ -906,9 +902,9 @@ public class VungleMediationAdapter
         @Override
         public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
         {
-            MaxAdapterError error = toMaxError(e);
-            log(adFormatLabel + " ad display failed with error: " + error);
-            listener.onAdViewAdDisplayFailed(error);
+            MaxAdapterError error = toMaxError( e );
+            log( adFormatLabel + " ad display failed with error: " + error );
+            listener.onAdViewAdDisplayFailed( error );
         }
 
         @Override
@@ -1121,6 +1117,20 @@ public class VungleMediationAdapter
         }
 
         @Override
+        public void onAdFailedToLoad(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
+        {
+            MaxAdapterError adapterError = toMaxError( e );
+            log( "Native ad failed to load with error " + adapterError + " with placement id: " + baseAd.getPlacementId() );
+            listener.onNativeAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
+        {
+            log( "Native ad failed to play with error " + toMaxError( e ) + " with placement id: " + baseAd.getPlacementId() );
+        }
+
+        @Override
         public void onAdImpression(final @NonNull BaseAd baseAd)
         {
             log( "Native ad shown with placement id: " + baseAd.getPlacementId() );
@@ -1146,20 +1156,6 @@ public class VungleMediationAdapter
         public void onAdLeftApplication(final @NonNull BaseAd baseAd)
         {
             log( "Native ad left application with placement id: " + baseAd.getPlacementId() );
-        }
-
-        @Override
-        public void onAdFailedToPlay(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
-        {
-            log( "Native ad failed to play with error " + toMaxError( e ) + " with placement id: " + baseAd.getPlacementId() );
-        }
-
-        @Override
-        public void onAdFailedToLoad(final @NonNull BaseAd baseAd, final @NonNull VungleError e)
-        {
-            MaxAdapterError adapterError = toMaxError( e );
-            log( "Native ad failed to load with error " + adapterError + " with placement id: " + baseAd.getPlacementId() );
-            listener.onNativeAdLoadFailed( adapterError );
         }
 
         @Override
