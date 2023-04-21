@@ -55,7 +55,6 @@ import com.facebook.ads.RewardedVideoAd;
 import com.facebook.ads.RewardedVideoAdExtendedListener;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -551,7 +550,7 @@ public class FacebookMediationAdapter
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             AdSettings.setMixedAudience( isAgeRestrictedUser );
@@ -566,22 +565,6 @@ public class FacebookMediationAdapter
 
         // Update mediation service
         AdSettings.setMediationService( getMediationIdentifier() );
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
     }
 
     private static MaxAdapterError toMaxError(final AdError facebookError)
@@ -928,14 +911,9 @@ public class FacebookMediationAdapter
                 View mrecView = NativeAdView.render( getContext( activityRef.get() ), mNativeAd );
                 listener.onAdViewAdLoaded( mrecView );
             }
-            else if ( AppLovinSdk.VERSION_CODE >= 9140000 ) // Native banners and leaders use APIs in newer SDKs
-            {
-                renderNativeAdView();
-            }
             else
             {
-                log( "Native " + adFormat.getLabel() + " failed to load: AppLovin SDK version must be at least 9.14.0" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                renderNativeAdView();
             }
         }
 
@@ -988,8 +966,8 @@ public class FacebookMediationAdapter
                             .setBody( mNativeAd.getAdBodyText() )
                             .setCallToAction( mNativeAd.getAdCallToAction() )
                             .setIconView( iconView )
-                            .setMediaView( mediaView )
                             .setOptionsView( new AdOptionsView( context, mNativeAd, null ) )
+                            .setMediaView( mediaView )
                             .build();
 
                     // Backend will pass down `vertical` as the template to indicate using a vertical native template
@@ -1025,7 +1003,23 @@ public class FacebookMediationAdapter
                                                                  activity );
                     }
 
-                    final List<View> clickableViews = new ArrayList<>();
+                    final List<View> clickableViews = new ArrayList<>( 6 );
+                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
+                    {
+                        clickableViews.add( maxNativeAdView.getTitleTextView() );
+                    }
+                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+                    {
+                        clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
+                    }
+                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
+                    {
+                        clickableViews.add( maxNativeAdView.getBodyTextView() );
+                    }
+                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
+                    {
+                        clickableViews.add( maxNativeAdView.getCallToActionButton() );
+                    }
                     if ( maxNativeAd.getIconView() != null && maxNativeAdView.getIconContentView() != null )
                     {
                         clickableViews.add( maxNativeAdView.getIconContentView() );
@@ -1035,22 +1029,6 @@ public class FacebookMediationAdapter
                     if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
                     {
                         clickableViews.add( mediaContentView );
-                    }
-                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-                    {
-                        clickableViews.add( maxNativeAdView.getTitleTextView() );
-                    }
-                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-                    {
-                        clickableViews.add( maxNativeAdView.getCallToActionButton() );
-                    }
-                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-                    {
-                        clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-                    }
-                    if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
-                    {
-                        clickableViews.add( maxNativeAdView.getBodyTextView() );
                     }
 
                     mNativeAd.registerViewForInteraction( maxNativeAdView, mediaView, iconView, clickableViews );
@@ -1263,7 +1241,7 @@ public class FacebookMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>( 6 );
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );

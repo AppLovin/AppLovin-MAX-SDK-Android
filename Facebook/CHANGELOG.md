@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.14.0.0
+* Certified with Facebook SDK 6.14.0.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 6.13.7.0
 * Certified with Facebook SDK 6.13.7.
 
