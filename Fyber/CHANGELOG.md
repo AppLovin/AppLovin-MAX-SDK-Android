@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.2.3.1
+* Call `InneractiveAdManager.currentAudienceAppliesToCoppa()` after SDK initialization.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 8.2.3.0
 * Certified with Fyber SDK 8.2.3.
 

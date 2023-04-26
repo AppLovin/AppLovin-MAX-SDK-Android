@@ -24,7 +24,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.inneractive.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.fyber.inneractive.sdk.external.BidTokenProvider;
 import com.fyber.inneractive.sdk.external.ImpressionData;
 import com.fyber.inneractive.sdk.external.InneractiveAdManager;
@@ -42,7 +41,6 @@ import com.fyber.inneractive.sdk.external.InneractiveUnitController;
 import com.fyber.inneractive.sdk.external.OnFyberMarketplaceInitializedListener;
 import com.fyber.inneractive.sdk.external.VideoContentListener;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.applovin.sdk.AppLovinSdkUtils.isValidString;
@@ -70,13 +68,6 @@ public class InneractiveMediationAdapter
         if ( initialized.compareAndSet( false, true ) )
         {
             status = InitializationStatus.INITIALIZING;
-
-            // NOTE: Digital Turbine requires that we set this API once per app session, before the SDK is initialized.
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
-            if ( isAgeRestrictedUser != null && isAgeRestrictedUser )
-            {
-                InneractiveAdManager.currentAudienceIsAChild();
-            }
 
             final String appId = parameters.getServerParameters().getString( "app_id", null );
             log( "Initializing Inneractive SDK with app id: " + appId + "..." );
@@ -228,10 +219,10 @@ public class InneractiveMediationAdapter
             }
 
             @Override
-            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) { }
 
             @Override
-            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) { }
         } );
 
         interstitialSpot = InneractiveAdSpotManager.get().createSpot();
@@ -380,10 +371,10 @@ public class InneractiveMediationAdapter
             }
 
             @Override
-            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) { }
 
             @Override
-            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) { }
         } );
 
         controller.setRewardedListener( new InneractiveFullScreenAdRewardedListener()
@@ -514,13 +505,13 @@ public class InneractiveMediationAdapter
             }
 
             @Override
-            public void onAdResized(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdResized(final InneractiveAdSpot inneractiveAdSpot) { }
 
             @Override
-            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillCloseInternalBrowser(final InneractiveAdSpot inneractiveAdSpot) { }
 
             @Override
-            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) {}
+            public void onAdWillOpenExternalApp(final InneractiveAdSpot inneractiveAdSpot) { }
         } );
 
         adViewGroup = new RelativeLayout( getContext( activity ) );
@@ -570,7 +561,7 @@ public class InneractiveMediationAdapter
     {
         InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             InneractiveAdManager.setGdprConsent( hasUserConsent );
@@ -595,33 +586,20 @@ public class InneractiveMediationAdapter
             InneractiveAdManager.setMuteVideo( serverParameters.getBoolean( "is_muted" ) );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null )
-            {
-                InneractiveAdManager.setUSPrivacyString( isDoNotSell ? "1YY-" : "1YN-" );
-            }
-            else
-            {
-                InneractiveAdManager.setUSPrivacyString( "1---" );
-            }
+            InneractiveAdManager.setUSPrivacyString( isDoNotSell ? "1YY-" : "1YN-" );
         }
-    }
+        else
+        {
+            InneractiveAdManager.setUSPrivacyString( "1---" );
+        }
 
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
+        if ( isAgeRestrictedUser != null && isAgeRestrictedUser )
         {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
+            InneractiveAdManager.currentAudienceAppliesToCoppa();
         }
     }
 
