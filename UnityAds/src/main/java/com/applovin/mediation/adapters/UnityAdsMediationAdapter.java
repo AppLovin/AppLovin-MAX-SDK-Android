@@ -380,6 +380,10 @@ public class UnityAdsMediationAdapter
         {
             return new UnityBannerSize( 728, 90 );
         }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return new UnityBannerSize( 300, 250 );
+        }
         else
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
