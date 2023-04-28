@@ -4,8 +4,8 @@ plugins {
 }
 
 private val versionMajor = 9
-private val versionMinor = 7
-private val versionPatch = 1
+private val versionMinor = 8
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -22,6 +22,7 @@ android.defaultConfig.versionName = libraryVersionName
 dependencies {
     api("com.amazon.android:aps-sdk:${libraryVersions["amazon"]}")
     compileOnly("com.android.support:support-annotations:+")
+    implementation("androidx.appcompat:appcompat:${libraryVersions["appcompat"]}")
 }
 
 publishing {
