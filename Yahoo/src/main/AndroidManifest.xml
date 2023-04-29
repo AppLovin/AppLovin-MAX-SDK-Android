@@ -1,7 +1,0 @@
-<manifest
-    package="com.applovin.mediation.adapters.yahoo">
-
-    <application />
-
-    <!--Note: We don't need to add the permissions and activities for this adapter. Verizon Ads SDK's AndroidManifest adds the required permissions and activities.-->
-</manifest>
