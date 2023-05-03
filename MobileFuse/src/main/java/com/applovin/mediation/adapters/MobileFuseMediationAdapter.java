@@ -329,7 +329,7 @@ public class MobileFuseMediationAdapter
 
     private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
     {
-        List<View> clickableViews = new ArrayList<View>( 6 );
+        final List<View> clickableViews = new ArrayList<>( 6 );
         if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
         if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
         if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
