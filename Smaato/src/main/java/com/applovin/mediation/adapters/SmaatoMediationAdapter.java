@@ -56,7 +56,6 @@ import com.smaato.sdk.rewarded.RewardedInterstitial;
 import com.smaato.sdk.rewarded.RewardedInterstitialAd;
 import com.smaato.sdk.rewarded.RewardedRequestError;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,14 +85,7 @@ public class SmaatoMediationAdapter
 
     static
     {
-        if ( AppLovinSdk.VERSION_CODE >= 90802 )
-        {
-            ROUTER = (SmaatoMediationAdapterRouter) MediationAdapterRouter.getSharedInstance( SmaatoMediationAdapterRouter.class );
-        }
-        else
-        {
-            ROUTER = new SmaatoMediationAdapterRouter();
-        }
+        ROUTER = (SmaatoMediationAdapterRouter) MediationAdapterRouter.getSharedInstance( SmaatoMediationAdapterRouter.class );
     }
 
     public SmaatoMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -426,27 +418,10 @@ public class SmaatoMediationAdapter
     {
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        final Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        final Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             SmaatoSdk.setCoppa( isAgeRestrictedUser );
-        }
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
     }
 
@@ -564,7 +539,7 @@ public class SmaatoMediationAdapter
 
     private static List<View> getClickableViews(final MaxNativeAd maxNativeAd, final MaxNativeAdView maxNativeAdView)
     {
-        final List<View> clickableViews = new ArrayList<>();
+        final List<View> clickableViews = new ArrayList<>( 6 );
         if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
         {
             clickableViews.add( maxNativeAdView.getTitleTextView() );

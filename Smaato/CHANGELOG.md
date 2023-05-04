@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.1.1.0
+* Certified with Smaato SDK 22.1.1.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 22.1.0.1
 * Add support for native ad view ads.
 
