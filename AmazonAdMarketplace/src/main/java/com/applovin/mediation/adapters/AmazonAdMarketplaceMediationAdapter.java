@@ -482,7 +482,10 @@ public class AmazonAdMarketplaceMediationAdapter
 
     private String getMediationHintsCacheId(final String encodedBidId, final MaxAdFormat adFormat)
     {
-        return encodedBidId + "_" + adFormat.getLabel();
+        // Treat banners and leaders as the same ad format
+        String adFormatLabel = ( adFormat == MaxAdFormat.LEADER ) ? MaxAdFormat.BANNER.getLabel() : adFormat.getLabel();
+
+        return encodedBidId + "_" + adFormatLabel;
     }
 
     //endregion

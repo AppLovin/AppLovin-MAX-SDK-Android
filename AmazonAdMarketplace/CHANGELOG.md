@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.0.1
+* Fix APS banner ads not loading on tablets in edge-case situations.
+
 ## 9.8.0.0
 * Certified with AmazonAdMarketplace SDK 9.8.0.
 
