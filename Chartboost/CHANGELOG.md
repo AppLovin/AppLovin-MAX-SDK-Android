@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.3.0.0
+* Certified with Chartboost SDK 9.3.0.
+
 ## 9.2.1.0
 * Certified with Chartboost SDK 9.2.1.
 
