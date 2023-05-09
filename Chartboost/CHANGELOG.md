@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.3.0.0
+* Certified with Chartboost SDK 9.3.0.
+* Use Chartboost's custom Maven repo for their SDK (updated to: https://cboost.jfrog.io/artifactory/chartboost-ads/).
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 9.2.1.0
 * Certified with Chartboost SDK 9.2.1.
 

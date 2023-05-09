@@ -4,8 +4,8 @@ plugins {
 }
 
 private val versionMajor = 9
-private val versionMinor = 2
-private val versionPatch = 1
+private val versionMinor = 3
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -24,6 +24,10 @@ dependencies {
 
     // https://answers.chartboost.com/en-us/child_article/android
     implementation("com.google.android.gms:play-services-base:${libraryVersions["playServicesBase"]}")
+}
+
+repositories {
+    maven { url = uri("https://cboost.jfrog.io/artifactory/chartboost-ads/") }
 }
 
 publishing {
