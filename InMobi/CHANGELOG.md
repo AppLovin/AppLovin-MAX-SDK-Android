@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.1.4.0
+* Certified with InMobi SDK 10.1.4.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 10.1.3.4
 * Initialize InMobi SDK on UI thread to avoid crash: `IllegalStateException: Calling View methods on another thread than the UI thread`.
 

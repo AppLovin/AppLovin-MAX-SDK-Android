@@ -53,7 +53,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -472,7 +471,7 @@ public class InMobiMediationAdapter
 
         try
         {
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            Boolean hasUserConsent = parameters.hasUserConsent();
             if ( hasUserConsent != null )
             {
                 consentObject.put( KEY_PARTNER_GDPR_CONSENT, hasUserConsent );
@@ -489,7 +488,7 @@ public class InMobiMediationAdapter
     private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
     {
         // NOTE: Only for family apps and not related to COPPA
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             InMobiSdk.setIsAgeRestricted( isAgeRestrictedUser );
@@ -508,38 +507,19 @@ public class InMobiMediationAdapter
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
 
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 9_11_00 )
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null )
-            {
-                extras.put( "do_not_sell", isDoNotSell ? "1" : "0" );
-            }
+            extras.put( "do_not_sell", isDoNotSell ? "1" : "0" );
         }
 
         return extras;
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
     }
 
     private Drawable fetchNativeAdIcon(@NonNull final String iconUrl, final Bundle serverParameters, final Context context)
@@ -634,12 +614,12 @@ public class InMobiMediationAdapter
     {
         if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
         {
-            List<View> clickableViews = new ArrayList<View>( 5 );
+            final List<View> clickableViews = new ArrayList<>( 5 );
             if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
             if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
-            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
             if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
+            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
 
             return clickableViews;
         }
@@ -993,9 +973,9 @@ public class InMobiMediationAdapter
                                     .setAdFormat( adFormat )
                                     .setTitle( inMobiNative.getAdTitle() )
                                     .setBody( inMobiNative.getAdDescription() )
-                                    .setMediaView( frameLayout )
+                                    .setCallToAction( inMobiNative.getAdCtaText() )
                                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                                    .setCallToAction( inMobiNative.getAdCtaText() );
+                                    .setMediaView( frameLayout );
 
                             final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, adFormat );
 
@@ -1174,9 +1154,9 @@ public class InMobiMediationAdapter
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( inMobiNative.getAdTitle() )
                             .setBody( inMobiNative.getAdDescription() )
-                            .setMediaView( frameLayout )
+                            .setCallToAction( inMobiNative.getAdCtaText() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                            .setCallToAction( inMobiNative.getAdCtaText() );
+                            .setMediaView( frameLayout );
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
                     {
