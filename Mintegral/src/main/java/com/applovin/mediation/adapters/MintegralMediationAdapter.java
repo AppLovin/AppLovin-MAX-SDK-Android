@@ -22,7 +22,6 @@ import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
-import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.mintegral.BuildConfig;
@@ -55,7 +54,6 @@ import com.mbridge.msdk.out.RewardInfo;
 import com.mbridge.msdk.out.RewardVideoListener;
 import com.mbridge.msdk.widget.MBAdChoice;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +152,7 @@ public class MintegralMediationAdapter
             final Context context = getContext( activity );
 
             // Communicated over email, GDPR status can only be set before SDK initialization
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            Boolean hasUserConsent = parameters.hasUserConsent();
             if ( hasUserConsent != null )
             {
                 int consent = hasUserConsent ? MBridgeConstans.IS_SWITCH_ON : MBridgeConstans.IS_SWITCH_OFF;
@@ -163,24 +161,21 @@ public class MintegralMediationAdapter
             }
 
             // Has to be _before_ their SDK init as well
-            if ( AppLovinSdk.VERSION_CODE >= 91100 )
+            Boolean isDoNotSell = parameters.isDoNotSell();
+            if ( isDoNotSell != null && isDoNotSell )
             {
-                Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-                if ( isDoNotSell != null && isDoNotSell )
-                {
-                    mBridgeSDK.setDoNotTrackStatus( true );
-                }
+                mBridgeSDK.setDoNotTrackStatus( context, true );
             }
 
             // Has to be _before_ their SDK init as well
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
             if ( isAgeRestrictedUser != null )
             {
                 mBridgeSDK.setCoppaStatus( context, isAgeRestrictedUser );
             }
 
             // Mintegral Docs - "It is recommended to use the API in the main thread"
-            final Map<String, String> map = mBridgeSDK.getMBConfigurationMap( appId, appKey );
+            Map<String, String> map = mBridgeSDK.getMBConfigurationMap( appId, appKey );
             mBridgeSDK.init( map, context );
         }
 
@@ -623,22 +618,6 @@ public class MintegralMediationAdapter
         mbBidNativeHandler.bidLoad( parameters.getBidResponse() );
     }
 
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
-    }
-
     private MaxNativeAdView createMaxNativeAdViewWithNativeAd(final MaxNativeAd maxNativeAd, final String templateName, final Context context)
     {
         if ( templateName.contains( "vertical" ) )
@@ -776,12 +755,12 @@ public class MintegralMediationAdapter
     {
         if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
         {
-            List<View> clickableViews = new ArrayList<View>( 5 );
+            final List<View> clickableViews = new ArrayList<>( 5 );
             if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
             if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
-            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
             if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
+            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
 
             return clickableViews;
         }
@@ -1107,8 +1086,8 @@ public class MintegralMediationAdapter
                                     .setBody( campaign.getAppDesc() )
                                     .setCallToAction( campaign.getAdCall() )
                                     .setIcon( finalIconImage )
-                                    .setMediaView( mediaView )
-                                    .setOptionsView( adChoiceView );
+                                    .setOptionsView( adChoiceView )
+                                    .setMediaView( mediaView );
 
                             final MaxMintegralNativeAd maxMintegralNativeAd = new MaxMintegralNativeAd( builder );
 
@@ -1378,8 +1357,8 @@ public class MintegralMediationAdapter
                                     .setBody( campaign.getAppDesc() )
                                     .setCallToAction( campaign.getAdCall() )
                                     .setIcon( finalIconImage )
-                                    .setMediaView( mediaView )
-                                    .setOptionsView( adChoiceView );
+                                    .setOptionsView( adChoiceView )
+                                    .setMediaView( mediaView );
                             if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
                             {
                                 builder.setMainImage( mainImage );

@@ -1,5 +1,10 @@
 # Changelog
 
+## 16.4.31.2
+* Update call to `setDoNotTrackStatus(...)` to pass in context.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 16.4.31.1
 * Fix NPE that occurs when `mbBidNativeHandler` or `mbBidNativeAdViewHandler` is `null` on native or native ad view ad loads.
 
