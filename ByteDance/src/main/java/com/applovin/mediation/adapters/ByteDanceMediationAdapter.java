@@ -28,7 +28,6 @@ import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
-import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.bytedance.BuildConfig;
@@ -65,7 +64,6 @@ import com.bytedance.sdk.openadsdk.api.reward.PAGRewardedRequest;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,7 +175,7 @@ public class ByteDanceMediationAdapter
             // Set mediation provider
             builder.setUserData( createAdConfigData( serverParameters, true ) );
 
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            Boolean hasUserConsent = parameters.hasUserConsent();
             if ( hasUserConsent != null )
             {
                 builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
@@ -185,19 +183,16 @@ public class ByteDanceMediationAdapter
 
             // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
             // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
             if ( isAgeRestrictedUser != null )
             {
                 builder.setChildDirected( isAgeRestrictedUser ? 1 : 0 );
             }
 
-            if ( AppLovinSdk.VERSION_CODE >= 91100 )
+            Boolean isDoNotSell = parameters.isDoNotSell();
+            if ( isDoNotSell != null )
             {
-                Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-                if ( isDoNotSell != null )
-                {
-                    builder.setDoNotSell( isDoNotSell ? 1 : 0 );
-                }
+                builder.setDoNotSell( isDoNotSell ? 1 : 0 );
             }
 
             PAGConfig adConfig = builder.appId( appId )
@@ -476,22 +471,6 @@ public class ByteDanceMediationAdapter
     //endregion
 
     //region Helper Methods
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
-    }
 
     private Callable<Drawable> createDrawableTask(final String imageUrl, final Resources resources)
     {
@@ -960,8 +939,8 @@ public class ByteDanceMediationAdapter
                                     .setBody( nativeAdData.getDescription() )
                                     .setCallToAction( nativeAdData.getButtonText() )
                                     .setIcon( icon )
-                                    .setMediaView( nativeAdData.getMediaView() )
                                     .setOptionsView( nativeAdData.getAdLogoView() )
+                                    .setMediaView( nativeAdData.getMediaView() )
                                     .build();
 
                             String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -980,7 +959,7 @@ public class ByteDanceMediationAdapter
                                 maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
                             }
 
-                            List<View> clickableViews = new ArrayList<>();
+                            final List<View> clickableViews = new ArrayList<>( 4 );
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
                             {
                                 clickableViews.add( maxNativeAdView.getTitleTextView() );
@@ -1162,8 +1141,8 @@ public class ByteDanceMediationAdapter
                                     .setBody( nativeAdData.getDescription() )
                                     .setCallToAction( nativeAdData.getButtonText() )
                                     .setIcon( icon )
-                                    .setMediaView( nativeAdData.getMediaView() )
-                                    .setOptionsView( nativeAdData.getAdLogoView() );
+                                    .setOptionsView( nativeAdData.getAdLogoView() )
+                                    .setMediaView( nativeAdData.getMediaView() );
                             MaxNativeAd maxNativeAd = new MaxByteDanceNativeAd( builder );
 
                             log( "Native ad fully loaded: " + codeId );
@@ -1240,7 +1219,7 @@ public class ByteDanceMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>( 4 );
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
