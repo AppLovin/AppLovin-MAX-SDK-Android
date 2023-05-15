@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.4.41.0
+* Certified with Mintegral SDK 16.4.41.
+
 ## 16.4.31.2
 * Update call to `setDoNotTrackStatus(...)` to pass in context.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
