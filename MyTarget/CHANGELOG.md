@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.16.5.0
+* Certified with MyTarget SDK 5.16.5.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 5.16.4.0
 * Certified with MyTarget SDK 5.16.4.
 

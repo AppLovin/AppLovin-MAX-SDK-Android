@@ -30,7 +30,6 @@ import com.applovin.mediation.adapters.mytarget.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.my.target.ads.InterstitialAd;
 import com.my.target.ads.MyTargetView;
@@ -48,7 +47,6 @@ import com.my.target.nativeads.factories.NativeViewsFactory;
 import com.my.target.nativeads.views.MediaAdView;
 import com.my.target.nativeads.views.NativeAdView;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -286,41 +284,22 @@ public class MyTargetMediationAdapter
     {
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=eno
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             MyTargetPrivacy.setUserAgeRestricted( isAgeRestrictedUser );
         }
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             MyTargetPrivacy.setUserConsent( hasUserConsent );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null )
-            {
-                MyTargetPrivacy.setCcpaUserConsent( isDoNotSell );
-            }
-        }
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
+            MyTargetPrivacy.setCcpaUserConsent( isDoNotSell );
         }
     }
 
@@ -666,10 +645,14 @@ public class MyTargetMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>( 6 );
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
+            }
+            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+            {
+                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
             if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
             {
@@ -686,10 +669,6 @@ public class MyTargetMediationAdapter
             if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
             {
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
 
             prepareForInteraction( clickableViews, maxNativeAdView );
