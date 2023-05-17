@@ -20,7 +20,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.unityads.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
@@ -36,7 +35,6 @@ import com.unity3d.services.banners.BannerErrorInfo;
 import com.unity3d.services.banners.BannerView;
 import com.unity3d.services.banners.UnityBannerSize;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -469,47 +467,28 @@ public class UnityAdsMediationAdapter
     {
         MetaData privacyMetaData = new MetaData( context );
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             privacyMetaData.set( "gdpr.consent", hasUserConsent );
             privacyMetaData.commit();
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null ) // CCPA compliance - https://unityads.unity3d.com/help/legal/gdpr
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null ) // CCPA compliance - https://unityads.unity3d.com/help/legal/gdpr
-            {
-                privacyMetaData.set( "privacy.consent", !isDoNotSell ); // isDoNotSell means user has opted out and is equivalent to false.
-                privacyMetaData.commit();
-            }
+            privacyMetaData.set( "privacy.consent", !isDoNotSell ); // isDoNotSell means user has opted out and is equivalent to false.
+            privacyMetaData.commit();
         }
 
         privacyMetaData.set( "privacy.mode", "mixed" );
         privacyMetaData.commit();
 
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             privacyMetaData.set( "user.nonbehavioral", isAgeRestrictedUser );
             privacyMetaData.commit();
-        }
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
     }
 

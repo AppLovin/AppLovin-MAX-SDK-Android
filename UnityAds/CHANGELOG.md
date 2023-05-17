@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.7.1.0
+* Certified with UnityAds SDK 4.7.1.
+* Remove the getPrivacySetting() function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 4.6.1.0
 * Certified with UnityAds SDK 4.6.1.
 
