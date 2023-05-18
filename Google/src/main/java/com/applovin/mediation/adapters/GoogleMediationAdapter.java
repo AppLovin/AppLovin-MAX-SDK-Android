@@ -72,8 +72,6 @@ import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -817,7 +815,7 @@ public class GoogleMediationAdapter
     {
         RequestConfiguration.Builder requestConfigurationBuilder = MobileAds.getRequestConfiguration().toBuilder();
 
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             int ageRestrictedUserTag = isAgeRestrictedUser ? RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE : RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE;
@@ -882,24 +880,21 @@ public class GoogleMediationAdapter
             networkExtras.putString( "placement_req_id", eventId );
         }
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null && !hasUserConsent )
         {
             networkExtras.putString( "npa", "1" ); // Non-personalized ads
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 ) // Pre-beta versioning (9.14.0)
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null && isDoNotSell )
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null && isDoNotSell )
-            {
-                networkExtras.putInt( "rdp", 1 ); // Restrict data processing - https://developers.google.com/admob/android/ccpa
+            networkExtras.putInt( "rdp", 1 ); // Restrict data processing - https://developers.google.com/admob/android/ccpa
 
-                PreferenceManager.getDefaultSharedPreferences( context )
-                        .edit()
-                        .putInt( "gad_rdp", 1 )
-                        .commit();
-            }
+            PreferenceManager.getDefaultSharedPreferences( context )
+                    .edit()
+                    .putInt( "gad_rdp", 1 )
+                    .commit();
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
@@ -936,22 +931,6 @@ public class GoogleMediationAdapter
         requestBuilder.addNetworkExtrasBundle( AdMobAdapter.class, networkExtras );
 
         return requestBuilder.build();
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
     }
 
     /**
@@ -1354,11 +1333,11 @@ public class GoogleMediationAdapter
 
             final MaxNativeAd maxNativeAd = new MaxNativeAd.Builder()
                     .setAdFormat( adFormat )
-                    .setIcon( maxNativeAdImage )
                     .setTitle( nativeAd.getHeadline() )
                     .setBody( nativeAd.getBody() )
-                    .setMediaView( mediaView )
                     .setCallToAction( nativeAd.getCallToAction() )
+                    .setIcon( maxNativeAdImage )
+                    .setMediaView( mediaView )
                     .build();
 
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
@@ -1373,21 +1352,13 @@ public class GoogleMediationAdapter
                 public void run()
                 {
                     MaxNativeAdView maxNativeAdView;
-                    if ( AppLovinSdk.VERSION_CODE < 9140000 )
+                    if ( AppLovinSdk.VERSION_CODE >= 11010000 )
                     {
-                        log( "Native ads with media views are only supported on MAX SDK version 9.14.0 and above. Default native template will be used." );
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, activity );
+                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
                     }
                     else
                     {
-                        if ( AppLovinSdk.VERSION_CODE >= 11010000 )
-                        {
-                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
-                        }
-                        else
-                        {
-                            maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
-                        }
+                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
                     }
 
                     nativeAdView = new NativeAdView( context );
@@ -1540,12 +1511,12 @@ public class GoogleMediationAdapter
 
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
-                            .setIcon( iconImage )
                             .setTitle( nativeAd.getHeadline() )
                             .setAdvertiser( nativeAd.getAdvertiser() )
                             .setBody( nativeAd.getBody() )
-                            .setMediaView( mediaView )
-                            .setCallToAction( nativeAd.getCallToAction() );
+                            .setCallToAction( nativeAd.getCallToAction() )
+                            .setIcon( iconImage )
+                            .setMediaView( mediaView );
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
                     {

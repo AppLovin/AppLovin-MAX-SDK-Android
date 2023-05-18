@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.1.0.0
+* Certified with Google SDK 22.1.0.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 22.0.0.2
 * Re-certified with GoogleAdManager SDK 22.0.0.
 * Remove client-side setting of test device ids.
