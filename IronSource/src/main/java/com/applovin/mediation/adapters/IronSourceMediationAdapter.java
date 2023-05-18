@@ -18,17 +18,15 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.ironsource.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.ironsource.mediationsdk.ISBannerSize;
-import com.ironsource.mediationsdk.ISDemandOnlyBannerLayout;
 import com.ironsource.mediationsdk.IronSource;
+import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyBannerLayout;
+import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyBannerListener;
+import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyInterstitialListener;
+import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.logger.IronSourceError;
-import com.ironsource.mediationsdk.sdk.ISDemandOnlyBannerListener;
-import com.ironsource.mediationsdk.sdk.ISDemandOnlyInterstitialListener;
-import com.ironsource.mediationsdk.sdk.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.utils.IronSourceUtils;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,17 +96,14 @@ public class IronSourceMediationAdapter
 
             setPrivacySettings( parameters );
 
-            if ( AppLovinSdk.VERSION_CODE >= 91100 )
+            Boolean isDoNotSell = parameters.isDoNotSell();
+            if ( isDoNotSell != null )
             {
-                Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-                if ( isDoNotSell != null )
-                {
-                    // NOTE: `setMetaData` must be called _before_ initializing their SDK
-                    IronSource.setMetaData( "do_not_sell", Boolean.toString( isDoNotSell ) );
-                }
+                // NOTE: `setMetaData` must be called _before_ initializing their SDK
+                IronSource.setMetaData( "do_not_sell", Boolean.toString( isDoNotSell ) );
             }
 
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
             if ( isAgeRestrictedUser != null )
             {
                 IronSource.setMetaData( "is_child_directed", Boolean.toString( isAgeRestrictedUser ) );
@@ -254,26 +249,10 @@ public class IronSourceMediationAdapter
 
     private void setPrivacySettings(final MaxAdapterParameters parameters)
     {
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             IronSource.setConsent( hasUserConsent );
-        }
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
     }
 
@@ -469,8 +448,8 @@ public class IronSourceMediationAdapter
                 case IronSourceError.ERROR_RV_LOAD_UNEXPECTED_CALLBACK:
                 case IronSourceError.ERROR_RV_SHOW_EXCEPTION:
                 case IronSourceError.ERROR_IS_SHOW_EXCEPTION:
-                case IronSourceError.ERROR_RV_INIT_EXCEPTION:
-                case IronSourceError.ERROR_IS_INIT_EXCEPTION:
+                case IronSourceError.ERROR_RV_INSTANCE_INIT_EXCEPTION:
+                case IronSourceError.ERROR_IS_INSTANCE_INIT_EXCEPTION:
                 case IronSourceError.ERROR_DO_RV_LOAD_MISSING_ACTIVITY:
                 case IronSourceError.ERROR_DO_IS_LOAD_MISSING_ACTIVITY:
                     adapterError = MaxAdapterError.INTERNAL_ERROR;
@@ -493,7 +472,7 @@ public class IronSourceMediationAdapter
                 case IronSourceError.ERROR_BN_INIT_FAILED_AFTER_LOAD:
                 case IronSourceError.ERROR_BN_LOAD_WHILE_LONG_INITIATION:
                 case IronSourceError.ERROR_BN_INSTANCE_INIT_TIMEOUT:
-                case IronSourceError.ERROR_BN_INSTANCE_INIT_ERROR:
+                case IronSourceError.ERROR_BN_INSTANCE_INIT_EXCEPTION:
                 case IronSourceError.INIT_ERROR_NO_ADAPTERS_LOADED:
                     adapterError = MaxAdapterError.NOT_INITIALIZED;
                     break;

@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.3.0.1.0
+* Certified with IronSource SDK 7.3.0.1.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 7.2.7.0.0
 * Certified with IronSource SDK 7.2.7.
 
