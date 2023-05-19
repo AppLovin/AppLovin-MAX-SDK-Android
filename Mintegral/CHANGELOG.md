@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.4.41.1
+* Fix native ads memory leak by calling `MBMediaView.destory()`.
+
 ## 16.4.41.0
 * Certified with Mintegral SDK 16.4.41.
 

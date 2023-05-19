@@ -126,6 +126,7 @@ public class MintegralMediationAdapter
     private MBBidNativeHandler            mbBidNativeAdViewHandler;
     private Campaign                      nativeAdCampaign;
     private ViewGroup                     nativeAdContainer;
+    private MaxNativeAd                   nativeAd;
     private List<View>                    clickableViews;
 
     static
@@ -247,6 +248,16 @@ public class MintegralMediationAdapter
             mbBidNativeAdViewHandler.bidRelease();
             mbBidNativeAdViewHandler.setAdListener( null );
             mbBidNativeAdViewHandler = null;
+        }
+
+        if ( nativeAd != null )
+        {
+            if ( nativeAd.getMediaView() instanceof MBMediaView )
+            {
+                ( (MBMediaView) nativeAd.getMediaView() ).destory();
+            }
+
+            nativeAd = null;
         }
 
         nativeAdCampaign = null;
@@ -1089,12 +1100,12 @@ public class MintegralMediationAdapter
                                     .setOptionsView( adChoiceView )
                                     .setMediaView( mediaView );
 
-                            final MaxMintegralNativeAd maxMintegralNativeAd = new MaxMintegralNativeAd( builder );
+                            nativeAd = new MaxMintegralNativeAd( builder );
 
                             final String templateName = BundleUtils.getString( "template", "", serverParameters );
-                            MaxNativeAdView maxNativeAdView = createMaxNativeAdViewWithNativeAd( maxMintegralNativeAd, templateName, context );
+                            MaxNativeAdView maxNativeAdView = createMaxNativeAdViewWithNativeAd( nativeAd, templateName, context );
 
-                            maxMintegralNativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
+                            nativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
                             listener.onAdViewAdLoaded( maxNativeAdView );
                         }
                     } );
@@ -1370,8 +1381,8 @@ public class MintegralMediationAdapter
                                 builder.setStarRating( campaign.getRating() );
                             }
 
-                            final MaxNativeAd maxNativeAd = new MaxMintegralNativeAd( builder );
-                            listener.onNativeAdLoaded( maxNativeAd, null );
+                            nativeAd = new MaxMintegralNativeAd( builder );
+                            listener.onNativeAdLoaded( nativeAd, null );
                         }
                     } );
                 }
