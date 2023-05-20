@@ -210,7 +210,7 @@ public class HyprMXMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -241,7 +241,7 @@ public class HyprMXMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -332,6 +332,8 @@ public class HyprMXMediationAdapter
                 adapterError = MaxAdapterError.NO_FILL;
                 break;
             case DISPLAY_ERROR:
+                adapterError = MaxAdapterError.AD_DISPLAY_FAILED;
+                break;
             case AD_FAILED_TO_RENDER:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
@@ -451,7 +453,7 @@ public class HyprMXMediationAdapter
         @Override
         public void onAdDisplayError(Placement placement, HyprMXErrors hyprMXError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", hyprMXError.ordinal(), "" );
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", hyprMXError.ordinal(), hyprMXError.name() );
             log( "Interstitial failed to display with error: " + adapterError + ", for placement: " + placement.getName() );
 
             listener.onInterstitialAdDisplayFailed( adapterError );

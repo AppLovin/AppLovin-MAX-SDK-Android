@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.2.0.0
+* Certified with HyprMX SDK 6.2.0.
+* Add additional details for ad display failures.
+
 ## 6.0.3.1
 * Set consent based on a mix of 'hasUserConsent', 'ageRestrictedUser' and 'doNotSell' values.
 
