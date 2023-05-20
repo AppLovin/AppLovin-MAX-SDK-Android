@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -65,6 +66,7 @@ import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -83,6 +85,13 @@ public class GoogleAdManagerMediationAdapter
         extends MediationAdapterBase
         implements MaxInterstitialAdapter, /* MaxAppOpenAdapter */ MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
+    private static final int TITLE_LABEL_TAG          = 1;
+    private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
+    private static final int ICON_VIEW_TAG            = 3;
+    private static final int BODY_VIEW_TAG            = 4;
+    private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
+    private static final int ADVERTISER_VIEW_TAG      = 8;
+
     private static final AtomicBoolean initialized = new AtomicBoolean();
 
     private AdManagerInterstitialAd interstitialAd;
@@ -1406,46 +1415,115 @@ public class GoogleAdManagerMediationAdapter
     private class MaxGoogleAdManagerNativeAd
             extends MaxNativeAd
     {
-        public MaxGoogleAdManagerNativeAd(final Builder builder)
-        {
-            super( builder );
-        }
+        public MaxGoogleAdManagerNativeAd(final Builder builder) { super( builder ); }
 
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        {
+            prepareForInteraction( Collections.<View>emptyList(), maxNativeAdView );
+        }
+
+        @Override
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final NativeAd nativeAd = GoogleAdManagerMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
-                return;
+                return false;
             }
 
-            nativeAdView = new NativeAdView( maxNativeAdView.getContext() );
+            nativeAdView = new NativeAdView( container.getContext() );
 
-            // The Google Native Ad View needs to be wrapped around the main native ad view.
-            View mainView = maxNativeAdView.getMainView();
-            maxNativeAdView.removeView( mainView );
-            nativeAdView.addView( mainView );
-            maxNativeAdView.addView( nativeAdView );
-
-            nativeAdView.setIconView( maxNativeAdView.getIconImageView() );
-            nativeAdView.setHeadlineView( maxNativeAdView.getTitleTextView() );
-            nativeAdView.setAdvertiserView( maxNativeAdView.getAdvertiserTextView() );
-            nativeAdView.setBodyView( maxNativeAdView.getBodyTextView() );
-            nativeAdView.setCallToActionView( maxNativeAdView.getCallToActionButton() );
-
-            View mediaView = getMediaView();
-            if ( mediaView instanceof MediaView )
+            // Native integrations
+            if ( container instanceof MaxNativeAdView )
             {
-                nativeAdView.setMediaView( (MediaView) mediaView );
+                MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
+
+                // The Google Native Ad View needs to be wrapped around the main native ad view.
+                View mainView = maxNativeAdView.getMainView();
+                maxNativeAdView.removeView( mainView );
+                nativeAdView.addView( mainView );
+                maxNativeAdView.addView( nativeAdView );
+
+                nativeAdView.setIconView( maxNativeAdView.getIconImageView() );
+                nativeAdView.setHeadlineView( maxNativeAdView.getTitleTextView() );
+                nativeAdView.setAdvertiserView( maxNativeAdView.getAdvertiserTextView() );
+                nativeAdView.setBodyView( maxNativeAdView.getBodyTextView() );
+                nativeAdView.setCallToActionView( maxNativeAdView.getCallToActionButton() );
+
+                View mediaView = getMediaView();
+                if ( mediaView instanceof MediaView )
+                {
+                    nativeAdView.setMediaView( (MediaView) mediaView );
+                }
+                else if ( mediaView instanceof ImageView )
+                {
+                    nativeAdView.setImageView( mediaView );
+                }
+
+                nativeAdView.setNativeAd( nativeAd );
             }
-            else if ( mediaView instanceof ImageView )
+            // Plugins
             {
-                nativeAdView.setImageView( mediaView );
+                for ( View view : clickableViews )
+                {
+                    int tag = (int) view.getTag();
+
+                    if ( tag == TITLE_LABEL_TAG )
+                    {
+                        nativeAdView.setHeadlineView( view );
+                    }
+                    else if ( tag == ICON_VIEW_TAG )
+                    {
+                        nativeAdView.setIconView( view );
+                    }
+                    else if ( tag == BODY_VIEW_TAG )
+                    {
+                        nativeAdView.setBodyView( view );
+                    }
+                    else if ( tag == CALL_TO_ACTION_VIEW_TAG )
+                    {
+                        nativeAdView.setCallToActionView( view );
+                    }
+                    else if ( tag == ADVERTISER_VIEW_TAG )
+                    {
+                        nativeAdView.setAdvertiserView( view );
+                    }
+                }
+
+                View mediaView = getMediaView();
+                ViewGroup midContainer = ( mediaView != null ) ? (ViewGroup) mediaView.getParent() : null;
+
+                // mediaView must be already added to the container unless the user skipped it, but the
+                // parent may not be the container, although it should be within the hierarchy
+                if ( midContainer != null && container.findViewById( midContainer.getId() ) != null )
+                {
+                    // The Google Native Ad View needs to be inserted between mediaView and midContainer
+                    // for mediaView to be visible
+                    midContainer.removeView( mediaView );
+                    nativeAdView.addView( mediaView );
+                    midContainer.addView( nativeAdView );
+
+                    if ( mediaView instanceof MediaView )
+                    {
+                        nativeAdView.setMediaView( (MediaView) mediaView );
+                    }
+                    else if ( mediaView instanceof ImageView )
+                    {
+                        nativeAdView.setImageView( mediaView );
+                    }
+
+                    nativeAdView.setNativeAd( nativeAd );
+
+                    // stretch nativeAdView out to midContainer
+                    nativeAdView.measure( View.MeasureSpec.makeMeasureSpec( midContainer.getWidth(), View.MeasureSpec.EXACTLY ),
+                                          View.MeasureSpec.makeMeasureSpec( midContainer.getHeight(), View.MeasureSpec.EXACTLY ) );
+                    nativeAdView.layout( 0, 0, midContainer.getWidth(), midContainer.getHeight() );
+                }
             }
 
-            nativeAdView.setNativeAd( nativeAd );
+            return true;
         }
     }
 }

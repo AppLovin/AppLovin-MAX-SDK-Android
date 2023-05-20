@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.1
+* Support for native ads in external plugins (e.g. React Native).
+
 ## 22.1.0.0
 * Certified with GoogleAdManager SDK 22.1.0.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
