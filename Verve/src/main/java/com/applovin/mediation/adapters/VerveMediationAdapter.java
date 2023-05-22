@@ -245,10 +245,18 @@ public class VerveMediationAdapter
         UserDataManager userDataManager = HyBid.getUserDataManager();
 
         Boolean hasUserConsent = parameters.hasUserConsent();
-        if ( hasUserConsent != null && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABGDPRConsentString() ) )
-        {
-            userDataManager.setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
+        // 1. AppLovin revokes consent
+        if (hasUserConsent != null && userDataManager != null && !hasUserConsent) {
+            userDataManager.setIABGDPRConsentString("0");
         }
+
+        // 2. AppLovin grants consent and Verve doesn't have binary nor CMP consent yet
+        if ((hasUserConsent != null && userDataManager != null && hasUserConsent)
+                && (TextUtils.isEmpty(userDataManager.getIABGDPRConsentString()) || userDataManager.getIABGDPRConsentString().equals("0"))) {
+            userDataManager.setIABGDPRConsentString("1");
+        }
+
+        // 3. all other cases -> no change
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
