@@ -340,6 +340,7 @@ public class BidMachineMediationAdapter
 
     private void updateSettings(MaxAdapterParameters parameters)
     {
+        // NOTE: BidMachine's iOS SDK requires that the adapter passes the TCFv2 GDPR consent string, the BidMachine Android SDK does not.
         Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
@@ -709,8 +710,8 @@ public class BidMachineMediationAdapter
                             .setBody( nativeAd.getDescription() )
                             .setCallToAction( nativeAd.getCallToAction() )
                             .setIcon( iconMaxNativeAdImage )
-                            .setMediaView( mediaView )
-                            .setOptionsView( nativeAd.getProviderView( getApplicationContext() ) );
+                            .setOptionsView( nativeAd.getProviderView( getApplicationContext() ) )
+                            .setMediaView( mediaView );
                     if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 && nativeAd.getMainImage() != null )
                     {
                         MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( nativeAd.getMainImage().getImage() );
@@ -741,7 +742,7 @@ public class BidMachineMediationAdapter
         @Override
         public void prepareViewForInteraction(MaxNativeAdView maxNativeAdView)
         {
-            final List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>( 5 );
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
