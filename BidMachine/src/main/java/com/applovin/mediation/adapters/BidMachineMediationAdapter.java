@@ -44,7 +44,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import io.bidmachine.AdsFormat;
 import io.bidmachine.BidMachine;
+import io.bidmachine.BidTokenCallback;
 import io.bidmachine.ImageData;
 import io.bidmachine.InitializationCallback;
 import io.bidmachine.MediaAssetType;
@@ -166,9 +169,14 @@ public class BidMachineMediationAdapter
 
         updateSettings( parameters );
 
-        // NOTE: Must be ran on bg thread
-        String bidToken = BidMachine.getBidToken( getApplicationContext() );
-        callback.onSignalCollected( bidToken );
+        BidMachine.getBidToken( getApplicationContext(), toAdsFormat( parameters ), new BidTokenCallback()
+        {
+            @Override
+            public void onCollected(@NonNull String bidToken)
+            {
+                callback.onSignalCollected( bidToken );
+            }
+        } );
     }
 
     @Override
@@ -277,6 +285,41 @@ public class BidMachineMediationAdapter
                                .setMediaAssetTypes( MediaAssetType.All )
                                .setBidPayload( parameters.getBidResponse() )
                                .build() );
+    }
+
+    @Nullable
+    private AdsFormat toAdsFormat(@NonNull final MaxAdapterSignalCollectionParameters parameters)
+    {
+        MaxAdFormat maxAdFormat = parameters.getAdFormat();
+        boolean isNative = parameters.getServerParameters().getBoolean( "is_native" ) || maxAdFormat == MaxAdFormat.NATIVE;
+        if ( isNative )
+        {
+            return AdsFormat.Native;
+        }
+        else if ( maxAdFormat == MaxAdFormat.BANNER )
+        {
+            return AdsFormat.Banner_320x50;
+        }
+        else if ( maxAdFormat == MaxAdFormat.MREC )
+        {
+            return AdsFormat.Banner_300x250;
+        }
+        else if ( maxAdFormat == MaxAdFormat.LEADER )
+        {
+            return AdsFormat.Banner_728x90;
+        }
+        else if ( maxAdFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return AdsFormat.Interstitial;
+        }
+        else if ( maxAdFormat == MaxAdFormat.REWARDED || maxAdFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
+        {
+            return AdsFormat.Rewarded;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private MaxAdapterError toMaxError(BMError bidMachineError)
