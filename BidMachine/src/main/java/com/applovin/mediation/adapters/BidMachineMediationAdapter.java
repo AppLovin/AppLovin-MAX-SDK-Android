@@ -31,7 +31,6 @@ import com.applovin.mediation.adapters.bidmachine.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 
 import java.util.ArrayList;
@@ -44,7 +43,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.bidmachine.AdsFormat;
 import io.bidmachine.BidMachine;
+import io.bidmachine.BidTokenCallback;
 import io.bidmachine.ImageData;
 import io.bidmachine.InitializationCallback;
 import io.bidmachine.MediaAssetType;
@@ -160,15 +161,22 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void collectSignal(MaxAdapterSignalCollectionParameters parameters, Activity activity, MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
-        log( "Collecting signal..." );
+        log( "Collecting signal for " + parameters.getAdFormat().getLabel() + " ad..." );
 
         updateSettings( parameters );
 
         // NOTE: Must be ran on bg thread
-        String bidToken = BidMachine.getBidToken( getApplicationContext() );
-        callback.onSignalCollected( bidToken );
+        BidMachine.getBidToken( getApplicationContext(), toAdsFormat( parameters ), new BidTokenCallback()
+        {
+            @Override
+            public void onCollected(@NonNull final String bidToken)
+            {
+                log( "Signal collection successful" );
+                callback.onSignalCollected( bidToken );
+            }
+        } );
     }
 
     @Override
@@ -335,6 +343,40 @@ public class BidMachineMediationAdapter
         else
         {
             throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+        }
+    }
+
+    @Nullable
+    private AdsFormat toAdsFormat(final MaxAdapterSignalCollectionParameters parameters)
+    {
+        MaxAdFormat adFormat = parameters.getAdFormat();
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return AdsFormat.Banner_320x50;
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return AdsFormat.Banner_300x250;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return AdsFormat.Banner_728x90;
+        }
+        else if ( adFormat == MaxAdFormat.NATIVE )
+        {
+            return AdsFormat.Native;
+        }
+        else if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return AdsFormat.Interstitial;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED || adFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
+        {
+            return AdsFormat.Rewarded;
+        }
+        else
+        {
+            return null;
         }
     }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.1
+* Updated `BidMachine.getBidToken()` usage.
+
 ## 2.2.0.0
 * Certified with BidMachine SDK 2.2.0.
 
