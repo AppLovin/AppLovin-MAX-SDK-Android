@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.4.1
+* Add a temporary workaround for the issue where `onAdImpression()` is called before `onAdLoadSucceeded().`
+
 ## 10.1.4.0
 * Certified with InMobi SDK 10.1.4.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.

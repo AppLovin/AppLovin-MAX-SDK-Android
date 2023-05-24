@@ -636,6 +636,9 @@ public class InMobiMediationAdapter
     {
         final MaxAdViewAdapterListener listener;
 
+        private boolean onAdLoadSucceededCalled;
+        private boolean onAdImpressionCalled;
+
         AdViewListener(MaxAdViewAdapterListener listener)
         {
             this.listener = listener;
@@ -658,6 +661,13 @@ public class InMobiMediationAdapter
             {
                 listener.onAdViewAdLoaded( inMobiBanner );
             }
+
+            // Temporary workaround for an issue where onAdImpression is called before onAdLoadSucceeded.
+            if ( onAdImpressionCalled )
+            {
+                listener.onAdViewAdDisplayed();
+            }
+            onAdLoadSucceededCalled = true;
         }
 
         @Override
@@ -680,7 +690,11 @@ public class InMobiMediationAdapter
         public void onAdImpression(@NonNull final InMobiBanner inMobiBanner)
         {
             log( "AdView impression tracked" );
-            listener.onAdViewAdDisplayed();
+            if ( onAdLoadSucceededCalled )
+            {
+                listener.onAdViewAdDisplayed();
+            }
+            onAdImpressionCalled = true;
         }
 
         @Override
