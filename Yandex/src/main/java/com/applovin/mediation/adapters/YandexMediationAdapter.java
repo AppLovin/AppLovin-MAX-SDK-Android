@@ -59,7 +59,6 @@ import com.yandex.mobile.ads.rewarded.Reward;
 import com.yandex.mobile.ads.rewarded.RewardedAd;
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -379,26 +378,10 @@ public class YandexMediationAdapter
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
     {
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             MobileAds.setUserConsent( hasUserConsent );
-        }
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
     }
 
@@ -748,13 +731,13 @@ public class YandexMediationAdapter
 
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
-                            .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                             .setTitle( assets.getTitle() )
                             .setAdvertiser( assets.getDomain() )
                             .setBody( assets.getBody() )
-                            .setMediaView( new MediaView( applicationContext ) ) // Yandex requires rendering MediaView with their own bind method
+                            .setCallToAction( assets.getCallToAction() )
+                            .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                             .setOptionsView( disclaimerSponsoredOptionsViewContainer )
-                            .setCallToAction( assets.getCallToAction() );
+                            .setMediaView( new MediaView( applicationContext ) ); // Yandex requires rendering MediaView with their own bind method
 
                     MaxNativeAd maxNativeAd = new MaxYandexNativeAd( builder );
 
