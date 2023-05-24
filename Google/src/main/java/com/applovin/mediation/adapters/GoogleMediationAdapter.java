@@ -1642,10 +1642,14 @@ public class GoogleMediationAdapter
                 nativeAdView.setNativeAd( nativeAd );
             }
             // Plugins
+            else
             {
                 for ( View view : clickableViews )
                 {
-                    int tag = (int) view.getTag();
+                    Object viewTag = view.getTag();
+                    if ( viewTag == null ) continue;
+
+                    int tag = (int) viewTag;
 
                     if ( tag == TITLE_LABEL_TAG )
                     {
