@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.2
+* Fix `int java.lang.Integer.intValue()` NPE for native ads.
+
 ## 22.1.0.1
 * Support for native ads in external plugins (e.g. React Native).
 
