@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.3.1.0
+* Certified with Chartboost SDK 9.3.1.
+
 ## 9.3.0.0
 * Certified with Chartboost SDK 9.3.0.
 * Use Chartboost's custom Maven repo for their SDK (updated to: https://cboost.jfrog.io/artifactory/chartboost-ads/).
