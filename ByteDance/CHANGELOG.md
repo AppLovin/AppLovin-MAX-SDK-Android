@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.1.1.1.0
+* Certified with ByteDance SDK 5.1.1.1.
+
 ## 5.1.1.0.0
 * Certified with ByteDance SDK 5.1.1.0.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
