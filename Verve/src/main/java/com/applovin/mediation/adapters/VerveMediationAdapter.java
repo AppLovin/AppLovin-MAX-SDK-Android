@@ -22,7 +22,7 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.verve.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
+import com.applovin.sdk.AppLovinSdkUtils;
 
 import net.pubnative.lite.sdk.HyBid;
 import net.pubnative.lite.sdk.HyBidError;
@@ -238,16 +238,28 @@ public class VerveMediationAdapter
     private void updateUserConsent(final MaxAdapterParameters parameters)
     {
         // From PubNative: "HyBid SDK is TCF v2 compliant, so any change in the IAB consent string will be picked up by the SDK."
-        // Because of this, they requested that we don't update consent values if one is already set.
+        // Because of this, they requested that we don't update consent values if one is already set and use binary consent state as a fallback.
         // As a side effect, pubs that use the MAX consent flow will not be able to update consent values mid-session.
         // Full context in this PR: https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/pull/57
 
         UserDataManager userDataManager = HyBid.getUserDataManager();
 
         Boolean hasUserConsent = parameters.hasUserConsent();
-        if ( hasUserConsent != null && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABGDPRConsentString() ) )
+        if ( hasUserConsent != null && userDataManager != null )
         {
-            userDataManager.setIABGDPRConsentString( hasUserConsent ? "1" : "0" );
+            // NOTE: verveGDPRConsentString can be nil, TCFv2 consent string, "1" or "0"
+            String verveGDPRConsentString = userDataManager.getIABGDPRConsentString();
+
+            // If hasUserConsent is set to false, set consent string to "0"
+            if ( !hasUserConsent )
+            {
+                userDataManager.setIABGDPRConsentString( "0" );
+            }
+            // If hasUserConsent is set to true, only override if it has not been set to a TCFv2 consent string or is set to "0"
+            else if ( TextUtils.isEmpty( verveGDPRConsentString ) || verveGDPRConsentString.equals( "0" ) )
+            {
+                userDataManager.setIABGDPRConsentString( "1" );
+            }
         }
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
@@ -258,7 +270,7 @@ public class VerveMediationAdapter
             HyBid.setCoppaEnabled( isAgeRestrictedUser );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 && userDataManager != null && TextUtils.isEmpty( userDataManager.getIABUSPrivacyString() ) )
+        if ( userDataManager != null && TextUtils.isEmpty( userDataManager.getIABUSPrivacyString() ) )
         {
             Boolean isDoNotSell = parameters.isDoNotSell();
             if ( isDoNotSell != null && isDoNotSell )
@@ -278,7 +290,7 @@ public class VerveMediationAdapter
             if ( isLocationCollectionEnabledObj instanceof Boolean )
             {
                 log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
-                HyBid.setLocationUpdatesEnabled( (boolean)isLocationCollectionEnabledObj );
+                HyBid.setLocationUpdatesEnabled( (boolean) isLocationCollectionEnabledObj );
             }
         }
     }
@@ -363,7 +375,7 @@ public class VerveMediationAdapter
                     break;
                 case DISABLED_FORMAT:
                 case DISABLED_RENDERING_ENGINE:
-                case ERROR_LOADING_FEEDBACK: 
+                case ERROR_LOADING_FEEDBACK:
                     adapterError = MaxAdapterError.INVALID_LOAD_STATE;
                     break;
                 case EXPIRED_AD:
