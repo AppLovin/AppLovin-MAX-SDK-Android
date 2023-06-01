@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.3
+* Re-enable support for adaptive banner traffic for Google bidding since their sizing issue is resolved.
+
 ## 22.1.0.2
 * Fix `int java.lang.Integer.intValue()` NPE for native ads.
 
