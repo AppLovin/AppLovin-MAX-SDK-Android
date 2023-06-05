@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1.0
+* Certified with MobileFuse SDK 1.5.1.
+
 ## 1.5.0.0
 * Certified with MobileFuse SDK 1.5.0.
 
