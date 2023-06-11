@@ -23,13 +23,11 @@ import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
-import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.line.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.five_corp.ad.FiveAd;
 import com.five_corp.ad.FiveAdConfig;
@@ -46,7 +44,6 @@ import com.five_corp.ad.NeedChildDirectedTreatment;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,7 +95,7 @@ public class LineMediationAdapter
             //
             // GDPR options
             //
-            Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+            Boolean hasUserConsent = parameters.hasUserConsent();
             if ( hasUserConsent != null )
             {
                 config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
@@ -108,7 +105,7 @@ public class LineMediationAdapter
             // COPPA options
             // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
             // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-            Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
             if ( isAgeRestrictedUser != null )
             {
                 config.needChildDirectedTreatment = isAgeRestrictedUser ? NeedChildDirectedTreatment.TRUE : NeedChildDirectedTreatment.FALSE;
@@ -285,22 +282,6 @@ public class LineMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), lineAdsError.ordinal(), thirdPartySdkErrorMessage );
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
     }
 
     private class InterstitialListener
@@ -770,13 +751,8 @@ public class LineMediationAdapter
                             }
 
                             final MaxNativeAdView maxNativeAdView;
-                            if ( AppLovinSdk.VERSION_CODE < 9140000 )
-                            {
-                                log( "Native ads with media views are only supported on MAX SDK version 9.14.0 and above. Default native template will be used." );
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, activity );
-                            }
                             // Fallback case to be removed when backend sends down full template names for vertical native ads
-                            else if ( templateName.equals( "vertical" ) )
+                            if ( templateName.equals( "vertical" ) )
                             {
                                 String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
 
@@ -801,28 +777,28 @@ public class LineMediationAdapter
                                 }
                             }
 
-                            final List<View> clickableViews = new ArrayList<>();
-                            if ( maxNativeAd.getIcon() != null && maxNativeAdView.getIconImageView() != null )
-                            {
-                                clickableViews.add( maxNativeAdView.getIconImageView() );
-                            }
+                            final List<View> clickableViews = new ArrayList<>( 5 );
 
-                            final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
-                            if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
-                            {
-                                clickableViews.add( mediaContentView );
-                            }
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
                             {
                                 clickableViews.add( maxNativeAdView.getTitleTextView() );
+                            }
+                            if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
+                            {
+                                clickableViews.add( maxNativeAdView.getBodyTextView() );
                             }
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
                             {
                                 clickableViews.add( maxNativeAdView.getCallToActionButton() );
                             }
-                            if ( AppLovinSdkUtils.isValidString( maxNativeAd.getBody() ) && maxNativeAdView.getBodyTextView() != null )
+                            if ( maxNativeAd.getIcon() != null && maxNativeAdView.getIconImageView() != null )
                             {
-                                clickableViews.add( maxNativeAdView.getBodyTextView() );
+                                clickableViews.add( maxNativeAdView.getIconImageView() );
+                            }
+                            final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+                            if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
+                            {
+                                clickableViews.add( mediaContentView );
                             }
 
                             nativeAd.registerViews( maxNativeAdView, maxNativeAdView.getIconImageView(), clickableViews );
@@ -896,12 +872,11 @@ public class LineMediationAdapter
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( nativeAd.getAdTitle() )
+                            .setAdvertiser( nativeAd.getAdvertiserName() )
                             .setBody( nativeAd.getDescriptionText() )
                             .setCallToAction( nativeAd.getButtonText() )
-                            .setAdvertiser( nativeAd.getAdvertiserName() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( activity.getResources(), bitmap ) ) )
-                            .setMediaView( nativeAd.getAdMainView() )
-                            .setAdvertiser( nativeAd.getAdvertiserName() );
+                            .setMediaView( nativeAd.getAdMainView() );
                     MaxNativeAd maxNativeAd = new MaxLineNativeAd( builder );
 
                     listener.onNativeAdLoaded( maxNativeAd, null );
@@ -1000,10 +975,14 @@ public class LineMediationAdapter
         @Override
         public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
         {
-            final List<View> clickableViews = new ArrayList<>();
+            final List<View> clickableViews = new ArrayList<>( 6 );
             if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
             {
                 clickableViews.add( maxNativeAdView.getTitleTextView() );
+            }
+            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
+            {
+                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
             if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
             {
@@ -1020,10 +999,6 @@ public class LineMediationAdapter
             if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
             {
                 clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
             }
 
             prepareForInteraction( clickableViews, maxNativeAdView );

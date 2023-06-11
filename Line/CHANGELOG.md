@@ -1,5 +1,10 @@
 # Changelog
 
+## 2023.6.7.0
+* Certified with Line SDK 2.6.20230607.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Remove unnecessary MAX SDK version check.
+
 ## 2023.2.15.0
 * Certified with Line SDK 2.6.20230215.
 
