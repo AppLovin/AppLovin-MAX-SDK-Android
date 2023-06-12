@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.3.1.0.0
+* Certified with IronSource SDK 7.3.1.
+
+## 7.3.0.1.0
+* Certified with IronSource SDK 7.3.0.1.
+
 ## 7.3.0.1.0
 * Certified with IronSource SDK 7.3.0.1.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.

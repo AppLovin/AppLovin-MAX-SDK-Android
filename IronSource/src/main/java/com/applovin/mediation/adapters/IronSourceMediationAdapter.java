@@ -436,7 +436,7 @@ public class IronSourceMediationAdapter
                 case IronSourceError.ERROR_BN_RELOAD_SKIP_INVISIBLE:
                 case IronSourceError.ERROR_BN_RELOAD_SKIP_BACKGROUND:
                 case IronSourceError.AUCTION_ERROR_REQUEST:
-                case IronSourceError.AUCTION_ERROR_RESPONSE_NOT_200:
+                case IronSourceError.AUCTION_ERROR_RESPONSE_CODE_NOT_VALID:
                 case IronSourceError.AUCTION_ERROR_PARSE:
                 case IronSourceError.AUCTION_ERROR_DECRYPTION:
                 case IronSourceError.AUCTION_ERROR_EMPTY_WATERFALL:
