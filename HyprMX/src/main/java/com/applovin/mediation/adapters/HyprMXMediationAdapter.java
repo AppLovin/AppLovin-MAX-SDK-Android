@@ -250,15 +250,14 @@ public class HyprMXMediationAdapter
     private ConsentStatus getConsentStatus(final MaxAdapterParameters parameters)
     {
         Boolean hasUserConsent = parameters.hasUserConsent();
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         Boolean isDoNotSell = parameters.isDoNotSell();
 
         // isTrue/isFalse/isNull to match the spec from HyprMX while avoiding NPEs
-        if ( ( isNull( isDoNotSell ) || isFalse( isDoNotSell ) ) && isTrue( hasUserConsent ) && isFalse( isAgeRestrictedUser ) )
+        if ( ( isNull( isDoNotSell ) || isFalse( isDoNotSell ) ) && isTrue( hasUserConsent ))
         {
             return ConsentStatus.CONSENT_GIVEN;
         }
-        else if ( isTrue( isDoNotSell ) || isFalse( hasUserConsent ) || isTrue( isAgeRestrictedUser ) )
+        else if ( isTrue( isDoNotSell ) || isFalse( hasUserConsent ))
         {
             return ConsentStatus.CONSENT_DECLINED;
         }
