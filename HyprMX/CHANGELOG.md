@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.0.1 
+* Remove the `ageRestrictedUser` check from user consent.
+
 ## 6.2.0.0
 * Certified with HyprMX SDK 6.2.0.
 * Add additional details for ad display failures.
