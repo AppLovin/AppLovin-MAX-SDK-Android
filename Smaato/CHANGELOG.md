@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.2.0
+* Certified with Smaato SDK 22.1.2.
+
 ## 22.1.1.0
 * Certified with Smaato SDK 22.1.1.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
