@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.3.2
+* Call `InneractiveAdManager.setMediationName()` and `InneractiveAdManager.setMediationVersion()` statically at the time of signal collection.
+
 ## 8.2.3.1
 * Call `InneractiveAdManager.currentAudienceAppliesToCoppa()` after SDK initialization.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.

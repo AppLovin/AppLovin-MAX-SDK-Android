@@ -147,6 +147,10 @@ public class InneractiveMediationAdapter
 
         updateUserInfo( parameters );
 
+        // Should be called statically at the time of signal collection
+        InneractiveAdManager.setMediationName( "Max" );
+        InneractiveAdManager.setMediationVersion( AppLovinSdk.VERSION );
+
         String signal = BidTokenProvider.getBidderToken();
         if ( signal != null )
         {
@@ -227,8 +231,6 @@ public class InneractiveMediationAdapter
 
         interstitialSpot = InneractiveAdSpotManager.get().createSpot();
         interstitialSpot.addUnitController( controller );
-        interstitialSpot.setMediationName( "Max" );
-        interstitialSpot.setMediationVersion( AppLovinSdk.VERSION );
         interstitialSpot.setRequestListener( new InneractiveAdSpot.RequestListener()
         {
             @Override
@@ -389,8 +391,6 @@ public class InneractiveMediationAdapter
 
         rewardedSpot = InneractiveAdSpotManager.get().createSpot();
         rewardedSpot.addUnitController( controller );
-        rewardedSpot.setMediationName( "Max" );
-        rewardedSpot.setMediationVersion( AppLovinSdk.VERSION );
         rewardedSpot.setRequestListener( new InneractiveAdSpot.RequestListener()
         {
             @Override
@@ -518,8 +518,6 @@ public class InneractiveMediationAdapter
 
         adViewSpot = InneractiveAdSpotManager.get().createSpot();
         adViewSpot.addUnitController( controller );
-        adViewSpot.setMediationName( "Max" );
-        adViewSpot.setMediationVersion( AppLovinSdk.VERSION );
         adViewSpot.setRequestListener( new InneractiveAdSpot.RequestListener()
         {
             @Override
