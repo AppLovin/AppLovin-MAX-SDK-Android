@@ -73,6 +73,8 @@ public class InneractiveMediationAdapter
             log( "Initializing Inneractive SDK with app id: " + appId + "..." );
 
             InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
+            InneractiveAdManager.setMediationName( "Max" );
+            InneractiveAdManager.setMediationVersion( AppLovinSdk.VERSION );
             InneractiveAdManager.initialize( getContext( activity ), appId, new OnFyberMarketplaceInitializedListener()
             {
                 @Override
@@ -146,10 +148,6 @@ public class InneractiveMediationAdapter
         log( "Collecting signal..." );
 
         updateUserInfo( parameters );
-
-        // Should be called statically at the time of signal collection
-        InneractiveAdManager.setMediationName( "Max" );
-        InneractiveAdManager.setMediationVersion( AppLovinSdk.VERSION );
 
         String signal = BidTokenProvider.getBidderToken();
         if ( signal != null )

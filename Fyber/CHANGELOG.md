@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.3.3
+* Fix to call `InneractiveAdManager.setMediationName()` and `InneractiveAdManager.setMediationVersion()` before initialization.
+
 ## 8.2.3.2
 * Call `InneractiveAdManager.setMediationName()` and `InneractiveAdManager.setMediationVersion()` statically at the time of signal collection.
 
