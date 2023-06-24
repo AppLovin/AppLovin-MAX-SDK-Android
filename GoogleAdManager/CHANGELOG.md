@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.3
+* Update CCPA state if granted mid-session.
+
 ## 22.1.0.2
 * Fix `int java.lang.Integer.intValue()` NPE for native ads.
 

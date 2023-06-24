@@ -692,6 +692,13 @@ public class GoogleAdManagerMediationAdapter
                     .putInt( "gad_rdp", 1 )
                     .commit();
         }
+        else
+        {
+            PreferenceManager.getDefaultSharedPreferences( context )
+                    .edit()
+                    .remove( "gad_rdp" )
+                    .commit();
+        }
 
         if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
         {
