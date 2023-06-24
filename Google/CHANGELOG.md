@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.1.0.4
+* Update CCPA state if granted mid-session. 
+
 ## 22.1.0.3
 * Re-enable support for adaptive banner traffic for Google bidding since their sizing issue is resolved.
 
