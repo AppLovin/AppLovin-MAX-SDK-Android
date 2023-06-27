@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.9.0.0
+* Certified with Yandex SDK 5.9.0.
+
 ## 5.8.0.0
 * Certified with Yandex SDK 5.8.0.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
