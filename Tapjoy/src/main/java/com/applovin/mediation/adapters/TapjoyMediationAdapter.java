@@ -18,7 +18,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.tapjoy.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.tapjoy.TJActionRequest;
 import com.tapjoy.TJConnectListener;
@@ -32,7 +31,6 @@ import com.tapjoy.TapjoyConnectFlag;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -231,7 +229,7 @@ public class TapjoyMediationAdapter
 
         // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
         // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        Boolean isAgeRestrictedUser = getPrivacySetting( "isAgeRestrictedUser", parameters );
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             tjPrivacyPolicy.setBelowConsentAge( isAgeRestrictedUser );
@@ -240,42 +238,23 @@ public class TapjoyMediationAdapter
             Tapjoy.optOutAdvertisingID( context, isAgeRestrictedUser );
         }
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             tjPrivacyPolicy.setUserConsent( hasUserConsent ? "1" : "0" );
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 91100 )
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
         {
-            Boolean isDoNotSell = getPrivacySetting( "isDoNotSell", parameters );
-            if ( isDoNotSell != null )
-            {
-                tjPrivacyPolicy.setUSPrivacy( isDoNotSell ? "1YY-" : "1YN-" );
-            }
-            else
-            {
-                tjPrivacyPolicy.setUSPrivacy( "1---" );
-            }
+            tjPrivacyPolicy.setUSPrivacy( isDoNotSell ? "1YY-" : "1YN-" );
+        }
+        else
+        {
+            tjPrivacyPolicy.setUSPrivacy( "1---" );
         }
 
         Tapjoy.setActivity( activity );
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
-        }
     }
 
     private TJPlacement createPlacement(final MaxAdapterResponseParameters parameters, final TJPlacementListener listener)
@@ -427,10 +406,10 @@ public class TapjoyMediationAdapter
         }
 
         @Override
-        public void onPurchaseRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s) {}
+        public void onPurchaseRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s) { }
 
         @Override
-        public void onRewardRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s, final int i) {}
+        public void onRewardRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s, final int i) { }
     }
 
     private class RewardedListener
@@ -503,10 +482,10 @@ public class TapjoyMediationAdapter
         }
 
         @Override
-        public void onPurchaseRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s) {}
+        public void onPurchaseRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s) { }
 
         @Override
-        public void onRewardRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s, final int i) {}
+        public void onRewardRequest(final TJPlacement tjPlacement, final TJActionRequest tjActionRequest, final String s, final int i) { }
 
         @Override
         public void onVideoStart(final TJPlacement tjPlacement)
