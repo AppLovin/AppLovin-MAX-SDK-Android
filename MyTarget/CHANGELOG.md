@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.17.0.0
+* Certified with MyTarget SDK 5.17.0.
+
 ## 5.16.5.0
 * Certified with MyTarget SDK 5.16.5.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
