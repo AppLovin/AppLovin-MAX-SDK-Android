@@ -1,5 +1,8 @@
 # Changelog
 
+## 13.1.1.0
+* Certified with Tapjoy SDK 13.1.1.
+
 ## 13.1.0.0
 * Certified with Tapjoy SDK 13.1.0.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
