@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.8.0.0
+* Certified with UnityAds SDK 4.8.0.
+* Add the `onBannerShown()` callback.
+
 ## 4.7.1.0
 * Certified with UnityAds SDK 4.7.1.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.

@@ -323,6 +323,13 @@ public class UnityAdsMediationAdapter
             }
 
             @Override
+            public void onBannerShown(final BannerView bannerAdView)
+            {
+                log( "Banner ad shown" );
+                listener.onAdViewAdDisplayed();
+            }
+
+            @Override
             public void onBannerClick(final BannerView bannerAdView)
             {
                 log( "Banner ad clicked" );
