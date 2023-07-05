@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.2.0.0
+* Certified with GoogleAdManager SDK 22.2.0.
+
 ## 22.1.0.3
 * Update CCPA state if granted mid-session.
 
