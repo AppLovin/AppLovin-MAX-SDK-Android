@@ -492,12 +492,12 @@ public class CriteoMediationAdapter
 
                             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                                     .setAdFormat( MaxAdFormat.NATIVE )
-                                    .setIcon( iconImage )
                                     .setTitle( ad.getTitle() )
                                     .setAdvertiser( ad.getAdvertiserDescription() )
                                     .setBody( ad.getDescription() )
-                                    .setMediaView( mediaView )
-                                    .setCallToAction( ad.getCallToAction() );
+                                    .setCallToAction( ad.getCallToAction() )
+                                    .setIcon( iconImage )
+                                    .setMediaView( mediaView );
                             final MaxNativeAd maxNativeAd = new MaxCriteoNativeAd( builder );
 
                             log( "Native ad loaded: " + placementId );
