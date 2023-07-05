@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.6.0.0
+* Certified with OguryPresage SDK 5.6.0.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.14.0 or higher.
+
 ## 5.5.0.2
 * Add bidding support for rewarded, banner, and MREC ads.
 

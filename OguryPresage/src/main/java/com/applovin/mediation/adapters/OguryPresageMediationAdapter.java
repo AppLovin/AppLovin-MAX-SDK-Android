@@ -36,7 +36,6 @@ import com.ogury.ed.OguryReward;
 import com.ogury.sdk.Ogury;
 import com.ogury.sdk.OguryConfiguration;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.presage.common.token.OguryTokenProvider;
@@ -269,26 +268,10 @@ public class OguryPresageMediationAdapter
             }
         }
 
-        Boolean hasUserConsent = getPrivacySetting( "hasUserConsent", parameters );
+        Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
-        }
-    }
-
-    private Boolean getPrivacySetting(final String privacySetting, final MaxAdapterParameters parameters)
-    {
-        try
-        {
-            // Use reflection because compiled adapters have trouble fetching `boolean` from old SDKs and `Boolean` from new SDKs (above 9.14.0)
-            Class<?> parametersClass = parameters.getClass();
-            Method privacyMethod = parametersClass.getMethod( privacySetting );
-            return (Boolean) privacyMethod.invoke( parameters );
-        }
-        catch ( Exception exception )
-        {
-            log( "Error getting privacy setting " + privacySetting + " with exception: ", exception );
-            return ( AppLovinSdk.VERSION_CODE >= 9140000 ) ? null : false;
         }
     }
 
