@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.2.0.0
+* Certified with Google SDK 22.2.0.
+
 ## 22.1.0.4
 * Update CCPA state if granted mid-session. 
 
