@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdActivity::class.java)))
         items.add(DemoMenuItem("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
         items.add(SectionHeader("SUPPORT"))
-        items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/support/home"))))
+        items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/hc/en-us"))))
         items.add(Footer())
         return items
     }
