@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.9.0.1
+* Use `Activity` context where available, to fix new tasks from spawning when displaying new ads.
+
 ## 5.9.0.0
 * Certified with Yandex SDK 5.9.0.
 

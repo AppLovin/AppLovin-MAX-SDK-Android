@@ -218,6 +218,17 @@ public class YandexMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
+        // Yandex team advises passing in an `Activity` context to fix any launcher task issues
+        if ( activity == null )
+        {
+            log( "Interstitial ad load failed: Activity is null" );
+
+            final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
+            listener.onInterstitialAdLoadFailed( error );
+
+            return;
+        }
+
         updateUserConsent( parameters );
 
         Runnable loadInterstitialAdRunnable = new Runnable()
@@ -225,7 +236,7 @@ public class YandexMediationAdapter
             @Override
             public void run()
             {
-                interstitialAd = new InterstitialAd( activity.getApplicationContext() );
+                interstitialAd = new InterstitialAd( activity );
                 interstitialAd.setAdUnitId( placementId );
                 interstitialAd.setInterstitialAdEventListener( new InterstitialAdListener( parameters, listener ) );
                 interstitialAd.loadAd( createAdRequest( parameters ) );
@@ -260,6 +271,17 @@ public class YandexMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
 
+        // Yandex team advises passing in an `Activity` context to fix any launcher task issues
+        if ( activity == null )
+        {
+            log( "Rewarded ad load failed: Activity is null" );
+
+            final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
+            listener.onRewardedAdLoadFailed( error );
+
+            return;
+        }
+
         updateUserConsent( parameters );
 
         Runnable loadRewardedAdRunnable = new Runnable()
@@ -267,7 +289,7 @@ public class YandexMediationAdapter
             @Override
             public void run()
             {
-                rewardedAd = new RewardedAd( activity.getApplicationContext() );
+                rewardedAd = new RewardedAd( activity );
                 rewardedAd.setAdUnitId( placementId );
                 rewardedAd.setRewardedAdEventListener( new RewardedAdListener( parameters, listener ) );
                 rewardedAd.loadAd( createAdRequest( parameters ) );
@@ -306,6 +328,9 @@ public class YandexMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
 
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        final Context applicationContext = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+
         updateUserConsent( parameters );
 
         Runnable loadAdViewAdRunnable = new Runnable()
@@ -313,7 +338,7 @@ public class YandexMediationAdapter
             @Override
             public void run()
             {
-                adView = new BannerAdView( activity.getApplicationContext() );
+                adView = new BannerAdView( applicationContext );
                 adView.setAdUnitId( placementId );
                 adView.setAdSize( toAdSize( adFormat ) );
                 adView.setBannerAdEventListener( new AdViewListener( adFormatLabel, listener ) );
