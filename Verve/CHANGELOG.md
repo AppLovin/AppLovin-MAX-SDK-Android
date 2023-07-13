@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.19.0.0
+* Certified with Verve SDK 2.19.0.
+
 ## 2.18.1.1
 * Add support for binary consent state as a fallback option if the TCFv2 GDPR consent string is not present in Shared Preferences.
 * Remove unnecessary MAX SDK version check.
