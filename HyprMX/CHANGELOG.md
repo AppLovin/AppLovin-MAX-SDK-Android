@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.0.2
+* Add ProGuard rule to not obfuscate public HyprMX SDK classes.
+
 ## 6.2.0.1 
 * Remove the `ageRestrictedUser` check from user consent.
 
