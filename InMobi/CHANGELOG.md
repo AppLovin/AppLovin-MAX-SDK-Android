@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.4.2
+* Revert temporary workaround for the issue where `onAdImpression()` is called before `onAdLoadSucceeded()`.
+
 ## 10.1.4.1
 * Add a temporary workaround for the issue where `onAdImpression()` is called before `onAdLoadSucceeded().`
 
