@@ -27,7 +27,7 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView
 class MaxComposableNativeAdTemplateLoader(
     adUnitId: String,
     context: Context,
-    private val callbacks: BaseJetpackComposeAdActivity
+    callbacks: BaseJetpackComposeAdActivity
 ) {
     var nativeAdView = mutableStateOf<MaxNativeAdView?>(null)
     private var nativeAd: MaxAd? = null
