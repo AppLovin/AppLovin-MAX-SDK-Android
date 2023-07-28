@@ -20,6 +20,12 @@ import com.applovin.sdk.AppLovinAdSize
 import com.applovin.sdk.AppLovinAdVideoPlaybackListener
 import com.applovin.sdk.AppLovinSdk
 
+/**
+ * [android.app.Activity] used to show AppLovin interstitial ads using Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-26.
+ */
+
 class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
     AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener,
     AppLovinAdVideoPlaybackListener {

@@ -43,7 +43,7 @@ class MaxComposableAdLoader(
             override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
                 callbacks.logCallback()
             }
-            
+
             override fun onAdHidden(ad: MaxAd?) {
                 callbacks.logCallback()
             }

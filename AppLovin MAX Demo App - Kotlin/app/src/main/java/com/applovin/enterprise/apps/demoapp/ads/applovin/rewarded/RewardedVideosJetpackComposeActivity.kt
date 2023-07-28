@@ -20,6 +20,12 @@ import com.applovin.sdk.AppLovinAdRewardListener
 import com.applovin.sdk.AppLovinAdVideoPlaybackListener
 import com.applovin.sdk.AppLovinErrorCodes
 
+/**
+ * [android.app.Activity] used to show AppLovin rewarded video ads using Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-27.
+ */
+
 class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
     AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener,
     AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener {

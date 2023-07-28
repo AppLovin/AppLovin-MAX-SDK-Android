@@ -17,6 +17,12 @@ import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.enterprise.apps.demoapp.ui.composables.MaxComposableNativeAdTemplateLoader
 import com.applovin.enterprise.apps.demoapp.ui.composables.NativeTemplateAdComposable
 
+/**
+ * [android.app.Activity] used to show AppLovin MAX native ads using the Templates API with Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-25.
+ */
+
 class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
     private lateinit var adLoader: MaxComposableNativeAdTemplateLoader
 

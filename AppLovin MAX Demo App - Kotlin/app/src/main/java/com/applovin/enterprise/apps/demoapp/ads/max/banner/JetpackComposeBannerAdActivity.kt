@@ -20,7 +20,6 @@ import com.applovin.mediation.MaxAdFormat
  * Created by Matthew Nguyen on 7/13/2023
  */
 
-
 class JetpackComposeBannerAdActivity : BaseJetpackComposeAdActivity() {
     private lateinit var adLoader: MaxComposableAdLoader
 

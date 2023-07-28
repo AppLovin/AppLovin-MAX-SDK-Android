@@ -15,6 +15,12 @@ import com.applovin.enterprise.apps.demoapp.ui.composables.MaxAdComposable
 import com.applovin.enterprise.apps.demoapp.ui.composables.MaxComposableAdLoader
 import com.applovin.mediation.MaxAdFormat
 
+/**
+ * [android.app.Activity] used to show AppLovin MAX MREC ads using Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-20.
+ */
+
 class JetpackComposeMrecAdActivity : BaseJetpackComposeAdActivity() {
     private lateinit var adLoader: MaxComposableAdLoader
 

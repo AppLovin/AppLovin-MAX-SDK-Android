@@ -15,6 +15,12 @@ import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdComposable
 import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinComposableAdLoader
 import com.applovin.sdk.AppLovinAdSize
 
+/**
+ * [android.app.Activity] used to show AppLovin banner ads using Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-26.
+ */
+
 class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity() {
     private lateinit var adLoader: AppLovinComposableAdLoader
 

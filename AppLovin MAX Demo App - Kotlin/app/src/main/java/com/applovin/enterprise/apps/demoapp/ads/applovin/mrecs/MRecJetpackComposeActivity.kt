@@ -17,6 +17,12 @@ import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdComposable
 import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinComposableAdLoader
 import com.applovin.sdk.AppLovinAdSize
 
+/**
+ * [android.app.Activity] used to show AppLovin MREC ads using Jetpack Compose.
+ * <p>
+ * Created by Matthew Nguyen on 2023-07-27.
+ */
+
 class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
     private lateinit var adLoader: AppLovinComposableAdLoader
 
