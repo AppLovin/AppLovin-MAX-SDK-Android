@@ -35,7 +35,7 @@ import kotlin.math.pow
  */
 
 class JetpackComposeRewardedAdActivity : BaseJetpackComposeAdActivity(),
-        MaxRewardedAdListener, MaxAdRevenueListener {
+    MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
     private var retryAttempt = 0
 
@@ -65,8 +65,7 @@ class JetpackComposeRewardedAdActivity : BaseJetpackComposeAdActivity(),
                     },
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.LightGray),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     Text(
                         text = "SHOW AD",

@@ -46,7 +46,7 @@ class JetpackComposeAppOpenAdActivity : BaseJetpackComposeAdActivity(),
 
         setContent {
             Box(Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.align(Alignment.TopCenter)) {
+                Box(Modifier.align(Alignment.TopCenter)) {
                     ListCallbacks()
                 }
                 Button(
@@ -57,8 +57,7 @@ class JetpackComposeAppOpenAdActivity : BaseJetpackComposeAdActivity(),
                     },
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.LightGray),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     Text(
                         text = "SHOW AD",

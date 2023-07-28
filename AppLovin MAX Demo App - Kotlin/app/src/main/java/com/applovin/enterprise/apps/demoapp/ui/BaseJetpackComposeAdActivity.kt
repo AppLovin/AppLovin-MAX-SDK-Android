@@ -18,16 +18,14 @@ import androidx.compose.ui.unit.dp
  * <p>
  * Created by Matthew Nguyen on 2023-07-27.
  */
-abstract class BaseJetpackComposeAdActivity : AppCompatActivity()
-{
+abstract class BaseJetpackComposeAdActivity : AppCompatActivity() {
     private val callbacks = mutableStateListOf<String>()
 
     /**
      * Log ad callbacks in the LazyColumn.
      * Uses the name of the function that calls this one in the log.
      */
-    fun logCallback()
-    {
+    fun logCallback() {
         val callbackName = Throwable().stackTrace[1].methodName
         callbacks.add(callbackName)
     }
@@ -37,8 +35,7 @@ abstract class BaseJetpackComposeAdActivity : AppCompatActivity()
      * LazyColumn is synonymous with a RecyclerView.
      */
     @Composable
-    fun ListCallbacks()
-    {
+    fun ListCallbacks() {
         LazyColumn {
             items(callbacks) { currentCallback ->
                 Text(

@@ -147,6 +147,7 @@
             android:label="@string/title_activity_interstitial_zone_integration" />
         <activity
             android:name=".ads.applovin.interstitials.InterstitialJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_interstitial_jetpack_compose" />
         <activity
             android:name=".ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
@@ -159,6 +160,7 @@
             android:label="@string/title_activity_rewarded_videos_zone_integration" />
         <activity
             android:name=".ads.applovin.rewarded.RewardedVideosJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_rewarded_videos_jetpack_compose" />
         <activity
             android:name=".ads.applovin.banners.BannerDemoMenuActivity"
@@ -174,6 +176,7 @@
             android:label="@string/title_activity_banner_zone_integration" />
         <activity
             android:name=".ads.applovin.banners.BannerJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_banner_jetpack_compose" />
         <activity
             android:name=".ads.applovin.leaders.LeaderDemoMenuActivity"
@@ -186,6 +189,7 @@
             android:label="@string/title_activity_leader_layout_editor" />
         <activity
             android:name=".ads.applovin.leaders.LeaderJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_leader_jetpack_compose" />
         <activity
             android:name=".ads.applovin.mrecs.MRecDemoMenuActivity"
@@ -198,6 +202,7 @@
             android:label="@string/title_activity_mrec_layout_editor" />
         <activity
             android:name=".ads.applovin.mrecs.MRecJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_mrec_jetpack_compose" />
         <activity
             android:name=".ads.applovin.eventtracking.EventTrackingActivity"

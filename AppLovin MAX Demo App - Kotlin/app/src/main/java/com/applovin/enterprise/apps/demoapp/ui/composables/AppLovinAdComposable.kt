@@ -16,7 +16,6 @@ import com.applovin.adview.AppLovinAdView
 import com.applovin.adview.AppLovinAdViewDisplayErrorCode
 import com.applovin.adview.AppLovinAdViewEventListener
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
-import com.applovin.mediation.MaxAdFormat
 import com.applovin.sdk.AppLovinAd
 import com.applovin.sdk.AppLovinAdClickListener
 import com.applovin.sdk.AppLovinAdDisplayListener
@@ -26,68 +25,59 @@ import com.applovin.sdk.AppLovinAdSize
 /**
  * Ad loader to load AppLovin banner/leader/MREC ads using Jetpack Compose.
  */
-class AppLovinAdLoader(val adFormat: AppLovinAdSize,
-                       context: Context,
-                       private val callbacks: BaseJetpackComposeAdActivity)
-{
+class AppLovinComposableAdLoader(
+    val adFormat: AppLovinAdSize,
+    context: Context,
+    callbacks: BaseJetpackComposeAdActivity
+) {
     var adView: AppLovinAdView? = null
 
-    init
-    {
-        val adLoadListener = object : AppLovinAdLoadListener
-        {
-            override fun adReceived(ad: AppLovinAd?)
-            {
+    init {
+        val adLoadListener = object : AppLovinAdLoadListener {
+            override fun adReceived(ad: AppLovinAd?) {
                 callbacks.logCallback()
             }
 
-            override fun failedToReceiveAd(errorCode: Int)
-            {
+            override fun failedToReceiveAd(errorCode: Int) {
                 // Look at AppLovinErrorCodes.java for list of error codes
                 callbacks.logCallback()
             }
         }
 
-        val adDisplayListener = object : AppLovinAdDisplayListener
-        {
-            override fun adDisplayed(ad: AppLovinAd?)
-            {
+        val adDisplayListener = object : AppLovinAdDisplayListener {
+            override fun adDisplayed(ad: AppLovinAd?) {
                 callbacks.logCallback()
             }
 
-            override fun adHidden(ad: AppLovinAd?)
-            {
+            override fun adHidden(ad: AppLovinAd?) {
                 callbacks.logCallback()
             }
         }
 
-        val adViewEventListener = object : AppLovinAdViewEventListener
-        {
-            override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
-            {
+        val adViewEventListener = object : AppLovinAdViewEventListener {
+            override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) {
                 callbacks.logCallback()
             }
 
-            override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?)
-            {
+            override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) {
                 callbacks.logCallback()
             }
 
-            override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?)
-            {
+            override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?) {
                 callbacks.logCallback()
             }
 
-            override fun adFailedToDisplay(ad: AppLovinAd?, adView: AppLovinAdView?, code: AppLovinAdViewDisplayErrorCode?)
-            {
+            override fun adFailedToDisplay(
+                ad: AppLovinAd?,
+                adView: AppLovinAdView?,
+                code: AppLovinAdViewDisplayErrorCode?
+            ) {
                 callbacks.logCallback()
             }
         }
 
-        val adClickListener = object : AppLovinAdClickListener
-        {
-            override fun adClicked(ad: AppLovinAd?)
-            {
+        val adClickListener = object : AppLovinAdClickListener {
+            override fun adClicked(ad: AppLovinAd?) {
                 callbacks.logCallback()
             }
         }
@@ -100,13 +90,11 @@ class AppLovinAdLoader(val adFormat: AppLovinAdSize,
         }
     }
 
-    fun destroy()
-    {
+    fun destroy() {
         adView?.destroy()
     }
 
-    fun loadAd()
-    {
+    fun loadAd() {
         adView?.loadNextAd()
     }
 }
@@ -115,21 +103,23 @@ class AppLovinAdLoader(val adFormat: AppLovinAdSize,
  * Jetpack Compose function to display AppLovin banner/leader/MREC ads.
  */
 @Composable
-fun AppLovinAdComposable(adLoader: AppLovinAdLoader)
-{
-    val adModifier = when(adLoader.adFormat) {
+fun AppLovinAdComposable(adLoader: AppLovinComposableAdLoader) {
+    val adViewModifier = when (adLoader.adFormat) {
         AppLovinAdSize.BANNER -> Modifier
             .fillMaxWidth()
             .height(50.dp)
             .background(Color.Black)
+
         AppLovinAdSize.LEADER -> Modifier
             .fillMaxWidth()
             .height(90.dp)
             .background(Color.Black)
+
         AppLovinAdSize.MREC -> Modifier
             .width(300.dp)
             .height(250.dp)
             .background(Color.Black)
+
         else -> Modifier
             .fillMaxSize()
             .background(Color.Black)
@@ -137,8 +127,8 @@ fun AppLovinAdComposable(adLoader: AppLovinAdLoader)
 
     AndroidView(
         factory = { adLoader.adView!! },
-        update = { adLoader.adView!!.loadNextAd() }, // Load an ad once layout is inflated.
-        modifier = adModifier
+        update = { adLoader.loadAd() }, // Load an ad once layout is inflated.
+        modifier = adViewModifier
     )
 
     DisposableEffect(adLoader.adView)

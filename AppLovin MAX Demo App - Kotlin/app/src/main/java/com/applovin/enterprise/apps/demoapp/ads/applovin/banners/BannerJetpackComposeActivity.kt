@@ -12,19 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdComposable
-import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinComposableAdLoader
 import com.applovin.sdk.AppLovinAdSize
 
-class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity()
-{
-    private lateinit var adLoader: AppLovinAdLoader
+class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity() {
+    private lateinit var adLoader: AppLovinComposableAdLoader
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize ad with ad loader.
-        adLoader = AppLovinAdLoader(AppLovinAdSize.BANNER, this, this)
+        adLoader = AppLovinComposableAdLoader(AppLovinAdSize.BANNER, this, this)
 
         setContent {
             Box(Modifier.fillMaxSize())
@@ -42,8 +40,7 @@ class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity()
                     // Load ad whenever button is tapped.
                     TextButton(
                         onClick = { adLoader.loadAd() },
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text("Load")
                     }

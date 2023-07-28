@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.applovin.adview.AppLovinInterstitialAd
-import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.sdk.AppLovinAd
 import com.applovin.sdk.AppLovinAdClickListener
@@ -22,16 +21,16 @@ import com.applovin.sdk.AppLovinAdVideoPlaybackListener
 import com.applovin.sdk.AppLovinSdk
 
 class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
-    AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener
-{
+    AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener,
+    AppLovinAdVideoPlaybackListener {
     private var currentAd: AppLovinAd? = null
     private var isAdLoading = mutableStateOf(false)
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val interstitialAdDialog = AppLovinInterstitialAd.create(AppLovinSdk.getInstance(this), this)
+        val interstitialAdDialog =
+            AppLovinInterstitialAd.create(AppLovinSdk.getInstance(this), this)
 
         interstitialAdDialog.setAdLoadListener(this)
         interstitialAdDialog.setAdDisplayListener(this)
@@ -40,51 +39,49 @@ class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
         val activity = this
         setContent {
-           Box(Modifier.fillMaxSize())
-           {
-               Box(Modifier.align(Alignment.TopCenter))
-               {
-                   ListCallbacks()
-               }
-               Row(Modifier.align(Alignment.BottomCenter))
-               {
-                   // Load interstitial ad before displaying.
-                   TextButton(onClick = {
-                       isAdLoading.value = true
-                       AppLovinSdk.getInstance(applicationContext).adService.loadNextAd(AppLovinAdSize.INTERSTITIAL, activity)
-                   })
-                   {
-                       Text("Load")
-                   }
+            Box(Modifier.fillMaxSize())
+            {
+                Box(Modifier.align(Alignment.TopCenter))
+                {
+                    ListCallbacks()
+                }
+                Row(Modifier.align(Alignment.BottomCenter))
+                {
+                    // Load interstitial ad before displaying.
+                    TextButton(onClick = {
+                        isAdLoading.value = true
+                        AppLovinSdk.getInstance(applicationContext).adService.loadNextAd(AppLovinAdSize.INTERSTITIAL, activity)
+                    })
+                    {
+                        Text("Load")
+                    }
 
-                   // Display ad only if ad finished loading.
-                   TextButton(onClick = {
-                       if (!isAdLoading.value) {
-                           currentAd?.let{
-                               interstitialAdDialog.showAndRender(it)
-                           }
-                       }
-                   })
-                   {
-                       Text("Show")
-                   }
-               }
-           }
+                    // Display ad only if ad finished loading.
+                    TextButton(onClick = {
+                        if (!isAdLoading.value) {
+                            currentAd?.let {
+                                interstitialAdDialog.showAndRender(it)
+                            }
+                        }
+                    })
+                    {
+                        Text("Show")
+                    }
+                }
+            }
         }
     }
 
     //region Ad Load Listener
 
-    override fun adReceived(appLovinAd: AppLovinAd)
-    {
+    override fun adReceived(appLovinAd: AppLovinAd) {
         logCallback()
         currentAd = appLovinAd
         isAdLoading.value = false
 
     }
 
-    override fun failedToReceiveAd(errorCode: Int)
-    {
+    override fun failedToReceiveAd(errorCode: Int) {
         // Look at AppLovinErrorCodes.java for list of error codes
         logCallback()
     }
@@ -93,13 +90,11 @@ class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Display Listener
 
-    override fun adDisplayed(appLovinAd: AppLovinAd)
-    {
+    override fun adDisplayed(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
-    override fun adHidden(appLovinAd: AppLovinAd)
-    {
+    override fun adHidden(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
@@ -107,8 +102,7 @@ class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Click Listener
 
-    override fun adClicked(appLovinAd: AppLovinAd)
-    {
+    override fun adClicked(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
@@ -116,13 +110,15 @@ class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Video Playback Listener
 
-    override fun videoPlaybackBegan(appLovinAd: AppLovinAd)
-    {
+    override fun videoPlaybackBegan(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
-    override fun videoPlaybackEnded(appLovinAd: AppLovinAd, percentViewed: Double, wasFullyViewed: Boolean)
-    {
+    override fun videoPlaybackEnded(
+        appLovinAd: AppLovinAd,
+        percentViewed: Double,
+        wasFullyViewed: Boolean
+    ) {
         logCallback()
     }
 

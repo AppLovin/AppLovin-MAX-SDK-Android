@@ -63,8 +63,7 @@ class JetpackComposeInterstitialAdActivity : BaseJetpackComposeAdActivity(),
                     },
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.LightGray),
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     Text(
                         text = "SHOW AD",
@@ -81,7 +80,6 @@ class JetpackComposeInterstitialAdActivity : BaseJetpackComposeAdActivity(),
         // Destroy interstitial ad to prevent memory leaks.
         interstitialAd.destroy()
     }
-
 
 
     //region MAX Ad Listener

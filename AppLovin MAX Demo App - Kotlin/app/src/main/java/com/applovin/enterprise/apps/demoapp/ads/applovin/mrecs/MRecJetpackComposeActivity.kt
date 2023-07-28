@@ -14,18 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdComposable
-import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinComposableAdLoader
 import com.applovin.sdk.AppLovinAdSize
 
-class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity()
-{
-    private lateinit var adLoader: AppLovinAdLoader
+class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
+    private lateinit var adLoader: AppLovinComposableAdLoader
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Initialize ad with ad loader.
-        adLoader = AppLovinAdLoader(AppLovinAdSize.MREC, this, this)
+        adLoader = AppLovinComposableAdLoader(AppLovinAdSize.MREC, this, this)
 
         setContent {
             Column(

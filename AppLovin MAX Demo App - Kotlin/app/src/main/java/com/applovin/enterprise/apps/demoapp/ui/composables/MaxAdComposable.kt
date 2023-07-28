@@ -26,63 +26,53 @@ import com.applovin.mediation.ads.MaxAdView
 /**
  * Ad loader to load Max banner/leader/MREC ads using Jetpack Compose.
  */
-class MaxAdLoader(adUnitId: String,
-                  val adFormat: MaxAdFormat,
-                  context: Context,
-                  private val callbacks: BaseJetpackComposeAdActivity)
-{
+class MaxComposableAdLoader(
+    adUnitId: String,
+    val adFormat: MaxAdFormat,
+    context: Context,
+    callbacks: BaseJetpackComposeAdActivity
+) {
     var adView: MaxAdView? = null
 
     init {
-        val adListener = object : MaxAdViewAdListener
-        {
-            override fun onAdLoaded(ad: MaxAd?)
-            {
+        val adListener = object : MaxAdViewAdListener {
+            override fun onAdLoaded(ad: MaxAd?) {
                 callbacks.logCallback()
             }
 
-            override fun onAdLoadFailed(adUnitId: String?, error: MaxError?)
-            {
-                callbacks.logCallback()
-            }
-
-            // deprecated?
-            override fun onAdHidden(ad: MaxAd?)
-            {
-                callbacks.logCallback()
-            }
-
-            override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?)
-            {
+            override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
                 callbacks.logCallback()
             }
 
             // deprecated?
-            override fun onAdDisplayed(ad: MaxAd?)
-            {
+            override fun onAdHidden(ad: MaxAd?) {
                 callbacks.logCallback()
             }
 
-            override fun onAdClicked(ad: MaxAd?)
-            {
+            override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
                 callbacks.logCallback()
             }
 
-            override fun onAdExpanded(ad: MaxAd?)
-            {
+            // deprecated?
+            override fun onAdDisplayed(ad: MaxAd?) {
                 callbacks.logCallback()
             }
 
-            override fun onAdCollapsed(ad: MaxAd?)
-            {
+            override fun onAdClicked(ad: MaxAd?) {
+                callbacks.logCallback()
+            }
+
+            override fun onAdExpanded(ad: MaxAd?) {
+                callbacks.logCallback()
+            }
+
+            override fun onAdCollapsed(ad: MaxAd?) {
                 callbacks.logCallback()
             }
         }
 
-        val revenueListener = object : MaxAdRevenueListener
-        {
-            override fun onAdRevenuePaid(ad: MaxAd?)
-            {
+        val revenueListener = object : MaxAdRevenueListener {
+            override fun onAdRevenuePaid(ad: MaxAd?) {
                 callbacks.logCallback()
 
                 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
@@ -102,8 +92,7 @@ class MaxAdLoader(adUnitId: String,
         }
     }
 
-    fun destroy()
-    {
+    fun destroy() {
         adView?.destroy()
     }
 }
@@ -112,21 +101,23 @@ class MaxAdLoader(adUnitId: String,
  * Jetpack Compose function used to display MAX banner/leader/MREC ads.
  */
 @Composable
-fun MaxAdComposable(adLoader: MaxAdLoader)
-{
-    val adModifier = when(adLoader.adFormat) {
+fun MaxAdComposable(adLoader: MaxComposableAdLoader) {
+    val adViewModifier = when (adLoader.adFormat) {
         MaxAdFormat.BANNER -> Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.Black)// Need to set the background color for MRECs to be fully functional.
+            .background(Color.Black) // Need to set the background color for ads to be fully functional.
+
         MaxAdFormat.LEADER -> Modifier
             .fillMaxWidth()
             .height(90.dp)
             .background(Color.Black)
+
         MaxAdFormat.MREC -> Modifier
             .width(300.dp)
             .height(250.dp)
             .background(Color.Black)
+
         else -> Modifier
             .fillMaxSize()
             .background(Color.Black)
@@ -134,7 +125,7 @@ fun MaxAdComposable(adLoader: MaxAdLoader)
 
     AndroidView(
         factory = { adLoader.adView!! },
-        modifier = adModifier
+        modifier = adViewModifier
     )
 
     DisposableEffect(adLoader.adView)

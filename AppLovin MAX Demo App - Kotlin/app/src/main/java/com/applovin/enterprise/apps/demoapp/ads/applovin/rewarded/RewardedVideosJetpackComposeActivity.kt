@@ -21,14 +21,13 @@ import com.applovin.sdk.AppLovinAdVideoPlaybackListener
 import com.applovin.sdk.AppLovinErrorCodes
 
 class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
-    AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener, AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener
-{
+    AppLovinAdLoadListener, AppLovinAdDisplayListener, AppLovinAdClickListener,
+    AppLovinAdVideoPlaybackListener, AppLovinAdRewardListener {
     private var incentivizedInterstitial: AppLovinIncentivizedInterstitial? = null
     private var currentAd: AppLovinAd? = null
     private var isAdLoading = mutableStateOf(false)
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -38,10 +37,11 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
                 {
                     // You need to preload each rewarded video before it can be displayed
                     TextButton(onClick = {
-                        incentivizedInterstitial = AppLovinIncentivizedInterstitial.create(applicationContext).apply {
-                            isAdLoading.value = true
-                            preload(this@RewardedVideosJetpackComposeActivity)
-                        }
+                        incentivizedInterstitial =
+                            AppLovinIncentivizedInterstitial.create(applicationContext).apply {
+                                isAdLoading.value = true
+                                preload(this@RewardedVideosJetpackComposeActivity)
+                            }
                     })
                     {
                         Text("Preload")
@@ -69,15 +69,13 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Load Listener
 
-    override fun adReceived(appLovinAd: AppLovinAd)
-    {
+    override fun adReceived(appLovinAd: AppLovinAd) {
         logCallback()
         currentAd = appLovinAd
         isAdLoading.value = false
     }
 
-    override fun failedToReceiveAd(errorCode: Int)
-    {
+    override fun failedToReceiveAd(errorCode: Int) {
         // Look at AppLovinErrorCodes.java for list of error codes
         logCallback()
     }
@@ -86,13 +84,11 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Display Listener
 
-    override fun adDisplayed(appLovinAd: AppLovinAd)
-    {
+    override fun adDisplayed(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
-    override fun adHidden(appLovinAd: AppLovinAd)
-    {
+    override fun adHidden(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
@@ -100,8 +96,7 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Click Listener
 
-    override fun adClicked(appLovinAd: AppLovinAd)
-    {
+    override fun adClicked(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
@@ -109,13 +104,15 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Video Playback Listener
 
-    override fun videoPlaybackBegan(appLovinAd: AppLovinAd)
-    {
+    override fun videoPlaybackBegan(appLovinAd: AppLovinAd) {
         logCallback()
     }
 
-    override fun videoPlaybackEnded(appLovinAd: AppLovinAd, percentViewed: Double, wasFullyViewed: Boolean)
-    {
+    override fun videoPlaybackEnded(
+        appLovinAd: AppLovinAd,
+        percentViewed: Double,
+        wasFullyViewed: Boolean
+    ) {
         logCallback()
     }
 
@@ -123,8 +120,7 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
 
     //region Ad Reward Listener
 
-    override fun userRewardVerified(appLovinAd: AppLovinAd, map: Map<String, String>)
-    {
+    override fun userRewardVerified(appLovinAd: AppLovinAd, map: Map<String, String>) {
         // AppLovin servers validated the reward. Refresh user balance from your server.  We will also pass the number of coins
         // awarded and the name of the currency.  However, ideally, you should verify this with your server before granting it.
 
@@ -134,8 +130,7 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
         // If you don't want this, you can turn it off in the Manage Apps UI.
     }
 
-    override fun userOverQuota(appLovinAd: AppLovinAd, map: Map<String, String>)
-    {
+    override fun userOverQuota(appLovinAd: AppLovinAd, map: Map<String, String>) {
         // Your user has already earned the max amount you allowed for the day at this point, so
         // don't give them any more currency. By default we'll show them a alert explaining this,
         // though you can change that from the AppLovin dashboard.
@@ -143,8 +138,7 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
         logCallback()
     }
 
-    override fun userRewardRejected(appLovinAd: AppLovinAd, map: Map<String, String>)
-    {
+    override fun userRewardRejected(appLovinAd: AppLovinAd, map: Map<String, String>) {
         // Your user couldn't be granted a reward for this view. This could happen if you've blacklisted
         // them, for example. Don't grant them any currency. By default we'll show them an alert explaining this,
         // though you can change that from the AppLovin dashboard.
@@ -152,25 +146,22 @@ class RewardedVideosJetpackComposeActivity : BaseJetpackComposeAdActivity(),
         logCallback()
     }
 
-    override fun validationRequestFailed(appLovinAd: AppLovinAd, responseCode: Int)
-    {
-        when (responseCode)
-        {
-            AppLovinErrorCodes.INCENTIVIZED_USER_CLOSED_VIDEO ->
-            {
+    override fun validationRequestFailed(appLovinAd: AppLovinAd, responseCode: Int) {
+        when (responseCode) {
+            AppLovinErrorCodes.INCENTIVIZED_USER_CLOSED_VIDEO -> {
                 // Your user exited the video prematurely. It's up to you if you'd still like to grant
                 // a reward in this case. Most developers choose not to. Note that this case can occur
                 // after a reward was initially granted (since reward validation happens as soon as a
                 // video is launched).
             }
-            AppLovinErrorCodes.INCENTIVIZED_SERVER_TIMEOUT, AppLovinErrorCodes.INCENTIVIZED_UNKNOWN_SERVER_ERROR ->
-            {
+
+            AppLovinErrorCodes.INCENTIVIZED_SERVER_TIMEOUT, AppLovinErrorCodes.INCENTIVIZED_UNKNOWN_SERVER_ERROR -> {
                 // Some server issue happened here. Don't grant a reward. By default we'll show the user
                 // a alert telling them to try again later, but you can change this in the
                 // AppLovin dashboard.
             }
-            AppLovinErrorCodes.INCENTIVIZED_NO_AD_PRELOADED ->
-            {
+
+            AppLovinErrorCodes.INCENTIVIZED_NO_AD_PRELOADED -> {
                 // Indicates that the developer called for a rewarded video before one was available.
                 // Note: This code is only possible when working with rewarded videos.
             }

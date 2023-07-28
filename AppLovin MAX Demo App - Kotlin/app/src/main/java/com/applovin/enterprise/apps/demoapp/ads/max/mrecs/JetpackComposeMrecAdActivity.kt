@@ -12,22 +12,21 @@ import androidx.compose.ui.unit.dp
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.enterprise.apps.demoapp.ui.composables.MaxAdComposable
-import com.applovin.enterprise.apps.demoapp.ui.composables.MaxAdLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.MaxComposableAdLoader
 import com.applovin.mediation.MaxAdFormat
 
 class JetpackComposeMrecAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var adLoader: MaxAdLoader
+    private lateinit var adLoader: MaxComposableAdLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_mrecs)
 
         // Initialize ad with ad loader.
-        adLoader = MaxAdLoader("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this, this)
+        adLoader = MaxComposableAdLoader("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this, this)
         setContent {
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MaxAdComposable(adLoader)

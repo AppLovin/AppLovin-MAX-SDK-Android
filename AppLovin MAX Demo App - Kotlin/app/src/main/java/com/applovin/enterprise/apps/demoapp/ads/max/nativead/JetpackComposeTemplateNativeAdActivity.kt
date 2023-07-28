@@ -14,18 +14,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
-import com.applovin.enterprise.apps.demoapp.ui.composables.MaxNativeAdTemplateLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.MaxComposableNativeAdTemplateLoader
 import com.applovin.enterprise.apps.demoapp.ui.composables.NativeTemplateAdComposable
 
 class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var adLoader: MaxNativeAdTemplateLoader
+    private lateinit var adLoader: MaxComposableNativeAdTemplateLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_template_native_ad)
 
         // Initialize ad with ad loader.
-        adLoader = MaxNativeAdTemplateLoader("YOUR_AD_UNIT_ID", this, this)
+        adLoader = MaxComposableNativeAdTemplateLoader("YOUR_AD_UNIT_ID", this, this)
         setContent {
             Column(
                 modifier = Modifier.fillMaxSize(),
