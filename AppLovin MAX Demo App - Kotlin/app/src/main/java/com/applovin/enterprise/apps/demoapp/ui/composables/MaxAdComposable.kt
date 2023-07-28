@@ -43,8 +43,7 @@ class MaxComposableAdLoader(
             override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
                 callbacks.logCallback()
             }
-
-            // deprecated?
+            
             override fun onAdHidden(ad: MaxAd?) {
                 callbacks.logCallback()
             }
@@ -53,7 +52,6 @@ class MaxComposableAdLoader(
                 callbacks.logCallback()
             }
 
-            // deprecated?
             override fun onAdDisplayed(ad: MaxAd?) {
                 callbacks.logCallback()
             }

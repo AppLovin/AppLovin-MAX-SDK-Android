@@ -29,8 +29,7 @@ class InterstitialJetpackComposeActivity : BaseJetpackComposeAdActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val interstitialAdDialog =
-            AppLovinInterstitialAd.create(AppLovinSdk.getInstance(this), this)
+        val interstitialAdDialog = AppLovinInterstitialAd.create(AppLovinSdk.getInstance(this), this)
 
         interstitialAdDialog.setAdLoadListener(this)
         interstitialAdDialog.setAdDisplayListener(this)
