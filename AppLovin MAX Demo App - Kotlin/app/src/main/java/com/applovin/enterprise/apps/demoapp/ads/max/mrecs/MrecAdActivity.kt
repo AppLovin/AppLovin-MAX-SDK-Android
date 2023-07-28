@@ -8,5 +8,6 @@ class MrecAdActivity : DemoMenuActivity() {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
         DemoMenuItem("Programmatic MRECs", Intent(this, ProgrammaticMrecAdActivity::class.java)),
         DemoMenuItem("Layout Editor MRECs", Intent(this, LayoutEditorMrecAdActivity::class.java)),
-        DemoMenuItem("Recycler View MRECs", Intent(this, RecyclerViewMrecAdActivity::class.java)))
+        DemoMenuItem("Recycler View MRECs", Intent(this, RecyclerViewMrecAdActivity::class.java)),
+        DemoMenuItem("Jetpack Compose MRECs", Intent(this, JetpackComposeMrecAdActivity::class.java)))
 }

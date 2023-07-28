@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ads.max.rewarded
 
 import android.os.Bundle
 import android.os.Handler
@@ -20,7 +20,8 @@ import kotlin.math.pow
  * <p>
  * Created by Harry Arakkal on 2019-09-17.
  */
-class RewardedAdActivity : BaseAdActivity(),
+
+class BasicIntegrationRewardedAdActivity : BaseAdActivity(),
         MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
     private var retryAttempt = 0

@@ -8,6 +8,7 @@ class LeaderDemoMenuActivity : DemoMenuActivity()
 {
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
             DemoMenuItem("Programmatic", Intent(this, LeaderProgrammaticActivity::class.java)),
-            DemoMenuItem("Layout Editor",  Intent(this, LeaderLayoutEditorActivity::class.java))
+            DemoMenuItem("Layout Editor",  Intent(this, LeaderLayoutEditorActivity::class.java)),
+            DemoMenuItem("Jetpack Compose", Intent(this, LeaderJetpackComposeActivity::class.java))
     )
 }
