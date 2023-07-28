@@ -34,7 +34,8 @@ class JetpackComposeBannerAdActivity : BaseJetpackComposeAdActivity() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-            ) {
+            )
+            {
                 MaxAdComposable(adLoader)
                 Spacer(modifier = Modifier.height(4.dp))
                 ListCallbacks()

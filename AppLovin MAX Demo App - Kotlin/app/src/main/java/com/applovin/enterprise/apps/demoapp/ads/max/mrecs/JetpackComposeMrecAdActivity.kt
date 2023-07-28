@@ -28,7 +28,8 @@ class JetpackComposeMrecAdActivity : BaseJetpackComposeAdActivity() {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            )
+            {
                 MaxAdComposable(adLoader)
                 Spacer(modifier = Modifier.height(4.dp))
                 ListCallbacks()

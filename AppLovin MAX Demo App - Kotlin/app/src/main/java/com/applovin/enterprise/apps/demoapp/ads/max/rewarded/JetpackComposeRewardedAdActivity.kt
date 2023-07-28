@@ -52,8 +52,10 @@ class JetpackComposeRewardedAdActivity : BaseJetpackComposeAdActivity(),
         rewardedAd.loadAd()
 
         setContent {
-            Box(Modifier.fillMaxSize()) {
-                Box(Modifier.align(Alignment.TopCenter)) {
+            Box(Modifier.fillMaxSize())
+            {
+                Box(Modifier.align(Alignment.TopCenter))
+                {
                     ListCallbacks()
                 }
                 // If ad is ready, show ad whenever button is tapped.
@@ -66,7 +68,8 @@ class JetpackComposeRewardedAdActivity : BaseJetpackComposeAdActivity(),
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.LightGray),
                     modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
+                )
+                {
                     Text(
                         text = "SHOW AD",
                         color = Color.Black

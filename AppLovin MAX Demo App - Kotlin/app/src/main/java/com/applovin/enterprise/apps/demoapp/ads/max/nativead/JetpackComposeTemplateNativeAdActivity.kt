@@ -30,9 +30,11 @@ class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            )
+            {
                 NativeTemplateAdComposable(adLoader)
-                Box(Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize())
+                {
                     ListCallbacks()
 
                     // If ad is finished loading, show ad whenever button is tapped.
@@ -41,7 +43,8 @@ class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
                         colors = ButtonDefaults.buttonColors(Color.LightGray),
                         onClick = { adLoader.loadAd() },
                         modifier = Modifier.align(Alignment.BottomCenter)
-                    ) {
+                    )
+                    {
                         Text(
                             text = "SHOW AD",
                             color = Color.Black

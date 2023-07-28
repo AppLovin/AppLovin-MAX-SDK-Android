@@ -51,7 +51,8 @@ class JetpackComposeInterstitialAdActivity : BaseJetpackComposeAdActivity(),
 
         setContent {
             Box(Modifier.fillMaxSize()) {
-                Box(Modifier.align(Alignment.TopCenter)) {
+                Box(Modifier.align(Alignment.TopCenter))
+                {
                     ListCallbacks()
                 }
                 // Show ad when button is tapped if ad is loaded and ready.
@@ -64,7 +65,8 @@ class JetpackComposeInterstitialAdActivity : BaseJetpackComposeAdActivity(),
                     shape = RectangleShape,
                     colors = ButtonDefaults.buttonColors(Color.LightGray),
                     modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
+                )
+                {
                     Text(
                         text = "SHOW AD",
                         color = Color.Black
