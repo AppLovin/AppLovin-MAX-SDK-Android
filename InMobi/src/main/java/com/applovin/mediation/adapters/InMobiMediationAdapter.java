@@ -74,6 +74,10 @@ public class InMobiMediationAdapter
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
     private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
 
+    // https://support.inmobi.com/monetize/android-guidelines/native-ads-for-android/#set-up-native-ad
+    // The default setting is an in-Feed ad layout, an aspect ratio ranging between 256:135 - 1200x627
+    private static final float DEFAULT_MEDIA_CONTENT_ASPECT_RATIO = (float) ( ( 256.0 / 135.0 + 1200.0 / 627.0 ) / 2.0 );
+
     private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 5;
 
     private static final AtomicBoolean        INITIALIZED = new AtomicBoolean();
@@ -522,6 +526,18 @@ public class InMobiMediationAdapter
         return extras;
     }
 
+    private float getNativeAdMediaContentAspectRatio(final MaxAdapterParameters parameters)
+    {
+        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        Object aspectRatioObj = localExtraParameters.get( "native_ad_media_content_aspect_ratio" );
+        if ( aspectRatioObj instanceof Number )
+        {
+            return ( (Number) aspectRatioObj ).floatValue();
+        }
+
+        return DEFAULT_MEDIA_CONTENT_ASPECT_RATIO;
+    }
+
     private Drawable fetchNativeAdIcon(@NonNull final String iconUrl, final Bundle serverParameters, final Context context)
     {
         if ( TextUtils.isEmpty( iconUrl ) )
@@ -917,11 +933,13 @@ public class InMobiMediationAdapter
         private final MaxAdViewAdapterListener listener;
         private final Bundle                   serverParameters;
         private final MaxAdFormat              adFormat;
+        private final float                    mediaContentAspectRatio;
 
         NativeAdViewListener(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
         {
             this.placementId = parameters.getThirdPartyAdPlacementId();
             this.serverParameters = parameters.getServerParameters();
+            this.mediaContentAspectRatio = getNativeAdMediaContentAspectRatio( parameters );
 
             this.adFormat = adFormat;
             this.activityRef = new WeakReference<>( activity );
@@ -975,7 +993,8 @@ public class InMobiMediationAdapter
                                     .setBody( inMobiNative.getAdDescription() )
                                     .setCallToAction( inMobiNative.getAdCtaText() )
                                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                                    .setMediaView( frameLayout );
+                                    .setMediaView( frameLayout )
+                                    .setMediaContentAspectRatio( mediaContentAspectRatio );
 
                             final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, adFormat );
 
@@ -1093,11 +1112,13 @@ public class InMobiMediationAdapter
         private final Context                    context;
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
+        private final float                      mediaContentAspectRatio;
 
         NativeAdListener(final MaxAdapterResponseParameters parameters, final Context context, final MaxNativeAdAdapterListener listener)
         {
             placementId = parameters.getThirdPartyAdPlacementId();
             serverParameters = parameters.getServerParameters();
+            mediaContentAspectRatio = getNativeAdMediaContentAspectRatio( parameters );
 
             this.context = context;
             this.listener = listener;
@@ -1156,7 +1177,8 @@ public class InMobiMediationAdapter
                             .setBody( inMobiNative.getAdDescription() )
                             .setCallToAction( inMobiNative.getAdCtaText() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                            .setMediaView( frameLayout );
+                            .setMediaView( frameLayout )
+                            .setMediaContentAspectRatio( mediaContentAspectRatio );
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
                     {
@@ -1271,13 +1293,24 @@ public class InMobiMediationAdapter
                 public void run()
                 {
                     int primaryViewWidth = mediaView.getWidth();
+                    int primaryViewHeight = mediaView.getHeight();
 
-                    final boolean isHorizontalBanner = ( format == MaxAdFormat.BANNER ) && ( mediaView.getWidth() > mediaView.getHeight() );
+                    final boolean isHorizontalBanner = ( format == MaxAdFormat.BANNER ) && ( primaryViewWidth > primaryViewHeight );
 
                     // For horizontal banners before AppLovin SDK version 11.6.0, scale primary view appropriately.
                     if ( AppLovinSdk.VERSION_CODE < 11_06_00_00 && isHorizontalBanner )
                     {
-                        primaryViewWidth = (int) ( mediaView.getHeight() * ( 16.0 / 9.0 ) );
+                        primaryViewWidth = (int) ( primaryViewHeight * getMediaContentAspectRatio() );
+                    }
+
+                    // Compute primaryViewWidth when it is a dynamic layout value before getting the actual measurement.
+                    if ( primaryViewWidth == 0 )
+                    {
+                        int layoutWidth = mediaView.getLayoutParams().width;
+                        if ( layoutWidth == ViewGroup.LayoutParams.WRAP_CONTENT || layoutWidth == ViewGroup.LayoutParams.MATCH_PARENT )
+                        {
+                            primaryViewWidth = (int) ( primaryViewHeight * getMediaContentAspectRatio() );
+                        }
                     }
 
                     final View primaryView = nativeAd.getPrimaryViewOfWidth( mediaView.getContext(), null, mediaView, primaryViewWidth );

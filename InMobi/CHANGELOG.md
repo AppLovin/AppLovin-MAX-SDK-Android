@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.4.3
+* Fix the `mediaView` scaling bug for native ads, caused by mismatch in aspect ratio.
+
 ## 10.1.4.2
 * Revert temporary workaround for the issue where `onAdImpression()` is called before `onAdLoadSucceeded()`.
 
