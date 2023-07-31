@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.2.0.1
+* Updated the device width measurement logic for adaptive banners to match [AdMob's logic](https://developers.google.com/admob/android/banner/anchored-adaptive).
+
 ## 22.2.0.0
 * Certified with GoogleAdManager SDK 22.2.0.
 

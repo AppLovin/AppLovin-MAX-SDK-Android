@@ -3,7 +3,9 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -12,6 +14,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -635,12 +638,26 @@ public class GoogleAdManagerMediationAdapter
             }
         }
 
-        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics( outMetrics );
+        int deviceWidthPx = getApplicationWindowWidth( context );
+        return AppLovinSdkUtils.pxToDp( context, deviceWidthPx );
+    }
 
-        return AppLovinSdkUtils.pxToDp( context, outMetrics.widthPixels );
+    public static int getApplicationWindowWidth(final Context context)
+    {
+        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R )
+        {
+            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
+            Rect applicationBounds = windowMetrics.getBounds();
+            return applicationBounds.width();
+        }
+        else
+        {
+            Display display = windowManager.getDefaultDisplay();
+            DisplayMetrics outMetrics = new DisplayMetrics();
+            display.getMetrics( outMetrics );
+            return outMetrics.widthPixels;
+        }
     }
 
     private void setRequestConfiguration(final MaxAdapterParameters parameters)
