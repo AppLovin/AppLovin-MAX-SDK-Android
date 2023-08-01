@@ -39,6 +39,8 @@ import com.my.target.common.CachePolicy;
 import com.my.target.common.MyTargetManager;
 import com.my.target.common.MyTargetPrivacy;
 import com.my.target.common.MyTargetVersion;
+import com.my.target.common.models.IAdLoadingError;
+import com.my.target.common.models.IAdLoadingError.LoadErrorType;
 import com.my.target.common.models.ImageData;
 import com.my.target.nativeads.AdChoicesPlacement;
 import com.my.target.nativeads.NativeAd;
@@ -326,9 +328,48 @@ public class MyTargetMediationAdapter
         return MyTargetView.AdSize.ADSIZE_320x50;
     }
 
-    private static MaxAdapterError toMaxError(final String myTargetError)
+    private static MaxAdapterError toMaxError(final IAdLoadingError myTargetError)
     {
-        return new MaxAdapterError( MaxAdapterError.NO_FILL.getErrorCode(), MaxAdapterError.NO_FILL.getErrorMessage(), 0, myTargetError );
+        final int myTargetErrorCode = myTargetError.getCode();
+        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+        switch ( myTargetErrorCode )
+        {
+            case LoadErrorType.NETWORK_CONNECTION_FAILED:
+                adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case LoadErrorType.REQUEST_TIMEOUT:
+                adapterError = MaxAdapterError.TIMEOUT;
+                break;
+            case LoadErrorType.FORBIDDEN:
+            case LoadErrorType.NOT_FOUND:
+            case LoadErrorType.INTERNAL_SERVER_ERROR:
+            case LoadErrorType.UNDEFINED_PARSE_ERROR:
+            case LoadErrorType.EMPTY_RESPONSE:
+            case LoadErrorType.UNDEFINED_MEDIATION_ERROR:
+            case LoadErrorType.UNDEFINED_NETWORK_ERROR:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case LoadErrorType.INVALID_URL:
+            case LoadErrorType.INVALID_JSON:
+            case LoadErrorType.INVALID_XML:
+            case LoadErrorType.INVALID_TYPE:
+            case LoadErrorType.REQUIRED_FIELD_MISSED:
+            case LoadErrorType.UNDEFINED_DATA_ERROR:
+            case LoadErrorType.BANNER_HAS_NO_IMAGE:
+            case LoadErrorType.BANNER_HAS_NO_HTML_SOURCE:
+            case LoadErrorType.INVALID_BANNER_TYPE:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case LoadErrorType.RELOADING_NOT_ALLOWED:
+                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            case LoadErrorType.AD_NOT_LOADED_FROM_MEDIATION_NETWORK:
+            case LoadErrorType.NO_BANNERS:
+                adapterError = MaxAdapterError.NO_FILL;
+                break;
+        }
+
+        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), myTargetErrorCode, myTargetError.getMessage() );
     }
 
     //endregion
@@ -353,10 +394,11 @@ public class MyTargetMediationAdapter
         }
 
         @Override
-        public void onNoAd(@NonNull final String reason, @NonNull final InterstitialAd interstitialAd)
+        public void onNoAd(@NonNull final IAdLoadingError adLoadingError, @NonNull final InterstitialAd interstitialAd)
         {
-            log( "Interstitial failed to load with reason: " + reason );
-            listener.onInterstitialAdLoadFailed( toMaxError( reason ) );
+            MaxAdapterError adapterError = toMaxError( adLoadingError );
+            log( "Interstitial failed to load with error: " + adapterError );
+            listener.onInterstitialAdLoadFailed( adapterError );
         }
 
         @Override
@@ -406,10 +448,11 @@ public class MyTargetMediationAdapter
         }
 
         @Override
-        public void onNoAd(@NonNull final String reason, @NonNull final RewardedAd rewardedAd)
+        public void onNoAd(@NonNull final IAdLoadingError adLoadingError, @NonNull final RewardedAd rewardedAd)
         {
-            log( "Rewarded ad failed to load with reason: " + reason );
-            listener.onRewardedAdLoadFailed( toMaxError( reason ) );
+            MaxAdapterError adapterError = toMaxError( adLoadingError );
+            log( "Rewarded ad failed to load with error: " + adapterError );
+            listener.onRewardedAdLoadFailed( adapterError );
         }
 
         @Override
@@ -467,10 +510,11 @@ public class MyTargetMediationAdapter
         }
 
         @Override
-        public void onNoAd(@NonNull final String reason, @NonNull final MyTargetView myTargetView)
+        public void onNoAd(@NonNull final IAdLoadingError adLoadingError, @NonNull final MyTargetView myTargetView)
         {
-            log( "Ad view failed to load with reason: " + reason );
-            listener.onAdViewAdLoadFailed( toMaxError( reason ) );
+            MaxAdapterError adapterError = toMaxError( adLoadingError );
+            log( "Ad view failed to load with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
         }
 
         @Override
@@ -586,10 +630,11 @@ public class MyTargetMediationAdapter
         }
 
         @Override
-        public void onNoAd(@NonNull final String reason, @NonNull NativeAd nativeAd)
+        public void onNoAd(@NonNull final IAdLoadingError adLoadingError, @NonNull NativeAd nativeAd)
         {
-            log( "Native ad (" + slotId + ") failed to load with reason: " + reason );
-            listener.onNativeAdLoadFailed( toMaxError( reason ) );
+            MaxAdapterError adapterError = toMaxError( adLoadingError );
+            log( "Native ad (" + slotId + ") failed to load with error: " + adapterError );
+            listener.onNativeAdLoadFailed( adapterError );
         }
 
         @Override

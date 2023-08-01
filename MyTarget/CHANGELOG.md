@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.18.0.0
+* Certified with MyTarget SDK 5.18.0.
+* Update `onNoAd` method with `IAdLoadingError` parameter and update error code mapping.
+
 ## 5.17.0.0
 * Certified with MyTarget SDK 5.17.0.
 

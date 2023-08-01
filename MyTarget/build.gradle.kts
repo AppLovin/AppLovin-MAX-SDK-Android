@@ -4,7 +4,7 @@ plugins {
 }
 
 private val versionMajor = 5
-private val versionMinor = 17
+private val versionMinor = 18
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.my.target:mytarget-sdk:${libraryVersions["mytarget"]}")
+    implementation("com.my.target:mytarget-sdk:${libraryVersions["myTarget"]}")
 }
 
 publishing {
@@ -52,7 +52,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.my.target")
                                 appendNode("artifactId", "mytarget-sdk")
-                                appendNode("version", libraryVersions["mytarget"])
+                                appendNode("version", libraryVersions["myTarget"])
                                 appendNode("scope", "compile")
                             }
                 }
