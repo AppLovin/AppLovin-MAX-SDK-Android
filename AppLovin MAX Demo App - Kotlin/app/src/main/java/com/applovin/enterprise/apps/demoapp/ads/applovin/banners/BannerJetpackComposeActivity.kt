@@ -47,7 +47,8 @@ class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity() {
                     TextButton(
                         onClick = { adLoader.loadAd() },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
+                    )
+                    {
                         Text("Load")
                     }
                     AppLovinAdComposable(adLoader)

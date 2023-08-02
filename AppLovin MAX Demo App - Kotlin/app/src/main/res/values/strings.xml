@@ -2,13 +2,10 @@
     <string name="app_name">AppLovin Demo App</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
-    <string name="activity_jetpack_compose_interstitial">Jetpack Compose Interstitials</string>
 
-    <string name="activity_app_open">Basic Integration App Open</string>
-    <string name="activity_jetpack_compose_app_open">Jetpack Compose App Open</string>
+    <string name="activity_app_open">App Open Ads</string>
 
-    <string name="activity_rewarded">Basic Integration Rewarded</string>
-    <string name="activity_jetpack_compose_rewarded">Jetpack Compose Rewarded</string>
+    <string name="activity_rewarded">Rewarded Ads</string>
 
     <string name="activity_programmatic_banners">Programmatic Banners</string>
     <string name="activity_layout_editor_banners">Layout Editor Banners</string>
@@ -30,12 +27,10 @@
     <string name="title_activity_interstitial_basic_integration">Basic Integration</string>
     <string name="title_activity_interstitial_manual_loading">Manual Loading Ad</string>
     <string name="title_activity_interstitial_zone_integration">Zone Integration</string>
-    <string name="title_activity_interstitial_jetpack_compose">Jetpack Compose Integration</string>
 
     <string name="title_activity_rewarded_videos_list">Rewarded</string>
     <string name="title_activity_rewarded_videos_basic_integration">Basic Integration</string>
     <string name="title_activity_rewarded_videos_zone_integration">Zone Integration</string>
-    <string name="title_activity_rewarded_videos_jetpack_compose">Jetpack Compose Integration</string>
 
     <string name="title_activity_banner_list">Banners</string>
     <string name="title_activity_banner_programmatic">Programmatic Banners</string>

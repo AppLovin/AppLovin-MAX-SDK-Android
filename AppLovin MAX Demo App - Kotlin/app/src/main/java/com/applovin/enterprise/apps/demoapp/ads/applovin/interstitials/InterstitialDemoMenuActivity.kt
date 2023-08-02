@@ -9,7 +9,6 @@ class InterstitialDemoMenuActivity : DemoMenuActivity()
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
             DemoMenuItem("Basic Integration", Intent(this, InterstitialBasicIntegrationActivity::class.java)),
             DemoMenuItem("Manually Loading Ad", Intent(this, InterstitialManualLoadingActivity::class.java)),
-            DemoMenuItem("Zone Integration",  Intent(this, InterstitialZoneActivity::class.java)),
-            DemoMenuItem("Jetpack Compose",  Intent(this, InterstitialJetpackComposeActivity::class.java))
+            DemoMenuItem("Zone Integration",  Intent(this, InterstitialZoneActivity::class.java))
     )
 }

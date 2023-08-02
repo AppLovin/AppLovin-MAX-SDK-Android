@@ -24,9 +24,7 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+
     buildFeatures {
         compose true
         viewBinding true
@@ -34,11 +32,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.6'
     }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
-    }
+
     if (isLocalAppLovinWorkspace) {
         flavorDimensions "default"
         productFlavors {
@@ -63,23 +57,10 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation 'androidx.activity:activity-compose:1.5.1'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.ui:ui-graphics'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    implementation platform('androidx.compose:compose-bom:2023.06.01')
+    implementation "androidx.compose.material3:material3"
+    implementation 'androidx.activity:activity-compose:1.7.2'
 
     if (isLocalAppLovinWorkspace) {
         implementation(project(":Android-SDK"))

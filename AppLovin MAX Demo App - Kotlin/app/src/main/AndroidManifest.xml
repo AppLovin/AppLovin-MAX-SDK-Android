@@ -34,15 +34,6 @@
         <activity
             android:name=".ads.max.interstitial.InterstitialAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="Interstitials"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.interstitial.BasicIntegrationInterstitialAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.interstitial.JetpackComposeInterstitialAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.max.banner.BannerAdActivity"
@@ -85,27 +76,9 @@
         <activity
             android:name=".ads.max.appopen.AppOpenAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="App Open"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.appopen.BasicIntegrationAppOpenAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.appopen.JetpackComposeAppOpenAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ads.max.rewarded.RewardedAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="Rewarded"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.rewarded.BasicIntegrationRewardedAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".ads.max.rewarded.JetpackComposeRewardedAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".MainActivity" />
         <activity
@@ -146,10 +119,6 @@
             android:name=".ads.applovin.interstitials.InterstitialZoneActivity"
             android:label="@string/title_activity_interstitial_zone_integration" />
         <activity
-            android:name=".ads.applovin.interstitials.InterstitialJetpackComposeActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_interstitial_jetpack_compose" />
-        <activity
             android:name=".ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
             android:label="@string/title_activity_rewarded_videos_list" />
         <activity
@@ -158,10 +127,6 @@
         <activity
             android:name=".ads.applovin.rewarded.RewardedVideosZoneActivity"
             android:label="@string/title_activity_rewarded_videos_zone_integration" />
-        <activity
-            android:name=".ads.applovin.rewarded.RewardedVideosJetpackComposeActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_rewarded_videos_jetpack_compose" />
         <activity
             android:name=".ads.applovin.banners.BannerDemoMenuActivity"
             android:label="@string/title_activity_banner_list" />
