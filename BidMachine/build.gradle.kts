@@ -4,9 +4,9 @@ plugins {
 }
 
 private val versionMajor = 2
-private val versionMinor = 2
-private val versionPatch = 0
-private val versionAdapterPatch = 1
+private val versionMinor = 3
+private val versionPatch = 1
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -25,7 +25,7 @@ repositories {
 
 dependencies {
     compileOnly("com.android.support:support-annotations:${libraryVersions["annotation"]}")
-    implementation("io.bidmachine:ads:${libraryVersions["bidmachine"]}")
+    implementation("io.bidmachine:ads:${libraryVersions["bidMachine"]}")
 }
 
 publishing {
@@ -57,7 +57,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "io.bidmachine")
                                 appendNode("artifactId", "ads")
-                                appendNode("version", libraryVersions["bidmachine"])
+                                appendNode("version", libraryVersions["bidMachine"])
                                 appendNode("scope", "compile")
                             }
                 }

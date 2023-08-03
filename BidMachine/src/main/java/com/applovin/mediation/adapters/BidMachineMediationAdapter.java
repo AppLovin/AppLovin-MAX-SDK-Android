@@ -616,6 +616,14 @@ public class BidMachineMediationAdapter
         }
 
         @Override
+        public void onAdShowFailed(@NonNull BannerView bannerView, @NonNull BMError bmError)
+        {
+            MaxAdapterError maxAdapterError = toMaxError( bmError );
+            log( "AdView ad failed to show with error (" + maxAdapterError + ")" );
+            listener.onAdViewAdDisplayFailed( maxAdapterError );
+        }
+
+        @Override
         public void onAdClicked(@NonNull BannerView bannerView)
         {
             log( "AdView ad clicked" );
@@ -722,6 +730,12 @@ public class BidMachineMediationAdapter
         {
             log( "Native ad impression" );
             listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdShowFailed(@NonNull NativeAd nativeAd, @NonNull BMError bmError)
+        {
+            log( "Native ad failed to show with error (" + bmError + ")" );
         }
 
         @Override

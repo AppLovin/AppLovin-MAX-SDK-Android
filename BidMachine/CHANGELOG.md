@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.1.0
+* Certified with BidMachine SDK 2.3.1.
+* Add `onAdShowFailed()` callback for banners, MRECs, and native ads.
+
 ## 2.2.0.1
 * Updated `BidMachine.getBidToken()` usage.
 
