@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads.max.interstitial
+package com.applovin.enterprise.apps.demoapp.ads.max
 
 import android.os.Bundle
 import android.os.Handler

@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads.max.appopen
+package com.applovin.enterprise.apps.demoapp.ads.max
 
 import android.os.Bundle
 import android.view.View

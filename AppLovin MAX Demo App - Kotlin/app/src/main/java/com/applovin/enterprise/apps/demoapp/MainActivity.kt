@@ -20,12 +20,12 @@ import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.Interstit
 import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.appopen.AppOpenAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.interstitial.InterstitialAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.rewarded.RewardedAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
