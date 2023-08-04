@@ -5,7 +5,7 @@ plugins {
 
 private val versionMajor = 9
 private val versionMinor = 8
-private val versionPatch = 3
+private val versionPatch = 4
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    api("com.amazon.android:aps-sdk:${libraryVersions["amazon"]}")
+    api("com.amazon.android:aps-sdk:${libraryVersions["amazonAdMarketplace"]}")
     compileOnly("com.android.support:support-annotations:+")
     implementation("androidx.appcompat:appcompat:${libraryVersions["appcompat"]}")
 }
