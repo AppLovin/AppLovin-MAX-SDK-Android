@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 22
 private val versionMinor = 2
 private val versionPatch = 0
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -20,9 +20,9 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.google.android.gms:play-services-ads:${libraryVersions["playServicesAds"]}")
+    implementation("com.google.android.gms:play-services-ads:${libraryVersions["google"]}")
 
-    // Also required by MoPub and Inneractive to check for availability of Google Play Services APIs and retrieve the advertising ID
+    // Also required by Inneractive to check for availability of Google Play Services APIs and retrieve the advertising ID
     implementation("com.google.android.gms:play-services-base:${libraryVersions["playServicesBase"]}")
 }
 
@@ -56,7 +56,7 @@ publishing {
 
                                 appendNode("groupId", "com.google.android.gms")
                                 appendNode("artifactId", "play-services-ads")
-                                appendNode("version", libraryVersions["playServicesAds"])
+                                appendNode("version", libraryVersions["google"])
                                 appendNode("scope", "compile")
                             }
                 }

@@ -822,6 +822,10 @@ public class GoogleMediationAdapter
         {
             return AdFormat.REWARDED_INTERSTITIAL;
         }
+        else if ( adFormat == MaxAdFormat.APP_OPEN )
+        {
+            return AdFormat.APP_OPEN_AD;
+        }
         else
         {
             return AdFormat.UNKNOWN;
