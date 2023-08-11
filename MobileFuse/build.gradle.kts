@@ -4,8 +4,8 @@ plugins {
 }
 
 private val versionMajor = 1
-private val versionMinor = 5
-private val versionPatch = 2
+private val versionMinor = 6
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.mobilefuse.sdk:mobilefuse-sdk-core:${libraryVersions["mobilefuse"]}")
+    implementation("com.mobilefuse.sdk:mobilefuse-sdk-core:${libraryVersions["mobileFuse"]}")
 }
 
 publishing {
@@ -52,7 +52,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.mobilefuse.sdk")
                                 appendNode("artifactId", "mobilefuse-sdk-core")
-                                appendNode("version", libraryVersions["mobilefuse"])
+                                appendNode("version", libraryVersions["mobileFuse"])
                                 appendNode("scope", "compile")
                             }
                 }
