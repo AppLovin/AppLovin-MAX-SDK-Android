@@ -5,57 +5,46 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.unit.dp
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
-import com.applovin.enterprise.apps.demoapp.ui.composables.MaxComposableNativeAdTemplateLoader
-import com.applovin.enterprise.apps.demoapp.ui.composables.NativeTemplateAdComposable
+import com.applovin.enterprise.apps.demoapp.ui.composables.MaxTemplateNativeAdViewComposableLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.MaxTemplateNativeAdViewComposable
 
 /**
  * [android.app.Activity] used to show AppLovin MAX native ads using the Templates API with Jetpack Compose.
  * <p>
  * Created by Matthew Nguyen on 2023-07-25.
  */
-
 class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var adLoader: MaxComposableNativeAdTemplateLoader
+    private lateinit var adLoader: MaxTemplateNativeAdViewComposableLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_template_native_ad)
 
         // Initialize ad with ad loader.
-        adLoader = MaxComposableNativeAdTemplateLoader("YOUR_AD_UNIT_ID", this, this)
+        adLoader = MaxTemplateNativeAdViewComposableLoader("YOUR_AD_UNIT_ID", this, this)
         setContent {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                NativeTemplateAdComposable(adLoader)
+                MaxTemplateNativeAdViewComposable(adLoader)
                 Box(Modifier.fillMaxSize())
                 {
                     ListCallbacks()
-
                     // If ad is finished loading, show ad whenever button is tapped.
-                    Button(
-                        shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(Color.LightGray),
+                    ShowAdButton(
                         onClick = { adLoader.loadAd() },
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(10.dp)
                     )
-                    {
-                        Text(
-                            text = "SHOW AD",
-                            color = Color.Black
-                        )
-                    }
                 }
             }
 

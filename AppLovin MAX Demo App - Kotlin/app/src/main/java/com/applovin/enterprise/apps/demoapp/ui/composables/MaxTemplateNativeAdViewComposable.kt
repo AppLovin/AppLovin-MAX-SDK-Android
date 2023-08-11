@@ -2,8 +2,8 @@ package com.applovin.enterprise.apps.demoapp.ui.composables
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -24,17 +24,17 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView
 /**
  * Ad loader to load Max Native ads with Templates API using Jetpack Compose.
  */
-class MaxComposableNativeAdTemplateLoader(
-    adUnitId: String,
+class MaxTemplateNativeAdViewComposableLoader(
+    adUnitIdentifier: String,
     context: Context,
     callbacks: BaseJetpackComposeAdActivity
 ) {
     var nativeAdView = mutableStateOf<MaxNativeAdView?>(null)
     private var nativeAd: MaxAd? = null
-    private var adLoader: MaxNativeAdLoader? = null
+    private var adLoader: MaxNativeAdLoader
 
     init {
-        adLoader = MaxNativeAdLoader(adUnitId, context)
+        adLoader = MaxNativeAdLoader(adUnitIdentifier, context)
         val adRevenueListener = object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd?) {
                 callbacks.logCallback()
@@ -54,7 +54,7 @@ class MaxComposableNativeAdTemplateLoader(
                 callbacks.logCallback()
                 // Cleanup any pre-existing native ad to prevent memory leaks.
                 if (nativeAd != null) {
-                    adLoader!!.destroy(nativeAd)
+                    adLoader.destroy(nativeAd)
                     nativeAdView.value?.let {
                         it.removeAllViews()
                         it.addView(loadedNativeAdView)
@@ -77,7 +77,7 @@ class MaxComposableNativeAdTemplateLoader(
                 callbacks.logCallback()
             }
         }
-        adLoader?.apply {
+        adLoader.apply {
             setRevenueListener(adRevenueListener)
             setNativeAdListener(adListener)
         }
@@ -87,15 +87,15 @@ class MaxComposableNativeAdTemplateLoader(
         // Must destroy native ad or else there will be memory leaks.
         if (nativeAd != null) {
             // Call destroy on the native ad from any native ad loader.
-            adLoader?.destroy(nativeAd)
+            adLoader.destroy(nativeAd)
         }
 
         // Destroy the actual loader itself
-        adLoader?.destroy()
+        adLoader.destroy()
     }
 
     fun loadAd() {
-        adLoader?.loadAd()
+        adLoader.loadAd()
     }
 }
 
@@ -103,13 +103,13 @@ class MaxComposableNativeAdTemplateLoader(
  * Jetpack Compose function to display MAX native ads using the Templates API.
  */
 @Composable
-fun NativeTemplateAdComposable(adLoader: MaxComposableNativeAdTemplateLoader) {
+fun MaxTemplateNativeAdViewComposable(adLoader: MaxTemplateNativeAdViewComposableLoader) {
     adLoader.nativeAdView.value?.let { adView ->
         AndroidView(
             factory = { adView },
             modifier = Modifier
                 .height(300.dp)
-                .width(250.dp)
+                .fillMaxWidth()
                 .background(Color.Black)
         )
     }

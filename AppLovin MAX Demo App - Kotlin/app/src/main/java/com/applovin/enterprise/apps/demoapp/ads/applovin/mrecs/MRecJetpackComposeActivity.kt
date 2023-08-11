@@ -4,17 +4,12 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
-import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdComposable
-import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinComposableAdLoader
+import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdViewComposable
+import com.applovin.enterprise.apps.demoapp.ui.composables.AppLovinAdViewComposableViewModel
 import com.applovin.sdk.AppLovinAdSize
 
 /**
@@ -22,14 +17,14 @@ import com.applovin.sdk.AppLovinAdSize
  * <p>
  * Created by Matthew Nguyen on 2023-07-27.
  */
-
 class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var adLoader: AppLovinComposableAdLoader
+    private lateinit var viewModel: AppLovinAdViewComposableViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Initialize ad with ad loader.
-        adLoader = AppLovinComposableAdLoader(AppLovinAdSize.MREC, this, this)
+
+        // Initialize view model.
+        viewModel = AppLovinAdViewComposableViewModel(this)
 
         setContent {
             Column(
@@ -38,20 +33,16 @@ class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                AppLovinAdComposable(adLoader)
-                Spacer(modifier = Modifier.height(4.dp))
+                AppLovinAdViewComposable(AppLovinAdSize.MREC, viewModel)
                 Box(modifier = Modifier.fillMaxSize())
                 {
                     ListCallbacks()
-
-                    // Load ad whenever button is tapped.
-                    TextButton(
-                        onClick = { adLoader.loadAd() },
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                    // Load new ad whenever button is tapped.
+                    LoadButton(
+                        onClick = { viewModel.loadAd() },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
                     )
-                    {
-                        Text("Load")
-                    }
                 }
             }
         }
