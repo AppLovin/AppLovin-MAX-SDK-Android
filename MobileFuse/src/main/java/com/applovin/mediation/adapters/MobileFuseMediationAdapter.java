@@ -35,6 +35,7 @@ import com.mobilefuse.sdk.MobileFuseInterstitialAd;
 import com.mobilefuse.sdk.MobileFuseNativeAd;
 import com.mobilefuse.sdk.MobileFuseRewardedAd;
 import com.mobilefuse.sdk.MobileFuseSettings;
+import com.mobilefuse.sdk.SdkInitListener;
 import com.mobilefuse.sdk.internal.MobileFuseBiddingTokenProvider;
 import com.mobilefuse.sdk.internal.MobileFuseBiddingTokenRequest;
 import com.mobilefuse.sdk.internal.TokenGeneratorListener;
@@ -42,6 +43,7 @@ import com.mobilefuse.sdk.privacy.MobileFusePrivacyPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,6 +52,10 @@ public class MobileFuseMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
+    private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
+
+    private static InitializationStatus sStatus;
+
     private MobileFuseInterstitialAd interstitialAd;
     private MobileFuseRewardedAd     rewardedAd;
     private MobileFuseBannerAd       adView;
@@ -60,8 +66,34 @@ public class MobileFuseMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        MobileFuseSettings.setTestMode( parameters.isTesting() );
-        onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
+        if ( INITIALIZED.compareAndSet( false, true ) )
+        {
+            sStatus = InitializationStatus.INITIALIZING;
+
+            MobileFuseSettings.setTestMode( parameters.isTesting() );
+            MobileFuse.init( new SdkInitListener()
+            {
+                @Override
+                public void onInitSuccess()
+                {
+                    sStatus = InitializationStatus.INITIALIZED_SUCCESS;
+                    onCompletionListener.onCompletion( sStatus, null );
+                }
+
+                @Override
+                public void onInitError()
+                {
+                    sStatus = InitializationStatus.INITIALIZED_FAILURE;
+                    onCompletionListener.onCompletion( sStatus, null );
+                }
+            } );
+        }
+        else
+        {
+            log( "MobileFuse attempted initialization already - marking initialization as completed" );
+
+            onCompletionListener.onCompletion( sStatus, null );
+        }
     }
 
     @Override
