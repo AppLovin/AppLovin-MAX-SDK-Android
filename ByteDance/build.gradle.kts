@@ -4,9 +4,9 @@ plugins {
 }
 
 private val versionMajor = 5
-private val versionMinor = 3
+private val versionMinor = 4
 private val versionPatch = 0
-private val versionBuild = 4
+private val versionBuild = 8
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.pangle.global:ads-sdk:${libraryVersions["bytedance"]}")
+    implementation("com.pangle.global:ads-sdk:${libraryVersions["byteDance"]}")
 }
 
 publishing {
@@ -58,7 +58,7 @@ publishing {
 
                                 appendNode("groupId", "com.pangle.global")
                                 appendNode("artifactId", "ads-sdk")
-                                appendNode("version", libraryVersions["bytedance"])
+                                appendNode("version", libraryVersions["byteDance"])
                                 appendNode("scope", "compile")
                             }
 
