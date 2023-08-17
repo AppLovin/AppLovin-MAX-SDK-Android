@@ -182,7 +182,7 @@ public class SmaatoMediationAdapter
             {
                 log( "Native " + adFormat.getLabel() + " ad load failed: Activity is null" );
 
-                final MaxAdapterError error = new MaxAdapterError( -5601, "No Activity" );
+                final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
                 listener.onAdViewAdLoadFailed( error );
 
                 return;
