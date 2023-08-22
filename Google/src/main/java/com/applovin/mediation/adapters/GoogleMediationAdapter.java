@@ -822,6 +822,7 @@ public class GoogleMediationAdapter
         {
             return AdFormat.REWARDED_INTERSTITIAL;
         }
+        // NOTE: App open ads were added in AppLovin v11.5.0 and must be checked after all the other ad formats to avoid throwing an exception
         else if ( adFormat == MaxAdFormat.APP_OPEN )
         {
             return AdFormat.APP_OPEN_AD;

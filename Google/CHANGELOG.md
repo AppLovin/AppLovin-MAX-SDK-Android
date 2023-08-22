@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.3.0.0
+* Certified with Google SDK 22.3.0.
+
 ## 22.2.0.2
 * Add support for bidding on app open ads.
 
