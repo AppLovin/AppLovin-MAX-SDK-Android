@@ -20,40 +20,39 @@ import com.applovin.enterprise.apps.demoapp.ui.composables.MaxTemplateNativeAdVi
  * Created by Matthew Nguyen on 2023-07-25.
  */
 class JetpackComposeTemplateNativeAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var adLoader: MaxTemplateNativeAdViewComposableLoader
+    private lateinit var nativeAdLoader: MaxTemplateNativeAdViewComposableLoader
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_template_native_ad)
 
         // Initialize ad with ad loader.
-        adLoader = MaxTemplateNativeAdViewComposableLoader("YOUR_AD_UNIT_ID", this, this)
+        nativeAdLoader = MaxTemplateNativeAdViewComposableLoader("YOUR_AD_UNIT_ID", this, this)
         setContent {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                MaxTemplateNativeAdViewComposable(adLoader)
+                MaxTemplateNativeAdViewComposable(nativeAdLoader)
                 Box(Modifier.fillMaxSize())
                 {
                     ListCallbacks()
                     // If ad is finished loading, show ad whenever button is tapped.
                     ShowAdButton(
-                        onClick = { adLoader.loadAd() },
+                        onClick = { nativeAdLoader.loadAd() },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(10.dp)
                     )
                 }
             }
-
         }
     }
 
     override fun onDestroy() {
         // Destroy ad loader to prevent memory leaks.
-        adLoader.destroy()
+        nativeAdLoader.destroy()
         super.onDestroy()
     }
 }

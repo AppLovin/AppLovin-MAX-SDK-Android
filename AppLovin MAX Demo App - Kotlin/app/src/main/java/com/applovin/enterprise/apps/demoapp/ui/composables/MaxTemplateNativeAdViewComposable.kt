@@ -27,17 +27,17 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView
 class MaxTemplateNativeAdViewComposableLoader(
     adUnitIdentifier: String,
     context: Context,
-    callbacks: BaseJetpackComposeAdActivity
+    baseActivity: BaseJetpackComposeAdActivity
 ) {
     var nativeAdView = mutableStateOf<MaxNativeAdView?>(null)
     private var nativeAd: MaxAd? = null
-    private var adLoader: MaxNativeAdLoader
+    private var nativeAdLoader: MaxNativeAdLoader
 
     init {
-        adLoader = MaxNativeAdLoader(adUnitIdentifier, context)
+        nativeAdLoader = MaxNativeAdLoader(adUnitIdentifier, context)
         val adRevenueListener = object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd?) {
-                callbacks.logCallback()
+                baseActivity.logCallback()
 
                 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
                 adjustAdRevenue.setRevenue(ad?.revenue, "USD")
@@ -51,10 +51,10 @@ class MaxTemplateNativeAdViewComposableLoader(
 
         val adListener = object : MaxNativeAdListener() {
             override fun onNativeAdLoaded(loadedNativeAdView: MaxNativeAdView?, ad: MaxAd) {
-                callbacks.logCallback()
+                baseActivity.logCallback()
                 // Cleanup any pre-existing native ad to prevent memory leaks.
                 if (nativeAd != null) {
-                    adLoader.destroy(nativeAd)
+                    nativeAdLoader.destroy(nativeAd)
                     nativeAdView.value?.let {
                         it.removeAllViews()
                         it.addView(loadedNativeAdView)
@@ -66,18 +66,18 @@ class MaxTemplateNativeAdViewComposableLoader(
             }
 
             override fun onNativeAdLoadFailed(adUnitId: String, error: MaxError) {
-                callbacks.logCallback()
+                baseActivity.logCallback()
             }
 
             override fun onNativeAdClicked(ad: MaxAd) {
-                callbacks.logCallback()
+                baseActivity.logCallback()
             }
 
             override fun onNativeAdExpired(nativeAd: MaxAd?) {
-                callbacks.logCallback()
+                baseActivity.logCallback()
             }
         }
-        adLoader.apply {
+        nativeAdLoader.apply {
             setRevenueListener(adRevenueListener)
             setNativeAdListener(adListener)
         }
@@ -87,15 +87,15 @@ class MaxTemplateNativeAdViewComposableLoader(
         // Must destroy native ad or else there will be memory leaks.
         if (nativeAd != null) {
             // Call destroy on the native ad from any native ad loader.
-            adLoader.destroy(nativeAd)
+            nativeAdLoader.destroy(nativeAd)
         }
 
         // Destroy the actual loader itself
-        adLoader.destroy()
+        nativeAdLoader.destroy()
     }
 
     fun loadAd() {
-        adLoader.loadAd()
+        nativeAdLoader.loadAd()
     }
 }
 
@@ -103,8 +103,8 @@ class MaxTemplateNativeAdViewComposableLoader(
  * Jetpack Compose function to display MAX native ads using the Templates API.
  */
 @Composable
-fun MaxTemplateNativeAdViewComposable(adLoader: MaxTemplateNativeAdViewComposableLoader) {
-    adLoader.nativeAdView.value?.let { adView ->
+fun MaxTemplateNativeAdViewComposable(nativeAdLoader: MaxTemplateNativeAdViewComposableLoader) {
+    nativeAdLoader.nativeAdView.value?.let { adView ->
         AndroidView(
             factory = { adView },
             modifier = Modifier

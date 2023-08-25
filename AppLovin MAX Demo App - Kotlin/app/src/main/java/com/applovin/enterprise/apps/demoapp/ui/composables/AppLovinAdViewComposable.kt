@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * View Model for AppLovin banner/leader/MREC ads using Jetpack Compose.
  */
-class AppLovinAdViewComposableViewModel(callbacks: BaseJetpackComposeAdActivity) : ViewModel() {
+class AppLovinAdViewComposableViewModel(baseActivity: BaseJetpackComposeAdActivity) : ViewModel() {
     private val _shouldLoadAd = MutableStateFlow(true)
     val shouldLoadAd: StateFlow<Boolean> get() = _shouldLoadAd
 
@@ -40,38 +40,38 @@ class AppLovinAdViewComposableViewModel(callbacks: BaseJetpackComposeAdActivity)
 
     val adLoadListener = object : AppLovinAdLoadListener {
         override fun adReceived(ad: AppLovinAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun failedToReceiveAd(errorCode: Int) {
             // Look at AppLovinErrorCodes.java for list of error codes
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
     }
 
     val adDisplayListener = object : AppLovinAdDisplayListener {
         override fun adDisplayed(ad: AppLovinAd?) {
             _shouldLoadAd.value = false
-            callbacks.logCallback()
+            baseActivity.logCallback()
 
         }
 
         override fun adHidden(ad: AppLovinAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
     }
 
     val adViewEventListener = object : AppLovinAdViewEventListener {
         override fun adOpenedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun adClosedFullscreen(ad: AppLovinAd?, adView: AppLovinAdView?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun adLeftApplication(ad: AppLovinAd?, adView: AppLovinAdView?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun adFailedToDisplay(
@@ -80,13 +80,13 @@ class AppLovinAdViewComposableViewModel(callbacks: BaseJetpackComposeAdActivity)
             code: AppLovinAdViewDisplayErrorCode?
         ) {
             _shouldLoadAd.value = false
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
     }
 
     val adClickListener = object : AppLovinAdClickListener {
         override fun adClicked(ad: AppLovinAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
     }
 }

@@ -21,13 +21,13 @@ import com.applovin.sdk.AppLovinAdSize
  * Created by Matthew Nguyen on 2023-07-26.
  */
 class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var viewModel: AppLovinAdViewComposableViewModel
+    private lateinit var bannerViewModel: AppLovinAdViewComposableViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize view model.
-        viewModel = AppLovinAdViewComposableViewModel(this)
+        bannerViewModel = AppLovinAdViewComposableViewModel(this)
 
         setContent {
             Column(
@@ -45,13 +45,13 @@ class BannerJetpackComposeActivity : BaseJetpackComposeAdActivity() {
                     ListCallbacks()
                     // Load new ad whenever button is tapped.
                     LoadButton(
-                        onClick = { viewModel.loadAd() },
+                        onClick = { bannerViewModel.loadAd() },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 8.dp)
                     )
                 }
-                AppLovinAdViewComposable(AppLovinAdSize.BANNER, viewModel)
+                AppLovinAdViewComposable(AppLovinAdSize.BANNER, bannerViewModel)
             }
         }
     }

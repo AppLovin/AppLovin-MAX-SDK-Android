@@ -18,13 +18,13 @@ import com.applovin.sdk.AppLovinAdSize
  * Created by Matthew Nguyen on 2023-07-27.
  */
 class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var viewModel: AppLovinAdViewComposableViewModel
+    private lateinit var mrecViewModel: AppLovinAdViewComposableViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize view model.
-        viewModel = AppLovinAdViewComposableViewModel(this)
+        mrecViewModel = AppLovinAdViewComposableViewModel(this)
 
         setContent {
             Column(
@@ -33,13 +33,13 @@ class MRecJetpackComposeActivity : BaseJetpackComposeAdActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                AppLovinAdViewComposable(AppLovinAdSize.MREC, viewModel)
+                AppLovinAdViewComposable(AppLovinAdSize.MREC, mrecViewModel)
                 Box(modifier = Modifier.fillMaxSize())
                 {
                     ListCallbacks()
                     // Load new ad whenever button is tapped.
                     LoadButton(
-                        onClick = { viewModel.loadAd() },
+                        onClick = { mrecViewModel.loadAd() },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                     )

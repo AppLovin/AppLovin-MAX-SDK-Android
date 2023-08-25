@@ -28,44 +28,44 @@ import com.applovin.mediation.ads.MaxAdView
 /**
  * View Model for Max banner/leader/MREC ads using Jetpack Compose.
  */
-class MaxAdViewComposableViewModel(callbacks: BaseJetpackComposeAdActivity) : ViewModel() {
+class MaxAdViewComposableViewModel(baseActivity: BaseJetpackComposeAdActivity) : ViewModel() {
     val adListener = object : MaxAdViewAdListener {
         override fun onAdLoaded(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdHidden(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdDisplayed(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdClicked(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdExpanded(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
 
         override fun onAdCollapsed(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
         }
     }
 
     val revenueListener = object : MaxAdRevenueListener {
         override fun onAdRevenuePaid(ad: MaxAd?) {
-            callbacks.logCallback()
+            baseActivity.logCallback()
 
             val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
             adjustAdRevenue.setRevenue(ad?.revenue, "USD")

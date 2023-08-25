@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.applovin.enterprise.apps.demoapp.R
 
-
 /**
  * Base for activities showing ads using Jetpack Compose.
  * <p>

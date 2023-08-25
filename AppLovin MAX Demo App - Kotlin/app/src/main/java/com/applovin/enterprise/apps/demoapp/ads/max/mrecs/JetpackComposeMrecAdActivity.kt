@@ -18,21 +18,21 @@ import com.applovin.mediation.MaxAdFormat
  * Created by Matthew Nguyen on 2023-07-20.
  */
 class JetpackComposeMrecAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var viewModel: MaxAdViewComposableViewModel
+    private lateinit var mrecViewModel: MaxAdViewComposableViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_mrecs)
 
         // Initialize ad with ad loader.
-        viewModel = MaxAdViewComposableViewModel(this)
+        mrecViewModel = MaxAdViewComposableViewModel(this)
         setContent {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                MaxAdViewComposable("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, viewModel)
+                MaxAdViewComposable("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, mrecViewModel)
                 ListCallbacks()
             }
         }

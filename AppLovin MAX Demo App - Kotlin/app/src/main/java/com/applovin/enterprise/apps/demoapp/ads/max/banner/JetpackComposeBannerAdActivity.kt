@@ -18,14 +18,14 @@ import com.applovin.sdk.AppLovinSdkUtils
  * Created by Matthew Nguyen on 7/13/2023
  */
 class JetpackComposeBannerAdActivity : BaseJetpackComposeAdActivity() {
-    private lateinit var viewModel: MaxAdViewComposableViewModel
+    private lateinit var bannerViewModel: MaxAdViewComposableViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle(R.string.activity_jetpack_compose_banners)
 
         // Initialize ad with ad loader.
-        viewModel = MaxAdViewComposableViewModel(this)
+        bannerViewModel = MaxAdViewComposableViewModel(this)
 
         val isTablet = AppLovinSdkUtils.isTablet(this)
         val adFormat = if (isTablet) MaxAdFormat.LEADER else MaxAdFormat.BANNER
@@ -36,7 +36,7 @@ class JetpackComposeBannerAdActivity : BaseJetpackComposeAdActivity() {
                     .fillMaxSize()
             )
             {
-                MaxAdViewComposable("YOUR_AD_UNIT_ID", adFormat, viewModel)
+                MaxAdViewComposable("YOUR_AD_UNIT_ID", adFormat, bannerViewModel)
                 ListCallbacks()
             }
         }

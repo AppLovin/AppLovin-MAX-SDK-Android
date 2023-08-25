@@ -20,7 +20,6 @@ import kotlin.math.pow
  * <p>
  * Created by Harry Arakkal on 2019-09-17.
  */
-
 class RewardedAdActivity : BaseAdActivity(),
         MaxRewardedAdListener, MaxAdRevenueListener {
     private lateinit var rewardedAd: MaxRewardedAd
