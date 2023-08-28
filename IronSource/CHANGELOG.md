@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.5.0.0.0
+* Certified with IronSource SDK 7.5.0.
+
 ## 7.4.0.0.1
 * Add support for bidding on banners/MRECs, interstitials, and rewarded ads.
 
