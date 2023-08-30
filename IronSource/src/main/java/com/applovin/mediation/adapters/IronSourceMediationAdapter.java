@@ -3,7 +3,6 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Bundle;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -46,44 +45,6 @@ public class IronSourceMediationAdapter
     private String                   mRouterPlacementIdentifier;
     private ISDemandOnlyBannerLayout adView;
 
-    private static final Application.ActivityLifecycleCallbacks activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks()
-    {
-        @Override
-        public void onActivityResumed(final Activity activity)
-        {
-            // Do not forward ironSource Activity lifecycle events
-            if ( !activity.getClass().getName().startsWith( "com.ironsource.sdk" ) )
-            {
-                IronSource.onResume( activity );
-            }
-        }
-
-        @Override
-        public void onActivityPaused(final Activity activity)
-        {
-            // Do not forward ironSource Activity lifecycle events
-            if ( !activity.getClass().getName().startsWith( "com.ironsource.sdk" ) )
-            {
-                IronSource.onPause( activity );
-            }
-        }
-
-        @Override
-        public void onActivityCreated(final Activity activity, final Bundle savedInstanceState) { }
-
-        @Override
-        public void onActivityStarted(final Activity activity) { }
-
-        @Override
-        public void onActivityStopped(final Activity activity) { }
-
-        @Override
-        public void onActivitySaveInstanceState(final Activity activity, final Bundle outState) { }
-
-        @Override
-        public void onActivityDestroyed(final Activity activity) { }
-    };
-
     public IronSourceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
@@ -122,8 +83,6 @@ public class IronSourceMediationAdapter
             Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
 
             IronSource.initISDemandOnly( application, appKey, getAdFormatsToInitialize( parameters ) );
-
-            application.registerActivityLifecycleCallbacks( activityLifecycleCallbacks );
         }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
