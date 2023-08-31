@@ -4,7 +4,7 @@ plugins {
 }
 
 private val versionMajor = 6
-private val versionMinor = 15
+private val versionMinor = 16
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.facebook.android:audience-network-sdk:${libraryVersions["facebookAudienceNetwork"]}")
+    implementation("com.facebook.android:audience-network-sdk:${libraryVersions["facebook"]}")
 }
 
 publishing {
@@ -52,7 +52,7 @@ publishing {
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.facebook.android")
                                 appendNode("artifactId", "audience-network-sdk")
-                                appendNode("version", libraryVersions["facebookAudienceNetwork"])
+                                appendNode("version", libraryVersions["facebook"])
                                 appendNode("scope", "compile")
                             }
                 }
