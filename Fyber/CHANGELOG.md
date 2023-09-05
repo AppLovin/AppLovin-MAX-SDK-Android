@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.4.0
+* Certified with Fyber SDK 8.2.4.
+
 ## 8.2.3.3
 * Fix to call `InneractiveAdManager.setMediationName()` and `InneractiveAdManager.setMediationVersion()` before initialization.
 
