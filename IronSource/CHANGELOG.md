@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.5.1.0.0
+* Certified with IronSource SDK 7.5.1.
+
 ## 7.5.0.0.1
 * Remove activity lifecycle callbacks to prevent memory leak.
 
