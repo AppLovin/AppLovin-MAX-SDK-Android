@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.7.0
+* Certified with InMobi's Kotlin SDK 10.5.7.
+
 ## 10.1.4.3
 * Fix the `mediaView` scaling bug for native ads, caused by mismatch in aspect ratio.
 

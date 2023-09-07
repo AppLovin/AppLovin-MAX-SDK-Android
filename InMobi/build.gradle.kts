@@ -4,9 +4,9 @@ plugins {
 }
 
 private val versionMajor = 10
-private val versionMinor = 1
-private val versionPatch = 4
-private val versionAdapterPatch = 3
+private val versionMinor = 5
+private val versionPatch = 7
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -20,7 +20,7 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.inmobi.monetization:inmobi-ads:${libraryVersions["inmobi"]}")
+    implementation("com.inmobi.monetization:inmobi-ads-kotlin:${libraryVersions["inMobi"]}")
 
     // The InMobi SDK for Android uses the popular Picasso library for loading the ad assets for interstitials
     implementation("com.squareup.picasso:picasso:${libraryVersions["picasso"]}")
@@ -62,8 +62,8 @@ publishing {
                     appendNode("dependencies")
                             .appendNode("dependency").apply {
                                 appendNode("groupId", "com.inmobi.monetization")
-                                appendNode("artifactId", "inmobi-ads")
-                                appendNode("version", libraryVersions["inmobi"])
+                                appendNode("artifactId", "inmobi-ads-kotlin")
+                                appendNode("version", libraryVersions["inMobi"])
                                 appendNode("scope", "compile")
                             }
                 }
