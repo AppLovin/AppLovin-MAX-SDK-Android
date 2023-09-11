@@ -52,12 +52,13 @@ public class MobileFuseMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
-    private static final AtomicBoolean            initialized = new AtomicBoolean();
-    private static       InitializationStatus     initializationStatus;
-    private              MobileFuseInterstitialAd interstitialAd;
-    private              MobileFuseRewardedAd     rewardedAd;
-    private              MobileFuseBannerAd       adView;
-    private              MobileFuseNativeAd       nativeAd;
+    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static       InitializationStatus initializationStatus;
+
+    private MobileFuseInterstitialAd interstitialAd;
+    private MobileFuseRewardedAd     rewardedAd;
+    private MobileFuseBannerAd       adView;
+    private MobileFuseNativeAd       nativeAd;
 
     public MobileFuseMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
