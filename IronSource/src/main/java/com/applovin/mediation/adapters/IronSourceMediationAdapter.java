@@ -72,6 +72,7 @@ public class IronSourceMediationAdapter
             Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
             if ( isAgeRestrictedUser != null )
             {
+                IronSource.setMetaData( "is_deviceid_optout", Boolean.toString( isAgeRestrictedUser ) );
                 IronSource.setMetaData( "is_child_directed", Boolean.toString( isAgeRestrictedUser ) );
             }
 
