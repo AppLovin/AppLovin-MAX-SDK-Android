@@ -3,9 +3,9 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 5
-private val versionMinor = 10
-private val versionPatch = 0
+private val versionMajor = 6
+private val versionMinor = 0
+private val versionPatch = 1
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -21,9 +21,9 @@ android.defaultConfig.versionName = libraryVersionName
 // Ignore lint error that Yandex throws when incorrectly parsing their SDK version below.
 android.lintOptions.isAbortOnError = false
 
-// Suppress lint because Gradle does not detect the correct `yandexMobileAds` version
+// Suppress lint because Gradle does not detect the correct `yandex` version
 @Suppress("MobileAdsSdkOutdatedVersion") dependencies {
-    implementation("com.yandex.android:mobileads:${libraryVersions["yandexMobileAds"]}")
+    implementation("com.yandex.android:mobileads:${libraryVersions["yandex"]}")
     implementation("com.yandex.android:mobmetricalib:${libraryVersions["yandexMobmetrica"]}")
 }
 
@@ -56,7 +56,7 @@ publishing {
                         appendNode("dependency").apply {
                             appendNode("groupId", "com.yandex.android")
                             appendNode("artifactId", "mobileads")
-                            appendNode("version", libraryVersions["yandexMobileAds"])
+                            appendNode("version", libraryVersions["yandex"])
                             appendNode("scope", "compile")
                         }
                         appendNode("dependency").apply {
