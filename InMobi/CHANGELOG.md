@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.5.8.1
+* Fix `com.inmobi.ads.exceptions.SdkNotInitializedException` from calling `InMobiSdk.setIsAgeRestricted(...)` with `true` value before initializing SDK.
+* Updated to use `InMobiPrivacyCompliance.setDoNotSell()` API to set CCPA values.
+
 ## 10.5.8.0
 * Certified with InMobi SDK 10.5.8.
 

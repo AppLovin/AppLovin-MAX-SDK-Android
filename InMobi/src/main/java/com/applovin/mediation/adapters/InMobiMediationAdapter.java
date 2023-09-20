@@ -46,6 +46,7 @@ import com.inmobi.ads.InMobiNative;
 import com.inmobi.ads.listeners.BannerAdEventListener;
 import com.inmobi.ads.listeners.InterstitialAdEventListener;
 import com.inmobi.ads.listeners.NativeAdEventListener;
+import com.inmobi.compliance.InMobiPrivacyCompliance;
 import com.inmobi.sdk.InMobiSdk;
 import com.inmobi.sdk.SdkInitializationListener;
 
@@ -112,8 +113,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
-        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
+        updatePrivacySettings( parameters );
 
         String signal = InMobiSdk.getToken( getExtras( parameters ), null );
         callback.onSignalCollected( signal );
@@ -156,8 +156,6 @@ public class InMobiMediationAdapter
             final Context context = getContext( activity );
 
             status = InitializationStatus.INITIALIZING;
-
-            updateAgeRestrictedUser( parameters );
 
             final JSONObject consentObject = getConsentJSONObject( parameters );
 
@@ -220,8 +218,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
-        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
+        updatePrivacySettings( parameters );
 
         final String bidResponse = parameters.getBidResponse();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
@@ -309,19 +306,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
-
-        interstitialAd = createFullscreenAd( placementId, parameters, new InterstitialListener( listener ), activity );
-
-        final String bidResponse = parameters.getBidResponse();
-        if ( !TextUtils.isEmpty( bidResponse ) )
-        {
-            interstitialAd.load( bidResponse.getBytes() );
-        }
-        else
-        {
-            interstitialAd.load();
-        }
+        interstitialAd = loadFullscreenAd( placementId, parameters, new InterstitialListener( listener ), activity );
     }
 
     @Override
@@ -355,19 +340,7 @@ public class InMobiMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
-
-        rewardedAd = createFullscreenAd( placementId, parameters, new RewardedAdListener( listener ), activity );
-
-        final String bidResponse = parameters.getBidResponse();
-        if ( !TextUtils.isEmpty( bidResponse ) )
-        {
-            rewardedAd.load( bidResponse.getBytes() );
-        }
-        else
-        {
-            rewardedAd.load();
-        }
+        rewardedAd = loadFullscreenAd( placementId, parameters, new RewardedAdListener( listener ), activity );
     }
 
     @Override
@@ -401,15 +374,13 @@ public class InMobiMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
+        updatePrivacySettings( parameters );
 
         final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
 
         final String bidResponse = parameters.getBidResponse();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
-
-        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
 
         final Context context = getContext( activity );
         nativeAd = new InMobiNative( context,
@@ -445,12 +416,22 @@ public class InMobiMediationAdapter
         }
     }
 
-    private InMobiInterstitial createFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, Activity activity)
+    private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, Activity activity)
     {
         InMobiInterstitial interstitial = new InMobiInterstitial( activity, placementId, listener );
         interstitial.setExtras( getExtras( parameters ) );
 
-        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
+        updatePrivacySettings( parameters );
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( !TextUtils.isEmpty( bidResponse ) )
+        {
+            interstitial.load( bidResponse.getBytes() );
+        }
+        else
+        {
+            interstitial.load();
+        }
 
         return interstitial;
     }
@@ -489,13 +470,21 @@ public class InMobiMediationAdapter
         return consentObject;
     }
 
-    private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
+    private void updatePrivacySettings(final MaxAdapterParameters parameters)
     {
+        InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
+
         // NOTE: Only for family apps and not related to COPPA
         Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
             InMobiSdk.setIsAgeRestricted( isAgeRestrictedUser );
+        }
+
+        Boolean isDoNotSell = parameters.isDoNotSell();
+        if ( isDoNotSell != null )
+        {
+            InMobiPrivacyCompliance.setDoNotSell( isDoNotSell );
         }
     }
 
@@ -515,12 +504,6 @@ public class InMobiMediationAdapter
         if ( isAgeRestrictedUser != null )
         {
             extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
-        }
-
-        Boolean isDoNotSell = parameters.isDoNotSell();
-        if ( isDoNotSell != null )
-        {
-            extras.put( "do_not_sell", isDoNotSell ? "1" : "0" );
         }
 
         return extras;
