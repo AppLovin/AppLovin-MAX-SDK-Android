@@ -159,6 +159,16 @@ public class InMobiMediationAdapter
 
             final JSONObject consentObject = getConsentJSONObject( parameters );
 
+            if ( accountId == null )
+            {
+                log( "InMobi SDK initialization failed with null account id" );
+
+                status = InitializationStatus.INITIALIZED_FAILURE;
+                onCompletionListener.onCompletion( status, "Account id is null" );
+
+                return;
+            }
+
             Runnable initializeSdkRunnable = new Runnable()
             {
                 @Override

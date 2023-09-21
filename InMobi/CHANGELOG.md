@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.8.2
+* Fix NPE caused by initializing with null account id.
+
 ## 10.5.8.1
 * Fix `com.inmobi.ads.exceptions.SdkNotInitializedException` from calling `InMobiSdk.setIsAgeRestricted(...)` with `true` value before initializing SDK.
 * Updated to use `InMobiPrivacyCompliance.setDoNotSell()` API to set CCPA values.
