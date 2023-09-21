@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.0
+* Certified with Yandex SDK 6.0.1. 
+
 ## 5.10.0.0
 * Certified with Yandex SDK 5.10.0.
 
