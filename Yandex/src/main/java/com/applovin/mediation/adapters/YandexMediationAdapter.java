@@ -249,7 +249,7 @@ public class YandexMediationAdapter
                 InterstitialAdLoader interstitialAdLoader = new InterstitialAdLoader( getContext( activity ) );
                 interstitialAdListener = new InterstitialAdListener( parameters, listener );
                 interstitialAdLoader.setAdLoadListener( interstitialAdListener );
-                interstitialAdLoader.loadAd( new AdRequestConfiguration.Builder( placementId ).build() );
+                interstitialAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -303,7 +303,7 @@ public class YandexMediationAdapter
                 RewardedAdLoader rewardedAdLoader = new RewardedAdLoader( activity );
                 rewardedAdListener = new RewardedAdListener( parameters, listener );
                 rewardedAdLoader.setAdLoadListener( rewardedAdListener );
-                rewardedAdLoader.loadAd( new AdRequestConfiguration.Builder( placementId ).build() );
+                rewardedAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -429,6 +429,14 @@ public class YandexMediationAdapter
     private AdRequest createAdRequest(MaxAdapterResponseParameters parameters)
     {
         return new AdRequest.Builder()
+                .setBiddingData( parameters.getBidResponse() )
+                .setParameters( adRequestParameters )
+                .build();
+    }
+
+    private AdRequestConfiguration createAdRequestConfiguration(final String placementId, final MaxAdapterResponseParameters parameters)
+    {
+        return new AdRequestConfiguration.Builder( placementId )
                 .setBiddingData( parameters.getBidResponse() )
                 .setParameters( adRequestParameters )
                 .build();
