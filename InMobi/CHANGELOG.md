@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.5.9.0
+* Certified with InMobi SDK 10.5.9.
+
 ## 10.5.8.2
 * Fix NPE caused by initializing with null account id.
 
