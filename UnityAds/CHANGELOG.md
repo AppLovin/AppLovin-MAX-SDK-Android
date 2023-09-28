@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.9.0.0
+* Certified with UnityAds SDK 4.9.0.
+
 ## 4.8.0.0
 * Certified with UnityAds SDK 4.8.0.
 * Add the `onBannerShown()` callback.
