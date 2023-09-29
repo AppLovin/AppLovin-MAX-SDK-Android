@@ -1,5 +1,8 @@
 # Changelog
 
+## 13.2.0.0
+* Certified with Tapjoy SDK 13.2.0.
+
 ## 13.1.2.0
 * Certified with Tapjoy SDK 13.1.2.
 
