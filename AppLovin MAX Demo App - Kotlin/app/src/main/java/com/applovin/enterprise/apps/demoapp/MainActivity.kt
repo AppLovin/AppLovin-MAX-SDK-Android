@@ -9,30 +9,23 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.RecyclerView
-import com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.AppOpenAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity
+import com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity
-import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
 import com.applovin.enterprise.apps.demoapp.data.main.ListItem
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter
 import com.applovin.sdk.AppLovinSdk
-import com.applovin.sdk.AppLovinSdkUtils
 import java.util.*
 
 class MainActivity : AppCompatActivity(),
@@ -45,23 +38,6 @@ class MainActivity : AppCompatActivity(),
     {
         val items: MutableList<ListItem> =
                 ArrayList()
-        items.add(SectionHeader("APPLOVIN"))
-        items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialDemoMenuActivity::class.java)))
-        items.add(DemoMenuItem("Rewarded", Intent(this, RewardedVideosDemoMenuActivity::class.java)))
-
-        // Add "Leaders" menu item for tablets
-        if (AppLovinSdkUtils.isTablet(this))
-        {
-            items.add(DemoMenuItem("Leaders", Intent(this, LeaderDemoMenuActivity::class.java)))
-        }
-        // Add "Banners" menu item for phones
-        else
-        {
-            items.add(DemoMenuItem("Banners", Intent(this, BannerDemoMenuActivity::class.java)))
-        }
-
-        items.add(DemoMenuItem("MRECs", Intent(this, MRecDemoMenuActivity::class.java)))
-        items.add(DemoMenuItem("Event Tracking", Intent(this, EventTrackingActivity::class.java)))
         items.add(SectionHeader("MAX"))
         items.add(DemoMenuItem("Interstitials", Intent(this, InterstitialAdActivity::class.java)))
         items.add(DemoMenuItem("App Open Ads", Intent(this, AppOpenAdActivity::class.java)))
