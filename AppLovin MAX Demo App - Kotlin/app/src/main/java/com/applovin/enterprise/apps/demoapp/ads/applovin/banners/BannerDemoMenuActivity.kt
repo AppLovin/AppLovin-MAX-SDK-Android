@@ -9,6 +9,7 @@ class BannerDemoMenuActivity : DemoMenuActivity()
     override fun getListViewContents(): Array<DemoMenuItem> = arrayOf(
             DemoMenuItem("Programmatic", Intent(this, BannerProgrammaticActivity::class.java)),
             DemoMenuItem("Layout Editor", Intent(this, BannerLayoutEditorActivity::class.java)),
-            DemoMenuItem("Zone Integration", Intent(this, BannerZoneActivity::class.java))
+            DemoMenuItem("Zone Integration", Intent(this, BannerZoneActivity::class.java)),
+            DemoMenuItem("Jetpack Compose", Intent(this, BannerJetpackComposeActivity::class.java))
     )
 }

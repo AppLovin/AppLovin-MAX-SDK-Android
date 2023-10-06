@@ -45,6 +45,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.banner.JetpackComposeBannerAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="MRECs"
@@ -62,15 +66,19 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.JetpackComposeMrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.AppOpenAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
@@ -92,6 +100,10 @@
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.RecyclerViewNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.JetpackComposeTemplateNativeAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
@@ -128,6 +140,10 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerZoneActivity"
             android:label="@string/title_activity_banner_zone_integration" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_activity_banner_jetpack_compose" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity"
             android:label="@string/title_activity_leader_list" />
         <activity
@@ -137,6 +153,10 @@
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderLayoutEditorActivity"
             android:label="@string/title_activity_leader_layout_editor" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_activity_leader_jetpack_compose" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity"
             android:label="@string/title_activity_mrec_list" />
         <activity
@@ -145,6 +165,10 @@
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecLayoutEditorActivity"
             android:label="@string/title_activity_mrec_layout_editor" />
+        <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecJetpackComposeActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_activity_mrec_jetpack_compose" />
         <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
             android:label="@string/title_activity_event_tracking" />

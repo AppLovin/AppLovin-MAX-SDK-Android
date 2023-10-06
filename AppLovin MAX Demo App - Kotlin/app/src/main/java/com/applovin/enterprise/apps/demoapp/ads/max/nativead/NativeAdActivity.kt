@@ -9,6 +9,7 @@ class NativeAdActivity : DemoMenuActivity() {
         DemoMenuItem("Templates API", Intent(this, TemplateNativeAdActivity::class.java)),
         DemoMenuItem("Manual API", Intent(this, ManualNativeAdActivity::class.java)),
         DemoMenuItem("Manual Late Binding API", Intent(this, ManualNativeLateBindingAdActivity::class.java)),
-        DemoMenuItem("Recycler View Ad Placer", Intent(this, RecyclerViewNativeAdActivity::class.java))
+        DemoMenuItem("Recycler View Ad Placer", Intent(this, RecyclerViewNativeAdActivity::class.java)),
+        DemoMenuItem("Jetpack Compose Templates API", Intent(this, JetpackComposeTemplateNativeAdActivity::class.java))
     )
 }
