@@ -1,7 +1,7 @@
 package com.applovin.enterprise.apps.demoapp.ads.max.nativead
 
 import android.content.Intent
-import com.applovin.enterprise.apps.demoapp.ads.DemoMenuActivity
+import com.applovin.enterprise.apps.demoapp.ui.DemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 
 class NativeAdActivity : DemoMenuActivity() {

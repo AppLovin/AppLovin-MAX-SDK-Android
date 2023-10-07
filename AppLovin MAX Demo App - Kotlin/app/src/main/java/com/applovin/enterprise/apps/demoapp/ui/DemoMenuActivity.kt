@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ui
 
 import android.content.Context
 import android.os.Bundle
