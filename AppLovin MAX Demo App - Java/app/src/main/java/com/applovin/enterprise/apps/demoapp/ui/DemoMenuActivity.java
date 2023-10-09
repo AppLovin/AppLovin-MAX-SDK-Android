@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads.applovin;
+package com.applovin.enterprise.apps.demoapp.ui;
 
 import android.content.Context;
 import android.content.Intent;

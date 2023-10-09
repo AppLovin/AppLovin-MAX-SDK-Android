@@ -9,12 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.mrecs.MRecDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
@@ -27,7 +21,6 @@ import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
 import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
 import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,23 +110,6 @@ public class MainActivity
     private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
-        items.add( new SectionHeader( "APPLOVIN" ) );
-        items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
-        items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
-
-        // Add "Leaders" menu item for tablets
-        if ( AppLovinSdkUtils.isTablet( this ) )
-        {
-            items.add( new DemoMenuItem( "Leaders", new Intent( this, LeaderDemoMenuActivity.class ) ) );
-        }
-        // Add "Banners" menu item for phones
-        else
-        {
-            items.add( new DemoMenuItem( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
-        }
-
-        items.add( new DemoMenuItem( "MRECs", new Intent( this, MRecDemoMenuActivity.class ) ) );
-        items.add( new DemoMenuItem( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
         items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
         items.add( new DemoMenuItem( "App Open Ads", new Intent( this, AppOpenAdActivity.class ) ) );

@@ -2,7 +2,7 @@ package com.applovin.enterprise.apps.demoapp.ads.max.banner
 
 import android.content.Intent
 
-import com.applovin.enterprise.apps.demoapp.ads.DemoMenuActivity
+import com.applovin.enterprise.apps.demoapp.ui.DemoMenuActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 
 class BannerAdActivity : DemoMenuActivity()
