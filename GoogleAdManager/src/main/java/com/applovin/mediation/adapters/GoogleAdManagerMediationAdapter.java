@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -1520,38 +1522,96 @@ public class GoogleAdManagerMediationAdapter
                     }
                 }
 
+                //
+                // Logic required for proper media view rendering in plugins (e.g. Flutter / React Native)
+                //
+
                 View mediaView = getMediaView();
-                ViewGroup midContainer = ( mediaView != null ) ? (ViewGroup) mediaView.getParent() : null;
+                if ( mediaView == null ) return true;
 
-                // mediaView must be already added to the container unless the user skipped it, but the
-                // parent may not be the container, although it should be within the hierarchy
-                if ( midContainer != null && container.findViewById( midContainer.getId() ) != null )
+                ViewGroup pluginContainer = (ViewGroup) mediaView.getParent();
+                if ( pluginContainer == null ) return true;
+
+                // Re-parent mediaView - mediaView must be a child of nativeAdView for Google native ads
+
+                // 1. Remove mediaView from the plugin
+                pluginContainer.removeView( mediaView );
+
+                // NOTE: Will be false for React Native (will extend `ReactViewGroup`), but true for Flutter
+                boolean hasPluginLayout = ( pluginContainer instanceof RelativeLayout || pluginContainer instanceof FrameLayout );
+                if ( !hasPluginLayout )
                 {
-                    // The Google Native Ad View needs to be inserted between mediaView and midContainer
-                    // for mediaView to be visible
-                    midContainer.removeView( mediaView );
-                    nativeAdView.addView( mediaView );
-                    midContainer.addView( nativeAdView );
-
                     if ( mediaView instanceof MediaView )
                     {
-                        nativeAdView.setMediaView( (MediaView) mediaView );
+                        MediaView googleMediaView = (MediaView) mediaView;
+                        MediaContent googleMediaContent = googleMediaView.getMediaContent();
+                        if ( googleMediaContent != null && googleMediaContent.hasVideoContent() )
+                        {
+                            mediaView = new AutoMeasuringMediaView( container.getContext() );
+                            googleMediaView.setMediaContent( nativeAd.getMediaContent() );
+                        }
                     }
-                    else if ( mediaView instanceof ImageView )
-                    {
-                        nativeAdView.setImageView( mediaView );
-                    }
+                }
 
-                    nativeAdView.setNativeAd( nativeAd );
+                // 2. Add mediaView to nativeAdView
+                ViewGroup.LayoutParams mediaViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+                nativeAdView.addView( mediaView, mediaViewLayout );
 
-                    // stretch nativeAdView out to midContainer
-                    nativeAdView.measure( View.MeasureSpec.makeMeasureSpec( midContainer.getWidth(), View.MeasureSpec.EXACTLY ),
-                                          View.MeasureSpec.makeMeasureSpec( midContainer.getHeight(), View.MeasureSpec.EXACTLY ) );
-                    nativeAdView.layout( 0, 0, midContainer.getWidth(), midContainer.getHeight() );
+                // Set mediaView or imageView based on the instance type
+                if ( mediaView instanceof MediaView )
+                {
+                    nativeAdView.setMediaView( (MediaView) mediaView );
+                }
+                else if ( mediaView instanceof ImageView )
+                {
+                    nativeAdView.setImageView( (ImageView) mediaView );
+                }
+
+                nativeAdView.setNativeAd( nativeAd );
+
+                // 3. Add nativeAdView to the plugin
+                ViewGroup.LayoutParams nativeAdViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+
+                if ( hasPluginLayout )
+                {
+                    pluginContainer.addView( nativeAdView, nativeAdViewLayout );
+                }
+                else
+                {
+                    nativeAdView.measure(
+                            View.MeasureSpec.makeMeasureSpec( pluginContainer.getWidth(), View.MeasureSpec.EXACTLY ),
+                            View.MeasureSpec.makeMeasureSpec( pluginContainer.getHeight(), View.MeasureSpec.EXACTLY ) );
+                    nativeAdView.layout( 0, 0, pluginContainer.getWidth(), pluginContainer.getHeight() );
+                    pluginContainer.addView( nativeAdView );
                 }
             }
 
             return true;
+        }
+    }
+
+    private static class AutoMeasuringMediaView
+            extends MediaView
+    {
+        AutoMeasuringMediaView(final Context context) { super( context ); }
+
+        @Override
+        protected void onAttachedToWindow()
+        {
+            super.onAttachedToWindow();
+            requestLayout();
+        }
+
+        @Override
+        public void requestLayout()
+        {
+            super.requestLayout();
+            post( () -> {
+                measure(
+                        MeasureSpec.makeMeasureSpec( getWidth(), MeasureSpec.EXACTLY ),
+                        MeasureSpec.makeMeasureSpec( getHeight(), MeasureSpec.EXACTLY ) );
+                layout( getLeft(), getTop(), getRight(), getBottom() );
+            } );
         }
     }
 }
