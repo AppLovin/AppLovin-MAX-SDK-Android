@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.4.0.1
+Fix rendering of native ad video content in React Native or Flutter.
+
 ## 22.4.0.0
 * Certified with Google SDK 22.4.0.
 
