@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.9.0.1
+* Downgrade UnityAds SDK to 4.8.0 due to signal collection issues with 4.9.0.
+
 ## 4.9.0.0
 * Certified with UnityAds SDK 4.9.0.
 
