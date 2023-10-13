@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -353,10 +354,24 @@ public class VungleMediationAdapter
     {
         log( "Showing " + ( isBiddingAd ? "bidding " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
 
-        if (bannerAd != null && bannerAd.getBannerView() != null) {
-            BannerView bannerView = bannerAd.getBannerView();
-            bannerView.setGravity( Gravity.CENTER );
-            listener.onAdViewAdLoaded( bannerView );
+        if (bannerAd != null) {
+            Context context = getContext( null );
+            RelativeLayout layout = new RelativeLayout( context ) {
+                @Override
+                protected void onAttachedToWindow() {
+                    super.onAttachedToWindow();
+                    BannerView bannerView = bannerAd.getBannerView();
+                    if (bannerView != null) {
+                        if (bannerView.getParent() != null) {
+                            ((ViewGroup) bannerView.getParent()).removeView( bannerView );
+                        }
+                        bannerView.setGravity( Gravity.CENTER );
+                        addView( bannerView );
+                    }
+                }
+            };
+
+            listener.onAdViewAdLoaded( layout );
         } else {
             MaxAdapterError error = MaxAdapterError.INVALID_LOAD_STATE;
             log( adFormatLabel + " ad failed to load: " + error );
