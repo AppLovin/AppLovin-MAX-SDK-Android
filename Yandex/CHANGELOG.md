@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.2
+* Add support for native ad star ratings.
+
 ## 6.0.1.1
 * Re-add support for bidding, which was omitted in adapter version 6.0.1.0.
 

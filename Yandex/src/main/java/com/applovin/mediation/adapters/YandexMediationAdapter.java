@@ -782,6 +782,10 @@ public class YandexMediationAdapter
                             .setOptionsView( disclaimerSponsoredOptionsViewContainer )
                             .setMediaView( new MediaView( applicationContext ) ); // Yandex requires rendering MediaView with their own bind method
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 && assets.getRating() != null )
+                    {
+                        builder.setStarRating( (double) assets.getRating() );
+                    }
                     MaxNativeAd maxNativeAd = new MaxYandexNativeAd( builder );
 
                     listener.onNativeAdLoaded( maxNativeAd, null );
