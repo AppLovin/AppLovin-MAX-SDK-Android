@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.6.1.0
+* Certified with OguryPresage SDK 5.6.1.
+
 ## 5.6.0.0
 * Certified with OguryPresage SDK 5.6.0.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.
