@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.1.0.0
+* Certified with Yandex SDK 6.1.0.
+
 ## 6.0.1.2
 * Add support for native ad star ratings.
 
