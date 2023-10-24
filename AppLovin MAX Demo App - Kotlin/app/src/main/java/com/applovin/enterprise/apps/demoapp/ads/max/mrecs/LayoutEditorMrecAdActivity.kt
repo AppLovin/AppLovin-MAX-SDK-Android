@@ -28,7 +28,7 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         setTitle(R.string.activity_layout_editor_mrecs)
         setupCallbacksRecyclerView()
 
-        adView = findViewById<MaxAdView>(R.id.mrec_ad_view)
+        adView = findViewById(R.id.mrec_ad_view)
         adView.setListener(this)
         adView.setRevenueListener(this)
 
@@ -42,7 +42,7 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         logCallback()
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
     }
 
@@ -50,7 +50,7 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         logCallback()
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
     }
 
@@ -74,14 +74,14 @@ class LayoutEditorMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd) {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
-        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
-        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
-        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
-        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+        adjustAdRevenue.setRevenue(ad.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad.placement)
 
         Adjust.trackAdRevenue(adjustAdRevenue)
     }
