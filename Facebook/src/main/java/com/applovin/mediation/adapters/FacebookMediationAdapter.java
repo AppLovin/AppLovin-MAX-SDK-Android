@@ -1322,6 +1322,11 @@ public class FacebookMediationAdapter
             }
             else
             {
+                if ( getMediaView() != null )
+                {
+                    clickableViews.add( getMediaView() );
+                }
+
                 ( (NativeAd) nativeAd ).registerViewForInteraction( container, (MediaView) getMediaView(), iconImageView, clickableViews );
             }
 
