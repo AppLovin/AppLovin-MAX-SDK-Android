@@ -5,10 +5,15 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
+import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.sdk.AppLovinSdkUtils;
 
@@ -21,7 +26,7 @@ import androidx.annotation.NonNull;
  */
 public class ProgrammaticBannerAdActivity
         extends BaseAdActivity
-        implements MaxAdViewAdListener
+        implements MaxAdViewAdListener, MaxAdRevenueListener
 {
     private MaxAdView adView;
 
@@ -35,7 +40,9 @@ public class ProgrammaticBannerAdActivity
         setupCallbacksRecyclerView();
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", this );
+
         adView.setListener( this );
+        adView.setRevenueListener( this );
 
         // Set the height of the banner ad based on the device type.
         final boolean isTablet = AppLovinSdkUtils.isTablet( this );
@@ -53,19 +60,27 @@ public class ProgrammaticBannerAdActivity
         adView.loadAd();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        adView.destroy();
+    }
+
     //region MAX Ad Listener
 
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode) { logCallback(); }
+    public void onAdLoadFailed(final String adUnitId, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdHidden(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode) { logCallback(); }
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
@@ -78,6 +93,24 @@ public class ProgrammaticBannerAdActivity
 
     @Override
     public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd)
+    {
+        logCallback();
+
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+        adjustAdRevenue.setRevenue( maxAd.getRevenue(), "USD" );
+        adjustAdRevenue.setAdRevenueNetwork( maxAd.getNetworkName() );
+        adjustAdRevenue.setAdRevenueUnit( maxAd.getAdUnitId() );
+        adjustAdRevenue.setAdRevenuePlacement( maxAd.getPlacement() );
+
+        Adjust.trackAdRevenue( adjustAdRevenue );
+    }
 
     //endregion
 }

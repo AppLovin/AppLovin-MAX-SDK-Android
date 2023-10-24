@@ -4,9 +4,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
+import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
+import com.applovin.mediation.MaxAdRevenueListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.MaxRewardedAdListener;
 import com.applovin.mediation.ads.MaxRewardedAd;
@@ -22,7 +27,7 @@ import androidx.annotation.NonNull;
  */
 public class RewardedAdActivity
         extends BaseAdActivity
-        implements MaxRewardedAdListener
+        implements MaxRewardedAdListener, MaxAdRevenueListener
 {
     private MaxRewardedAd rewardedAd;
     private int           retryAttempt;
@@ -37,7 +42,9 @@ public class RewardedAdActivity
         setupCallbacksRecyclerView();
 
         rewardedAd = MaxRewardedAd.getInstance( "YOUR_AD_UNIT_ID", this );
+
         rewardedAd.setListener( this );
+        rewardedAd.setRevenueListener( this );
 
         // Load the first ad.
         rewardedAd.loadAd();
@@ -64,7 +71,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode)
+    public void onAdLoadFailed(final String adUnitId, final MaxError maxError)
     {
         logCallback();
 
@@ -84,7 +91,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode)
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError)
     {
         logCallback();
 
@@ -118,6 +125,24 @@ public class RewardedAdActivity
     {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback();
+    }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd)
+    {
+        logCallback();
+
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+        adjustAdRevenue.setRevenue( maxAd.getRevenue(), "USD" );
+        adjustAdRevenue.setAdRevenueNetwork( maxAd.getNetworkName() );
+        adjustAdRevenue.setAdRevenueUnit( maxAd.getAdUnitId() );
+        adjustAdRevenue.setAdRevenuePlacement( maxAd.getPlacement() );
+
+        Adjust.trackAdRevenue( adjustAdRevenue );
     }
 
     //endregion

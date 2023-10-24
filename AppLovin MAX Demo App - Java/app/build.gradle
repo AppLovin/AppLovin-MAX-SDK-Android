@@ -1,13 +1,16 @@
 apply plugin: 'com.android.application'
 
+def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion 16
-        targetSdkVersion 29
-        versionCode 1
+        targetSdkVersion 31
+        versionCode 10000
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -21,6 +24,15 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    if (isLocalAppLovinWorkspace) {
+        flavorDimensions "default"
+        productFlavors {
+            // There is only one flavor for running SDK in
+            app {
+                matchingFallbacks = ['app', 'standalone']
+            }
+        }
+    }
 }
 
 dependencies {
@@ -29,7 +41,16 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
-    implementation 'com.applovin:applovin-sdk:+'
-    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+    implementation 'com.adjust.sdk:adjust-android:4.28.7'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+
+    if (isLocalAppLovinWorkspace) {
+        implementation(project(":Android-SDK"))
+    } else {
+        implementation("com.applovin:applovin-sdk:+@aar")
+    }
 }

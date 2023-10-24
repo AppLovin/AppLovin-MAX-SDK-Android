@@ -48,4 +48,12 @@ public abstract class BaseAdActivity
 
         callbacksAdapter.notifyItemInserted( callbacks.size() - 1 );
     }
+
+    protected void logAnonymousCallback()
+    {
+        String callbackName = new Throwable().getStackTrace()[2].getMethodName();
+        callbacks.add( callbackName );
+
+        callbacksAdapter.notifyItemInserted( callbacks.size() - 1 );
+    }
 }

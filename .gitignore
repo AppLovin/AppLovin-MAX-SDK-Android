@@ -1,5 +1,19 @@
 .DS_Store
 
 # Android Studio files
-.idea/
 *.iml
+.idea/
+
+/local.properties
+
+/.idea/workspace.xml
+/.idea/libraries
+
+.DS_Store
+
+/build
+/captures
+
+.externalNativeBuild
+
+*/dependency-reduced-pom.xml

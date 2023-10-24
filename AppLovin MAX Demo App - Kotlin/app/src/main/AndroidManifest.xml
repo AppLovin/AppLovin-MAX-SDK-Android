@@ -3,9 +3,11 @@
     package="com.applovin.enterprise.apps.demoapp">
 
     <application
+        android:name=".GlobalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -15,6 +17,7 @@
             android:value="SDK_KEY_HERE" />
 
         <activity
+            android:exported="true"
             android:name="com.applovin.enterprise.apps.demoapp.SplashActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -42,6 +45,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.banner.JetpackComposeBannerAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
+        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="MRECs"
@@ -55,57 +62,49 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.InterstitialAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.RecyclerViewMrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.RewardedAdActivity"
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.JetpackComposeMrecAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity"
-            android:label="@string/title_activity_interstitial_list" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialBasicIntegrationActivity"
-            android:label="@string/title_activity_interstitial_basic_integration" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialManualLoadingActivity"
-            android:label="@string/title_activity_interstitial_manual_loading" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialZoneActivity"
-            android:label="@string/title_activity_interstitial_zone_integration" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="Natives"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity"
-            android:label="@string/title_activity_rewarded_videos_list" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.TemplateNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosActivity"
-            android:label="@string/title_activity_rewarded_videos_basic_integration" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.ManualNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosZoneActivity"
-            android:label="@string/title_activity_rewarded_videos_zone_integration" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.ManualNativeLateBindingAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerDemoMenuActivity"
-            android:label="@string/title_activity_banner_list" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.RecyclerViewNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerProgrammaticActivity"
-            android:label="@string/title_activity_banner_programmatic" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerLayoutEditorActivity"
-            android:label="@string/title_activity_banner_layout_editor" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.banners.BannerZoneActivity"
-            android:label="@string/title_activity_banner_zone_integration" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity"
-            android:label="@string/title_activity_leader_list" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderProgrammaticActivity"
-            android:label="@string/title_activity_leader_programmatic" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderLayoutEditorActivity"
-            android:label="@string/title_activity_leader_layout_editor" />
-        <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity"
-            android:label="@string/title_activity_event_tracking" />
+            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.JetpackComposeTemplateNativeAdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
     </application>
 </manifest>

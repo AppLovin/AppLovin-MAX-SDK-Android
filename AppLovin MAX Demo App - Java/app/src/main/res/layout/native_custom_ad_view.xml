@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:maxHeight="300dp"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/icon_image_view"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:background="@android:color/holo_green_dark"
+        android:padding="2dp"
+        android:text="Ad"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/title_text_view"
+        app:layout_constraintStart_toEndOf="@+id/icon_image_view"
+        app:layout_constraintTop_toTopOf="@+id/title_text_view" />
+
+    <FrameLayout
+        android:id="@+id/options_view"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/advertiser_text_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/title_text_view"
+        app:layout_constraintTop_toTopOf="@+id/icon_image_view" />
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintStart_toEndOf="@+id/text_view"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title" />
+
+    <TextView
+        android:id="@+id/advertiser_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="8dp"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_image_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/icon_image_view"
+        app:layout_constraintTop_toBottomOf="@+id/title_text_view"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="Advertiser" />
+
+    <FrameLayout
+        android:id="@+id/star_rating_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintBottom_toTopOf="@id/advertiser_text_view"
+        app:layout_constraintStart_toStartOf="@id/text_view"
+        app:layout_constraintTop_toBottomOf="@id/text_view" />
+
+    <TextView
+        android:id="@+id/body_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/icon_image_view"
+        tools:text="Body" />
+
+    <FrameLayout
+        android:id="@+id/media_view_container"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="4dp"
+        android:maxHeight="150dp"
+        app:layout_constraintDimensionRatio="W,16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/body_text_view" />
+
+    <Button
+        android:id="@+id/cta_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/applovin_sdk_brand_color"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/media_view_container"
+        tools:layout_editor_absoluteX="8dp"
+        tools:text="Install" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_constraint_layout"
-    tools:context="com.applovin.enterprise.apps.demoapp.ads.max.mrecs.ProgrammaticMrecAdActivity">
+    tools:context=".ads.max.mrecs.ProgrammaticMrecAdActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/callbacks_recycler_view"
+        android:id="@+id/callbacksRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/mrec_height"

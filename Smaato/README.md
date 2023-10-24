@@ -1,0 +1,1 @@
+# Smaato Adapter

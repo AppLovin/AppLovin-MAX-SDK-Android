@@ -3,19 +3,23 @@ package com.applovin.enterprise.apps.demoapp.ads.max.mrecs;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
-import androidx.core.view.ViewCompat;
-
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
+import com.adjust.sdk.AdjustConfig;
 import com.applovin.enterprise.apps.demoapp.R;
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
+import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 import com.applovin.sdk.AppLovinSdkUtils;
+
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.ViewCompat;
 
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX MREC ads.
@@ -24,7 +28,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
  */
 public class ProgrammaticMrecAdActivity
         extends BaseAdActivity
-        implements MaxAdViewAdListener
+        implements MaxAdViewAdListener, MaxAdRevenueListener
 {
     private MaxAdView adView;
 
@@ -38,7 +42,10 @@ public class ProgrammaticMrecAdActivity
         setupCallbacksRecyclerView();
 
         adView = new MaxAdView( "YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this );
+
         adView.setListener( this );
+        adView.setRevenueListener( this );
+
         adView.setId( ViewCompat.generateViewId() );
 
         final int widthPx = AppLovinSdkUtils.dpToPx( this, 300 );
@@ -68,19 +75,27 @@ public class ProgrammaticMrecAdActivity
         adView.loadAd();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+
+        adView.destroy();
+    }
+
     //region MAX Ad Listener
 
     @Override
     public void onAdLoaded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(@NonNull final String adUnitId, final int errorCode) { logCallback(); }
+    public void onAdLoadFailed(final String adUnitId, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdHidden(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(@NonNull final MaxAd ad, final int errorCode) { logCallback(); }
+    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError) { logCallback(); }
 
     @Override
     public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
@@ -93,6 +108,24 @@ public class ProgrammaticMrecAdActivity
 
     @Override
     public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+
+    //endregion
+
+    //region MAX Ad Revenue Listener
+
+    @Override
+    public void onAdRevenuePaid(final MaxAd maxAd)
+    {
+        logCallback();
+
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX );
+        adjustAdRevenue.setRevenue( maxAd.getRevenue(), "USD" );
+        adjustAdRevenue.setAdRevenueNetwork( maxAd.getNetworkName() );
+        adjustAdRevenue.setAdRevenueUnit( maxAd.getAdUnitId() );
+        adjustAdRevenue.setAdRevenuePlacement( maxAd.getPlacement() );
+
+        Adjust.trackAdRevenue( adjustAdRevenue );
+    }
 
     //endregion
 }

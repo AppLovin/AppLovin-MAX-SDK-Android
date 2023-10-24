@@ -9,34 +9,28 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.applovin.enterprise.apps.demoapp.ads.max.AppOpenAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
+import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity;
+import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
+import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
+import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
+import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
+import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
+import com.applovin.sdk.AppLovinSdk;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.applovin.enterprise.apps.demoapp.ads.applovin.banner.BannerDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.eventtracking.EventTrackingActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.interstitials.InterstitialDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.leaders.LeaderDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.applovin.rewarded.RewardedVideosDemoMenuActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity;
-import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity;
-import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem;
-import com.applovin.enterprise.apps.demoapp.data.main.FooterType;
-import com.applovin.enterprise.apps.demoapp.data.main.ListItem;
-import com.applovin.enterprise.apps.demoapp.data.main.SectionHeader;
-import com.applovin.enterprise.apps.demoapp.ui.MainRecyclerViewAdapter;
-import com.applovin.sdk.AppLovinMediationProvider;
-import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkConfiguration;
-import com.applovin.sdk.AppLovinSdkUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The main {@link android.app.Activity} of this app.
@@ -67,17 +61,6 @@ public class MainActivity
         recyclerView.addItemDecoration( decoration );
         recyclerView.setItemAnimator( new DefaultItemAnimator() );
         recyclerView.setAdapter( adapter );
-
-        // Initialize the AppLovin SDK
-        AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
-        AppLovinSdk.getInstance( this ).initializeSdk( new AppLovinSdk.SdkInitializationListener()
-        {
-            @Override
-            public void onSdkInitialized(final AppLovinSdkConfiguration config)
-            {
-                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
-            }
-        } );
 
         // Check that SDK key is present in Android Manifest
         checkSdkKey();
@@ -127,30 +110,16 @@ public class MainActivity
     private List<ListItem> generateMainListItems()
     {
         final List<ListItem> items = new ArrayList<>();
-        items.add( new SectionHeader( "APPLOVIN" ) );
-        items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialDemoMenuActivity.class ) ) );
-        items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedVideosDemoMenuActivity.class ) ) );
-
-        // Add "Leaders" menu item for tablets
-        if ( AppLovinSdkUtils.isTablet( this ) )
-        {
-            items.add( new DemoMenuItem( "Leaders", new Intent( this, LeaderDemoMenuActivity.class ) ) );
-        }
-        // Add "Banners" menu item for phones
-        else
-        {
-            items.add( new DemoMenuItem( "Banners", new Intent( this, BannerDemoMenuActivity.class ) ) );
-        }
-
-        items.add( new DemoMenuItem( "Event Tracking", new Intent( this, EventTrackingActivity.class ) ) );
         items.add( new SectionHeader( "MAX" ) );
         items.add( new DemoMenuItem( "Interstitials", new Intent( this, InterstitialAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "App Open Ads", new Intent( this, AppOpenAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Rewarded", new Intent( this, RewardedAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Banners", new Intent( this, BannerAdActivity.class ) ) );
         items.add( new DemoMenuItem( "MRECs", new Intent( this, MrecAdActivity.class ) ) );
+        items.add( new DemoMenuItem( "Native Ads", new Intent( this, NativeAdActivity.class ) ) );
         items.add( new DemoMenuItem( "Launch Mediation Debugger", () -> AppLovinSdk.getInstance( getApplicationContext() ).showMediationDebugger() ) );
         items.add( new SectionHeader( "SUPPORT" ) );
-        items.add( new DemoMenuItem( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/support/home" ) ) ) );
+        items.add( new DemoMenuItem( "Visit our Support Site", new Intent( Intent.ACTION_VIEW, Uri.parse( "https://support.applovin.com/hc/en-us" ) ) ) );
         items.add( new FooterType() );
         return items;
     }

@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.mediation.adapters.googleadmanager">
+
+    <application />
+
+    <!--Note: We don't need to add any other permissions and activities for this adapter. Google Play Services Ads SDK's AndroidManifest adds the required permissions and activities.-->
+</manifest>

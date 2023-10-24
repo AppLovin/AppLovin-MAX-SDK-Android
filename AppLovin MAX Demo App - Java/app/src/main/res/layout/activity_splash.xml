@@ -1,5 +1,4 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,28 +12,28 @@
         android:layout_height="250dp"
         android:background="@drawable/logo"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/logoTextView"
+        app:layout_constraintBottom_toTopOf="@+id/logo_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/logoTextView"
+        android:id="@+id/logo_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/applovin"
         android:textColor="@android:color/white"
         android:textSize="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/titleTextView"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/titleTextView"
+        android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
@@ -42,9 +41,9 @@
         android:textColor="@android:color/white"
         android:textSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/logoTextView"
-        app:layout_constraintStart_toStartOf="@+id/logoTextView"
-        app:layout_constraintTop_toBottomOf="@+id/logoTextView"
+        app:layout_constraintEnd_toEndOf="@+id/logo_text_view"
+        app:layout_constraintStart_toStartOf="@+id/logo_text_view"
+        app:layout_constraintTop_toBottomOf="@+id/logo_text_view"
         app:layout_constraintVertical_chainStyle="packed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

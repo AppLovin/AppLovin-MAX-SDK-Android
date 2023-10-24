@@ -1,0 +1,1 @@
+# Criteo Adapter

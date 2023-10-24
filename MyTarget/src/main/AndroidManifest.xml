@@ -1,0 +1,9 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.mediation.adapters.mytarget">
+
+    <application>
+        <activity android:name="com.my.target.common.MyTargetActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+    </application>
+
+</manifest>
