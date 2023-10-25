@@ -14,6 +14,8 @@ import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAppOpenAd;
 
+import androidx.annotation.NonNull;
+
 /**
  * An {@link android.app.Activity} used to show AppLovin MAX App Open ads.
  * <p>
@@ -54,20 +56,20 @@ public class AppOpenAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad)
+    public void onAdLoaded(@NonNull final MaxAd ad)
     {
         // App Open ad is ready to be shown. appOpenAd.isReady() will now return 'true'.
         logCallback();
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError error)
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error)
     {
         logCallback();
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError error)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError error)
     {
         logCallback();
 
@@ -76,13 +78,13 @@ public class AppOpenAdActivity
     }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad)
+    public void onAdHidden(@NonNull final MaxAd ad)
     {
         logCallback();
 
@@ -95,7 +97,7 @@ public class AppOpenAdActivity
     //region MAX Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd ad)
+    public void onAdRevenuePaid(@NonNull final MaxAd ad)
     {
         logCallback();
 

@@ -70,7 +70,7 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError maxError)
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError maxError)
     {
         logCallback();
 
@@ -90,7 +90,7 @@ public class InterstitialAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError maxError)
     {
         logCallback();
 

@@ -71,7 +71,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError maxError)
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError maxError)
     {
         logCallback();
 
@@ -91,7 +91,7 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError)
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError maxError)
     {
         logCallback();
 
@@ -115,13 +115,13 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onRewardedVideoStarted(final MaxAd ad) { logCallback(); }
+    public void onRewardedVideoStarted(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onRewardedVideoCompleted(final MaxAd ad) { logCallback(); }
+    public void onRewardedVideoCompleted(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onUserRewarded(final MaxAd ad, final MaxReward reward)
+    public void onUserRewarded(@NonNull final MaxAd ad, @NonNull final MaxReward reward)
     {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback();
@@ -132,7 +132,7 @@ public class RewardedAdActivity
     //region MAX Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd)
+    public void onAdRevenuePaid(@NonNull final MaxAd maxAd)
     {
         logCallback();
 
