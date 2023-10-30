@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.5.0.0
+* Certified with GoogleAdManager SDK 22.5.0.
+
 ## 22.4.0.1
 * Fix rendering of native ad video content in React Native or Flutter.
 
