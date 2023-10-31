@@ -1304,6 +1304,11 @@ public class FacebookMediationAdapter
                 }
             }
 
+            if ( getMediaView() != null )
+            {
+                clickableViews.add( getMediaView() );
+            }
+
             if ( nativeAd instanceof NativeBannerAd )
             {
                 if ( iconImageView != null )
@@ -1322,11 +1327,6 @@ public class FacebookMediationAdapter
             }
             else
             {
-                if ( getMediaView() != null )
-                {
-                    clickableViews.add( getMediaView() );
-                }
-
                 ( (NativeAd) nativeAd ).registerViewForInteraction( container, (MediaView) getMediaView(), iconImageView, clickableViews );
             }
 

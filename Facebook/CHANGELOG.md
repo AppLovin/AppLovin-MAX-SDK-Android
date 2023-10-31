@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.16.0.2
+* Fix native banner ad media views not clickable.
+
 ## 6.16.0.1
 * Fix native ad media views not clickable.
 
