@@ -30,41 +30,41 @@ import com.applovin.mediation.ads.MaxAdView
  */
 class MaxAdViewComposableViewModel(baseActivity: BaseJetpackComposeAdActivity) : ViewModel() {
     val adListener = object : MaxAdViewAdListener {
-        override fun onAdLoaded(ad: MaxAd?) {
+        override fun onAdLoaded(ad: MaxAd) {
             baseActivity.logCallback()
         }
 
-        override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+        override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
             baseActivity.logCallback()
         }
 
-        override fun onAdHidden(ad: MaxAd?) {
+        override fun onAdHidden(ad: MaxAd) {
             baseActivity.logCallback()
         }
 
-        override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+        override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
             baseActivity.logCallback()
         }
 
-        override fun onAdDisplayed(ad: MaxAd?) {
+        override fun onAdDisplayed(ad: MaxAd) {
             baseActivity.logCallback()
         }
 
-        override fun onAdClicked(ad: MaxAd?) {
+        override fun onAdClicked(ad: MaxAd) {
             baseActivity.logCallback()
         }
 
-        override fun onAdExpanded(ad: MaxAd?) {
+        override fun onAdExpanded(ad: MaxAd) {
             baseActivity.logCallback()
         }
 
-        override fun onAdCollapsed(ad: MaxAd?) {
+        override fun onAdCollapsed(ad: MaxAd) {
             baseActivity.logCallback()
         }
     }
 
     val revenueListener = object : MaxAdRevenueListener {
-        override fun onAdRevenuePaid(ad: MaxAd?) {
+        override fun onAdRevenuePaid(ad: MaxAd) {
             baseActivity.logCallback()
 
             val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)

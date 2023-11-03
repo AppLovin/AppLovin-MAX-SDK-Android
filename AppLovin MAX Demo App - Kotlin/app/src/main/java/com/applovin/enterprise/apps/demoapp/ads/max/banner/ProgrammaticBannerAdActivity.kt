@@ -58,35 +58,35 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) {
+    override fun onAdLoaded(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
     }
 
-    override fun onAdHidden(ad: MaxAd?) {
+    override fun onAdHidden(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) {
+    override fun onAdDisplayed(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdClicked(ad: MaxAd?) {
+    override fun onAdClicked(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdExpanded(ad: MaxAd?) {
+    override fun onAdExpanded(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdCollapsed(ad: MaxAd?) {
+    override fun onAdCollapsed(ad: MaxAd) {
         logCallback()
     }
 
@@ -94,7 +94,7 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?)
+    override fun onAdRevenuePaid(ad: MaxAd)
     {
         logCallback()
 

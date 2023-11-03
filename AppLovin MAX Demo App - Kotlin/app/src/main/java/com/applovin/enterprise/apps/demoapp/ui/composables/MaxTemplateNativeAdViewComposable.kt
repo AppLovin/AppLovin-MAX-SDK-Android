@@ -36,7 +36,7 @@ class MaxTemplateNativeAdViewComposableLoader(
     init {
         nativeAdLoader = MaxNativeAdLoader(adUnitIdentifier, context)
         val adRevenueListener = object : MaxAdRevenueListener {
-            override fun onAdRevenuePaid(ad: MaxAd?) {
+            override fun onAdRevenuePaid(ad: MaxAd) {
                 baseActivity.logCallback()
 
                 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
@@ -73,7 +73,7 @@ class MaxTemplateNativeAdViewComposableLoader(
                 baseActivity.logCallback()
             }
 
-            override fun onNativeAdExpired(nativeAd: MaxAd?) {
+            override fun onNativeAdExpired(nativeAd: MaxAd) {
                 baseActivity.logCallback()
             }
         }

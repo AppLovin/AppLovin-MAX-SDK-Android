@@ -45,7 +45,7 @@ class ManualNativeAdActivity : BaseAdActivity() {
 
         nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
         nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
-            override fun onAdRevenuePaid(ad: MaxAd?) {
+            override fun onAdRevenuePaid(ad: MaxAd) {
                 logCallback()
 
                 val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
@@ -82,7 +82,7 @@ class ManualNativeAdActivity : BaseAdActivity() {
                 logAnonymousCallback()
             }
 
-            override fun onNativeAdExpired(nativeAd: MaxAd?) {
+            override fun onNativeAdExpired(nativeAd: MaxAd) {
                 logAnonymousCallback()
             }
         })

@@ -82,7 +82,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         logCallback()
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
     }
 
@@ -90,7 +90,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         logCallback()
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
     }
 
@@ -114,7 +114,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd) {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)

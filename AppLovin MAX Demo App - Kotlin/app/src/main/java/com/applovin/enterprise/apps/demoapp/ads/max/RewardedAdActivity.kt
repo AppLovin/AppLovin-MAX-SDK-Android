@@ -48,7 +48,7 @@ class RewardedAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) {
+    override fun onAdLoaded(ad: MaxAd) {
         // Rewarded ad is ready to be shown. rewardedAd.isReady() will now return 'true'
         logCallback()
 
@@ -56,7 +56,7 @@ class RewardedAdActivity : BaseAdActivity(),
         retryAttempt = 0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
 
         // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
@@ -67,37 +67,37 @@ class RewardedAdActivity : BaseAdActivity(),
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
 
         // Rewarded ad failed to display. We recommend loading the next ad.
         rewardedAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) {
+    override fun onAdDisplayed(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdClicked(ad: MaxAd?) {
+    override fun onAdClicked(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdHidden(ad: MaxAd?) {
+    override fun onAdHidden(ad: MaxAd) {
         logCallback()
 
         // Rewarded ad is hidden. Pre-load the next ad.
         rewardedAd.loadAd()
     }
 
-    override fun onRewardedVideoStarted(ad: MaxAd?) {
+    override fun onRewardedVideoStarted(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onRewardedVideoCompleted(ad: MaxAd?) {
+    override fun onRewardedVideoCompleted(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onUserRewarded(ad: MaxAd?, reward: MaxReward?) {
+    override fun onUserRewarded(ad: MaxAd, reward: MaxReward) {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()
     }
@@ -106,7 +106,7 @@ class RewardedAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd) {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
