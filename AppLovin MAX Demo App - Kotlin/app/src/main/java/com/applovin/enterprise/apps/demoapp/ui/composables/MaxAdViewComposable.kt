@@ -68,10 +68,10 @@ class MaxAdViewComposableViewModel(baseActivity: BaseJetpackComposeAdActivity) :
             baseActivity.logCallback()
 
             val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
-            adjustAdRevenue.setRevenue(ad?.revenue, "USD")
-            adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
-            adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
-            adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+            adjustAdRevenue.setRevenue(ad.revenue, "USD")
+            adjustAdRevenue.setAdRevenueNetwork(ad.networkName)
+            adjustAdRevenue.setAdRevenueUnit(ad.adUnitId)
+            adjustAdRevenue.setAdRevenuePlacement(ad.placement)
 
             Adjust.trackAdRevenue(adjustAdRevenue)
         }
