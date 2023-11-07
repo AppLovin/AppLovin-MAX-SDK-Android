@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.0.0.0
+* Certified with Vungle SDK 7.0.0.
+* Update to use instance based APIs.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.15.0 or higher.
+
 ## 6.12.1.1
 * Add support for native banner and MREC ads.
 
