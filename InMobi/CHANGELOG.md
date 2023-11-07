@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.6.1.0
+* Certified with InMobi SDK 10.6.1.
+
 ## 10.6.0.1
 * Downgrade InMobi SDK to 10.5.9.
 
