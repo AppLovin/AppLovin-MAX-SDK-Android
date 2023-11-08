@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.1.0.0
+* Certified with Vungle SDK 7.1.0.
+* Added support to measure Native ad with OMSDK.
+* New super token v4.
+* Added better sleep code.
+
 ## 7.0.0.0
 * Certified with Vungle SDK 7.0.0.
 * Update to use instance based APIs.
