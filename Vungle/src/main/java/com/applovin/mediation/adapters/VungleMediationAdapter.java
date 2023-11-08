@@ -211,7 +211,7 @@ public class VungleMediationAdapter
         if ( interstitialAd != null && interstitialAd.canPlayAd() )
         {
             log( "Showing interstitial ad for placement: " + parameters.getThirdPartyAdPlacementId() + "..." );
-            interstitialAd.play();
+            interstitialAd.play( activity );
         }
         else
         {
@@ -252,7 +252,7 @@ public class VungleMediationAdapter
         if ( appOpenAd != null && appOpenAd.canPlayAd() )
         {
             log( "Showing app open ad for placement: " + parameters.getThirdPartyAdPlacementId() + "..." );
-            appOpenAd.play();
+            appOpenAd.play( activity );
         }
         else
         {
@@ -297,7 +297,7 @@ public class VungleMediationAdapter
             log( "Showing rewarded ad for placement: " + parameters.getThirdPartyAdPlacementId() + "..." );
 
             configureReward( parameters );
-            rewardedAd.play();
+            rewardedAd.play( activity );
         }
         else
         {
@@ -463,13 +463,13 @@ public class VungleMediationAdapter
             case VungleError.NO_SPACE_TO_DOWNLOAD_ASSETS:
             case VungleError.PLACEMENT_NOT_FOUND:
             case VungleError.SDK_VERSION_BELOW_REQUIRED_VERSION:
-            case VungleError.TYPE_NOT_MATCH:
+            case VungleError.PLACEMENT_AD_TYPE_MISMATCH:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                 break;
             case VungleError.AD_EXPIRED:
                 adapterError = MaxAdapterError.AD_EXPIRED;
                 break;
-            case VungleError.VUNGLE_NOT_INITIALIZED:
+            case VungleError.SDK_NOT_INITIALIZED:
                 adapterError = MaxAdapterError.NOT_INITIALIZED;
                 break;
             case VungleError.AD_UNABLE_TO_PLAY:
@@ -491,7 +491,6 @@ public class VungleMediationAdapter
                 adapterError = MaxAdapterError.SERVER_ERROR;
                 break;
             case VungleError.ALREADY_PLAYING_ANOTHER_AD:
-            case VungleError.OPERATION_ONGOING:
             case VungleError.INVALID_AD_STATE:
                 adapterError = MaxAdapterError.INVALID_LOAD_STATE;
                 break;
@@ -787,32 +786,17 @@ public class VungleMediationAdapter
         {
             log( "Showing " + adFormatLabel + " ad for placement: " + baseAd.getPlacementId() + "..." );
 
-            // Vungle suggested fix to support banners in feed
-            if ( bannerAd != null )
+            if (bannerAd != null && bannerAd.getBannerView() != null)
             {
-                RelativeLayout layout = new RelativeLayout( getContext( null ) )
-                {
-                    @Override
-                    protected void onAttachedToWindow()
-                    {
-                        super.onAttachedToWindow();
-                        BannerView bannerView = bannerAd.getBannerView();
-                        if ( bannerView != null )
-                        {
-                            if ( bannerView.getParent() != null )
-                            {
-                                ( (ViewGroup) bannerView.getParent() ).removeView( bannerView );
-                            }
-                            bannerView.setGravity( Gravity.CENTER );
-                            addView( bannerView );
-                        }
-                    }
-                };
-
-                listener.onAdViewAdLoaded( layout );
+                BannerView bannerView = bannerAd.getBannerView();
+                bannerView.setGravity( Gravity.CENTER );
+                log( adFormatLabel + " ad loaded" );
+                listener.onAdViewAdLoaded( bannerView );
+            } else {
+                MaxAdapterError error = MaxAdapterError.INVALID_LOAD_STATE;
+                log( adFormatLabel + " ad failed to load: " + error );
+                listener.onAdViewAdLoadFailed( error );
             }
-            
-            log( adFormatLabel + " ad loaded" );
         }
 
         @Override
