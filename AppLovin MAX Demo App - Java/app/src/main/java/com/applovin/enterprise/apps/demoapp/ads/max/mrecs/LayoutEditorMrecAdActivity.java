@@ -13,6 +13,7 @@ import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.ads.MaxAdView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -55,35 +56,35 @@ public class LayoutEditorMrecAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd ad) { logCallback(); }
+    public void onAdLoaded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError maxError) { logCallback(); }
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError maxError) { logCallback(); }
 
     @Override
-    public void onAdHidden(final MaxAd ad) { logCallback(); }
+    public void onAdHidden(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd ad, final MaxError maxError) { logCallback(); }
+    public void onAdDisplayFailed(@NonNull final MaxAd ad, @NonNull final MaxError maxError) { logCallback(); }
 
     @Override
-    public void onAdDisplayed(final MaxAd ad) { logCallback(); }
+    public void onAdDisplayed(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdClicked(final MaxAd ad) { logCallback(); }
+    public void onAdClicked(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdExpanded(final MaxAd ad) { logCallback(); }
+    public void onAdExpanded(@NonNull final MaxAd ad) { logCallback(); }
 
     @Override
-    public void onAdCollapsed(final MaxAd ad) { logCallback(); }
+    public void onAdCollapsed(@NonNull final MaxAd ad) { logCallback(); }
 
     //endregion
 
     //region MAX Ad Revenue Listener
 
     @Override
-    public void onAdRevenuePaid(final MaxAd maxAd)
+    public void onAdRevenuePaid(@NonNull final MaxAd maxAd)
     {
         logCallback();
 
