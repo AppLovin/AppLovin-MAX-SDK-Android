@@ -40,8 +40,10 @@ import com.yandex.mobile.ads.common.AdError;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
+import com.yandex.mobile.ads.common.AdType;
 import com.yandex.mobile.ads.common.BidderTokenLoadListener;
 import com.yandex.mobile.ads.common.BidderTokenLoader;
+import com.yandex.mobile.ads.common.BidderTokenRequestConfiguration;
 import com.yandex.mobile.ads.common.ImpressionData;
 import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.MobileAds;
@@ -156,7 +158,7 @@ public class YandexMediationAdapter
 
             status = InitializationStatus.INITIALIZING;
 
-            updateUserConsent( parameters );
+            updatePrivacySettings( parameters );
 
             if ( parameters.isTesting() )
             {
@@ -196,9 +198,11 @@ public class YandexMediationAdapter
     {
         log( "Collecting signal..." );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
-        BidderTokenLoader.loadBidderToken( activity, new BidderTokenLoadListener()
+        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( activity, parameters.getAdFormat() );
+
+        BidderTokenLoader.loadBidderToken( activity, bidderTokenRequest, new BidderTokenLoadListener()
         {
             @Override
             public void onBidderTokenLoaded(@NonNull final String bidderToken)
@@ -239,7 +243,7 @@ public class YandexMediationAdapter
             return;
         }
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadInterstitialAdRunnable = new Runnable()
         {
@@ -293,7 +297,7 @@ public class YandexMediationAdapter
             return;
         }
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadRewardedAdRunnable = new Runnable()
         {
@@ -342,7 +346,7 @@ public class YandexMediationAdapter
 
         final Context applicationContext = getContext( activity );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadAdViewAdRunnable = new Runnable()
         {
@@ -373,7 +377,7 @@ public class YandexMediationAdapter
 
         final Context applicationContext = getContext( activity );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadNativeAdRunnable = new Runnable()
         {
@@ -417,12 +421,18 @@ public class YandexMediationAdapter
         }
     }
 
-    private void updateUserConsent(final MaxAdapterParameters parameters)
+    private void updatePrivacySettings(final MaxAdapterParameters parameters)
     {
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             MobileAds.setUserConsent( hasUserConsent );
+        }
+
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
+        if ( isAgeRestrictedUser != null )
+        {
+            MobileAds.setAgeRestrictedUser( isAgeRestrictedUser );
         }
     }
 
@@ -440,6 +450,33 @@ public class YandexMediationAdapter
                 .setBiddingData( parameters.getBidResponse() )
                 .setParameters( adRequestParameters )
                 .build();
+    }
+
+    private BidderTokenRequestConfiguration createBidderTokenRequestConfiguration(final Context context, final MaxAdFormat adFormat) {
+        AdType adType = toAdType( adFormat );
+        BidderTokenRequestConfiguration.Builder requestBuilder = new BidderTokenRequestConfiguration.Builder( adType );
+
+        if (adType == AdType.BANNER) {
+            requestBuilder.setBannerAdSize( toBannerAdSize( adFormat, context ) );
+        }
+
+        return requestBuilder.setParameters(adRequestParameters).build();
+    }
+
+    private static AdType toAdType(final MaxAdFormat adFormat) {
+        if (adFormat.isAdViewAd()) {
+            return AdType.BANNER;
+        } else if (adFormat == MaxAdFormat.INTERSTITIAL) {
+            return AdType.INTERSTITIAL;
+        } else if (adFormat == MaxAdFormat.REWARDED || adFormat == MaxAdFormat.REWARDED_INTERSTITIAL) {
+            return AdType.REWARDED;
+        } else if (adFormat == MaxAdFormat.APP_OPEN) {
+            return AdType.APP_OPEN_AD;
+        } else if (adFormat == MaxAdFormat.NATIVE) {
+            return AdType.NATIVE;
+        } else {
+            return AdType.UNKNOWN;
+        }
     }
 
     private static BannerAdSize toBannerAdSize(final MaxAdFormat adFormat, final Context context)
