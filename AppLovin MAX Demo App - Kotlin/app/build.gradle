@@ -8,7 +8,6 @@ android {
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion 21
-        targetSdkVersion 33
         versionCode 10000
         versionName "1.0"
         multiDexEnabled true
