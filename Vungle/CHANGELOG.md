@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.1.0.0
+* Certified with Vungle SDK 7.1.0.
+* Update `play()` API to use context.
+* Pass creative ID to MAX SDK on ad load callbacks instead of the impression callbacks.
+* Update error codes.
+* Remove in feed banner display fix from the adapter since it is handled in the Vungle SDK 7.1.0.
+
 ## 7.0.0.0
 * Certified with Vungle SDK 7.0.0.
 * Update to use instance based APIs.
