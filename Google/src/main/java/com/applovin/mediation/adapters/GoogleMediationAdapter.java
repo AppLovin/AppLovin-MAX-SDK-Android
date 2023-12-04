@@ -457,7 +457,7 @@ public class GoogleMediationAdapter
         else
         {
             log( "App open ad failed to show: " + placementId );
-            listener.onAppOpenAdLoadFailed( new MaxAdapterError( -4205, "Ad display failed", 0, "App open ad not ready" ) );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad display failed", 0, "App open ad not ready" ) );
         }
     }
 
@@ -1328,7 +1328,7 @@ public class GoogleMediationAdapter
             if ( TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: Google native ad is missing one or more required assets" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                 nativeAd.destroy();
 
