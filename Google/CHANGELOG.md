@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.6.0.0
+* Certified with Google SDK 22.6.0.
+
 ## 22.5.0.1
 * Improve error handling.
 
