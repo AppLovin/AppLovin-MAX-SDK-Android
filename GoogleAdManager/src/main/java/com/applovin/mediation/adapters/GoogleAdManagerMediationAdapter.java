@@ -1156,7 +1156,7 @@ public class GoogleAdManagerMediationAdapter
             if ( TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: Google native ad is missing one or more required assets" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                 nativeAd.destroy();
 
