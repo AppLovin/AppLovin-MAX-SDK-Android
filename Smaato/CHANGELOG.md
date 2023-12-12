@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.5.1.0
+* Certified with Smaato SDK 22.5.1.
+* Improve error handling.
+
 ## 22.5.0.0
 * Certified with Smaato SDK 22.5.0.
 

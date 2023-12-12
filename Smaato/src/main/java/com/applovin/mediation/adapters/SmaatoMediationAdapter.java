@@ -674,7 +674,7 @@ public class SmaatoMediationAdapter
                     if ( TextUtils.isEmpty( assets.title() ) )
                     {
                         e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                        listener.onAdViewAdLoadFailed( new MaxAdapterError( 5400, "Missing Native Ad Assets" ) );
+                        listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                         return;
                     }
