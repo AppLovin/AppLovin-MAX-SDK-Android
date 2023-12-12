@@ -291,11 +291,11 @@ public class UnityAdsMediationAdapter
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading banner ad for placement \"" + placementId + "\"..." );
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + adFormat.getLabel() + " ad for placement \"" + placementId + "\"..." );
 
         if ( activity == null )
         {
-            log( "Banner ad load failed: Activity is null" );
+            log( adFormat.getLabel() + " ad placement \"" + placementId + "\" load failed: Activity is null" );
 
             MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
             listener.onAdViewAdLoadFailed( error );
@@ -305,45 +305,48 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters, activity.getApplicationContext() );
 
+        // Every ad needs a random ID associated with each load and show
+        biddingAdId = UUID.randomUUID().toString();
+
         bannerView = new BannerView( activity, placementId, toUnityBannerSize( adFormat ) );
         bannerView.setListener( new BannerView.IListener()
         {
             @Override
             public void onBannerLoaded(final BannerView bannerAdView)
             {
-                log( "Banner ad loaded" );
+                log( adFormat.getLabel() + " ad placement \"" + placementId + "\" loaded" );
                 listener.onAdViewAdLoaded( bannerAdView );
             }
 
             @Override
             public void onBannerFailedToLoad(final BannerView bannerAdView, final BannerErrorInfo errorInfo)
             {
-                log( "Banner ad failed to load" );
+                log( adFormat.getLabel() + " ad placement \"" + placementId + "\" failed to load" );
                 listener.onAdViewAdLoadFailed( toMaxError( errorInfo ) );
             }
 
             @Override
             public void onBannerShown(final BannerView bannerAdView)
             {
-                log( "Banner ad shown" );
+                log( adFormat.getLabel() + " ad placement \"" + placementId + "\" shown" );
                 listener.onAdViewAdDisplayed();
             }
 
             @Override
             public void onBannerClick(final BannerView bannerAdView)
             {
-                log( "Banner ad clicked" );
+                log( adFormat.getLabel() + " ad placement \"" + placementId + "\" clicked" );
                 listener.onAdViewAdClicked();
             }
 
             @Override
             public void onBannerLeftApplication(final BannerView bannerView)
             {
-                log( "Banner ad left application" );
+                log( adFormat.getLabel() + " ad placement \"" + placementId + "\" left application" );
             }
         } );
 
-        bannerView.load();
+        bannerView.load( createAdLoadOptions( parameters ) );
     }
 
     private UnityAdsLoadOptions createAdLoadOptions(final MaxAdapterResponseParameters parameters)
@@ -384,6 +387,10 @@ public class UnityAdsMediationAdapter
         else if ( adFormat == MaxAdFormat.LEADER )
         {
             return new UnityBannerSize( 728, 90 );
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return new UnityBannerSize( 300, 250 );
         }
         else
         {
