@@ -8,6 +8,7 @@
 
 ## 16.5.71.0
 * Certified with Mintegral SDK 16.5.71.
+* Note: This is the first Mintegral SDK with TCF v2 compliance.
 
 ## 16.5.61.0
 * Certified with Mintegral SDK 16.5.61.
