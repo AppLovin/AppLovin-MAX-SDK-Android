@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.3.0
+* Certified with HyprMX SDK 6.2.3.
+
 ## 6.2.0.2
 * Add ProGuard rule to not obfuscate public HyprMX SDK classes.
 
