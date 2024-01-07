@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.5.91.1
+* Update to retrieve creative ID and set channel code/ID using new APIs.
+* Now requires MAX SDK version 9.15.0 or higher.
+
 ## 16.5.91.0
 * Certified with Mintegral SDK 16.5.91.
 
