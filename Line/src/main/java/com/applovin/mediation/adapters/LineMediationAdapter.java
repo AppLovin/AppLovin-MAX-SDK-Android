@@ -59,6 +59,9 @@ public class LineMediationAdapter
     private FiveAdCustomLayout adView;
     private FiveAdNative       nativeAd;
 
+    private MaxInterstitialAdapterListener maxInterstitialAdapterListener;
+    private MaxRewardedAdapterListener     maxRewardedAdapterListener;
+
     public LineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
@@ -136,6 +139,18 @@ public class LineMediationAdapter
     @Override
     public void onDestroy()
     {
+        // Workaround for LINE SDK does not call onFiveAdClose method when app with Service API closed during displaying a full-screen ad.
+        if (maxInterstitialAdapterListener != null)
+        {
+            maxInterstitialAdapterListener.onInterstitialAdHidden();
+            maxInterstitialAdapterListener = null;
+        }
+        if (maxRewardedAdapterListener != null)
+        {
+            maxRewardedAdapterListener.onRewardedAdHidden();
+            maxRewardedAdapterListener = null;
+        }
+
         interstitialAd = null;
         rewardedAd = null;
         adView = null;
@@ -163,6 +178,7 @@ public class LineMediationAdapter
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
 
         interstitialAd.show( activity );
+        maxInterstitialAdapterListener = listener;
     }
 
     @Override
@@ -187,6 +203,7 @@ public class LineMediationAdapter
 
         configureReward( parameters );
         rewardedAd.show( activity );
+        maxRewardedAdapterListener = listener;
     }
 
     @Override
@@ -336,6 +353,7 @@ public class LineMediationAdapter
         {
             log( "Interstitial ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onInterstitialAdHidden();
+            maxInterstitialAdapterListener = null;
         }
 
         @Override
@@ -448,6 +466,7 @@ public class LineMediationAdapter
             }
             log( "Rewarded ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onRewardedAdHidden();
+            maxRewardedAdapterListener = null;
         }
 
         @Override
