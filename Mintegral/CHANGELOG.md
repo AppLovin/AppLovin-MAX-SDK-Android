@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.6.11.0
+* Certified with Mintegral SDK 16.6.11.
+
 ## 16.5.91.2
 * Update to set channel code/ID only when SDK is being initialized.
 
