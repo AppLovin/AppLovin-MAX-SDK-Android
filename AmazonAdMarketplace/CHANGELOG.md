@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.9.0
+* Certified with AmazonAdMarketplace SDK 9.8.9.
+
 ## 9.8.8.1
 * Fix memory leak in APS banners.
 
