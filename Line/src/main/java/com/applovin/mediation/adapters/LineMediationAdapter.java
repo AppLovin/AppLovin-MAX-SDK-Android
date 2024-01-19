@@ -32,14 +32,17 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.five_corp.ad.FiveAd;
 import com.five_corp.ad.FiveAdConfig;
 import com.five_corp.ad.FiveAdCustomLayout;
+import com.five_corp.ad.FiveAdCustomLayoutEventListener;
 import com.five_corp.ad.FiveAdErrorCode;
 import com.five_corp.ad.FiveAdInterface;
 import com.five_corp.ad.FiveAdInterstitial;
+import com.five_corp.ad.FiveAdInterstitialEventListener;
 import com.five_corp.ad.FiveAdLoadListener;
 import com.five_corp.ad.FiveAdNative;
+import com.five_corp.ad.FiveAdNativeEventListener;
 import com.five_corp.ad.FiveAdState;
 import com.five_corp.ad.FiveAdVideoReward;
-import com.five_corp.ad.FiveAdViewEventListener;
+import com.five_corp.ad.FiveAdVideoRewardEventListener;
 import com.five_corp.ad.NeedChildDirectedTreatment;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
@@ -152,7 +155,7 @@ public class LineMediationAdapter
 
         InterstitialListener interstitialListener = new InterstitialListener( listener );
         interstitialAd.setLoadListener( interstitialListener );
-        interstitialAd.setViewEventListener( interstitialListener );
+        interstitialAd.setEventListener( interstitialListener );
         interstitialAd.loadAdAsync();
     }
 
@@ -162,7 +165,7 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
 
-        interstitialAd.show( activity );
+        interstitialAd.showAd();
     }
 
     @Override
@@ -175,7 +178,7 @@ public class LineMediationAdapter
 
         RewardedListener rewardedListener = new RewardedListener( listener );
         rewardedAd.setLoadListener( rewardedListener );
-        rewardedAd.setViewEventListener( rewardedListener );
+        rewardedAd.setEventListener( rewardedListener );
         rewardedAd.loadAdAsync();
     }
 
@@ -186,7 +189,7 @@ public class LineMediationAdapter
         log( "Showing rewarded ad for slot id: " + slotId + "..." );
 
         configureReward( parameters );
-        rewardedAd.show( activity );
+        rewardedAd.showAd();
     }
 
     @Override
@@ -202,7 +205,7 @@ public class LineMediationAdapter
             nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
             NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters(), activity );
             nativeAd.setLoadListener( nativeAdViewListener );
-            nativeAd.setViewEventListener( nativeAdViewListener );
+            nativeAd.setEventListener( nativeAdViewListener );
 
             // We always want to mute banners and MRECs
             nativeAd.enableSound( false );
@@ -214,7 +217,7 @@ public class LineMediationAdapter
             adView = new FiveAdCustomLayout( activity, slotId, new DisplayMetrics().widthPixels );
             AdViewListener adViewListener = new AdViewListener( listener, adFormat );
             adView.setLoadListener( adViewListener );
-            adView.setViewEventListener( adViewListener );
+            adView.setEventListener( adViewListener );
 
             // We always want to mute banners and MRECs
             adView.enableSound( false );
@@ -232,7 +235,7 @@ public class LineMediationAdapter
         nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
         NativeAdListener nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters(), activity );
         nativeAd.setLoadListener( nativeAdListener );
-        nativeAd.setViewEventListener( nativeAdListener );
+        nativeAd.setEventListener( nativeAdListener );
 
         // We always want to mute banners and MRECs
         nativeAd.enableSound( false );
@@ -285,7 +288,7 @@ public class LineMediationAdapter
     }
 
     private class InterstitialListener
-            implements FiveAdLoadListener, FiveAdViewEventListener
+            implements FiveAdLoadListener, FiveAdInterstitialEventListener
     {
         private final MaxInterstitialAdapterListener listener;
 
@@ -310,7 +313,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onViewError(final FiveAdInterstitial ad, final FiveAdErrorCode errorCode)
         {
             log( "Interstitial ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
@@ -318,74 +321,53 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpression(final FiveAdInterface ad)
+        public void onImpression(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad impression tracked for slot id: " + ad.getSlotId() + "..." );
             listener.onInterstitialAdDisplayed();
         }
 
         @Override
-        public void onFiveAdClick(final FiveAdInterface ad)
+        public void onClick(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad clicked for slot id: " + ad.getSlotId() + "..." );
             listener.onInterstitialAdClicked();
         }
 
         @Override
-        public void onFiveAdClose(final FiveAdInterface ad)
+        public void onFullScreenClose(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onInterstitialAdHidden();
         }
 
         @Override
-        public void onFiveAdStart(final FiveAdInterface ad)
+        public void onFullScreenOpen(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad shown for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for video-only interstitial ads.
-            listener.onInterstitialAdDisplayed();
         }
 
         @Override
-        public void onFiveAdPause(final FiveAdInterface ad)
+        public void onPlay(final FiveAdInterstitial ad)
+        {
+            log( "Interstitial ad did play for slot id: " + ad.getSlotId() + "..." );
+        }
+
+        @Override
+        public void onPause(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad did pause for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdResume(final FiveAdInterface ad)
-        {
-            log( "Interstitial ad did resume for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdViewThrough(final FiveAdInterface ad)
+        public void onViewThrough(final FiveAdInterstitial ad)
         {
             log( "Interstitial ad completed for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdReplay(final FiveAdInterface ad)
-        {
-            log( "Interstitial ad did replay for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdStall(final FiveAdInterface ad)
-        {
-            log( "Interstitial ad did stall for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdRecover(final FiveAdInterface ad)
-        {
-            log( "Interstitial ad did recover for slot id: " + ad.getSlotId() + "..." );
         }
     }
 
     private class RewardedListener
-            implements FiveAdLoadListener, FiveAdViewEventListener
+            implements FiveAdLoadListener, FiveAdVideoRewardEventListener
     {
         private final MaxRewardedAdapterListener listener;
         private       boolean                    hasGrantedReward;
@@ -411,7 +393,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onViewError(final FiveAdVideoReward ad, final FiveAdErrorCode errorCode)
         {
             log( "Rewarded ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
@@ -419,23 +401,24 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpression(final FiveAdInterface ad)
+        public void onImpression(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad impression tracked for slot id: " + ad.getSlotId() + "..." );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
-        public void onFiveAdClick(final FiveAdInterface ad)
+        public void onClick(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad clicked for slot id: " + ad.getSlotId() + "..." );
             listener.onRewardedAdClicked();
         }
 
         @Override
-        public void onFiveAdClose(final FiveAdInterface ad)
+        public void onFullScreenClose(final FiveAdVideoReward ad)
         {
+            listener.onRewardedAdVideoCompleted();
+
             if ( ad.getState() != FiveAdState.ERROR )
             {
                 if ( hasGrantedReward || shouldAlwaysRewardUser() )
@@ -451,56 +434,40 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdStart(final FiveAdInterface ad)
+        public void onFullScreenOpen(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad shown for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for video-only rewarded ads.
-            listener.onRewardedAdDisplayed();
             listener.onRewardedAdVideoStarted();
         }
 
         @Override
-        public void onFiveAdPause(final FiveAdInterface ad)
+        public void onPlay(final FiveAdVideoReward ad)
+        {
+            log( "Rewarded ad did play for slot id: " + ad.getSlotId() + "..." );
+        }
+
+        @Override
+        public void onPause(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad did pause for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdResume(final FiveAdInterface ad)
-        {
-            log( "Rewarded ad did resume for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdViewThrough(final FiveAdInterface ad)
+        public void onViewThrough(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad completed for slot id: " + ad.getSlotId() + "..." );
-            listener.onRewardedAdVideoCompleted();
+        }
+
+        @Override
+        public void onReward(final FiveAdVideoReward ad)
+        {
+            log( "Rewarded ad granted reward for slot id: " + ad.getSlotId() );
             hasGrantedReward = true;
-        }
-
-        @Override
-        public void onFiveAdReplay(final FiveAdInterface ad)
-        {
-            log( "Rewarded ad did replay for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdStall(final FiveAdInterface ad)
-        {
-            log( "Rewarded ad did stall for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdRecover(final FiveAdInterface ad)
-        {
-            log( "Rewarded ad did recover for slot id: " + ad.getSlotId() + "..." );
         }
     }
 
     private class AdViewListener
-            implements FiveAdLoadListener, FiveAdViewEventListener
+            implements FiveAdLoadListener, FiveAdCustomLayoutEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -527,7 +494,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onViewError(final FiveAdCustomLayout ad, final FiveAdErrorCode errorCode)
         {
             log( adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
@@ -535,74 +502,47 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpression(final FiveAdInterface ad)
+        public void onImpression(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad impression tracked for slot id: " + ad.getSlotId() + "..." );
             listener.onAdViewAdDisplayed();
         }
 
         @Override
-        public void onFiveAdClick(final FiveAdInterface ad)
+        public void onClick(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad clicked for slot id: " + ad.getSlotId() + "..." );
             listener.onAdViewAdClicked();
         }
 
         @Override
-        public void onFiveAdClose(final FiveAdInterface ad)
+        public void onRemove(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onAdViewAdHidden();
         }
 
         @Override
-        public void onFiveAdStart(final FiveAdInterface ad)
+        public void onPlay(final FiveAdCustomLayout ad)
         {
-            log( adFormat.getLabel() + " ad shown for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for video-only adview ads.
-            listener.onAdViewAdDisplayed();
+            log( adFormat.getLabel() + " ad did play for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdPause(final FiveAdInterface ad)
+        public void onPause(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad did pause for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdResume(final FiveAdInterface ad)
-        {
-            log( adFormat.getLabel() + " ad did resume for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdViewThrough(final FiveAdInterface ad)
+        public void onViewThrough(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad completed for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdReplay(final FiveAdInterface ad)
-        {
-            log( adFormat.getLabel() + " ad did replay for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdStall(final FiveAdInterface ad)
-        {
-            log( adFormat.getLabel() + " ad did stall for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdRecover(final FiveAdInterface ad)
-        {
-            log( adFormat.getLabel() + " ad did recover for slot id: " + ad.getSlotId() + "..." );
         }
     }
 
     private class NativeAdViewListener
-            implements FiveAdLoadListener, FiveAdViewEventListener
+            implements FiveAdLoadListener, FiveAdNativeEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -641,7 +581,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onViewError(final FiveAdNative ad, final FiveAdErrorCode errorCode)
         {
             log( "Native " + adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
             MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
@@ -649,69 +589,42 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdImpression(final FiveAdInterface ad)
+        public void onImpression(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad impression tracked for slot id: " + ad.getSlotId() + "..." );
             listener.onAdViewAdDisplayed();
         }
 
         @Override
-        public void onFiveAdClick(final FiveAdInterface ad)
+        public void onClick(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad clicked for slot id: " + ad.getSlotId() );
             listener.onAdViewAdClicked();
         }
 
         @Override
-        public void onFiveAdClose(final FiveAdInterface ad)
+        public void onRemove(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onAdViewAdHidden();
         }
 
         @Override
-        public void onFiveAdStart(final FiveAdInterface ad)
+        public void onPlay(final FiveAdNative ad)
         {
-            log( "Native " + adFormat.getLabel() + " ad shown for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for video-only native adview ads.
-            listener.onAdViewAdDisplayed();
+            log( "Native " + adFormat.getLabel() + " ad did play for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdPause(final FiveAdInterface ad)
+        public void onPause(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad did pause for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdResume(final FiveAdInterface ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad did resume for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdViewThrough(final FiveAdInterface ad)
+        public void onViewThrough(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad completed for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdReplay(final FiveAdInterface ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad did replay for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdStall(final FiveAdInterface ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad did stall for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdRecover(final FiveAdInterface ad)
-        {
-            log( "Native " + adFormat.getLabel() + " ad did recover for slot id: " + ad.getSlotId() + "..." );
         }
 
         private void renderCustomNativeBanner(final String slotId, final Activity activity)
@@ -811,7 +724,7 @@ public class LineMediationAdapter
     }
 
     private class NativeAdListener
-            implements FiveAdLoadListener, FiveAdViewEventListener
+            implements FiveAdLoadListener, FiveAdNativeEventListener
     {
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
@@ -842,7 +755,7 @@ public class LineMediationAdapter
             if ( activity == null )
             {
                 log( "Native ad (" + ad.getSlotId() + ") failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
+                listener.onNativeAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
 
                 return;
             }
@@ -893,74 +806,47 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdViewError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onViewError(final FiveAdNative ad, final FiveAdErrorCode errorCode)
         {
             log( "Native ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
         }
 
         @Override
-        public void onFiveAdImpression(final FiveAdInterface ad)
+        public void onImpression(final FiveAdNative ad)
         {
             log( "Native ad impression tracked for slot id: " + ad.getSlotId() + "..." );
             listener.onNativeAdDisplayed( null );
         }
 
         @Override
-        public void onFiveAdClick(final FiveAdInterface ad)
+        public void onClick(final FiveAdNative ad)
         {
             log( "Native ad clicked for slot id: " + ad.getSlotId() );
             listener.onNativeAdClicked();
         }
 
         @Override
-        public void onFiveAdClose(final FiveAdInterface ad)
+        public void onRemove(final FiveAdNative ad)
         {
             log( "Native ad hidden for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdStart(final FiveAdInterface ad)
+        public void onPlay(final FiveAdNative ad)
         {
-            log( "Native ad shown for slot id: " + ad.getSlotId() + "..." );
-
-            // NOTE: Called for video-only native adview ads.
-            listener.onNativeAdDisplayed( null );
+            log( "Native ad did play for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdPause(final FiveAdInterface ad)
+        public void onPause(final FiveAdNative ad)
         {
             log( "Native ad did pause for slot id: " + ad.getSlotId() + "..." );
         }
 
         @Override
-        public void onFiveAdResume(final FiveAdInterface ad)
-        {
-            log( "Native ad did resume for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdViewThrough(final FiveAdInterface ad)
+        public void onViewThrough(final FiveAdNative ad)
         {
             log( "Native ad completed for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdReplay(final FiveAdInterface ad)
-        {
-            log( "Native ad did replay for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdStall(final FiveAdInterface ad)
-        {
-            log( "Native ad did stall for slot id: " + ad.getSlotId() + "..." );
-        }
-
-        @Override
-        public void onFiveAdRecover(final FiveAdInterface ad)
-        {
-            log( "Native ad did recover for slot id: " + ad.getSlotId() + "..." );
         }
     }
 
