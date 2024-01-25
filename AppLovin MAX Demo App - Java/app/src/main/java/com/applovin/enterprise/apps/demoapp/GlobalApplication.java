@@ -6,9 +6,14 @@ import android.os.Bundle;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.LogLevel;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkSettings;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+
+import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,16 +26,39 @@ public class GlobalApplication
     {
         super.onCreate();
 
-        // Initialize the AppLovin SDK
-        AppLovinSdk.getInstance( this ).setMediationProvider( AppLovinMediationProvider.MAX );
-        AppLovinSdk.getInstance( this ).initializeSdk( config -> {
-            // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+        // If you want to test your own AppLovin SDK key,
+        // update the value in AndroidManifest.xml under the "applovin.sdk.key" key, and update the package name to your app's name.
 
-            // Initialize Adjust SDK
-            AdjustConfig adjustConfig = new AdjustConfig( getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX );
-            Adjust.onCreate( adjustConfig );
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute( () -> {
+            // Enable test mode by default for the current device. Cannot be run on the main thread.
+            String currentGaid = null;
+            try
+            {
+                currentGaid = AdvertisingIdClient.getAdvertisingIdInfo( this ).getId();
+            }
+            catch ( Throwable ignored ) { }
 
-            registerActivityLifecycleCallbacks( new AdjustLifecycleCallbacks() );
+            AppLovinSdkSettings settings = new AppLovinSdkSettings( this );
+            if ( currentGaid != null )
+            {
+                settings.setTestDeviceAdvertisingIds( Collections.singletonList( currentGaid ) );
+            }
+
+            // Initialize the AppLovin SDK
+            AppLovinSdk sdk = AppLovinSdk.getInstance( settings, this );
+            sdk.setMediationProvider( AppLovinMediationProvider.MAX );
+            sdk.initializeSdk( appLovinSdkConfiguration -> {
+                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
+
+                // Initialize Adjust SDK
+                AdjustConfig adjustConfig = new AdjustConfig( getApplicationContext(), "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX );
+                Adjust.onCreate( adjustConfig );
+
+                registerActivityLifecycleCallbacks( new AdjustLifecycleCallbacks() );
+            } );
+
+            executor.shutdown();
         } );
     }
 
