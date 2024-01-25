@@ -954,7 +954,7 @@ public class InMobiMediationAdapter
             if ( TextUtils.isEmpty( inMobiNative.getAdTitle() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad does not have required assets." );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                 return;
             }

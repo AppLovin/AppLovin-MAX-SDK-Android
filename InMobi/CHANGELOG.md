@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.6.3.0
+* Certified with InMobi SDK 10.6.3.
+* Improve error handling.
+
 ## 10.6.2.0
 * Certified with InMobi SDK 10.6.2.
 
