@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.21.1.0
+* Certified with Verve SDK 2.21.1.
+
 ## 2.20.0.0
 * Certified with Verve SDK 2.20.0.
 
