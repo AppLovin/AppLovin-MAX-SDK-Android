@@ -579,6 +579,7 @@ public class InneractiveMediationAdapter
         // Overwritten by `mute_state` setting, unless `mute_state` is disabled
         if ( serverParameters.containsKey( "is_muted" ) ) // Introduced in 9.10.0
         {
+            // NOTE: Does not work for rewarded ads
             InneractiveAdManager.setMuteVideo( serverParameters.getBoolean( "is_muted" ) );
         }
 
