@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.6.6.0
+* Certified with InMobi SDK 10.6.6.
+
 ## 10.6.3.1
 * Fix NPE caused by calling `LayoutParams.width` to get media view width for native ads.
 
