@@ -70,13 +70,12 @@ public class OguryPresageMediationAdapter
             final String assetKey = parameters.getServerParameters().getString( "asset_key" );
             log( "Initializing Ogury Presage SDK with asset key: " + assetKey + "..." );
 
-            // Pass the user consent before initializing SDK for personalized ads
-            updateUserConsent( parameters );
-
             OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( getContext( activity ), assetKey )
                     .putMonitoringInfo( "max_applovin_mediation_version", AppLovinSdk.VERSION );
 
             Ogury.start( oguryConfigurationBuilder.build() );
+
+            updateUserConsent( parameters );
         }
 
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );

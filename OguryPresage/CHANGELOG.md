@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.6.2.1
+* Move `updateUserConsent()` call after `Ogury.start(...)`.
+
 ## 5.6.2.0
 * Certified with OguryPresage SDK 5.6.2.
 
