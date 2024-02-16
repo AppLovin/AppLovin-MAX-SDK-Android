@@ -29,6 +29,7 @@ import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyBannerListener;
 import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyInterstitialListener;
 import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.logger.IronSourceError;
+import com.ironsource.mediationsdk.utils.IronSourceConstants;
 import com.ironsource.mediationsdk.utils.IronSourceUtils;
 
 import java.util.ArrayList;
@@ -491,6 +492,8 @@ public class IronSourceMediationAdapter
                 case IronSourceError.ERROR_IS_LOAD_FAILED_NO_CANDIDATES:
                 case IronSourceError.ERROR_RV_LOAD_NO_FILL:
                 case IronSourceError.ERROR_IS_LOAD_NO_FILL:
+                case IronSourceError.ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED:
+                case IronSourceConstants.BN_INSTANCE_LOAD_NO_FILL:
                     adapterError = MaxAdapterError.NO_FILL;
                     break;
                 case IronSourceError.ERROR_CODE_GENERIC:

@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.7.0.0.0
+* Certified with IronSource SDK 7.7.0.
+* Correctly map `ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED` and `BN_INSTANCE_LOAD_NO_FILL` to MAX NO FILLs instead of unspecified errors.
+
 ## 7.6.0.0.0
 * Certified with IronSource SDK 7.6.0.
 
