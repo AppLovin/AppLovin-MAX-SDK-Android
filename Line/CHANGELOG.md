@@ -1,5 +1,8 @@
 # Changelog
 
+## 2024.2.14.0
+* Certified with Line SDK 2.7.20240214.
+
 ## 2024.1.12.0
 * Certified with Line SDK 2.7.20240112.
 * Update event tracking methods since `FiveAdViewEventListener` is deprecated.
