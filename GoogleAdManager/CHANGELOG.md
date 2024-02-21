@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.6.0.1
+* Use `apply()` when saving to `SharedPreferences` to prevent ANRs. 
+
 ## 22.6.0.0
 * Certified with GoogleAdManager SDK 22.6.0.
 * Improve error handling.

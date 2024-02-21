@@ -709,14 +709,14 @@ public class GoogleAdManagerMediationAdapter
             PreferenceManager.getDefaultSharedPreferences( context )
                     .edit()
                     .putInt( "gad_rdp", 1 )
-                    .commit();
+                    .apply();
         }
         else
         {
             PreferenceManager.getDefaultSharedPreferences( context )
                     .edit()
                     .remove( "gad_rdp" )
-                    .commit();
+                    .apply();
         }
 
         if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
