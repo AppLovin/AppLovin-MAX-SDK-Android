@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.7.0.3.1
+* Downgrade to ByteDance SDK 5.6.0.4 to fix deadlock issue when collecting signal.
+
 ## 5.7.0.3.0
 * Certified with ByteDance SDK 5.7.0.3.
 
