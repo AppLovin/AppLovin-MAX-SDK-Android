@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class VungleInitializer implements InitializationListener {
 
   private static final VungleInitializer instance = new VungleInitializer();
-  private final AtomicBoolean isInitializing = new AtomicBoolean(false);
+  private final AtomicBoolean isInitializing = new AtomicBoolean( false );
   private final ArrayList<VungleInitializationListener> initListeners;
 
   @NonNull
@@ -35,13 +35,13 @@ public class VungleInitializer implements InitializationListener {
       return;
     }
 
-    if (isInitializing.getAndSet(true)) {
-      initListeners.add(listener);
+    if (isInitializing.getAndSet( true )) {
+      initListeners.add( listener );
       return;
     }
 
-    VungleAds.init(context, appId, VungleInitializer.this);
-    initListeners.add(listener);
+    VungleAds.init( context, appId, VungleInitializer.this );
+    initListeners.add( listener );
   }
 
   @Override
@@ -50,16 +50,16 @@ public class VungleInitializer implements InitializationListener {
       listener.onInitializeSuccess();
     }
     initListeners.clear();
-    isInitializing.set(false);
+    isInitializing.set( false );
   }
 
   @Override
   public void onError(@NonNull final VungleError vungleError) {
     for (VungleInitializationListener listener : initListeners) {
-      listener.onInitializeError(vungleError);
+      listener.onInitializeError( vungleError );
     }
     initListeners.clear();
-    isInitializing.set(false);
+    isInitializing.set( false );
   }
 
   public interface VungleInitializationListener {
