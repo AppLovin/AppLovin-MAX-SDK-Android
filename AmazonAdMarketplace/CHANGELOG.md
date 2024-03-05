@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.9.2.1
+* Update to new APIs added in Amazon SDK version 9.8.7.
+* Note: The minimum Amazon SDK version required for this adapter is 9.8.7.
+* Remove the memory leak fix added for APS banners in adapter v9.8.8.1, as Amazon has addressed the issue in Amazon SDK 9.8.10.
+
 ## 9.9.2.0
 * Certified with AmazonAdMarketplace SDK 9.9.2.
 
