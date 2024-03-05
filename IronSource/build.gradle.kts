@@ -4,7 +4,7 @@ plugins {
 }
 
 private val versionMajor = 7
-private val versionMinor = 7
+private val versionMinor = 8
 private val versionPatch = 0
 private val versionBuild = 0
 private val versionAdapterPatch = 0
@@ -22,6 +22,7 @@ android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
     implementation("com.ironsource.sdk:mediationsdk:${libraryVersions["ironSource"]}")
+    compileOnly("com.android.support:support-annotations:+")
 }
 
 repositories {

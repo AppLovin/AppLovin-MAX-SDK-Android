@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.8.0.0.0
+* Certified with IronSource SDK 7.8.0.
+* Fixed to allow multiple banners/MRECs with same instanceId in a session to load by destroying previous banners/MRECs using `destroyISDemandOnlyBanner()` API.
+
 ## 7.7.0.0.0
 * Certified with IronSource SDK 7.7.0.
 * Correctly map `ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED` and `BN_INSTANCE_LOAD_NO_FILL` to MAX NO FILLs instead of unspecified errors.
