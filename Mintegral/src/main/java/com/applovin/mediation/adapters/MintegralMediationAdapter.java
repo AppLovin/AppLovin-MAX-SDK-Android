@@ -17,6 +17,7 @@ import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxAppOpenAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
@@ -47,6 +48,9 @@ import com.mbridge.msdk.out.MBBidNativeHandler;
 import com.mbridge.msdk.out.MBBidRewardVideoHandler;
 import com.mbridge.msdk.out.MBConfiguration;
 import com.mbridge.msdk.out.MBRewardVideoHandler;
+import com.mbridge.msdk.out.MBSplashHandler;
+import com.mbridge.msdk.out.MBSplashLoadListener;
+import com.mbridge.msdk.out.MBSplashShowListener;
 import com.mbridge.msdk.out.MBridgeIds;
 import com.mbridge.msdk.out.MBridgeSDKFactory;
 import com.mbridge.msdk.out.NativeListener;
@@ -66,9 +70,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.Nullable;
+
 public class MintegralMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
+        implements MaxInterstitialAdapter, /* MaxAppOpenAdapter */ MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
 {
     private static final MintegralMediationAdapterRouter router;
     private static final AtomicBoolean                   initialized = new AtomicBoolean();
@@ -121,6 +127,7 @@ public class MintegralMediationAdapter
     // Supports video, interactive, and banner ad formats
     private MBInterstitialVideoHandler    mbInterstitialVideoHandler;
     private MBBidInterstitialVideoHandler mbBidInterstitialVideoHandler;
+    private MBSplashHandler               mbSplashHandler;
     private MBRewardVideoHandler          mbRewardVideoHandler;
     private MBBidRewardVideoHandler       mbBidRewardVideoHandler;
     private MBBannerView                  mbBannerView;
@@ -219,6 +226,13 @@ public class MintegralMediationAdapter
         {
             mbBidInterstitialVideoHandler.setInterstitialVideoListener( null );
             mbBidInterstitialVideoHandler = null;
+        }
+
+        if ( mbSplashHandler != null )
+        {
+            mbSplashHandler.setSplashLoadListener( null );
+            mbSplashHandler.setSplashShowListener( null );
+            mbSplashHandler = null;
         }
 
         if ( mbRewardVideoHandler != null )
@@ -395,6 +409,36 @@ public class MintegralMediationAdapter
             // Ad load failed
             router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
+    }
+
+    public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        mbUnitId = parameters.getThirdPartyAdPlacementId();
+        final String placementId = BundleUtils.getString( "placement_id", parameters.getServerParameters() );
+
+        log( "Loading app open ad for unit id: " + mbUnitId + " and placement id: " + placementId + "..." );
+
+        mbSplashHandler = new MBSplashHandler( activity, placementId, mbUnitId );
+        final AppOpenAdListener appOpenAdListener = new AppOpenAdListener( listener );
+        mbSplashHandler.setSplashLoadListener( appOpenAdListener );
+        mbSplashHandler.setSplashShowListener( appOpenAdListener );
+
+        mbSplashHandler.preLoadByToken( parameters.getBidResponse() );
+    }
+
+    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        final String bidResponse = parameters.getBidResponse();
+        if ( mbSplashHandler == null || !mbSplashHandler.isReady( bidResponse ) )
+        {
+            log( "Unable to show app open ad - no ad loaded..." );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "App open ad not ready" ) );
+
+            return;
+        }
+
+        log( "Showing app open ad..." );
+        mbSplashHandler.show( activity, bidResponse );
     }
 
     @Override
@@ -1008,6 +1052,90 @@ public class MintegralMediationAdapter
 
         //TODO: marked for deletion, pending SDK change.
         void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener) { }
+    }
+
+    private class AppOpenAdListener
+            implements MBSplashLoadListener, MBSplashShowListener
+    {
+        private final MaxAppOpenAdapterListener listener;
+
+        AppOpenAdListener(final MaxAppOpenAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        //region MBSplashLoadListener
+
+        @Override
+        public void onLoadSuccessed(final MBridgeIds mBridgeIds, final int requestType)
+        {
+            log( "App open ad loaded for: " + mBridgeIds );
+
+            Bundle extraInfo = null;
+            final String creativeId = mbSplashHandler.getCreativeIdWithUnitId();
+            if ( AppLovinSdkUtils.isValidString( creativeId ) )
+            {
+                extraInfo = new Bundle( 1 );
+                extraInfo.putString( "creative_id", creativeId );
+            }
+
+            listener.onAppOpenAdLoaded( extraInfo );
+        }
+
+        @Override
+        public void onLoadFailed(final MBridgeIds mBridgeIds, final String errorMsg, final int requestType)
+        {
+            final MaxAdapterError adapterError = toMaxError( errorMsg );
+            log( "App open ad failed to load: " + adapterError );
+            listener.onAppOpenAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void isSupportZoomOut(final MBridgeIds mBridgeIds, final boolean supportsZoomOut) { }
+
+        //endregion
+
+        //region MBSplashShowListener
+
+        @Override
+        public void onShowSuccessed(final MBridgeIds mBridgeIds)
+        {
+            log( "App open ad displayed" );
+            listener.onAppOpenAdDisplayed();
+        }
+
+        @Override
+        public void onShowFailed(final MBridgeIds mBridgeIds, final String errorMsg)
+        {
+            final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+            log( "App open ad failed to show: " + adapterError );
+            listener.onAppOpenAdDisplayFailed( adapterError );
+        }
+
+        @Override
+        public void onAdClicked(final MBridgeIds mBridgeIds)
+        {
+            log( "App open ad clicked" );
+            listener.onAppOpenAdClicked();
+        }
+
+        @Override
+        public void onDismiss(final MBridgeIds mBridgeIds, final int dismissType)
+        {
+            log( "App open ad hidden" );
+            listener.onAppOpenAdHidden();
+        }
+
+        @Override
+        public void onAdTick(final MBridgeIds mBridgeIds, final long timeUntilFinishedMillis) { }
+
+        @Override
+        public void onZoomOutPlayStart(final MBridgeIds mBridgeIds) { }
+
+        @Override
+        public void onZoomOutPlayFinish(final MBridgeIds mBridgeIds) { }
+
+        //endregion
     }
 
     private class NativeAdViewListener
