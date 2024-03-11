@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.6.51.2
+* Add support for app open ads.
+
 ## 16.6.51.1
 * Remove ProGuard rules since they are included in Mintegral's libraries.
 
