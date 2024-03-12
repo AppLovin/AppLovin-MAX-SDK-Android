@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.1.0
+* Certified with Yandex SDK 6.4.1.
+
 ## 6.4.0.0
 * Certified with Yandex SDK 6.4.0 and AppMetrica SDK 6.2.1.
 * Add support for new bidding token generation method.
