@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.6.61.1
+* Add support for app open ads.
+
 ## 16.6.61.0
 * Certified with Mintegral SDK 16.6.61.
 
