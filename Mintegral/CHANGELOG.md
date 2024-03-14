@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.6.61.0
+* Certified with Mintegral SDK 16.6.61.
+
 ## 16.6.51.1
 * Remove ProGuard rules since they are included in Mintegral's libraries.
 
