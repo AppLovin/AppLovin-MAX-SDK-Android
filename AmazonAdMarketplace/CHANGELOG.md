@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.3.0
+* Certified with AmazonAdMarketplace SDK 9.9.3.
+
 ## 9.9.2.1
 * Update to new APIs added in Amazon SDK version 9.8.7.
 * Note: The minimum Amazon SDK version required for this adapter is 9.8.7.
