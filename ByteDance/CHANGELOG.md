@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.8.1.0.1
+* Update to use asynchronous signal collection API.
+
 ## 5.8.1.0.0
 * Certified with ByteDance SDK 5.8.1.0.
 
