@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.3.0.0
+* Certified with Vungle SDK 7.3.0.
+
 ## 7.1.0.0
 * Certified with Vungle SDK 7.1.0.
 * Update `play()` API to use context.

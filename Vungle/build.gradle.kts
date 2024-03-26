@@ -4,7 +4,7 @@ plugins {
 }
 
 private val versionMajor = 7
-private val versionMinor = 1
+private val versionMinor = 3
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
