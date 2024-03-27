@@ -15,13 +15,3 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
--keepattributes Signature
--keepattributes *Annotation*
--keep class com.mbridge.** {*; }
--keep interface com.bridge.** {*; }
--keep class android.support.v4.** { *; }
--dontwarn com.mbridge.**
--keep class **.R$* { public static final int mbridge*; }
--keep class com.alphab.** {*; }
--keep interface com.alphab.** {*; }

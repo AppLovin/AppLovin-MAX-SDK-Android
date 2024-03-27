@@ -1,5 +1,9 @@
 # Changelog
 
+## 23.0.0.0
+* Certified with Google SDK 23.0.0
+* Now requires minimum Android API level be 21 or higher.
+
 ## 22.6.0.1
 * Use `apply()` when saving to `SharedPreferences` to prevent ANRs. 
 

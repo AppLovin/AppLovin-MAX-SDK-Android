@@ -831,7 +831,7 @@ public class GoogleMediationAdapter
         }
         else
         {
-            return AdFormat.UNKNOWN;
+            throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
     }
 

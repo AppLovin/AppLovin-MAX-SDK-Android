@@ -6,8 +6,8 @@ plugins {
 // NOTE: Mintegral has 2 separate SDK versions, e.g. x.x.51 for Google Play & x.x.52 for Android Market (in China)
 private val versionMajor = 16
 private val versionMinor = 6
-private val versionPatch = 41
-private val versionAdapterPatch = 0
+private val versionPatch = 61
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -37,6 +37,7 @@ dependencies {
     implementation("com.mbridge.msdk.oversea:videojs:${libraryVersions["mintegral"]}")
     implementation("com.mbridge.msdk.oversea:mbnative:${libraryVersions["mintegral"]}")
     implementation("com.mbridge.msdk.oversea:dycreator:${libraryVersions["mintegral"]}")
+    implementation("com.mbridge.msdk.oversea:mbsplash:${libraryVersions["mintegral"]}")
 
     implementation("androidx.recyclerview:recyclerview:${libraryVersions["recyclerView"]}")
 }
@@ -136,6 +137,12 @@ publishing {
                         appendNode("dependency").apply {
                             appendNode("groupId", "com.mbridge.msdk.oversea")
                             appendNode("artifactId", "dycreator")
+                            appendNode("version", libraryVersions["mintegral"])
+                            appendNode("scope", "compile")
+                        }
+                        appendNode("dependency").apply {
+                            appendNode("groupId", "com.mbridge.msdk.oversea")
+                            appendNode("artifactId", "mbsplash")
                             appendNode("version", libraryVersions["mintegral"])
                             appendNode("scope", "compile")
                         }
