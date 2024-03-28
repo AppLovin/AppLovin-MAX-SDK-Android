@@ -3,9 +3,7 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -14,7 +12,6 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -785,19 +782,10 @@ public class GoogleMediationAdapter
     public static int getApplicationWindowWidth(final Context context)
     {
         WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.R )
-        {
-            WindowMetrics windowMetrics = windowManager.getCurrentWindowMetrics();
-            Rect applicationBounds = windowMetrics.getBounds();
-            return applicationBounds.width();
-        }
-        else
-        {
-            Display display = windowManager.getDefaultDisplay();
-            DisplayMetrics outMetrics = new DisplayMetrics();
-            display.getMetrics( outMetrics );
-            return outMetrics.widthPixels;
-        }
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics( outMetrics );
+        return outMetrics.widthPixels;
     }
 
     private AdFormat toAdFormat(final MaxAdapterSignalCollectionParameters parameters)
@@ -1122,7 +1110,6 @@ public class GoogleMediationAdapter
         public void onAdShowedFullScreenContent()
         {
             log( "Rewarded interstitial ad shown: " + placementId );
-            listener.onRewardedInterstitialAdVideoStarted();
         }
 
         @Override
@@ -1150,8 +1137,6 @@ public class GoogleMediationAdapter
         @Override
         public void onAdDismissedFullScreenContent()
         {
-            listener.onRewardedInterstitialAdVideoCompleted();
-
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
                 MaxReward reward = getReward();
@@ -1182,7 +1167,6 @@ public class GoogleMediationAdapter
         public void onAdShowedFullScreenContent()
         {
             log( "Rewarded ad shown: " + placementId );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -1210,8 +1194,6 @@ public class GoogleMediationAdapter
         @Override
         public void onAdDismissedFullScreenContent()
         {
-            listener.onRewardedAdVideoCompleted();
-
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
                 MaxReward reward = getReward();
