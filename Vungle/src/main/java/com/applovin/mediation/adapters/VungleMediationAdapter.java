@@ -27,6 +27,7 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParamet
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
+import com.applovin.mediation.adapters.VungleInitializer.VungleInitializationListener;
 import com.applovin.mediation.adapters.vungle.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
@@ -38,7 +39,6 @@ import com.vungle.ads.BannerAdListener;
 import com.vungle.ads.BannerAdSize;
 import com.vungle.ads.BannerView;
 import com.vungle.ads.BaseAd;
-import com.vungle.ads.InitializationListener;
 import com.vungle.ads.InterstitialAd;
 import com.vungle.ads.InterstitialAdListener;
 import com.vungle.ads.NativeAd;
@@ -52,7 +52,6 @@ import com.vungle.ads.internal.ui.view.MediaView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
 
@@ -60,8 +59,6 @@ public class VungleMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, /* MaxAppOpenAdapter */ MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
-    private static final AtomicBoolean        initialized = new AtomicBoolean();
-    private static       InitializationStatus initializationStatus;
 
     private BannerAd       bannerAd;
     private InterstitialAd interstitialAd;
@@ -77,42 +74,33 @@ public class VungleMediationAdapter
     {
         updateUserPrivacySettings( parameters );
 
-        if ( initialized.compareAndSet( false, true ) )
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        log( "Initializing Vungle SDK with app id: " + appId + "..." );
+        if ( TextUtils.isEmpty( appId ) )
         {
-            String appId = parameters.getServerParameters().getString( "app_id", null );
-            log( "Initializing Vungle SDK with app id: " + appId + "..." );
+            log( "No app ID provided" );
+            onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, "No app ID provided" );
+            return;
+        }
 
-            initializationStatus = InitializationStatus.INITIALIZING;
-
-            VungleAds.setIntegrationName( VungleAds.WrapperFramework.max, getAdapterVersion() );
-
-            // Note: Vungle requires the Application Context
-            VungleAds.init( getContext( activity ), appId, new InitializationListener()
+        VungleInitializer.getInstance().initialize( appId, getContext( activity ), new VungleInitializationListener()
+        {
+            @Override
+            public void onInitializeSuccess()
             {
-                @Override
-                public void onSuccess()
-                {
-                    log( "Vungle SDK initialized" );
+                log( "Vungle SDK initialized" );
 
-                    initializationStatus = InitializationStatus.INITIALIZED_SUCCESS;
-                    onCompletionListener.onCompletion( initializationStatus, null );
-                }
+                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
+            }
 
-                @Override
-                public void onError(final VungleError vungleError)
-                {
-                    log( "Vungle SDK failed to initialize with error: ", vungleError );
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                log( "Vungle SDK failed to initialize with error: ", vungleError );
 
-                    initializationStatus = InitializationStatus.INITIALIZED_FAILURE;
-                    onCompletionListener.onCompletion( initializationStatus, vungleError.getErrorMessage() );
-                }
-            } );
-        }
-        else
-        {
-            log( "Vungle SDK already initialized" );
-            onCompletionListener.onCompletion( initializationStatus, null );
-        }
+                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, vungleError.getErrorMessage() );
+            }
+        } );
     }
 
     @Override
@@ -183,25 +171,39 @@ public class VungleMediationAdapter
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        String bidResponse = parameters.getBidResponse();
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
-
-        if ( !VungleAds.isInitialized() )
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        if ( TextUtils.isEmpty( appId ) )
         {
-            log( "Vungle SDK not successfully initialized: failing interstitial ad load..." );
-            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
+            log( "No app ID provided" );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             return;
         }
 
+        String bidResponse = parameters.getBidResponse();
+        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        String placementId = parameters.getThirdPartyAdPlacementId();
+        Context context = getContext( activity );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
+
         updateUserPrivacySettings( parameters );
 
-        interstitialAd = new InterstitialAd( getContext( activity ), placementId, new AdConfig() );
-        interstitialAd.setAdListener( new InterstitialListener( listener ) );
+        VungleInitializer.getInstance().initialize( appId, context, new VungleInitializationListener()
+        {
+            @Override
+            public void onInitializeSuccess()
+            {
+                interstitialAd = new InterstitialAd( context, placementId, new AdConfig() );
+                interstitialAd.setAdListener( new InterstitialListener( listener ) );
 
-        interstitialAd.load( bidResponse );
+                interstitialAd.load( bidResponse );
+            }
+
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                listener.onInterstitialAdLoadFailed( toMaxError( vungleError ) );
+            }
+        } );
     }
 
     @Override
@@ -225,25 +227,39 @@ public class VungleMediationAdapter
 
     public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
     {
-        String bidResponse = parameters.getBidResponse();
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "app open ad for placement: " + placementId + "..." );
-
-        if ( !VungleAds.isInitialized() )
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        if ( TextUtils.isEmpty( appId ) )
         {
-            log( "Vungle SDK not successfully initialized: failing app open ad load..." );
-            listener.onAppOpenAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
+            log( "No app ID provided" );
+            listener.onAppOpenAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             return;
         }
 
+        String bidResponse = parameters.getBidResponse();
+        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        String placementId = parameters.getThirdPartyAdPlacementId();
+        Context context = getContext( activity );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "app open ad for placement: " + placementId + "..." );
+
         updateUserPrivacySettings( parameters );
 
-        appOpenAd = new InterstitialAd( getContext( activity ), placementId, new AdConfig() );
-        appOpenAd.setAdListener( new AppOpenAdListener( listener ) );
+        VungleInitializer.getInstance().initialize( appId, context, new VungleInitializationListener()
+        {
+            @Override
+            public void onInitializeSuccess()
+            {
+                appOpenAd = new InterstitialAd( context, placementId, new AdConfig() );
+                appOpenAd.setAdListener( new AppOpenAdListener( listener ) );
 
-        appOpenAd.load( bidResponse );
+                appOpenAd.load( bidResponse );
+            }
+
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                listener.onAppOpenAdLoadFailed( toMaxError( vungleError ) );
+            }
+        } );
     }
 
     public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
@@ -267,25 +283,39 @@ public class VungleMediationAdapter
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        String bidResponse = parameters.getBidResponse();
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
-
-        if ( !VungleAds.isInitialized() )
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        if ( TextUtils.isEmpty( appId ) )
         {
-            log( "Vungle SDK not successfully initialized: failing rewarded ad load..." );
-            listener.onRewardedAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
+            log( "No app ID provided" );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             return;
         }
 
+        String bidResponse = parameters.getBidResponse();
+        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        String placementId = parameters.getThirdPartyAdPlacementId();
+        Context context = getContext( activity );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
+
         updateUserPrivacySettings( parameters );
 
-        rewardedAd = new RewardedAd( getContext( activity ), placementId, new AdConfig() );
-        rewardedAd.setAdListener( new RewardedListener( listener ) );
+        VungleInitializer.getInstance().initialize( appId, context, new VungleInitializationListener()
+        {
+            @Override
+            public void onInitializeSuccess()
+            {
+                rewardedAd = new RewardedAd( context, placementId, new AdConfig() );
+                rewardedAd.setAdListener( new RewardedListener( listener ) );
 
-        rewardedAd.load( bidResponse );
+                rewardedAd.load( bidResponse );
+            }
+
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                listener.onRewardedAdLoadFailed( toMaxError( vungleError ) );
+            }
+        } );
     }
 
     @Override
@@ -312,6 +342,14 @@ public class VungleMediationAdapter
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        if ( TextUtils.isEmpty( appId ) )
+        {
+            log( "No app ID provided" );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            return;
+        }
+
         final String bidResponse = parameters.getBidResponse();
         final String adFormatLabel = adFormat.getLabel();
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -322,32 +360,37 @@ public class VungleMediationAdapter
 
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
-        {
-            log( "Vungle SDK not successfully initialized: failing " + adFormatLabel + " ad load..." );
-            listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
-            return;
-        }
-
         updateUserPrivacySettings( parameters );
 
-        if ( isNative )
+        VungleInitializer.getInstance().initialize( appId, context, new VungleInitializationListener()
         {
-            final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, context, listener );
-            nativeAd = new NativeAd( activity, placementId );
-            nativeAd.setAdListener( nativeAdViewListener );
+            @Override
+            public void onInitializeSuccess()
+            {
+                if ( isNative )
+                {
+                    final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, context, listener );
+                    nativeAd = new NativeAd( activity, placementId );
+                    nativeAd.setAdListener( nativeAdViewListener );
 
-            nativeAd.load( bidResponse );
+                    nativeAd.load( bidResponse );
 
-            return;
-        }
+                    return;
+                }
 
-        BannerAdSize adSize = vungleAdSize( adFormat );
-        bannerAd = new BannerAd( context, placementId, adSize );
-        bannerAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
+                BannerAdSize adSize = vungleAdSize( adFormat );
+                bannerAd = new BannerAd( context, placementId, adSize );
+                bannerAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
-        bannerAd.load( bidResponse );
+                bannerAd.load( bidResponse );
+            }
+
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                listener.onAdViewAdLoadFailed( toMaxError( vungleError ) );
+            }
+        } );
     }
 
     //endregion
@@ -357,25 +400,39 @@ public class VungleMediationAdapter
     @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
     {
-        String bidResponse = parameters.getBidResponse();
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
-
-        if ( !VungleAds.isInitialized() )
+        String appId = parameters.getServerParameters().getString( "app_id", null );
+        if ( TextUtils.isEmpty( appId ) )
         {
-            log( "Vungle SDK not successfully initialized: failing interstitial ad load..." );
-            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
-
+            log( "No app ID provided" );
+            listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             return;
         }
 
+        String bidResponse = parameters.getBidResponse();
+        boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
+        String placementId = parameters.getThirdPartyAdPlacementId();
+        Context context = getContext( activity );
+        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
+
         updateUserPrivacySettings( parameters );
 
-        nativeAd = new NativeAd( activity, placementId );
-        nativeAd.setAdListener( new NativeListener( parameters, getContext( activity ), listener ) );
+        VungleInitializer.getInstance().initialize( appId, context, new VungleInitializationListener()
+        {
+            @Override
+            public void onInitializeSuccess()
+            {
+                nativeAd = new NativeAd( activity, placementId );
+                nativeAd.setAdListener( new NativeListener( parameters, context, listener ) );
 
-        nativeAd.load( bidResponse );
+                nativeAd.load( bidResponse );
+            }
+
+            @Override
+            public void onInitializeError(final VungleError vungleError)
+            {
+                listener.onNativeAdLoadFailed( toMaxError( vungleError ) );
+            }
+        } );
     }
 
     //endregion

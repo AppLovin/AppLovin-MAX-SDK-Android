@@ -2,6 +2,7 @@
 
 ## 7.3.0.0
 * Certified with Vungle SDK 7.3.0.
+* Re-init SDK if SDK not initialized or initialize fails when loading ads.
 
 ## 7.1.0.0
 * Certified with Vungle SDK 7.1.0.
