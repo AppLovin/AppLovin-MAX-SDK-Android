@@ -85,9 +85,8 @@ public class FacebookMediationAdapter
     private RewardedVideoAd mRewardedVideoAd;
     private RewardedVideoAd mRewardedInterAd;
 
-    private final AtomicBoolean onInterstitialAdHiddenCalled     = new AtomicBoolean();
-    private final AtomicBoolean onRewardedAdVideoCompletedCalled = new AtomicBoolean();
-    private final AtomicBoolean onRewardedAdHiddenCalled         = new AtomicBoolean();
+    private final AtomicBoolean onInterstitialAdHiddenCalled = new AtomicBoolean();
+    private final AtomicBoolean onRewardedAdHiddenCalled     = new AtomicBoolean();
 
     // Explicit default constructor declaration
     public FacebookMediationAdapter(final AppLovinSdk sdk)
@@ -329,12 +328,7 @@ public class FacebookMediationAdapter
                     {
                         log( "Rewarded interstitial ad video completed: " + placementId );
 
-                        if ( onRewardedAdVideoCompletedCalled.compareAndSet( false, true ) )
-                        {
-                            listener.onRewardedInterstitialAdVideoCompleted();
-
-                            hasGrantedReward = true;
-                        }
+                        hasGrantedReward = true;
                     }
 
                     @Override
@@ -343,7 +337,6 @@ public class FacebookMediationAdapter
                         log( "Rewarded interstitial ad logging impression: " + placementId );
 
                         listener.onRewardedInterstitialAdDisplayed();
-                        listener.onRewardedInterstitialAdVideoStarted();
                     }
 
                     @Override
@@ -354,11 +347,6 @@ public class FacebookMediationAdapter
                         //
                         // We will not reward the user if Activity is destroyed - this may be due to launching from app icon and having the `android:launchMode="singleTask"` flag
                         //
-
-                        if ( onRewardedAdVideoCompletedCalled.compareAndSet( false, true ) )
-                        {
-                            listener.onRewardedInterstitialAdVideoCompleted();
-                        }
 
                         if ( onRewardedAdHiddenCalled.compareAndSet( false, true ) )
                         {
@@ -785,12 +773,7 @@ public class FacebookMediationAdapter
         {
             log( "Rewarded ad video completed" );
 
-            if ( onRewardedAdVideoCompletedCalled.compareAndSet( false, true ) )
-            {
-                listener.onRewardedAdVideoCompleted();
-
-                hasGrantedReward = true;
-            }
+            hasGrantedReward = true;
         }
 
         @Override
@@ -799,7 +782,6 @@ public class FacebookMediationAdapter
             log( "Rewarded ad logging impression: " + ad.getPlacementId() );
 
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -810,11 +792,6 @@ public class FacebookMediationAdapter
             //
             // We will not reward the user if Activity is destroyed - this may be due to launching from app icon and having the `android:launchMode="singleTask"` flag
             //
-
-            if ( onRewardedAdVideoCompletedCalled.compareAndSet( false, true ) )
-            {
-                listener.onRewardedAdVideoCompleted();
-            }
 
             if ( onRewardedAdHiddenCalled.compareAndSet( false, true ) )
             {
