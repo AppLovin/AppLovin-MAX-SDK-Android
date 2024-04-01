@@ -748,7 +748,6 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdOpen(final ApsAd apsAd)
         {
             d( "Rewarded ad did open" );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -763,7 +762,6 @@ public class AmazonAdMarketplaceMediationAdapter
         {
             d( "Rewarded ad video completed" );
             hasGrantedReward = true;
-            listener.onRewardedAdVideoCompleted();
         }
 
         @Override

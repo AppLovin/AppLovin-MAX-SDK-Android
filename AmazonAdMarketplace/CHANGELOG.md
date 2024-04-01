@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.9.3.1
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Update ProGuard rules to preserve `com.iabtcf.**` classes and APIs to fix error from Amazon SDK: `Non-fatal Exception: java.lang.IllegalArgumentException: Missing the dependency libraries - Ex; com.iabtcf:iabtcf-decoder:2.0.10. For further details, please refer to our Android SDK documentation.`.
+
 ## 9.9.3.0
 * Certified with AmazonAdMarketplace SDK 9.9.3.
 
