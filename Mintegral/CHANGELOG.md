@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.6.71.0
+* Certified with Mintegral SDK 16.6.71.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 16.6.61.1
 * Add support for app open ads.
 

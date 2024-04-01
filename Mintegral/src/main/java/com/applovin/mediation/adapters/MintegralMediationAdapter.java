@@ -1019,7 +1019,6 @@ public class MintegralMediationAdapter
 
                 final String unitId = mBridgeIds.getUnitId();
                 onAdDisplayed( unitId );
-                onRewardedAdVideoStarted( unitId );
             }
 
             @Override
@@ -1045,7 +1044,6 @@ public class MintegralMediationAdapter
                 final String unitId = mBridgeIds.getUnitId();
                 if ( rewardInfo.isCompleteView() )
                 {
-                    onRewardedAdVideoCompleted( unitId );
                     onUserRewarded( unitId, getReward( unitId ) );
                 }
                 else if ( shouldAlwaysRewardUser( unitId ) )
