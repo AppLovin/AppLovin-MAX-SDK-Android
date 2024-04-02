@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.3.2
+* Add `com.iabtcf:iabtcf-decoder:2.0.10` dependency to complete fix in v9.9.3.1. This is recommended by Amazon's docs [here](https://ams.amazon.com/webpublisher/uam/docs/aps-mobile/android).
+
 ## 9.9.3.1
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
 * Update ProGuard rules to preserve `com.iabtcf.**` classes and APIs to fix error from Amazon SDK: `Non-fatal Exception: java.lang.IllegalArgumentException: Missing the dependency libraries - Ex; com.iabtcf:iabtcf-decoder:2.0.10. For further details, please refer to our Android SDK documentation.`.

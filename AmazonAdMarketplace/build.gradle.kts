@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 9
 private val versionMinor = 9
 private val versionPatch = 3
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 2
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -23,6 +23,7 @@ dependencies {
     api("com.amazon.android:aps-sdk:${libraryVersions["amazonAdMarketplace"]}")
     compileOnly("com.android.support:support-annotations:+")
     implementation("androidx.appcompat:appcompat:${libraryVersions["appcompat"]}")
+    implementation("com.iabtcf:iabtcf-decoder:2.0.10")
 }
 
 publishing {
@@ -50,6 +51,13 @@ publishing {
                             appendNode("url", "https://www.applovin.com")
                         }
                     // NOTE: Amazon requested us to not add them to the list of transitive dependencies. External pubs have to manually integrate their SDK.
+                    appendNode("dependencies")
+                        .appendNode("dependency").apply {
+                            appendNode("groupId", "com.iabtcf")
+                            appendNode("artifactId", "iabtcf-decoder")
+                            appendNode("version", "2.0.10")
+                            appendNode("scope", "compile")
+                        }
                 }
             }
         }
