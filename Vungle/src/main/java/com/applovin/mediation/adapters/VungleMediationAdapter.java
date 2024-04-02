@@ -700,7 +700,6 @@ public class VungleMediationAdapter
             log( "Rewarded ad displayed" );
 
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -728,7 +727,6 @@ public class VungleMediationAdapter
         public void onAdEnd(final BaseAd baseAd)
         {
             log( "Rewarded ad video completed" );
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {

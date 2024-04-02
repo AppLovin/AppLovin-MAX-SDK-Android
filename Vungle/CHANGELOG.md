@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.3.0.1
+* Downgrade Vungle SDK to 7.1.0 due to crashes in Vungle SDK version 7.3.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 7.3.0.0
 * Certified with Vungle SDK 7.3.0.
 
