@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
 
 android {
+    namespace "com.applovin.enterprise.apps.demoapp"
     compileSdkVersion 33
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
