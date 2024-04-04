@@ -7,6 +7,7 @@ import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
 import com.applovin.sdk.AppLovinMediationProvider
 import com.applovin.sdk.AppLovinSdk
+import com.applovin.sdk.AppLovinSdkInitializationConfiguration
 import com.applovin.sdk.AppLovinSdkSettings
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import java.util.Collections
@@ -18,23 +19,24 @@ class GlobalApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // If you want to test your own AppLovin SDK key,
-        // update the value in AndroidManifest.xml under the "applovin.sdk.key" key, and update the package name to your app's name.
+        // If you want to test your own AppLovin SDK key, change the value here and update the package name in the build.gradle
+        val YOUR_SDK_KEY = "05TMDQ5tZabpXQ45_UTbmEGNUtVAzSTzT6KmWQc5_CuWdzccS4DCITZoL3yIWUG3bbq60QC_d4WF28tUC4gVTF"
 
         val executor = Executors.newSingleThreadExecutor();
         executor.execute {
+
+            val initConfigBuilder = AppLovinSdkInitializationConfiguration.builder(YOUR_SDK_KEY, this)
+            initConfigBuilder.mediationProvider = AppLovinMediationProvider.MAX
+
             // Enable test mode by default for the current device. Cannot be run on the main thread.
             val currentGaid = AdvertisingIdClient.getAdvertisingIdInfo(this).id
-
-            val settings = AppLovinSdkSettings(this)
             if (currentGaid != null) {
-                settings.testDeviceAdvertisingIds = Collections.singletonList(currentGaid)
+                initConfigBuilder.testDeviceAdvertisingIds = Collections.singletonList(currentGaid)
             }
 
             // Initialize the AppLovin SDK
-            val sdk = AppLovinSdk.getInstance(settings, this)
-            sdk.mediationProvider = AppLovinMediationProvider.MAX
-            sdk.initializeSdk {
+            val sdk = AppLovinSdk.getInstance(this)
+            sdk.initialize(initConfigBuilder.build()) {
                 // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
 
                 // Initialize Adjust SDK
