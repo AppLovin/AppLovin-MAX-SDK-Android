@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.0.0
+* Certified with BidMachine SDK 2.6.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 2.5.2.0
 * Certified with BidMachine SDK 2.5.2.
 
