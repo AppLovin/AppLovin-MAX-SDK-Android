@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 4
 private val versionMinor = 6
 private val versionPatch = 1
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -52,7 +52,7 @@ publishing {
                     // Add Bigo Ads network to list of dependencies.
                     appendNode("dependencies")
                             .appendNode("dependency").apply {
-                                appendNode("groupId", "com.bigo.ads")
+                                appendNode("groupId", "com.bigossp")
                                 appendNode("artifactId", "bigo-ads")
                                 appendNode("version", libraryVersions["bigoAds"])
                                 appendNode("scope", "compile")

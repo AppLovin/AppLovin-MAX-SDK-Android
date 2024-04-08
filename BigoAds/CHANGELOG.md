@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.6.1.1
+* Fix a dependency issue with previous adapter version.
+
 ## 4.6.1.0
 * Certified with BigoAds SDK 4.6.1.
 
