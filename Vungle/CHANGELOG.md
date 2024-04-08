@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.3.1.1
+* Fix a dependency issue with previous adapter version.
+
 ## 7.3.1.0
 * Certified with Vungle SDK 7.3.1.
 
