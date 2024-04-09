@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.2.7.0
+* Certified with Fyber SDK 8.2.7.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 8.2.6.0
 * Certified with Fyber SDK 8.2.6.
 

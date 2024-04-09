@@ -299,7 +299,6 @@ public class InneractiveMediationAdapter
             public void onCompleted()
             {
                 log( "Rewarded video completed" );
-                listener.onRewardedAdVideoCompleted();
             }
 
             @Override
@@ -335,9 +334,6 @@ public class InneractiveMediationAdapter
                 {
                     listener.onRewardedAdDisplayed();
                 }
-
-                // `VideoContentListener.onProgress()` is called before this
-                listener.onRewardedAdVideoStarted();
             }
 
             @Override
