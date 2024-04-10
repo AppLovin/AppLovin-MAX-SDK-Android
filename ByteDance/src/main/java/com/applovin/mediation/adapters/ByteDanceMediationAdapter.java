@@ -756,7 +756,6 @@ public class ByteDanceMediationAdapter
             log( "Rewarded ad displayed: " + codeId );
 
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -784,8 +783,6 @@ public class ByteDanceMediationAdapter
         public void onAdDismissed()
         {
             log( "Rewarded ad hidden: " + codeId );
-
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
