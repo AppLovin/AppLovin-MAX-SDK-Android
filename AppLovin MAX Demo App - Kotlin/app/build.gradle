@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+def isLocalAppLovinWorkspace = rootProject.name == "Android-Workspace"
 
 android {
     namespace "com.applovin.enterprise.apps.demoapp"
