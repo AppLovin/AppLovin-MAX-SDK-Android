@@ -1128,7 +1128,6 @@ public class SmaatoMediationAdapter
 
             log( "Rewarded ad displayed" );
             onAdDisplayed( placementId );
-            onRewardedAdVideoStarted( placementId );
         }
 
         @Override
@@ -1142,7 +1141,6 @@ public class SmaatoMediationAdapter
         public void onAdReward(final RewardedInterstitialAd rewardedInterstitialAd)
         {
             log( "Rewarded ad video completed" );
-            onRewardedAdVideoCompleted( rewardedInterstitialAd.getAdSpaceId() );
 
             hasGrantedReward = true;
         }
