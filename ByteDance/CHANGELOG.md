@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.9.0.2.0
+* Certified with ByteDance SDK 5.9.0.2.
+
 ## 5.8.1.1.0
 * Certified with ByteDance SDK 5.8.1.1.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
