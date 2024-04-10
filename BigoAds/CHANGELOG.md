@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.6.1.2
+* Fix `Null extracted folder for artifact` build error when using AGP < 8.0.
+
 ## 4.6.1.1
 * Fix a dependency issue with previous adapter version.
 
