@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.4.0
+* Certified with AmazonAdMarketplace SDK 9.9.4.
+
 ## 9.9.3.2
 * Add `com.iabtcf:iabtcf-decoder:2.0.10` dependency to complete fix in v9.9.3.1. This is recommended by Amazon's docs [here](https://ams.amazon.com/webpublisher/uam/docs/aps-mobile/android).
 
