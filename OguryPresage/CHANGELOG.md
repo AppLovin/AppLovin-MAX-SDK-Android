@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.6.2.2
+* Remove privacy method calls as `OguryChoiceManagerExternal.setConsent()` is deprecated and [OguryPresage SDK can collect TCF string directly from disk](https://ogury-ltd.gitbook.io/android/ogury-choice-manager/third-party-consent-manager#case-a-your-cmp-is-compatible-with-the-iab-gdpr-consent-framework).
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 5.6.2.1
 * Move `updateUserConsent()` call after `Ogury.start(...)`.
 
