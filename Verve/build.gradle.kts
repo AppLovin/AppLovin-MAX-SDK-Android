@@ -3,9 +3,9 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 2
-private val versionMinor = 21
-private val versionPatch = 1
+private val versionMajor = 3
+private val versionMinor = 0
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -16,8 +16,10 @@ val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
+android.namespace = "com.applovin.mediation.adapters.verve"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
+android.defaultConfig.minSdk = 21
 
 dependencies {
     implementation("net.pubnative:hybid.sdk:${libraryVersions["verve"]}")

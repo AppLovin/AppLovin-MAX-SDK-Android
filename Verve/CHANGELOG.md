@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.0.0
+* Certified with Verve SDK 3.0.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Remove updating mute state due to deprecation of `HyBid.setVideoAudioStatus( AudioState )`.
+
 ## 2.21.1.0
 * Certified with Verve SDK 2.21.1.
 

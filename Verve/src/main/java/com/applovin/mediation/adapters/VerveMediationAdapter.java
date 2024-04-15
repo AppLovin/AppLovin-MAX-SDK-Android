@@ -2,7 +2,6 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
@@ -22,7 +21,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.verve.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.applovin.sdk.AppLovinSdkUtils;
 
 import net.pubnative.lite.sdk.HyBid;
 import net.pubnative.lite.sdk.HyBidError;
@@ -32,7 +30,6 @@ import net.pubnative.lite.sdk.models.AdSize;
 import net.pubnative.lite.sdk.models.ImpressionTrackingMethod;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
-import net.pubnative.lite.sdk.vpaid.enums.AudioState;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -153,7 +150,6 @@ public class VerveMediationAdapter
 
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
-        updateMuteState( parameters );
 
         interstitialAd = new HyBidInterstitialAd( activity, new InterstitialListener( listener ) );
         interstitialAd.prepareAd( parameters.getBidResponse() );
@@ -190,7 +186,6 @@ public class VerveMediationAdapter
 
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
-        updateMuteState( parameters );
 
         rewardedAd = new HyBidRewardedAd( activity, new RewardedListener( listener ) );
         rewardedAd.prepareAd( parameters.getBidResponse() );
@@ -228,7 +223,6 @@ public class VerveMediationAdapter
 
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
-        updateMuteState( parameters );
 
         adViewAd = new HyBidAdView( activity, getSize( adFormat ) );
         adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
@@ -312,22 +306,6 @@ public class VerveMediationAdapter
         else
         {
             throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
-        }
-    }
-
-    private static void updateMuteState(final MaxAdapterResponseParameters parameters)
-    {
-        Bundle serverParameters = parameters.getServerParameters();
-        if ( serverParameters.containsKey( "is_muted" ) )
-        {
-            if ( serverParameters.getBoolean( "is_muted" ) )
-            {
-                HyBid.setVideoAudioStatus( AudioState.MUTED );
-            }
-            else
-            {
-                HyBid.setVideoAudioStatus( AudioState.DEFAULT );
-            }
         }
     }
 
@@ -464,7 +442,6 @@ public class VerveMediationAdapter
         {
             log( "Rewarded ad did track impression" );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -485,7 +462,6 @@ public class VerveMediationAdapter
         public void onRewardedClosed()
         {
             log( "Rewarded ad did disappear" );
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
