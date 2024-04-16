@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.0.0.0.0
+* Certified with IronSource SDK 8.0.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 7.9.0.0.0
 * Certified with IronSource SDK 7.9.0.
 

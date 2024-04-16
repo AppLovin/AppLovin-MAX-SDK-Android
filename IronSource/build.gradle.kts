@@ -3,8 +3,8 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 7
-private val versionMinor = 9
+private val versionMajor = 8
+private val versionMinor = 0
 private val versionPatch = 0
 private val versionBuild = 0
 private val versionAdapterPatch = 0
@@ -17,6 +17,7 @@ val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
+android.namespace = "com.applovin.mediation.adapters.ironsource"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 

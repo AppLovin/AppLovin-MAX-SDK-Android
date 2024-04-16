@@ -396,7 +396,6 @@ public class IronSourceMediationAdapter
 
             final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
             onAdDisplayed( routerPlacementId );
-            onRewardedAdVideoStarted( routerPlacementId );
         }
 
         @Override
@@ -436,7 +435,6 @@ public class IronSourceMediationAdapter
         public void onRewardedVideoAdRewarded(final String instanceId)
         {
             log( "Rewarded ad granted reward for instance ID: " + instanceId );
-            onRewardedAdVideoCompleted( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ) );
 
             hasGrantedReward = true;
         }
