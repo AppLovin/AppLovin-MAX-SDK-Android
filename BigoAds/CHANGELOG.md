@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.0.0
+* Certified with BigoAds SDK 4.7.0.
+
 ## 4.6.1.2
 * Fix `Null extracted folder for artifact` build error when using AGP < 8.0.
 
