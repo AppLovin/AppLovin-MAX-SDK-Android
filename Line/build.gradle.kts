@@ -6,7 +6,7 @@ plugins {
 private val versionMajor = 2024
 private val versionMinor = 2
 private val versionPatch = 14
-private val versionAdapterPatch = 0
+private val versionAdapterPatch = 1
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
@@ -16,8 +16,10 @@ val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
+android.namespace = "com.applovin.mediation.adapters.line"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
+android.defaultConfig.minSdk = 19
 
 dependencies {
     implementation("com.linecorp.adsnetwork:fivead:${libraryVersions["line"]}")

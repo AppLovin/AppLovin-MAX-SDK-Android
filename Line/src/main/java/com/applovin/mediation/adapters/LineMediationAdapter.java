@@ -1,7 +1,6 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ import com.five_corp.ad.FiveAdVideoRewardEventListener;
 import com.five_corp.ad.NeedChildDirectedTreatment;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -114,10 +112,7 @@ public class LineMediationAdapter
                 config.needChildDirectedTreatment = isAgeRestrictedUser ? NeedChildDirectedTreatment.TRUE : NeedChildDirectedTreatment.FALSE;
             }
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Context context = ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
-
-            FiveAd.initialize( context, config );
+            FiveAd.initialize( getApplicationContext(), config );
 
             onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
         }
@@ -151,7 +146,7 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad for slot id: " + slotId + "..." );
 
-        interstitialAd = new FiveAdInterstitial( activity, slotId );
+        interstitialAd = new FiveAdInterstitial( getApplicationContext(), slotId );
 
         InterstitialListener interstitialListener = new InterstitialListener( listener );
         interstitialAd.setLoadListener( interstitialListener );
@@ -174,7 +169,7 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad for slot id: " + slotId + "..." );
 
-        rewardedAd = new FiveAdVideoReward( activity, slotId );
+        rewardedAd = new FiveAdVideoReward( getApplicationContext(), slotId );
 
         RewardedListener rewardedListener = new RewardedListener( listener );
         rewardedAd.setLoadListener( rewardedListener );
@@ -202,8 +197,8 @@ public class LineMediationAdapter
 
         if ( isNative )
         {
-            nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
-            NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters(), activity );
+            nativeAd = new FiveAdNative( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
+            NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters() );
             nativeAd.setLoadListener( nativeAdViewListener );
             nativeAd.setEventListener( nativeAdViewListener );
 
@@ -214,7 +209,7 @@ public class LineMediationAdapter
         }
         else
         {
-            adView = new FiveAdCustomLayout( activity, slotId, new DisplayMetrics().widthPixels );
+            adView = new FiveAdCustomLayout( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
             AdViewListener adViewListener = new AdViewListener( listener, adFormat );
             adView.setLoadListener( adViewListener );
             adView.setEventListener( adViewListener );
@@ -232,8 +227,8 @@ public class LineMediationAdapter
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading native ad for slot id: " + slotId + "..." );
 
-        nativeAd = new FiveAdNative( activity, slotId, new DisplayMetrics().widthPixels );
-        NativeAdListener nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters(), activity );
+        nativeAd = new FiveAdNative( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
+        NativeAdListener nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters() );
         nativeAd.setLoadListener( nativeAdListener );
         nativeAd.setEventListener( nativeAdListener );
 
@@ -417,8 +412,6 @@ public class LineMediationAdapter
         @Override
         public void onFullScreenClose(final FiveAdVideoReward ad)
         {
-            listener.onRewardedAdVideoCompleted();
-
             if ( ad.getState() != FiveAdState.ERROR )
             {
                 if ( hasGrantedReward || shouldAlwaysRewardUser() )
@@ -437,7 +430,6 @@ public class LineMediationAdapter
         public void onFullScreenOpen(final FiveAdVideoReward ad)
         {
             log( "Rewarded ad shown for slot id: " + ad.getSlotId() + "..." );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -547,14 +539,12 @@ public class LineMediationAdapter
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
         private final Bundle                   serverParameters;
-        private final WeakReference<Activity>  activityRef;
 
-        NativeAdViewListener(final MaxAdViewAdapterListener listener, final MaxAdFormat adFormat, final Bundle serverParameters, final Activity activity)
+        NativeAdViewListener(final MaxAdViewAdapterListener listener, final MaxAdFormat adFormat, final Bundle serverParameters)
         {
             this.listener = listener;
             this.adFormat = adFormat;
             this.serverParameters = serverParameters;
-            this.activityRef = new WeakReference<>( activity );
         }
 
         @Override
@@ -569,7 +559,7 @@ public class LineMediationAdapter
                 return;
             }
 
-            renderCustomNativeBanner( ad.getSlotId(), activityRef.get() );
+            renderCustomNativeBanner( ad.getSlotId() );
         }
 
         @Override
@@ -627,7 +617,7 @@ public class LineMediationAdapter
             log( "Native " + adFormat.getLabel() + " ad completed for slot id: " + ad.getSlotId() + "..." );
         }
 
-        private void renderCustomNativeBanner(final String slotId, final Activity activity)
+        private void renderCustomNativeBanner(final String slotId)
         {
             nativeAd.loadIconImageAsync( new FiveAdNative.LoadImageCallback()
             {
@@ -652,7 +642,7 @@ public class LineMediationAdapter
                                     .setTitle( nativeAd.getAdTitle() )
                                     .setBody( nativeAd.getDescriptionText() )
                                     .setCallToAction( nativeAd.getButtonText() )
-                                    .setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( activity.getResources(), bitmap ) ) )
+                                    .setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( getApplicationContext().getResources(), bitmap ) ) )
                                     .setMediaView( nativeAd.getAdMainView() )
                                     .build();
 
@@ -668,26 +658,11 @@ public class LineMediationAdapter
                             if ( templateName.equals( "vertical" ) )
                             {
                                 String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
-
-                                if ( AppLovinSdk.VERSION_CODE >= 11010000 )
-                                {
-                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, getApplicationContext() );
-                                }
-                                else
-                                {
-                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, activity );
-                                }
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, getApplicationContext() );
                             }
                             else
                             {
-                                if ( AppLovinSdk.VERSION_CODE >= 11010000 )
-                                {
-                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
-                                }
-                                else
-                                {
-                                    maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
-                                }
+                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
                             }
 
                             final List<View> clickableViews = new ArrayList<>( 5 );
@@ -728,13 +703,11 @@ public class LineMediationAdapter
     {
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
-        private final WeakReference<Activity>    activityRef;
 
-        NativeAdListener(final MaxNativeAdAdapterListener listener, final Bundle serverParameters, final Activity activity)
+        NativeAdListener(final MaxNativeAdAdapterListener listener, final Bundle serverParameters)
         {
             this.listener = listener;
             this.serverParameters = serverParameters;
-            this.activityRef = new WeakReference<>( activity );
         }
 
         @Override
@@ -747,15 +720,6 @@ public class LineMediationAdapter
             {
                 log( "Native ad destroyed before the ad successfully loaded: " + ad.getSlotId() + "..." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                return;
-            }
-
-            final Activity activity = activityRef.get();
-            if ( activity == null )
-            {
-                log( "Native ad (" + ad.getSlotId() + ") failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5601, "Missing Activity" ) );
 
                 return;
             }
@@ -788,7 +752,7 @@ public class LineMediationAdapter
                             .setAdvertiser( nativeAd.getAdvertiserName() )
                             .setBody( nativeAd.getDescriptionText() )
                             .setCallToAction( nativeAd.getButtonText() )
-                            .setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( activity.getResources(), bitmap ) ) )
+                            .setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( getApplicationContext().getResources(), bitmap ) ) )
                             .setMediaView( nativeAd.getAdMainView() );
                     MaxNativeAd maxNativeAd = new MaxLineNativeAd( builder );
 
