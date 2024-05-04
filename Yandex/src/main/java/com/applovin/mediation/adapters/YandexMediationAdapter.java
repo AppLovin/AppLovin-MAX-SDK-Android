@@ -386,12 +386,7 @@ public class YandexMediationAdapter
             {
                 NativeAdLoader nativeAdLoader = new NativeAdLoader( applicationContext );
                 nativeAdLoader.setNativeAdLoadListener( new NativeAdListener( parameters, applicationContext, listener ) );
-                NativeAdRequestConfiguration nativeAdRequestConfiguration = new NativeAdRequestConfiguration.Builder( placementId )
-                        .setBiddingData( bidResponse )
-                        .setParameters( adRequestParameters )
-                        .setShouldLoadImagesAutomatically( true ) // images will be loaded before ad is ready
-                        .build();
-                nativeAdLoader.loadAd( nativeAdRequestConfiguration );
+                nativeAdLoader.loadAd( createNativeAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -438,18 +433,45 @@ public class YandexMediationAdapter
 
     private AdRequest createAdRequest(MaxAdapterResponseParameters parameters)
     {
-        return new AdRequest.Builder()
-                .setBiddingData( parameters.getBidResponse() )
-                .setParameters( adRequestParameters )
-                .build();
+        AdRequest.Builder builder = new AdRequest.Builder()
+                .setParameters( adRequestParameters );
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
     }
 
     private AdRequestConfiguration createAdRequestConfiguration(final String placementId, final MaxAdapterResponseParameters parameters)
     {
-        return new AdRequestConfiguration.Builder( placementId )
-                .setBiddingData( parameters.getBidResponse() )
+        AdRequestConfiguration.Builder builder = new AdRequestConfiguration.Builder( placementId )
+                .setParameters( adRequestParameters );
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
+    }
+
+    private NativeAdRequestConfiguration createNativeAdRequestConfiguration(final String placementId, final MaxAdapterResponseParameters parameters)
+    {
+        NativeAdRequestConfiguration.Builder builder = new NativeAdRequestConfiguration.Builder( placementId )
                 .setParameters( adRequestParameters )
-                .build();
+                .setShouldLoadImagesAutomatically( true ); // images will be loaded before ad is ready
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
     }
 
     private BidderTokenRequestConfiguration createBidderTokenRequestConfiguration(final Context context, final MaxAdFormat adFormat)
@@ -656,7 +678,6 @@ public class YandexMediationAdapter
             if ( parameters.isTesting() )
             {
                 listener.onRewardedAdDisplayed();
-                listener.onRewardedAdVideoStarted();
             }
         }
 
@@ -667,7 +688,6 @@ public class YandexMediationAdapter
         {
             log( "Rewarded ad impression tracked" );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -695,7 +715,6 @@ public class YandexMediationAdapter
         public void onAdDismissed()
         {
             log( "Rewarded ad hidden" );
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {

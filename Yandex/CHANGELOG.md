@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.1.0
+* Certified with Yandex SDK 7.0.1.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 6.4.1.0
 * Certified with Yandex SDK 6.4.1.
 
