@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.3.2.0
+* Certified with Vungle SDK 7.3.2.
+
 ## 7.3.1.2
 * Fix `Null extracted folder for artifact` build error when using AGP < 8.0.
 
