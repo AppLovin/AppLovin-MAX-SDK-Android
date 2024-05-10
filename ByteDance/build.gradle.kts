@@ -1,3 +1,5 @@
+import com.applovin.build.extensions.appendDependencyBundle
+
 plugins {
     id("signing")
     id("maven-publish")
@@ -6,7 +8,7 @@ plugins {
 private val versionMajor = 5
 private val versionMinor = 9
 private val versionPatch = 0
-private val versionBuild = 4
+private val versionBuild = 5
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
@@ -14,8 +16,6 @@ val libraryVersionCode by extra((versionMajor * 100000000) + (versionMinor * 100
 
 val libraryArtifactId by extra("bytedance-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
-
-var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
 android.namespace = "com.applovin.mediation.adapters.bytedance"
 android.defaultConfig.versionCode = libraryVersionCode
@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.pangle.global:ads-sdk:${libraryVersions["byteDance"]}")
+    implementation(mediation.bundles.bytedance)
 }
 
 publishing {
@@ -55,14 +55,7 @@ publishing {
                             }
                     // Add ByteDance network to list of dependencies.
                     appendNode("dependencies")
-                            .appendNode("dependency").apply {
-
-                                appendNode("groupId", "com.pangle.global")
-                                appendNode("artifactId", "ads-sdk")
-                                appendNode("version", libraryVersions["byteDance"])
-                                appendNode("scope", "compile")
-                            }
-
+                        .appendDependencyBundle(mediation.bundles.bytedance)
                 }
             }
         }
