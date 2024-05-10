@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.1.0.0
+* Certified with Google SDK 23.1.0.
+
 ## 23.0.0.1
 * Update adaptive banner width calculation to always use `Display.getMetrics()` instead of using `WindowMetrics.getBounds()` when available. The latter returns the full width of the device instead of the app window.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()`, `onRewardedAdVideoCompleted()`, `onRewardedInterstitialAdVideoStarted()` and `onRewardedInterstitialAdVideoCompleted`.
