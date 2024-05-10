@@ -1,20 +1,20 @@
+import com.applovin.build.extensions.appendDependencyBundle
+
 plugins {
     id("signing")
     id("maven-publish")
 }
 
 private val versionMajor = 2
-private val versionMinor = 6
+private val versionMinor = 7
 private val versionPatch = 0
-private val versionAdapterPatch = 1
+private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
 val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000) + (versionPatch * 100) + versionAdapterPatch)
 
 val libraryArtifactId by extra("bidmachine-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
-
-var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
 android.namespace = "com.applovin.mediation.adapters.bidmachine"
 android.defaultConfig.versionCode = libraryVersionCode
@@ -25,8 +25,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("com.android.support:support-annotations:${libraryVersions["annotation"]}")
-    implementation("io.bidmachine:ads:${libraryVersions["bidMachine"]}")
+    implementation(mediation.bundles.bidmachine)
+    compileOnly(libs.android.annotations)
 }
 
 publishing {
@@ -55,12 +55,7 @@ publishing {
                             }
                     // Add BidMachine network to list of dependencies.
                     appendNode("dependencies")
-                            .appendNode("dependency").apply {
-                                appendNode("groupId", "io.bidmachine")
-                                appendNode("artifactId", "ads")
-                                appendNode("version", libraryVersions["bidMachine"])
-                                appendNode("scope", "compile")
-                            }
+                        .appendDependencyBundle(mediation.bundles.bidmachine)
                 }
             }
         }

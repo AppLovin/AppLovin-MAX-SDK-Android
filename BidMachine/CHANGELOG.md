@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.7.0.0
+* Certified with BidMachine SDK 2.7.0.
+
 ## 2.6.0.1
 * Fix a dependency issue with previous adapter version.
 
