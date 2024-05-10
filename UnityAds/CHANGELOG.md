@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.11.3.0
+* Certified with UnityAds SDK 4.11.3.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 4.10.0.0
 * Certified with UnityAds SDK 4.10.0.
 

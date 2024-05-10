@@ -263,7 +263,6 @@ public class UnityAdsMediationAdapter
             {
                 log( "Rewarded ad placement \"" + placementId + "\" displayed" );
                 listener.onRewardedAdDisplayed();
-                listener.onRewardedAdVideoStarted();
             }
 
             @Override
@@ -277,7 +276,7 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowComplete(final String placementId, final UnityAds.UnityAdsShowCompletionState state)
             {
                 log( "Rewarded ad placement \"" + placementId + "\" hidden with completion state: " + state );
-                listener.onRewardedAdVideoCompleted();
+
                 if ( state == UnityAds.UnityAdsShowCompletionState.COMPLETED || shouldAlwaysRewardUser() )
                 {
                     listener.onUserRewarded( getReward() );
