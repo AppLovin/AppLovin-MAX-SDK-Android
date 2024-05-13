@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.4.0.0
+* Certified with HyprMX SDK 6.4.0.
+* Update to use new initialization and ad callback APIs.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 6.2.3.0
 * Certified with HyprMX SDK 6.2.3.
 

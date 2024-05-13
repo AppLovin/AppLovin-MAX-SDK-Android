@@ -1,11 +1,13 @@
+import com.applovin.build.extensions.appendDependencyBundle
+
 plugins {
     id("signing")
     id("maven-publish")
 }
 
 private val versionMajor = 6
-private val versionMinor = 2
-private val versionPatch = 3
+private val versionMinor = 4
+private val versionPatch = 0
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -14,14 +16,13 @@ val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000
 val libraryArtifactId by extra("hyprmx-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
 
-var libraryVersions = rootProject.extra["versions"] as Map<*, *>
-
+android.namespace = "com.applovin.mediation.adapters.hyprmx"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.hyprmx.android:HyprMX-SDK:${libraryVersions["hyprMX"]}")
-    implementation("com.google.android.gms:play-services-ads-identifier:${libraryVersions["playServicesIdentifier"]}")
+    implementation(mediation.bundles.hyprmx)
+    implementation(libs.android.playServices.adsIdentifier)
 }
 
 publishing {
@@ -51,14 +52,7 @@ publishing {
                             }
                     // Add HyprMX to list of dependencies.
                     appendNode("dependencies")
-                            .appendNode("dependency").apply {
-
-                                appendNode("groupId", "com.hyprmx.android")
-                                appendNode("artifactId", "HyprMX-SDK")
-                                appendNode("version", libraryVersions["hyprMX"])
-                                appendNode("type", "aar")
-                                appendNode("scope", "compile")
-                            }
+                        .appendDependencyBundle(mediation.bundles.hyprmx, type="aar")
                 }
             }
         }
