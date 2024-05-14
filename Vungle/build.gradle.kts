@@ -21,7 +21,8 @@ android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
 dependencies {
-    implementation("com.vungle:vungle-ads:${libraryVersions["vungle"]}")
+//    implementation("com.vungle:vungle-ads:${libraryVersions["vungle"]}")
+    implementation("com.github.Vungle:vng-android-sdk:aa72623f09")
 }
 
 publishing {

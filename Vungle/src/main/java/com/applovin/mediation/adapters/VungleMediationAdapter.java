@@ -5,10 +5,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.WindowManager;
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -35,7 +38,6 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.vungle.ads.AdConfig;
 import com.vungle.ads.BannerAd;
 import com.vungle.ads.BannerAdListener;
-import com.vungle.ads.BannerAdSize;
 import com.vungle.ads.BannerView;
 import com.vungle.ads.BaseAd;
 import com.vungle.ads.InitializationListener;
@@ -45,6 +47,7 @@ import com.vungle.ads.NativeAd;
 import com.vungle.ads.NativeAdListener;
 import com.vungle.ads.RewardedAd;
 import com.vungle.ads.RewardedAdListener;
+import com.vungle.ads.VungleAdSize;
 import com.vungle.ads.VungleAds;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
@@ -52,6 +55,7 @@ import com.vungle.ads.internal.ui.view.MediaView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
@@ -343,7 +347,7 @@ public class VungleMediationAdapter
             return;
         }
 
-        BannerAdSize adSize = vungleAdSize( adFormat );
+        VungleAdSize adSize = vungleAdSize( adFormat, parameters, context );
         bannerAd = new BannerAd( context, placementId, adSize );
         bannerAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
@@ -403,19 +407,63 @@ public class VungleMediationAdapter
         }
     }
 
-    private static BannerAdSize vungleAdSize(final MaxAdFormat adFormat)
+    private static int getApplicationWindowWidth(final Context context)
     {
-        if ( adFormat == MaxAdFormat.BANNER )
+        WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
+        Display display = windowManager.getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics( outMetrics );
+        return outMetrics.widthPixels;
+    }
+
+    private int getAdaptiveBannerWidth(final MaxAdapterParameters parameters, final Context context)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
         {
-            return BannerAdSize.BANNER;
+            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
+            if ( widthObj instanceof Integer )
+            {
+                return (int) widthObj;
+            }
+            else if ( widthObj != null )
+            {
+                log( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
+            }
         }
-        else if ( adFormat == MaxAdFormat.LEADER )
+
+        int deviceWidthPx = getApplicationWindowWidth( context );
+        return AppLovinSdkUtils.pxToDp( context, deviceWidthPx );
+    }
+
+    private VungleAdSize vungleAdSize(
+        final MaxAdFormat adFormat,
+        final MaxAdapterParameters parameters,
+        final Context context)
+    {
+        if (adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER)
         {
-            return BannerAdSize.BANNER_LEADERBOARD;
+            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object widthObj = localExtraParameters.get( "adaptive_banner" );
+            boolean isAdaptiveBanner = false;
+            if (widthObj instanceof String) {
+                try {
+                    isAdaptiveBanner = Boolean.parseBoolean( (String) widthObj );
+                } catch (Exception ignored) {
+                }
+            }
+
+            if (isAdaptiveBanner) {
+                int width = getAdaptiveBannerWidth( parameters, context );
+                return VungleAdSize.getCurrentOrientationAdSizeWithWidth( context, width );
+            } else {
+                return adFormat == MaxAdFormat.BANNER ? VungleAdSize.BANNER
+                    : VungleAdSize.BANNER_LEADERBOARD;
+            }
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
-            return BannerAdSize.VUNGLE_MREC;
+            return VungleAdSize.VUNGLE_MREC;
         }
         else
         {
@@ -513,8 +561,13 @@ public class VungleMediationAdapter
 
         if ( TextUtils.isEmpty( creativeId ) ) return null;
 
-        Bundle extraInfo = new Bundle( 1 );
+        Bundle extraInfo = new Bundle( 3 );
         extraInfo.putString( "creative_id", creativeId );
+        if(baseAd instanceof BannerAd) {
+            BannerAd bannerAd = (BannerAd) baseAd;
+            extraInfo.putString( "ad_width", String.valueOf( bannerAd.getAdSize().getWidth() ) );
+            extraInfo.putString( "ad_height", String.valueOf( bannerAd.getAdSize().getHeight() ) );
+        }
 
         return extraInfo;
     }
