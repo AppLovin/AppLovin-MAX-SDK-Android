@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.9.0.6.0
+* Certified with ByteDance SDK 5.9.0.6.
+
 ## 5.9.0.5.0
 * Certified with ByteDance SDK 5.9.0.5.
 
@@ -352,7 +355,7 @@
 * Certified with ByteDance SDK 3.8.1.2.
 
 ## 3.8.1.1.1
-* Add error log when user fails to receive reward. 
+* Add error log when user fails to receive reward.
 
 ## 3.8.1.1.0
 * Certified with ByteDance SDK 3.8.1.1.

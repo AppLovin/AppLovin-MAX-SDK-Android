@@ -1,63 +1,14 @@
-import com.applovin.build.extensions.appendDependencyBundle
-
 plugins {
-    id("signing")
-    id("maven-publish")
+    id("adapter-config")
 }
 
-private val versionMajor = 5
-private val versionMinor = 9
-private val versionPatch = 0
-private val versionBuild = 5
-private val versionAdapterPatch = 0
+afterEvaluate {
+    apply(plugin = "adapter-publish")
+}
 
-val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionBuild}.${versionAdapterPatch}")
-val libraryVersionCode by extra((versionMajor * 100000000) + (versionMinor * 1000000) + (versionPatch * 10000) + (versionBuild * 100) + versionAdapterPatch)
-
-val libraryArtifactId by extra("bytedance-adapter")
-val libraryGroupId by extra("com.applovin.mediation")
-
-android.namespace = "com.applovin.mediation.adapters.bytedance"
-android.defaultConfig.versionCode = libraryVersionCode
-android.defaultConfig.versionName = libraryVersionName
+val libraryVersionName by extra("5.9.0.6.0")
 
 repositories {
     maven { url = uri("https://artifact.bytedance.com/repository/pangle") }
 }
 
-dependencies {
-    implementation(mediation.bundles.bytedance)
-}
-
-publishing {
-    publications {
-        create<MavenPublication>(extra["publicationName"] as String) {
-            // The publication doesn't know about our dependencies, so we have to manually add them to the pom
-            pom.withXml {
-                asNode().apply {
-                    appendNode("name", libraryArtifactId)
-                    appendNode("description", "ByteDance adapter for AppLovin MAX mediation")
-                    appendNode("url", "https://www.applovin.com/")
-                    appendNode("licenses")
-                            .appendNode("license").apply {
-                                appendNode("name", "AppLovin Corporation Mediation Adapter EULA")
-                                appendNode("url", "https://www.applovin.com/eula")
-                            }
-                    appendNode("scm").apply {
-                        appendNode("connection", "scm:git:github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
-                        appendNode("developerConnection", "scm:git:ssh://github.com/AppLovin/AppLovin-MAX-SDK-Android.git")
-                        appendNode("url", "https://github.com/AppLovin/AppLovin-MAX-SDK-Android")
-                    }
-                    appendNode("developers")
-                            .appendNode("developer").apply {
-                                appendNode("name", "AppLovin")
-                                appendNode("url", "https://www.applovin.com")
-                            }
-                    // Add ByteDance network to list of dependencies.
-                    appendNode("dependencies")
-                        .appendDependencyBundle(mediation.bundles.bytedance)
-                }
-            }
-        }
-    }
-}
