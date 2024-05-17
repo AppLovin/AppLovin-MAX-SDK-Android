@@ -1,5 +1,8 @@
 # Changelog
 
+## 2024.5.15.0
+* Certified with Line SDK 2.7.20240515.
+
 ## 2024.2.14.1
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
 * Remove passing of `Activity` contexts into LINE APIs.
