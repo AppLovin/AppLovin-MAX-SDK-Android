@@ -436,6 +436,25 @@ public class VungleMediationAdapter
         return AppLovinSdkUtils.pxToDp( context, deviceWidthPx );
     }
 
+    private int getAdaptiveBannerHeight(final MaxAdapterParameters parameters)
+    {
+        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        {
+            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            Object heightObj = localExtraParameters.get( "adaptive_banner_height" );
+            if ( heightObj instanceof Integer )
+            {
+                return (int) heightObj;
+            }
+            else if ( heightObj != null )
+            {
+                log( "Expected parameter \"banner_height\" to be of type Integer, received: " + heightObj.getClass() );
+            }
+        }
+
+        return -1;
+    }
+
     private VungleAdSize vungleAdSize(
         final MaxAdFormat adFormat,
         final MaxAdapterParameters parameters,
@@ -444,26 +463,34 @@ public class VungleMediationAdapter
         if (adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER)
         {
             final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            Object widthObj = localExtraParameters.get( "adaptive_banner" );
+            Object isAdaptiveObj = localExtraParameters.get( "adaptive_banner" );
             boolean isAdaptiveBanner = false;
-            if (widthObj instanceof String) {
+            if (isAdaptiveObj instanceof String) {
                 try {
-                    isAdaptiveBanner = Boolean.parseBoolean( (String) widthObj );
+                    isAdaptiveBanner = Boolean.parseBoolean( (String) isAdaptiveObj );
                 } catch (Exception ignored) {
                 }
             }
 
+            int width = getAdaptiveBannerWidth( parameters, context );
             if (isAdaptiveBanner) {
-                int width = getAdaptiveBannerWidth( parameters, context );
-                return VungleAdSize.getCurrentOrientationAdSizeWithWidth( context, width );
+                // Adaptive ad size
+                return VungleAdSize.getAdSizeWithWidth( context, width );
             } else {
-                return adFormat == MaxAdFormat.BANNER ? VungleAdSize.BANNER
-                    : VungleAdSize.BANNER_LEADERBOARD;
+                int height = getAdaptiveBannerHeight( parameters );
+                if (height > 0) {
+                    // Custom ad size
+                    return VungleAdSize.getAdSizeWithWidthAndHeight( width, height );
+                } else {
+                    // Standard ad size
+                    return adFormat == MaxAdFormat.BANNER ? VungleAdSize.BANNER
+                        : VungleAdSize.BANNER_LEADERBOARD;
+                }
             }
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
-            return VungleAdSize.VUNGLE_MREC;
+            return VungleAdSize.MREC;
         }
         else
         {
