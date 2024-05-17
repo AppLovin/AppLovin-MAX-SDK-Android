@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.7.41.0
+* Certified with Mintegral SDK 16.7.41.
+
 ## 16.7.31.0
 * Certified with Mintegral SDK 16.7.31.
 
@@ -326,7 +329,7 @@
 
 ## 15.2.11.0
 * Certified with Mintegral SDK 15.2.11.
-* Update to use Mintegral `oversea` SDK from their private repository. 
+* Update to use Mintegral `oversea` SDK from their private repository.
 * Update 10000000 version check to 9140000.
 * Update initialization log.
 
