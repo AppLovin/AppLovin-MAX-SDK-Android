@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.1.0.0.0
+* Certified with IronSource SDK 8.1.0.
+
 ## 8.0.0.0.0
 * Certified with IronSource SDK 8.0.0.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
@@ -25,7 +28,7 @@
 * Certified with IronSource SDK 7.5.2.
 
 ## 7.5.1.0.1
-* Set `is_deviceid_optout` parameter for COPPA end users. 
+* Set `is_deviceid_optout` parameter for COPPA end users.
 
 ## 7.5.1.0.0
 * Certified with IronSource SDK 7.5.1.
