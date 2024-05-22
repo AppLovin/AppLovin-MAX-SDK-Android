@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.3.2.1
+* Certified with Vungle SDK 7.3.2.
+* Fix a initialize issue when first initializing the SDK failure. 
+
 ## 7.3.2.0
 * Certified with Vungle SDK 7.3.2.
 

@@ -102,7 +102,7 @@ public class VungleMediationAdapter
                 public void onError(final VungleError vungleError)
                 {
                     log( "Vungle SDK failed to initialize with error: ", vungleError );
-
+                    initialized.set( false );
                     initializationStatus = InitializationStatus.INITIALIZED_FAILURE;
                     onCompletionListener.onCompletion( initializationStatus, vungleError.getErrorMessage() );
                 }
