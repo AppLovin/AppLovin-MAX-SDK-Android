@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.0.1
+* Add `io.insert-koin:koin-android:3.5.6` as a dependency.
+
 ## 2.2.0.0
 * Certified with Moloco SDK 2.2.0.
 
