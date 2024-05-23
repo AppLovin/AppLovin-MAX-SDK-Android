@@ -436,25 +436,6 @@ public class VungleMediationAdapter
         return AppLovinSdkUtils.pxToDp( context, deviceWidthPx );
     }
 
-    private int getAdaptiveBannerHeight(final MaxAdapterParameters parameters)
-    {
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
-        {
-            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            Object heightObj = localExtraParameters.get( "adaptive_banner_height" );
-            if ( heightObj instanceof Integer )
-            {
-                return (int) heightObj;
-            }
-            else if ( heightObj != null )
-            {
-                log( "Expected parameter \"banner_height\" to be of type Integer, received: " + heightObj.getClass() );
-            }
-        }
-
-        return -1;
-    }
-
     private VungleAdSize vungleAdSize(
         final MaxAdFormat adFormat,
         final MaxAdapterParameters parameters,
@@ -472,20 +453,14 @@ public class VungleMediationAdapter
                 }
             }
 
-            int width = getAdaptiveBannerWidth( parameters, context );
             if (isAdaptiveBanner) {
                 // Adaptive ad size
+                int width = getAdaptiveBannerWidth( parameters, context );
                 return VungleAdSize.getAdSizeWithWidth( context, width );
             } else {
-                int height = getAdaptiveBannerHeight( parameters );
-                if (height > 0) {
-                    // Custom ad size
-                    return VungleAdSize.getAdSizeWithWidthAndHeight( width, height );
-                } else {
-                    // Standard ad size
-                    return adFormat == MaxAdFormat.BANNER ? VungleAdSize.BANNER
-                        : VungleAdSize.BANNER_LEADERBOARD;
-                }
+                // Standard ad size
+                return adFormat == MaxAdFormat.BANNER ? VungleAdSize.BANNER
+                    : VungleAdSize.BANNER_LEADERBOARD;
             }
         }
         else if ( adFormat == MaxAdFormat.MREC )
