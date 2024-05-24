@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class VungleMediationAdapter
@@ -99,8 +100,10 @@ public class VungleMediationAdapter
                 }
 
                 @Override
-                public void onError(final VungleError vungleError)
+                public void onError(@NonNull final VungleError vungleError)
                 {
+                    initialized.set( false );
+
                     log( "Vungle SDK failed to initialize with error: ", vungleError );
 
                     initializationStatus = InitializationStatus.INITIALIZED_FAILURE;
@@ -997,7 +1000,6 @@ public class VungleMediationAdapter
             }
 
             log( "Native ad loaded: " + nativeAd.getPlacementId() );
-
 
             final MediaView mediaView = new MediaView( applicationContext );
             final String iconUrl = nativeAd.getAppIcon();

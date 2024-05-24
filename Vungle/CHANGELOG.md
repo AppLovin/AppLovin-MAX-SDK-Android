@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.3.2.1
+* Allow SDK to re-initialize upon failure.
+
 ## 7.3.2.0
 * Certified with Vungle SDK 7.3.2.
 
@@ -86,7 +89,7 @@
 * Certified with Vungle SDK 6.10.3.
 
 ## 6.10.2.1
-* Fix centering of banner ads. 
+* Fix centering of banner ads.
 * Remove `checkExistence()` call from adapter.
 
 ## 6.10.2.0
