@@ -205,7 +205,7 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        interstitialAd = Moloco.createInterstitial( activity, placementId );
+        interstitialAd = Moloco.createInterstitial( placementId );
         if ( interstitialAd == null )
         {
             listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
@@ -255,7 +255,7 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        rewardedAd = Moloco.createRewardedInterstitial( activity, placementId );
+        rewardedAd = Moloco.createRewardedInterstitial( placementId );
         if ( rewardedAd == null )
         {
             listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
@@ -310,7 +310,7 @@ public class MolocoMediationAdapter
 
         if ( isNative )
         {
-            nativeAd = Moloco.createNativeAd( activity, placementId );
+            nativeAd = Moloco.createNativeAd( placementId );
             if ( nativeAd == null )
             {
                 listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
@@ -325,15 +325,15 @@ public class MolocoMediationAdapter
         {
             if ( adFormat == MaxAdFormat.BANNER )
             {
-                adView = Moloco.createBanner( activity, placementId );
+                adView = Moloco.createBanner( placementId );
             }
             else if ( adFormat == MaxAdFormat.LEADER )
             {
-                adView = Moloco.createBannerTablet( activity, placementId );
+                adView = Moloco.createBannerTablet( placementId );
             }
             else if ( adFormat == MaxAdFormat.MREC )
             {
-                adView = Moloco.createMREC( activity, placementId );
+                adView = Moloco.createMREC( placementId );
             }
             else
             {
@@ -375,7 +375,7 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        nativeAd = Moloco.createNativeAd( activity, placementId );
+        nativeAd = Moloco.createNativeAd( placementId );
         if ( nativeAd == null )
         {
             listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
@@ -442,7 +442,7 @@ public class MolocoMediationAdapter
         final Boolean isDoNotSell = parameters.isDoNotSell();
 
         final MolocoPrivacy.PrivacySettings privacySettings = new MolocoPrivacy.PrivacySettings( hasUserConsent, isAgeRestrictedUser, isDoNotSell );
-        MolocoPrivacy.INSTANCE.setPrivacy( privacySettings );
+        MolocoPrivacy.setPrivacy( privacySettings );
     }
 
     private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
