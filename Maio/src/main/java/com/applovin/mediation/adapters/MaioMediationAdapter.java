@@ -38,14 +38,7 @@ public class MaioMediationAdapter
 
     static
     {
-        if ( AppLovinSdk.VERSION_CODE >= 90802 )
-        {
-            ROUTER = (MaioMediationAdapterRouter) MediationAdapterRouter.getSharedInstance( MaioMediationAdapterRouter.class );
-        }
-        else
-        {
-            ROUTER = new MaioMediationAdapterRouter();
-        }
+        ROUTER = (MaioMediationAdapterRouter) MediationAdapterRouter.getSharedInstance( MaioMediationAdapterRouter.class );
     }
 
     // Explicit default constructor declaration
@@ -152,7 +145,7 @@ public class MaioMediationAdapter
         else
         {
             log( "Interstitial not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -201,7 +194,7 @@ public class MaioMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -257,7 +250,6 @@ public class MaioMediationAdapter
         public void onStartedAd(String zoneId)
         {
             log( "Ad video started: " + zoneId );
-            onRewardedAdVideoStarted( zoneId );
         }
 
         @Override
@@ -269,8 +261,6 @@ public class MaioMediationAdapter
             {
                 hasGrantedReward = true;
             }
-
-            onRewardedAdVideoCompleted( zoneId );
         }
 
         @Override
