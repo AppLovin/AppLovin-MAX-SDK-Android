@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.1.0
+* Certified with HyprMX SDK 6.4.1.
+
 ## 6.4.0.0
 * Certified with HyprMX SDK 6.4.0.
 * Update to use new initialization and ad callback APIs.
@@ -11,7 +14,7 @@
 ## 6.2.0.2
 * Add ProGuard rule to not obfuscate public HyprMX SDK classes.
 
-## 6.2.0.1 
+## 6.2.0.1
 * Remove the `ageRestrictedUser` check from user consent.
 
 ## 6.2.0.0
