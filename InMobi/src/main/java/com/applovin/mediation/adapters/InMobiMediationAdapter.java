@@ -868,7 +868,6 @@ public class InMobiMediationAdapter
         public void onAdDisplayed(@NonNull final InMobiInterstitial inMobiInterstitial, @NonNull final AdMetaInfo adMetaInfo)
         {
             log( "Rewarded ad did show" );
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -889,8 +888,6 @@ public class InMobiMediationAdapter
         public void onAdDismissed(@NonNull final InMobiInterstitial inMobiInterstitial)
         {
             log( "Rewarded ad hidden" );
-
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
@@ -1297,7 +1294,7 @@ public class InMobiMediationAdapter
                     }
 
                     ViewGroup.LayoutParams layoutParams = mediaView.getLayoutParams();
-                    
+
                     // Compute primaryViewWidth when it is a dynamic layout value before getting the actual measurement.
                     if ( primaryViewWidth == 0 && layoutParams != null )
                     {
