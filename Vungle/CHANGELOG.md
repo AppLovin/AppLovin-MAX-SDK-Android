@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.3.2.2
+* Add ability to disable init check during ad load.
+
 ## 7.3.2.1
 * Allow SDK to re-initialize upon failure.
 

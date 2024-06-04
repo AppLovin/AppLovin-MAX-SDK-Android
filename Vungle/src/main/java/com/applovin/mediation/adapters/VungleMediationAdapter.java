@@ -191,7 +191,7 @@ public class VungleMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
+        if ( shouldFailAdLoadWhenSdkNotInitialized( parameters ) && !VungleAds.isInitialized() )
         {
             log( "Vungle SDK not successfully initialized: failing interstitial ad load..." );
             listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
@@ -233,7 +233,7 @@ public class VungleMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "app open ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
+        if ( shouldFailAdLoadWhenSdkNotInitialized( parameters ) && !VungleAds.isInitialized() )
         {
             log( "Vungle SDK not successfully initialized: failing app open ad load..." );
             listener.onAppOpenAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
@@ -275,7 +275,7 @@ public class VungleMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
+        if ( shouldFailAdLoadWhenSdkNotInitialized( parameters ) && !VungleAds.isInitialized() )
         {
             log( "Vungle SDK not successfully initialized: failing rewarded ad load..." );
             listener.onRewardedAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
@@ -325,7 +325,7 @@ public class VungleMediationAdapter
 
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
+        if ( shouldFailAdLoadWhenSdkNotInitialized( parameters ) && !VungleAds.isInitialized() )
         {
             log( "Vungle SDK not successfully initialized: failing " + adFormatLabel + " ad load..." );
             listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
@@ -365,7 +365,7 @@ public class VungleMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for placement: " + placementId + "..." );
 
-        if ( !VungleAds.isInitialized() )
+        if ( shouldFailAdLoadWhenSdkNotInitialized( parameters ) && !VungleAds.isInitialized() )
         {
             log( "Vungle SDK not successfully initialized: failing interstitial ad load..." );
             listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
@@ -384,6 +384,11 @@ public class VungleMediationAdapter
     //endregion
 
     //region Helper Methods
+
+    private boolean shouldFailAdLoadWhenSdkNotInitialized(final MaxAdapterResponseParameters parameters)
+    {
+        return parameters.getServerParameters().getBoolean( "fail_ad_load_when_sdk_not_initialized", true );
+    }
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
     {
