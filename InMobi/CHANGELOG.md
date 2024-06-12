@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.7.4.0
+* Certified with InMobi SDK 10.7.4.
+
 ## 10.7.3.0
 * Certified with InMobi SDK 10.7.3.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
