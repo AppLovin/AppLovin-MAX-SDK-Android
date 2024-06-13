@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.6.2.0
+* Certified with Smaato SDK 22.6.2.
+
 ## 22.6.1.0
 * Certified with Smaato SDK 22.6.1.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
