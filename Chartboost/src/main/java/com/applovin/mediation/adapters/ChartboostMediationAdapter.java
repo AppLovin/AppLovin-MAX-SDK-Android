@@ -611,8 +611,6 @@ public class ChartboostMediationAdapter
             {
                 listener.onRewardedAdDisplayed();
             }
-
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -626,7 +624,6 @@ public class ChartboostMediationAdapter
         public void onAdDismiss(@NonNull final DismissEvent dismissEvent)
         {
             String location = dismissEvent.getAd().getLocation();
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
