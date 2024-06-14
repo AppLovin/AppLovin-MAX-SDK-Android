@@ -36,9 +36,7 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.vungle.ads.AdConfig;
-import com.vungle.ads.BannerAd;
 import com.vungle.ads.BannerAdListener;
-import com.vungle.ads.BannerView;
 import com.vungle.ads.BaseAd;
 import com.vungle.ads.InitializationListener;
 import com.vungle.ads.InterstitialAd;
@@ -49,6 +47,7 @@ import com.vungle.ads.RewardedAd;
 import com.vungle.ads.RewardedAdListener;
 import com.vungle.ads.VungleAdSize;
 import com.vungle.ads.VungleAds;
+import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
 import com.vungle.ads.internal.ui.view.MediaView;
@@ -67,7 +66,7 @@ public class VungleMediationAdapter
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus initializationStatus;
 
-    private BannerAd       bannerAd;
+    private VungleBannerView bannerView;
     private InterstitialAd interstitialAd;
     private RewardedAd     rewardedAd;
     private NativeAd       nativeAd;
@@ -134,11 +133,11 @@ public class VungleMediationAdapter
     @Override
     public void onDestroy()
     {
-        if ( bannerAd != null )
+        if ( bannerView != null )
         {
-            bannerAd.setAdListener( null );
-            bannerAd.finishAd();
-            bannerAd = null;
+            bannerView.setAdListener( null );
+            bannerView.finishAd();
+            bannerView = null;
         }
 
         if ( nativeAd != null )
@@ -348,10 +347,10 @@ public class VungleMediationAdapter
         }
 
         VungleAdSize adSize = vungleAdSize( adFormat, parameters, context );
-        bannerAd = new BannerAd( context, placementId, adSize );
-        bannerAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
+        bannerView = new VungleBannerView( context, placementId, adSize );
+        bannerView.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
-        bannerAd.load( bidResponse );
+        bannerView.load( bidResponse );
     }
 
     //endregion
@@ -565,10 +564,11 @@ public class VungleMediationAdapter
 
         Bundle extraInfo = new Bundle( 3 );
         extraInfo.putString( "creative_id", creativeId );
-        if(baseAd instanceof BannerAd) {
-            BannerAd bannerAd = (BannerAd) baseAd;
-            extraInfo.putString( "ad_width", String.valueOf( bannerAd.getAdSize().getWidth() ) );
-            extraInfo.putString( "ad_height", String.valueOf( bannerAd.getAdSize().getHeight() ) );
+        if ( bannerView != null ) {
+            extraInfo.putString( "ad_width",
+                String.valueOf( bannerView.getAdViewSize().getWidth() ) );
+            extraInfo.putString( "ad_height",
+                String.valueOf( bannerView.getAdViewSize().getHeight() ) );
         }
 
         return extraInfo;
@@ -819,21 +819,9 @@ public class VungleMediationAdapter
         {
             log( "Showing " + adFormatLabel + " ad for placement: " + baseAd.getPlacementId() + "..." );
 
-            if ( bannerAd != null && bannerAd.getBannerView() != null )
-            {
-                BannerView bannerView = bannerAd.getBannerView();
-                bannerView.setGravity( Gravity.CENTER );
-                log( adFormatLabel + " ad loaded" );
-
-                Bundle extraInfo = maybeCreateExtraInfoBundle( baseAd );
-                listener.onAdViewAdLoaded( bannerView, extraInfo );
-            }
-            else
-            {
-                MaxAdapterError error = MaxAdapterError.INVALID_LOAD_STATE;
-                log( adFormatLabel + " ad failed to load: " + error );
-                listener.onAdViewAdLoadFailed( error );
-            }
+            bannerView.setGravity( Gravity.CENTER );
+            Bundle extraInfo = maybeCreateExtraInfoBundle( baseAd );
+            listener.onAdViewAdLoaded( bannerView, extraInfo );
         }
 
         @Override
