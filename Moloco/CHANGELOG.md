@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.0.0
+* Certified with Moloco SDK 3.0.0.
+
 ## 2.3.0.0
 * Certified with Moloco SDK 2.3.0.
 * Update to use new APIs for creating ads that do not require `Activity` as a parameter.

@@ -56,6 +56,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 public class MolocoMediationAdapter
         extends MediationAdapterBase
@@ -205,15 +207,23 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        interstitialAd = Moloco.createInterstitial( placementId );
-        if ( interstitialAd == null )
-        {
-            listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
-            return;
-        }
+        final Function1<InterstitialAd, Unit> createCallback = interstitialAd -> {
 
-        interstitialAdListener = new InterstitialAdListener( listener );
-        interstitialAd.load( parameters.getBidResponse(), interstitialAdListener );
+            if ( interstitialAd == null )
+            {
+                listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            }
+            else
+            {
+                this.interstitialAd = interstitialAd;
+                interstitialAdListener = new InterstitialAdListener( listener );
+                interstitialAd.load( parameters.getBidResponse(), interstitialAdListener );
+            }
+
+            return Unit.INSTANCE;
+        };
+
+        Moloco.createInterstitial( placementId, createCallback );
     }
 
     @Override
@@ -255,15 +265,23 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        rewardedAd = Moloco.createRewardedInterstitial( placementId );
-        if ( rewardedAd == null )
-        {
-            listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
-            return;
-        }
+        final Function1<RewardedInterstitialAd, Unit> createCallback = rewardedAd -> {
 
-        rewardedAdListener = new RewardedAdListener( listener );
-        rewardedAd.load( parameters.getBidResponse(), rewardedAdListener );
+            if ( rewardedAd == null )
+            {
+                listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            }
+            else
+            {
+                this.rewardedAd = rewardedAd;
+                rewardedAdListener = new RewardedAdListener( listener );
+                rewardedAd.load( parameters.getBidResponse(), rewardedAdListener );
+            }
+
+            return Unit.INSTANCE;
+        };
+
+        Moloco.createRewardedInterstitial( placementId, createCallback );
     }
 
     @Override
@@ -310,45 +328,60 @@ public class MolocoMediationAdapter
 
         if ( isNative )
         {
-            nativeAd = Moloco.createNativeAd( placementId );
-            if ( nativeAd == null )
-            {
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
-                return;
-            }
+            final Function1<NativeAdForMediation, Unit> createCallback = nativeAd -> {
 
-            final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( adFormat, parameters, getContext( activity ), listener );
-            nativeAd.load( parameters.getBidResponse(), nativeAdViewListener );
-            nativeAd.setInteractionListener( nativeAdViewListener );
+                if ( nativeAd == null )
+                {
+                    listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                }
+                else
+                {
+                    this.nativeAd = nativeAd;
+                    final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( adFormat, parameters, getContext( activity ), listener );
+                    nativeAd.setInteractionListener( nativeAdViewListener );
+                    nativeAd.load( parameters.getBidResponse(), nativeAdViewListener );
+                }
+
+                return Unit.INSTANCE;
+            };
+
+            Moloco.createNativeAd( placementId, createCallback );
         }
         else
         {
+            final Function1<Banner, Unit> createCallback = adView -> {
+
+                if ( adView == null )
+                {
+                    listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                }
+                else
+                {
+                    this.adView = adView;
+                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener );
+                    adView.setAdShowListener( adViewAdListener );
+                    adView.load( parameters.getBidResponse(), adViewAdListener );
+                }
+
+                return Unit.INSTANCE;
+            };
+
             if ( adFormat == MaxAdFormat.BANNER )
             {
-                adView = Moloco.createBanner( placementId );
+                Moloco.createBanner( placementId, createCallback );
             }
             else if ( adFormat == MaxAdFormat.LEADER )
             {
-                adView = Moloco.createBannerTablet( placementId );
+                Moloco.createBannerTablet( placementId, createCallback );
             }
             else if ( adFormat == MaxAdFormat.MREC )
             {
-                adView = Moloco.createMREC( placementId );
+                Moloco.createMREC( placementId, createCallback );
             }
             else
             {
                 throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
             }
-
-            if ( adView == null )
-            {
-                listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
-                return;
-            }
-
-            final AdViewAdListener adViewAdListener = new AdViewAdListener( listener );
-            adView.setAdShowListener( adViewAdListener );
-            adView.load( parameters.getBidResponse(), adViewAdListener );
         }
     }
 
@@ -375,16 +408,23 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        nativeAd = Moloco.createNativeAd( placementId );
-        if ( nativeAd == null )
-        {
-            listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
-            return;
-        }
+        final Function1<NativeAdForMediation, Unit> createCallback = nativeAd -> {
 
-        final NativeAdListener nativeAdListener = new NativeAdListener( parameters, getContext( activity ), listener );
-        nativeAd.setInteractionListener( nativeAdListener );
-        nativeAd.load( parameters.getBidResponse(), nativeAdListener );
+            if ( nativeAd == null )
+            {
+                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            }
+            else
+            {
+                final NativeAdListener nativeAdListener = new NativeAdListener( parameters, getContext( activity ), listener );
+                nativeAd.setInteractionListener( nativeAdListener );
+                nativeAd.load( parameters.getBidResponse(), nativeAdListener );
+            }
+
+            return Unit.INSTANCE;
+        };
+
+        Moloco.createNativeAd( placementId, createCallback );
     }
 
     //region Helper Methods
