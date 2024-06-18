@@ -75,10 +75,7 @@ public class VerveMediationAdapter
                 HyBid.setTestMode( true );
             }
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
-
-            HyBid.initialize( appToken, application );
+            HyBid.initialize( appToken, (Application) getApplicationContext() );
 
             if ( HyBid.isInitialized() )
             {
@@ -151,7 +148,7 @@ public class VerveMediationAdapter
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
 
-        interstitialAd = new HyBidInterstitialAd( activity, new InterstitialListener( listener ) );
+        interstitialAd = new HyBidInterstitialAd( getApplicationContext(), null, "", new InterstitialListener( listener ) );
         interstitialAd.prepareAd( parameters.getBidResponse() );
     }
 
@@ -187,7 +184,7 @@ public class VerveMediationAdapter
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
 
-        rewardedAd = new HyBidRewardedAd( activity, new RewardedListener( listener ) );
+        rewardedAd = new HyBidRewardedAd( getApplicationContext(), null, "", new RewardedListener( listener ) );
         rewardedAd.prepareAd( parameters.getBidResponse() );
     }
 
@@ -224,7 +221,7 @@ public class VerveMediationAdapter
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
 
-        adViewAd = new HyBidAdView( activity, getSize( adFormat ) );
+        adViewAd = new HyBidAdView( getApplicationContext(), getSize( adFormat ) );
         adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
     }
