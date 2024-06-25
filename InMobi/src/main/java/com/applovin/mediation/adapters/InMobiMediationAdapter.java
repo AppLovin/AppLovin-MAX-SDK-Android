@@ -74,6 +74,7 @@ public class InMobiMediationAdapter
 {
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
     private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
+    private static final String INMOBI_EXTRA_KEY = "inmobi";
 
     // https://support.inmobi.com/monetize/android-guidelines/native-ads-for-android/#set-up-native-ad
     // The default setting is an in-Feed ad layout, an aspect ratio ranging between 256:135 - 1200x627
@@ -515,7 +516,7 @@ public class InMobiMediationAdapter
         Map<String, String> extras = new HashMap<>( 3 );
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
-
+        extras.putAll(getPublisherProvidedExtras(parameters));
         Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         if ( isAgeRestrictedUser != null )
         {
@@ -570,6 +571,28 @@ public class InMobiMediationAdapter
         else
         {
             return new MaxNativeAdView( maxNativeAd, templateName, activity );
+        }
+    }
+
+    private Map<String, String> getPublisherProvidedExtras(MaxAdapterParameters parameters) {
+        try {
+            Object extraData = parameters.getLocalExtraParameters().get(INMOBI_EXTRA_KEY);
+            HashMap<String, String> pubSuppliedExtras = new HashMap<>();
+            if (extraData instanceof Map) {
+                Map<?, ?> extraData1 = (Map<?, ?>) extraData;
+
+                for (Map.Entry<?, ?> entry : extraData1.entrySet()) {
+                    if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+                        pubSuppliedExtras.put((String) entry.getKey(), (String) entry.getValue());
+                    }
+                }
+            } else {
+                log("Provided extras is not a Map");
+            }
+            return pubSuppliedExtras;
+        } catch (Exception exception) {
+            log("Failed to get Pub Supplied extras", exception);
+            return new HashMap<>();
         }
     }
 
