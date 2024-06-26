@@ -1,1 +1,2 @@
 -keep class com.amazon.device.ads.** { *; }
+-keep class com.iabtcf.** { *; }

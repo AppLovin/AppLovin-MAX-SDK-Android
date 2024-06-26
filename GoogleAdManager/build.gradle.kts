@@ -1,10 +1,12 @@
+import com.applovin.build.extensions.appendDependencyBundle
+
 plugins {
     id("signing")
     id("maven-publish")
 }
 
-private val versionMajor = 22
-private val versionMinor = 4
+private val versionMajor = 23
+private val versionMinor = 1
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
@@ -14,13 +16,13 @@ val libraryVersionCode by extra((versionMajor * 1000000) + (versionMinor * 10000
 val libraryArtifactId by extra("google-ad-manager-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
 
-var libraryVersions = rootProject.extra["versions"] as Map<*, *>
-
+android.namespace = "com.applovin.mediation.adapters.googleadmanager"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
+android.defaultConfig.minSdk = 21
 
 dependencies {
-    implementation("com.google.android.gms:play-services-ads:${libraryVersions["google"]}")
+    implementation(mediation.bundles.google)
 }
 
 publishing {
@@ -50,13 +52,7 @@ publishing {
                             }
                     // Add Google AdMob to list of dependencies.
                     appendNode("dependencies")
-                            .appendNode("dependency").apply {
-
-                                appendNode("groupId", "com.google.android.gms")
-                                appendNode("artifactId", "play-services-ads")
-                                appendNode("version", libraryVersions["google"])
-                                appendNode("scope", "compile")
-                            }
+                        .appendDependencyBundle(mediation.bundles.google)
                 }
             }
         }

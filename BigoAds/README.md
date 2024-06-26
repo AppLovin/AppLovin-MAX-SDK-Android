@@ -1,0 +1,1 @@
+# Bigo Ads Adapter

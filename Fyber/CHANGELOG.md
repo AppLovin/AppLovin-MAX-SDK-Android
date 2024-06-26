@@ -1,5 +1,18 @@
 # Changelog
 
+## 8.2.7.1
+* Fix `Unsupported class file major version 65` build error when using JDK < 21.
+
+## 8.2.7.0
+* Certified with Fyber SDK 8.2.7.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 8.2.6.0
+* Certified with Fyber SDK 8.2.6.
+
+## 8.2.5.0
+* Certified with Fyber SDK 8.2.5.
+
 ## 8.2.4.0
 * Certified with Fyber SDK 8.2.4.
 

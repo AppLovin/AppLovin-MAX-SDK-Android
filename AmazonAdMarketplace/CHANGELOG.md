@@ -1,5 +1,59 @@
 # Changelog
 
+## 9.10.1.0
+* Certified with AmazonAdMarketplace SDK 9.10.1.
+
+## 9.10.0.0
+* Certified with AmazonAdMarketplace SDK 9.10.0.
+
+## 9.9.5.0
+* Certified with AmazonAdMarketplace SDK 9.9.5.
+
+## 9.9.4.0
+* Certified with AmazonAdMarketplace SDK 9.9.4.
+
+## 9.9.3.2
+* Add `com.iabtcf:iabtcf-decoder:2.0.10` dependency to complete fix in v9.9.3.1. This is recommended by Amazon's docs [here](https://ams.amazon.com/webpublisher/uam/docs/aps-mobile/android).
+
+## 9.9.3.1
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Update ProGuard rules to preserve `com.iabtcf.**` classes and APIs to fix error from Amazon SDK: `Non-fatal Exception: java.lang.IllegalArgumentException: Missing the dependency libraries - Ex; com.iabtcf:iabtcf-decoder:2.0.10. For further details, please refer to our Android SDK documentation.`.
+
+## 9.9.3.0
+* Certified with AmazonAdMarketplace SDK 9.9.3.
+
+## 9.9.2.1
+* Update to new APIs added in Amazon SDK version 9.8.7.
+* Note: The minimum Amazon SDK version required for this adapter is 9.8.7.
+* Remove the memory leak fix added for APS banners in adapter v9.8.8.1, as Amazon has addressed the issue in Amazon SDK 9.8.10.
+
+## 9.9.2.0
+* Certified with AmazonAdMarketplace SDK 9.9.2.
+
+## 9.9.1.0
+* Certified with AmazonAdMarketplace SDK 9.9.1.
+
+## 9.9.0.0
+* Certified with AmazonAdMarketplace SDK 9.9.0.
+
+## 9.8.10.0
+* Certified with AmazonAdMarketplace SDK 9.8.10.
+
+## 9.8.9.0
+* Certified with AmazonAdMarketplace SDK 9.8.9.
+
+## 9.8.8.1
+* Fix memory leak in APS banners.
+
+## 9.8.8.0
+* Certified with AmazonAdMarketplace SDK 9.8.8.
+
+## 9.8.7.0
+* Certified with AmazonAdMarketplace SDK 9.8.7.
+
+## 9.8.6.0
+* Certified with AmazonAdMarketplace SDK 9.8.6.
+
 ## 9.8.5.0
 * Certified with AmazonAdMarketplace SDK 9.8.5.
 

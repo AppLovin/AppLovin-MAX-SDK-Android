@@ -460,7 +460,6 @@ public class MyTargetMediationAdapter
         {
             log( "Rewarded ad displayed" );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override

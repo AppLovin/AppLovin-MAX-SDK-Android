@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppLovin Demo App</string>
+    <string name="app_name">AppLovin MAX Demo App</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
     <string name="activity_app_open">App Open Ads</string>
@@ -14,29 +14,4 @@
     <string name="activity_manual_native_late_binding_ad">Manual Late Bidding API</string>
     
     <string name="applovin"><b>App</b>Lovin</string>
-    
-    <string name="title_activity_interstitial_list">Interstitials</string>
-    <string name="title_activity_interstitial_basic_integration">Basic Integration</string>
-    <string name="title_activity_interstitial_manual_loading">Manual Loading</string>
-    <string name="title_activity_interstitial_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_rewarded_videos_list">Rewarded Videos</string>
-    <string name="title_activity_rewarded_videos_basic_integration">Basic Integration</string>
-    <string name="title_activity_rewarded_videos_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_banner_list">Banners</string>
-    <string name="title_activity_banner_programmatic">Programmatic Banners</string>
-    <string name="title_activity_banner_layout_editor">Layout Editor Banners</string>
-    <string name="title_activity_banner_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_leader_list">Leaders</string>
-    <string name="title_activity_leader_programmatic">Programmatic Leaders</string>
-    <string name="title_activity_leader_layout_editor">Layout Editor Leaders</string>
-
-    <string name="title_activity_mrec_list">MRECs</string>
-    <string name="title_activity_mrec_programmatic">Programmatic MRECs</string>
-    <string name="title_activity_mrec_layout_editor">Layout Editor MRECs</string>
-    <string name="title_activity_mrec_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_event_tracking">Event Tracking</string>
 </resources>

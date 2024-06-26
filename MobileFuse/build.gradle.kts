@@ -4,8 +4,8 @@ plugins {
 }
 
 private val versionMajor = 1
-private val versionMinor = 6
-private val versionPatch = 2
+private val versionMinor = 7
+private val versionPatch = 4
 private val versionAdapterPatch = 0
 
 val libraryVersionName by extra("${versionMajor}.${versionMinor}.${versionPatch}.${versionAdapterPatch}")
@@ -16,8 +16,10 @@ val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
+android.namespace = "com.applovin.mediation.adapters.mobilefuse"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
+android.defaultConfig.minSdk = 19
 
 dependencies {
     implementation("com.mobilefuse.sdk:mobilefuse-sdk-core:${libraryVersions["mobileFuse"]}")

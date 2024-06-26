@@ -1,4 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.applovin.mediation.adapters.tapjoy">
-    <!--Note: We don't need to add the permissions and activities for this adapter. Tapjoy SDK's AndroidManifest adds the required permissions and activities.-->
-</manifest>

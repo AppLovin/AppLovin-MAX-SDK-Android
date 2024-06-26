@@ -1,5 +1,43 @@
 # Changelog
 
+## 10.7.4.0
+* Certified with InMobi SDK 10.7.4.
+
+## 10.7.3.0
+* Certified with InMobi SDK 10.7.3.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 10.6.7.0
+* Certified with InMobi SDK 10.6.7.
+
+## 10.6.6.0
+* Certified with InMobi SDK 10.6.6.
+
+## 10.6.3.1
+* Fix NPE caused by calling `LayoutParams.width` to get media view width for native ads.
+
+## 10.6.3.0
+* Certified with InMobi SDK 10.6.3.
+* Improve error handling.
+
+## 10.6.2.0
+* Certified with InMobi SDK 10.6.2.
+
+## 10.6.1.0
+* Certified with InMobi SDK 10.6.1.
+
+## 10.6.0.1
+* Downgrade InMobi SDK to 10.5.9.
+
+## 10.6.0.0
+* Certified with InMobi SDK 10.6.0.
+
+## 10.5.9.0
+* Certified with InMobi SDK 10.5.9.
+
+## 10.5.8.2
+* Fix NPE caused by initializing with null account id.
+
 ## 10.5.8.1
 * Fix `com.inmobi.ads.exceptions.SdkNotInitializedException` from calling `InMobiSdk.setIsAgeRestricted(...)` with `true` value before initializing SDK.
 * Updated to use `InMobiPrivacyCompliance.setDoNotSell()` API to set CCPA values.
@@ -202,7 +240,7 @@
 * Updated to not set privacy settings if null.
 
 ## 9.0.7.1
-* Changed signal collecting ad objects from method level to class level. 
+* Changed signal collecting ad objects from method level to class level.
 
 ## 9.0.7.0
 * Certified with InMobi SDK 9.0.7.

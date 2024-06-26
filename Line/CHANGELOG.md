@@ -1,5 +1,21 @@
 # Changelog
 
+## 2024.5.15.0
+* Certified with Line SDK 2.7.20240515.
+
+## 2024.2.14.1
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Remove passing of `Activity` contexts into LINE APIs.
+
+## 2024.2.14.0
+* Certified with Line SDK 2.7.20240214.
+
+## 2024.1.12.0
+* Certified with Line SDK 2.7.20240112.
+* Update event tracking methods since `FiveAdViewEventListener` is deprecated.
+* Replace `FiveAdInterstitial.show()`, `FiveAdVideoReward.show()` with `FiveAdInterstitial.showAd()`, `FiveAdVideoReward.showAd()`.
+* Improve error handling.
+
 ## 2023.6.7.0
 * Certified with Line SDK 2.6.20230607.
 * Remove the `getPrivacySetting()` function and call privacy methods directly.

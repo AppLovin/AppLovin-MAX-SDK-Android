@@ -674,7 +674,7 @@ public class SmaatoMediationAdapter
                     if ( TextUtils.isEmpty( assets.title() ) )
                     {
                         e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                        listener.onAdViewAdLoadFailed( new MaxAdapterError( 5400, "Missing Native Ad Assets" ) );
+                        listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
 
                         return;
                     }
@@ -1128,7 +1128,6 @@ public class SmaatoMediationAdapter
 
             log( "Rewarded ad displayed" );
             onAdDisplayed( placementId );
-            onRewardedAdVideoStarted( placementId );
         }
 
         @Override
@@ -1142,7 +1141,6 @@ public class SmaatoMediationAdapter
         public void onAdReward(final RewardedInterstitialAd rewardedInterstitialAd)
         {
             log( "Rewarded ad video completed" );
-            onRewardedAdVideoCompleted( rewardedInterstitialAd.getAdSpaceId() );
 
             hasGrantedReward = true;
         }

@@ -1,5 +1,83 @@
 # Changelog
 
+## 16.7.61.0
+* Certified with Mintegral SDK 16.7.61.
+
+## 16.7.51.0
+* Certified with Mintegral SDK 16.7.51.
+
+## 16.7.41.0
+* Certified with Mintegral SDK 16.7.41.
+
+## 16.7.31.0
+* Certified with Mintegral SDK 16.7.31.
+
+## 16.7.21.0
+* Certified with Mintegral SDK 16.7.21.
+
+## 16.7.11.0
+* Certified with Mintegral SDK 16.7.11.
+
+## 16.6.71.0
+* Certified with Mintegral SDK 16.6.71.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 16.6.61.1
+* Add support for app open ads.
+
+## 16.6.61.0
+* Certified with Mintegral SDK 16.6.61.
+
+## 16.6.51.1
+* Remove ProGuard rules since they are included in Mintegral's libraries.
+
+## 16.6.51.0
+* Certified with Mintegral SDK 16.6.51.
+
+## 16.6.41.0
+* Certified with Mintegral SDK 16.6.41.
+
+## 16.6.34.0
+* Certified with Mintegral SDK 16.6.34.
+
+## 16.6.31.0
+* Certified with Mintegral SDK 16.6.31.
+
+## 16.6.21.0
+* Certified with Mintegral SDK 16.6.21.
+
+## 16.6.11.0
+* Certified with Mintegral SDK 16.6.11.
+
+## 16.5.91.2
+* Update to set channel code/ID only when SDK is being initialized.
+
+## 16.5.91.1
+* Update to retrieve creative ID and set channel code/ID using new APIs.
+* Now requires MAX SDK version 9.15.0 or higher.
+
+## 16.5.91.0
+* Certified with Mintegral SDK 16.5.91.
+
+## 16.5.81.0
+* Certified with Mintegral SDK 16.5.81.
+
+## 16.5.71.0
+* Certified with Mintegral SDK 16.5.71.
+* Note: This is the first Mintegral SDK with TCF v2 compliance.
+
+## 16.5.61.0
+* Certified with Mintegral SDK 16.5.61.
+
+## 16.5.51.0
+* Certified with Mintegral SDK 16.5.51.
+
+## 16.5.41.0
+* Certified with Mintegral SDK 16.5.41.
+
+## 16.5.31.0
+* Certified with Mintegral SDK 16.5.31.
+
 ## 16.5.21.0
 * Certified with Mintegral SDK 16.5.21.
 
@@ -257,7 +335,7 @@
 
 ## 15.2.11.0
 * Certified with Mintegral SDK 15.2.11.
-* Update to use Mintegral `oversea` SDK from their private repository. 
+* Update to use Mintegral `oversea` SDK from their private repository.
 * Update 10000000 version check to 9140000.
 * Update initialization log.
 

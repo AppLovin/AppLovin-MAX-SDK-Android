@@ -1,5 +1,43 @@
 # Changelog
 
+## 7.3.2.2
+* Add ability to disable init check during ad load.
+
+## 7.3.2.1
+* Allow SDK to re-initialize upon failure.
+
+## 7.3.2.0
+* Certified with Vungle SDK 7.3.2.
+
+## 7.3.1.2
+* Fix `Null extracted folder for artifact` build error when using AGP < 8.0.
+
+## 7.3.1.1
+* Fix a dependency issue with previous adapter version.
+
+## 7.3.1.0
+* Certified with Vungle SDK 7.3.1.
+
+## 7.3.0.1
+* Downgrade Vungle SDK to 7.1.0 due to crashes in Vungle SDK version 7.3.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 7.3.0.0
+* Certified with Vungle SDK 7.3.0.
+
+## 7.1.0.0
+* Certified with Vungle SDK 7.1.0.
+* Update `play()` API to use context.
+* Pass creative ID to MAX SDK on ad load callbacks instead of the impression callbacks.
+* Update error codes.
+* Remove in feed banner display fix from the adapter since it is handled in the Vungle SDK 7.1.0.
+
+## 7.0.0.0
+* Certified with Vungle SDK 7.0.0.
+* Update to use instance based APIs.
+* Remove the `getPrivacySetting()` function and call privacy methods directly.
+* Now requires MAX SDK version 9.15.0 or higher.
+
 ## 6.12.1.1
 * Add support for native banner and MREC ads.
 
@@ -54,7 +92,7 @@
 * Certified with Vungle SDK 6.10.3.
 
 ## 6.10.2.1
-* Fix centering of banner ads. 
+* Fix centering of banner ads.
 * Remove `checkExistence()` call from adapter.
 
 ## 6.10.2.0

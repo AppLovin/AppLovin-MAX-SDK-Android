@@ -1,5 +1,18 @@
 # Changelog
 
+## 5.21.0.0
+* Certified with MyTarget SDK 5.21.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 5.20.1.0
+* Certified with MyTarget SDK 5.20.1.
+
+## 5.20.0.0
+* Certified with MyTarget SDK 5.20.0.
+
+## 5.19.0.0
+* Certified with MyTarget SDK 5.19.0.
+
 ## 5.18.0.0
 * Certified with MyTarget SDK 5.18.0.
 * Update `onNoAd` method with `IAdLoadingError` parameter and update error code mapping.

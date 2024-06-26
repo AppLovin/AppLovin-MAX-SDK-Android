@@ -4,7 +4,7 @@ plugins {
 }
 
 private val versionMajor = 5
-private val versionMinor = 6
+private val versionMinor = 7
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
@@ -16,6 +16,7 @@ val libraryGroupId by extra("com.applovin.mediation")
 
 var libraryVersions = rootProject.extra["versions"] as Map<*, *>
 
+android.namespace = "com.applovin.mediation.adapters.ogurypresage"
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
