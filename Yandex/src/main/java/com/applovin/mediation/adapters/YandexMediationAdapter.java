@@ -40,8 +40,10 @@ import com.yandex.mobile.ads.common.AdError;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
+import com.yandex.mobile.ads.common.AdType;
 import com.yandex.mobile.ads.common.BidderTokenLoadListener;
 import com.yandex.mobile.ads.common.BidderTokenLoader;
+import com.yandex.mobile.ads.common.BidderTokenRequestConfiguration;
 import com.yandex.mobile.ads.common.ImpressionData;
 import com.yandex.mobile.ads.common.InitializationListener;
 import com.yandex.mobile.ads.common.MobileAds;
@@ -156,7 +158,7 @@ public class YandexMediationAdapter
 
             status = InitializationStatus.INITIALIZING;
 
-            updateUserConsent( parameters );
+            updatePrivacySettings( parameters );
 
             if ( parameters.isTesting() )
             {
@@ -196,9 +198,11 @@ public class YandexMediationAdapter
     {
         log( "Collecting signal..." );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
-        BidderTokenLoader.loadBidderToken( activity, new BidderTokenLoadListener()
+        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( activity, parameters.getAdFormat() );
+
+        BidderTokenLoader.loadBidderToken( activity, bidderTokenRequest, new BidderTokenLoadListener()
         {
             @Override
             public void onBidderTokenLoaded(@NonNull final String bidderToken)
@@ -239,7 +243,7 @@ public class YandexMediationAdapter
             return;
         }
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadInterstitialAdRunnable = new Runnable()
         {
@@ -249,7 +253,7 @@ public class YandexMediationAdapter
                 InterstitialAdLoader interstitialAdLoader = new InterstitialAdLoader( getContext( activity ) );
                 interstitialAdListener = new InterstitialAdListener( parameters, listener );
                 interstitialAdLoader.setAdLoadListener( interstitialAdListener );
-                interstitialAdLoader.loadAd( new AdRequestConfiguration.Builder( placementId ).build() );
+                interstitialAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -293,7 +297,7 @@ public class YandexMediationAdapter
             return;
         }
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadRewardedAdRunnable = new Runnable()
         {
@@ -303,7 +307,7 @@ public class YandexMediationAdapter
                 RewardedAdLoader rewardedAdLoader = new RewardedAdLoader( activity );
                 rewardedAdListener = new RewardedAdListener( parameters, listener );
                 rewardedAdLoader.setAdLoadListener( rewardedAdListener );
-                rewardedAdLoader.loadAd( new AdRequestConfiguration.Builder( placementId ).build() );
+                rewardedAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -342,7 +346,7 @@ public class YandexMediationAdapter
 
         final Context applicationContext = getContext( activity );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadAdViewAdRunnable = new Runnable()
         {
@@ -373,7 +377,7 @@ public class YandexMediationAdapter
 
         final Context applicationContext = getContext( activity );
 
-        updateUserConsent( parameters );
+        updatePrivacySettings( parameters );
 
         Runnable loadNativeAdRunnable = new Runnable()
         {
@@ -382,12 +386,7 @@ public class YandexMediationAdapter
             {
                 NativeAdLoader nativeAdLoader = new NativeAdLoader( applicationContext );
                 nativeAdLoader.setNativeAdLoadListener( new NativeAdListener( parameters, applicationContext, listener ) );
-                NativeAdRequestConfiguration nativeAdRequestConfiguration = new NativeAdRequestConfiguration.Builder( placementId )
-                        .setBiddingData( bidResponse )
-                        .setParameters( adRequestParameters )
-                        .setShouldLoadImagesAutomatically( true ) // images will be loaded before ad is ready
-                        .build();
-                nativeAdLoader.loadAd( nativeAdRequestConfiguration );
+                nativeAdLoader.loadAd( createNativeAdRequestConfiguration( placementId, parameters ) );
             }
         };
 
@@ -417,21 +416,103 @@ public class YandexMediationAdapter
         }
     }
 
-    private void updateUserConsent(final MaxAdapterParameters parameters)
+    private void updatePrivacySettings(final MaxAdapterParameters parameters)
     {
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
             MobileAds.setUserConsent( hasUserConsent );
         }
+
+        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
+        if ( isAgeRestrictedUser != null )
+        {
+            MobileAds.setAgeRestrictedUser( isAgeRestrictedUser );
+        }
     }
 
     private AdRequest createAdRequest(MaxAdapterResponseParameters parameters)
     {
-        return new AdRequest.Builder()
-                .setBiddingData( parameters.getBidResponse() )
+        AdRequest.Builder builder = new AdRequest.Builder()
+                .setParameters( adRequestParameters );
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
+    }
+
+    private AdRequestConfiguration createAdRequestConfiguration(final String placementId, final MaxAdapterResponseParameters parameters)
+    {
+        AdRequestConfiguration.Builder builder = new AdRequestConfiguration.Builder( placementId )
+                .setParameters( adRequestParameters );
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
+    }
+
+    private NativeAdRequestConfiguration createNativeAdRequestConfiguration(final String placementId, final MaxAdapterResponseParameters parameters)
+    {
+        NativeAdRequestConfiguration.Builder builder = new NativeAdRequestConfiguration.Builder( placementId )
                 .setParameters( adRequestParameters )
-                .build();
+                .setShouldLoadImagesAutomatically( true ); // images will be loaded before ad is ready
+
+        final String bidResponse = parameters.getBidResponse();
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            builder.setBiddingData( bidResponse );
+        }
+
+        return builder.build();
+    }
+
+    private BidderTokenRequestConfiguration createBidderTokenRequestConfiguration(final Context context, final MaxAdFormat adFormat)
+    {
+        AdType adType = toAdType( adFormat );
+        BidderTokenRequestConfiguration.Builder requestBuilder = new BidderTokenRequestConfiguration.Builder( adType );
+
+        if ( adType == AdType.BANNER )
+        {
+            requestBuilder.setBannerAdSize( toBannerAdSize( adFormat, context ) );
+        }
+
+        return requestBuilder.setParameters( adRequestParameters ).build();
+    }
+
+    private static AdType toAdType(final MaxAdFormat adFormat)
+    {
+        if ( adFormat.isAdViewAd() )
+        {
+            return AdType.BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return AdType.INTERSTITIAL;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED || adFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
+        {
+            return AdType.REWARDED;
+        }
+        else if ( adFormat == MaxAdFormat.APP_OPEN )
+        {
+            return AdType.APP_OPEN_AD;
+        }
+        else if ( adFormat == MaxAdFormat.NATIVE )
+        {
+            return AdType.NATIVE;
+        }
+        else
+        {
+            return AdType.UNKNOWN;
+        }
     }
 
     private static BannerAdSize toBannerAdSize(final MaxAdFormat adFormat, final Context context)
@@ -597,7 +678,6 @@ public class YandexMediationAdapter
             if ( parameters.isTesting() )
             {
                 listener.onRewardedAdDisplayed();
-                listener.onRewardedAdVideoStarted();
             }
         }
 
@@ -608,7 +688,6 @@ public class YandexMediationAdapter
         {
             log( "Rewarded ad impression tracked" );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -636,7 +715,6 @@ public class YandexMediationAdapter
         public void onAdDismissed()
         {
             log( "Rewarded ad hidden" );
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
@@ -774,6 +852,10 @@ public class YandexMediationAdapter
                             .setOptionsView( disclaimerSponsoredOptionsViewContainer )
                             .setMediaView( new MediaView( applicationContext ) ); // Yandex requires rendering MediaView with their own bind method
 
+                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 && assets.getRating() != null )
+                    {
+                        builder.setStarRating( (double) assets.getRating() );
+                    }
                     MaxNativeAd maxNativeAd = new MaxYandexNativeAd( builder );
 
                     listener.onNativeAdLoaded( maxNativeAd, null );

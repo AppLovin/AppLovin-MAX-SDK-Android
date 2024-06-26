@@ -1,43 +1,25 @@
 <resources>
-    <string name="app_name">AppLovin Demo App</string>
+    <string name="app_name">AppLovin MAX Demo App</string>
 
     <string name="activity_interstitial">Interstitial Ads</string>
+
     <string name="activity_app_open">App Open Ads</string>
+
     <string name="activity_rewarded">Rewarded Ads</string>
+
     <string name="activity_programmatic_banners">Programmatic Banners</string>
     <string name="activity_layout_editor_banners">Layout Editor Banners</string>
+    <string name="activity_jetpack_compose_banners">Jetpack Compose Banners</string>
+
     <string name="activity_layout_editor_mrecs">Layout Editor MRECs</string>
     <string name="activity_programmatic_mrecs">Programmatic MRECs</string>
     <string name="activity_recycler_view_mrecs">Recycler View MRECs</string>
+    <string name="activity_jetpack_compose_mrecs">Jetpack Compose MRECs</string>
+
     <string name="activity_template_native_ad">Templates API</string>
     <string name="activity_manual_native_ad">Manual API</string>
     <string name="activity_manual_native_late_binding_ad">Manual Late Bidding API</string>
+    <string name="activity_jetpack_compose_template_native_ad">Jetpack Compose Templates</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
-    
-    <string name="title_activity_interstitial_list">Interstitials</string>
-    <string name="title_activity_interstitial_basic_integration">Basic Integration</string>
-    <string name="title_activity_interstitial_manual_loading">Manual Loading Ad</string>
-    <string name="title_activity_interstitial_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_rewarded_videos_list">Rewarded</string>
-    <string name="title_activity_rewarded_videos_basic_integration">Basic Integration</string>
-    <string name="title_activity_rewarded_videos_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_banner_list">Banners</string>
-    <string name="title_activity_banner_programmatic">Programmatic Banners</string>
-    <string name="title_activity_banner_layout_editor">Layout Editor Banners</string>
-    <string name="title_activity_banner_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_leader_list">Leaders</string>
-    <string name="title_activity_leader_programmatic">Programmatic Leaders</string>
-    <string name="title_activity_leader_layout_editor">Layout Editor Leaders</string>
-
-    <string name="title_activity_mrec_list">MRECs</string>
-    <string name="title_activity_mrec_programmatic">Programmatic MRECs</string>
-    <string name="title_activity_mrec_layout_editor">Layout Editor MRECs</string>
-    <string name="title_activity_mrec_zone_integration">Zone Integration</string>
-
-    <string name="title_activity_event_tracking">Event Tracking</string>
-    
 </resources>

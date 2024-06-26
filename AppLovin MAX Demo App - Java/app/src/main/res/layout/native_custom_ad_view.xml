@@ -58,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/icon_image_view"

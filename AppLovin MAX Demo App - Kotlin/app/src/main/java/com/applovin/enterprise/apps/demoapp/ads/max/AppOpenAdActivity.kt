@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ads.max
 
 import android.os.Bundle
 import android.view.View
@@ -46,31 +46,31 @@ class AppOpenAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) {
+    override fun onAdLoaded(ad: MaxAd) {
         // App Open ad is ready to be shown. AppOpenAd.isReady() will now return 'true'.
         logCallback()
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
 
         // App Open ad failed to display. We recommend loading the next ad.
         appOpenAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) {
+    override fun onAdDisplayed(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdClicked(ad: MaxAd?) {
+    override fun onAdClicked(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdHidden(ad: MaxAd?) {
+    override fun onAdHidden(ad: MaxAd) {
         logCallback()
 
         // App Open Ad is hidden. Pre-load the next ad
@@ -81,14 +81,14 @@ class AppOpenAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd) {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
-        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
-        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
-        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
-        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+        adjustAdRevenue.setRevenue(ad.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad.placement)
 
         Adjust.trackAdRevenue(adjustAdRevenue)
     }

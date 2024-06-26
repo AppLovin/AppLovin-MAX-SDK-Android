@@ -5,7 +5,7 @@ MAX is AppLovin's in-app monetization solution.
 
 Move beyond the traditional monetization solution and integrate MAX. MAX is a single unbiased auction where advertisers get equal access to all ad inventory and bid simultaneously, which drives more competition and higher CPMs for you. You can read more about it [here](https://www.applovin.com/max-header-bidding).
 
-Please check out our [documentation](https://dash.applovin.com/documentation/mediation/android/getting-started) to get started on integrating and enabling mediated networks using our guides.
+Please check out our [documentation](https://developers.applovin.com/en/android/overview/integration) to get started on integrating and enabling mediated networks using our guides.
 
 ## Demo Apps
 To get started with the demo apps, follow the instructions below:
@@ -16,7 +16,7 @@ To get started with the demo apps, follow the instructions below:
 4. Update the package with your own unique identifier associated with the application you will create (or already created, if it is an existing app) in the MAX dashboard in your `build.gradle (Module: app)`.
 5. Update the unique MAX ad unit id value within each ad's activity code. Each ad format will correspond to a unique MAX ad unit ID you created in the AppLovin dashboard for the package used before. 
 
-<img src="https://user-images.githubusercontent.com/20387467/116483017-20195500-a83b-11eb-9440-d2fd7ac06a96.jpg" width="350" height="700" />
+<img src="https://github.com/AppLovin/AppLovin-MAX-SDK-Android/assets/144739628/25009aa9-3f67-44f6-9dcf-c9ceb3a42fe8.jpg" width="300" height="700" />
 
 ## Error Codes
 | Code          | Description   |

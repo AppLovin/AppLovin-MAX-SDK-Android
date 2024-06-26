@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 
-def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+def isLocalAppLovinWorkspace = rootProject.name == "Android-Workspace"
 
 android {
-    compileSdkVersion 31
+    namespace "com.applovin.enterprise.apps.demoapp"
+    compileSdk 34
+
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdk 34
         versionCode 10000
         versionName "1.0"
         multiDexEnabled true
@@ -36,7 +38,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.android.material:material:1.1.0'

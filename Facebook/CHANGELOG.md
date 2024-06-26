@@ -1,5 +1,15 @@
 # Changelog
 
+## 6.17.0.0
+* Certified with Facebook SDK 6.17.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()`, `onRewardedAdVideoCompleted()`, `onRewardedInterstitialAdVideoStarted()` and `onRewardedInterstitialAdVideoCompleted`.
+
+## 6.16.0.2
+* Fix native banner ad media views not clickable.
+
+## 6.16.0.1
+* Fix native ad media views not clickable.
+
 ## 6.16.0.0
 * Certified with Facebook SDK 6.16.0.
 

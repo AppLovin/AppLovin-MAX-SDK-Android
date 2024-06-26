@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.16.3
+* Now requires MAX SDK version 9.8.2 or higher.
+* Add additional details for ad display failures.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
 ## 1.1.16.2
 * Update ad display failed error code.
 
@@ -34,7 +39,7 @@
 
 ## 1.1.10.2
 * Use SDK aar instead of jar.
-* Fix incorrect `Unspecified` and `No Fill` errors due to keeping ad load state between ads. 
+* Fix incorrect `Unspecified` and `No Fill` errors due to keeping ad load state between ads.
 
 ## 1.1.10.1
 * Add configuration of rewards from server parameters.

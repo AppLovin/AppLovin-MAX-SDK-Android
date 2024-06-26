@@ -1,4 +1,4 @@
-package com.applovin.enterprise.apps.demoapp.ads
+package com.applovin.enterprise.apps.demoapp.ads.max
 
 import android.os.Bundle
 import android.os.Handler
@@ -51,7 +51,7 @@ class InterstitialAdActivity : BaseAdActivity(),
 
     //region MAX Ad Listener
 
-    override fun onAdLoaded(ad: MaxAd?) {
+    override fun onAdLoaded(ad: MaxAd) {
         // Interstitial ad is ready to be shown. interstitialAd.isReady() will now return 'true'.
         logCallback()
 
@@ -59,7 +59,7 @@ class InterstitialAdActivity : BaseAdActivity(),
         retryAttempt = 0
     }
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
 
         // Interstitial ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
@@ -70,22 +70,22 @@ class InterstitialAdActivity : BaseAdActivity(),
         Handler().postDelayed({ interstitialAd.loadAd() }, delayMillis)
     }
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {
         logCallback()
 
         // Interstitial ad failed to display. We recommend loading the next ad.
         interstitialAd.loadAd()
     }
 
-    override fun onAdDisplayed(ad: MaxAd?) {
+    override fun onAdDisplayed(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdClicked(ad: MaxAd?) {
+    override fun onAdClicked(ad: MaxAd) {
         logCallback()
     }
 
-    override fun onAdHidden(ad: MaxAd?) {
+    override fun onAdHidden(ad: MaxAd) {
         logCallback()
 
         // Interstitial Ad is hidden. Pre-load the next ad
@@ -96,14 +96,14 @@ class InterstitialAdActivity : BaseAdActivity(),
 
     //region MAX Ad Revenue Listener
 
-    override fun onAdRevenuePaid(ad: MaxAd?) {
+    override fun onAdRevenuePaid(ad: MaxAd) {
         logCallback()
 
         val adjustAdRevenue = AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX)
-        adjustAdRevenue.setRevenue(ad?.revenue, "USD")
-        adjustAdRevenue.setAdRevenueNetwork(ad?.networkName)
-        adjustAdRevenue.setAdRevenueUnit(ad?.adUnitId)
-        adjustAdRevenue.setAdRevenuePlacement(ad?.placement)
+        adjustAdRevenue.setRevenue(ad.revenue, "USD")
+        adjustAdRevenue.setAdRevenueNetwork(ad.networkName)
+        adjustAdRevenue.setAdRevenueUnit(ad.adUnitId)
+        adjustAdRevenue.setAdRevenuePlacement(ad.placement)
 
         Adjust.trackAdRevenue(adjustAdRevenue)
     }

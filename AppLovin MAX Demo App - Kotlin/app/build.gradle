@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-def isLocalAppLovinWorkspace = file("../../../Android-SDK/build.gradle.kts").exists()
+def isLocalAppLovinWorkspace = rootProject.name == "Android-Workspace"
 
 android {
-    compileSdkVersion 31
+    namespace "com.applovin.enterprise.apps.demoapp"
+    compileSdk 34
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
-        minSdkVersion 16
-        targetSdkVersion 31
+        minSdkVersion 21
+        targetSdk 34
         versionCode 10000
         versionName "1.0"
         multiDexEnabled true
@@ -24,6 +25,16 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.1"
+        kotlinCompilerVersion = "1.6.10"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
     if (isLocalAppLovinWorkspace) {
         flavorDimensions "default"
         productFlavors {
@@ -36,8 +47,8 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.1.0'
@@ -48,7 +59,12 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
-    
+
+    implementation 'androidx.compose.runtime:runtime:1.1.0'
+    implementation 'androidx.activity:activity-compose:1.3.0'
+    implementation 'androidx.compose.material:material:1.3.0'
+    implementation 'androidx.compose.foundation:foundation:1.3.0'
+
     if (isLocalAppLovinWorkspace) {
         implementation(project(":Android-SDK"))
     } else {

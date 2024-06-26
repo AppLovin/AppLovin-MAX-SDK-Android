@@ -1,7 +1,34 @@
 # Changelog
 
+## 8.1.0.0.0
+* Certified with IronSource SDK 8.1.0.
+
+## 8.0.0.0.0
+* Certified with IronSource SDK 8.0.0.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+
+## 7.9.0.0.0
+* Certified with IronSource SDK 7.9.0.
+
+## 7.8.1.0.0
+* Certified with IronSource SDK 7.8.1.
+
+## 7.8.0.0.0
+* Certified with IronSource SDK 7.8.0.
+* Fixed to allow multiple banners/MRECs with same instanceId in a session to load by destroying previous banners/MRECs using `destroyISDemandOnlyBanner()` API.
+
+## 7.7.0.0.0
+* Certified with IronSource SDK 7.7.0.
+* Correctly map `ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED` and `BN_INSTANCE_LOAD_NO_FILL` to MAX NO FILLs instead of unspecified errors.
+
+## 7.6.0.0.0
+* Certified with IronSource SDK 7.6.0.
+
+## 7.5.2.0.0
+* Certified with IronSource SDK 7.5.2.
+
 ## 7.5.1.0.1
-* Set `is_deviceid_optout` parameter for COPPA end users. 
+* Set `is_deviceid_optout` parameter for COPPA end users.
 
 ## 7.5.1.0.0
 * Certified with IronSource SDK 7.5.1.

@@ -220,28 +220,28 @@ public class RecyclerViewMrecAdActivity
     //region MAX Ad Listener
 
     @Override
-    public void onAdLoaded(final MaxAd maxAd) { }
+    public void onAdLoaded(@NonNull final MaxAd maxAd) { }
 
     @Override
-    public void onAdLoadFailed(final String adUnitId, final MaxError error) { }
+    public void onAdLoadFailed(@NonNull final String adUnitId, @NonNull final MaxError error) { }
 
     @Override
-    public void onAdDisplayFailed(final MaxAd maxAd, final MaxError error) { }
+    public void onAdDisplayFailed(@NonNull final MaxAd maxAd, @NonNull final MaxError error) { }
 
     @Override
-    public void onAdClicked(final MaxAd maxAd) { }
+    public void onAdClicked(@NonNull final MaxAd maxAd) { }
 
     @Override
-    public void onAdExpanded(final MaxAd maxAd) { }
+    public void onAdExpanded(@NonNull final MaxAd maxAd) { }
 
     @Override
-    public void onAdCollapsed(final MaxAd maxAd) { }
+    public void onAdCollapsed(@NonNull final MaxAd maxAd) { }
 
     @Override
-    public void onAdDisplayed(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+    public void onAdDisplayed(@NonNull final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
 
     @Override
-    public void onAdHidden(final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
+    public void onAdHidden(@NonNull final MaxAd maxAd) { /* DO NOT USE - THIS IS RESERVED FOR FULLSCREEN ADS ONLY AND WILL BE REMOVED IN A FUTURE SDK RELEASE */ }
 
     //endregion
 }

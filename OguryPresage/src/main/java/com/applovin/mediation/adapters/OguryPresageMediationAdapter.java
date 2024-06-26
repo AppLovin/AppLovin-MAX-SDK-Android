@@ -15,13 +15,11 @@ import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
-import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.ogurypresage.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
-import com.ogury.cm.OguryChoiceManagerExternal;
 import com.ogury.core.OguryError;
 import com.ogury.ed.OguryAdFormatErrorCode;
 import com.ogury.ed.OguryAdImpressionListener;
@@ -70,9 +68,6 @@ public class OguryPresageMediationAdapter
             final String assetKey = parameters.getServerParameters().getString( "asset_key" );
             log( "Initializing Ogury Presage SDK with asset key: " + assetKey + "..." );
 
-            // Pass the user consent before initializing SDK for personalized ads
-            updateUserConsent( parameters );
-
             OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( getContext( activity ), assetKey )
                     .putMonitoringInfo( "max_applovin_mediation_version", AppLovinSdk.VERSION );
 
@@ -115,8 +110,6 @@ public class OguryPresageMediationAdapter
     {
         log( "Collecting signal..." );
 
-        updateUserConsent( parameters );
-
         final String bidderToken = OguryTokenProvider.getBidderToken( getContext( activity ) );
         callback.onSignalCollected( bidderToken );
     }
@@ -135,9 +128,6 @@ public class OguryPresageMediationAdapter
         InterstitialAdListener adListener = new InterstitialAdListener( placementId, listener );
         interstitialAd.setListener( adListener );
         interstitialAd.setAdImpressionListener( adListener );
-
-        // Update user consent before loading
-        updateUserConsent( parameters );
 
         if ( interstitialAd.isLoaded() )
         {
@@ -187,9 +177,6 @@ public class OguryPresageMediationAdapter
         RewardedAdListener adListener = new RewardedAdListener( placementId, listener );
         rewardedAd.setListener( adListener );
         rewardedAd.setAdImpressionListener( adListener );
-
-        // Update user consent before loading
-        updateUserConsent( parameters );
 
         if ( rewardedAd.isLoaded() )
         {
@@ -245,9 +232,6 @@ public class OguryPresageMediationAdapter
         adView.setListener( adListener );
         adView.setAdImpressionListener( adListener );
 
-        // Update user consent before loading
-        updateUserConsent( parameters );
-
         if ( AppLovinSdkUtils.isValidString( bidResponse ) )
         {
             adView.setAdMarkup( bidResponse );
@@ -258,23 +242,6 @@ public class OguryPresageMediationAdapter
     //endregion
 
     //region Helper Methods
-    private void updateUserConsent(final MaxAdapterParameters parameters)
-    {
-        if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-        {
-            if ( parameters.getConsentString() != null )
-            {
-                OguryChoiceManagerExternal.TcfV2.setConsent( parameters.getConsentString(), new Integer[0] );
-            }
-        }
-
-        Boolean hasUserConsent = parameters.hasUserConsent();
-        if ( hasUserConsent != null )
-        {
-            OguryChoiceManagerExternal.setConsent( hasUserConsent, "CUSTOM" );
-        }
-    }
-
     private static MaxAdapterError toMaxError(OguryError oguryError)
     {
         final int oguryErrorCode = oguryError.getErrorCode();
@@ -433,7 +400,6 @@ public class OguryPresageMediationAdapter
         {
             log( "Rewarded ad triggered impression: " + placementId );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -446,8 +412,6 @@ public class OguryPresageMediationAdapter
         @Override
         public void onAdClosed()
         {
-            listener.onRewardedAdVideoCompleted();
-
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
                 final MaxReward reward = getReward();

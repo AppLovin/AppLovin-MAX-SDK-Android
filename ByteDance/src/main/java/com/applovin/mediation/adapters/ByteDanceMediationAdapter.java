@@ -40,6 +40,7 @@ import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdInteractionListener;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdLoadListener;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerRequest;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerSize;
+import com.bytedance.sdk.openadsdk.api.init.BiddingTokenCallback;
 import com.bytedance.sdk.openadsdk.api.init.PAGConfig;
 import com.bytedance.sdk.openadsdk.api.init.PAGSdk;
 import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialAd;
@@ -269,8 +270,23 @@ public class ByteDanceMediationAdapter
     {
         log( "Collecting signal..." );
 
-        String signal = PAGSdk.getBiddingToken();
-        callback.onSignalCollected( signal );
+        PAGSdk.getBiddingToken( new BiddingTokenCallback()
+        {
+            @Override
+            public void onBiddingTokenCollected(final String biddingToken)
+            {
+                if ( AppLovinSdkUtils.isValidString( biddingToken ) )
+                {
+                    log( "Signal collection successful" );
+                    callback.onSignalCollected( biddingToken );
+                }
+                else
+                {
+                    log( "Failed to collect signal" );
+                    callback.onSignalCollectionFailed( null );
+                }
+            }
+        } );
     }
 
     //endregion
@@ -740,7 +756,6 @@ public class ByteDanceMediationAdapter
             log( "Rewarded ad displayed: " + codeId );
 
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -768,8 +783,6 @@ public class ByteDanceMediationAdapter
         public void onAdDismissed()
         {
             log( "Rewarded ad hidden: " + codeId );
-
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {

@@ -1,18 +1,14 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.applovin.mediation.adapters.maio">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <activity
             android:name="jp.maio.sdk.android.AdFullscreenActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name="jp.maio.sdk.android.HtmlBasedAdActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
     </application>
 </manifest>

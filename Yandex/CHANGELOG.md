@@ -1,7 +1,32 @@
 # Changelog
 
+## 7.1.0.0
+* Certified with Yandex SDK 7.1.0.
+
+## 7.0.1.0
+* Certified with Yandex SDK 7.0.1.
+* Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Requires minimum Android API level be 21 or higher.
+
+## 6.4.1.0
+* Certified with Yandex SDK 6.4.1.
+
+## 6.4.0.0
+* Certified with Yandex SDK 6.4.0 and AppMetrica SDK 6.2.1.
+* Add support for new bidding token generation method.
+* Add support for age restricted users.
+
+## 6.1.0.0
+* Certified with Yandex SDK 6.1.0.
+
+## 6.0.1.2
+* Add support for native ad star ratings.
+
+## 6.0.1.1
+* Re-add support for bidding, which was omitted in adapter version 6.0.1.0.
+
 ## 6.0.1.0
-* Certified with Yandex SDK 6.0.1. 
+* Certified with Yandex SDK 6.0.1.
 
 ## 5.10.0.0
 * Certified with Yandex SDK 5.10.0.

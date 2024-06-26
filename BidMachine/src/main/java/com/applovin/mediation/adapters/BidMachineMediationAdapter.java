@@ -533,7 +533,6 @@ public class BidMachineMediationAdapter
         {
             log( "Rewarded ad impression" );
             listener.onRewardedAdDisplayed();
-            listener.onRewardedAdVideoStarted();
         }
 
         @Override
@@ -554,7 +553,6 @@ public class BidMachineMediationAdapter
         public void onAdClosed(@NonNull RewardedAd rewardedAd, boolean finished)
         {
             log( "Rewarded ad closed" );
-            listener.onRewardedAdVideoCompleted();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {

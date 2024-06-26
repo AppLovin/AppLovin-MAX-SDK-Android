@@ -150,9 +150,9 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
 
     override fun onAdLoaded(maxAd: MaxAd) {}
 
-    override fun onAdLoadFailed(adUnitId: String?, error: MaxError?) {}
+    override fun onAdLoadFailed(adUnitId: String, error: MaxError) {}
 
-    override fun onAdDisplayFailed(ad: MaxAd?, error: MaxError?) {}
+    override fun onAdDisplayFailed(ad: MaxAd, error: MaxError) {}
 
     override fun onAdClicked(maxAd: MaxAd) {}
 
