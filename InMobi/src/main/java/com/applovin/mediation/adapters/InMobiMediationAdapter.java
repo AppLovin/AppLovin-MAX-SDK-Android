@@ -577,11 +577,16 @@ public class InMobiMediationAdapter
     private Map<String, String> getPublisherProvidedExtras(MaxAdapterParameters parameters) {
         try {
             Object extraData = parameters.getLocalExtraParameters().get(INMOBI_EXTRA_KEY);
+            if (extraData == null) {
+                return new HashMap<>();
+            }
             HashMap<String, String> pubSuppliedExtras = new HashMap<>();
             if (extraData instanceof Map) {
                 Map<?, ?> extraData1 = (Map<?, ?>) extraData;
-
                 for (Map.Entry<?, ?> entry : extraData1.entrySet()) {
+                    if (entry.getKey() == null || entry.getValue() == null) {
+                        continue;
+                    }
                     if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
                         pubSuppliedExtras.put((String) entry.getKey(), (String) entry.getValue());
                     }
