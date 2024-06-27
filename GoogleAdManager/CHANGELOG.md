@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.2.0.0
+* Certified with GoogleAdManager SDK 23.2.0.
+
 ## 23.1.0.0
 * Certified with GoogleAdManager SDK 23.1.0.
 
@@ -12,7 +15,7 @@
 * Now requires minimum Android API level be 21 or higher.
 
 ## 22.6.0.1
-* Use `apply()` when saving to `SharedPreferences` to prevent ANRs. 
+* Use `apply()` when saving to `SharedPreferences` to prevent ANRs.
 
 ## 22.6.0.0
 * Certified with GoogleAdManager SDK 22.6.0.
@@ -207,7 +210,7 @@
 ## 20.0.0.0
 * Certified with GoogleAdManager SDK 20.0.0.
 * Remove `setIsDesignedForFamilies()` method. As a result `is_designed_for_families` is not passed to Google anymore.
-* Update deprecated APIs by setting test mode using `RequestConfiguration.Builder.setTestDeviceIds()` and age restricted user using `RequestConfiguration.Builder.setTagForChildDirectedTreatment()`. 
+* Update deprecated APIs by setting test mode using `RequestConfiguration.Builder.setTestDeviceIds()` and age restricted user using `RequestConfiguration.Builder.setTagForChildDirectedTreatment()`.
 
 ## 19.8.0.0
 * Certified with GoogleAdManager SDK 19.8.0.
