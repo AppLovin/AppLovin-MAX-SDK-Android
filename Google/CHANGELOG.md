@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.2.0.0
+* Certified with Google SDK 23.2.0.
+
 ## 23.1.0.0
 * Certified with Google SDK 23.1.0.
 
@@ -42,7 +45,7 @@
 * Certified with Google SDK 22.2.0.
 
 ## 22.1.0.4
-* Update CCPA state if granted mid-session. 
+* Update CCPA state if granted mid-session.
 
 ## 22.1.0.3
 * Re-enable support for adaptive banner traffic for Google bidding since their sizing issue is resolved.
@@ -236,7 +239,7 @@
 
 ## 20.0.0.0
 * Certified with Google SDK 20.0.0.
-* Remove `setIsDesignedForFamilies()` method. As a result `is_designed_for_families` is not passed to Google anymore. 
+* Remove `setIsDesignedForFamilies()` method. As a result `is_designed_for_families` is not passed to Google anymore.
 
 ## 19.8.0.0
 * Certified with Google SDK 19.8.0.
