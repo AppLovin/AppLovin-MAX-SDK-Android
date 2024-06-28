@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.8.0.0
+* Certified with OguryPresage SDK 5.8.0.
+* Add support for passing in MAX SDK name and version.
+
 ## 5.7.0.0
 * Certified with OguryPresage SDK 5.7.0.
 
@@ -110,7 +114,7 @@
 
 ## 4.3.6.1
 * Return the correct SDK version.
-* Using `Ogury-Presage` as the package naming convention. 
+* Using `Ogury-Presage` as the package naming convention.
 
 ## 4.3.6.0
 * Initial commit.

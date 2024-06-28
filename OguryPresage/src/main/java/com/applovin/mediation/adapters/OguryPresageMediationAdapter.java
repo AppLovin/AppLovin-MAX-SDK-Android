@@ -36,6 +36,7 @@ import com.ogury.sdk.OguryConfiguration;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.presage.common.Mediation;
 import io.presage.common.token.OguryTokenProvider;
 
 /**
@@ -123,7 +124,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad: " + placementId + "..." );
 
-        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId );
+        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId, new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
 
         InterstitialAdListener adListener = new InterstitialAdListener( placementId, listener );
         interstitialAd.setListener( adListener );
@@ -172,7 +173,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad: " + placementId + "..." );
 
-        rewardedAd = new OguryOptinVideoAd( getContext( activity ), placementId );
+        rewardedAd = new OguryOptinVideoAd( getContext( activity ), placementId, new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
 
         RewardedAdListener adListener = new RewardedAdListener( placementId, listener );
         rewardedAd.setListener( adListener );
@@ -224,7 +225,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad: " + placementId + "..." );
 
-        adView = new OguryBannerAdView( getContext( activity ) );
+        adView = new OguryBannerAdView( getContext( activity ), new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
         adView.setAdSize( toAdSize( adFormat ) );
         adView.setAdUnit( placementId );
 
