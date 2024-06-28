@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.4.0.0
+* Certified with Vungle SDK 7.4.0.
+
 ## 7.3.2.2
 * Add ability to disable init check during ad load.
 
