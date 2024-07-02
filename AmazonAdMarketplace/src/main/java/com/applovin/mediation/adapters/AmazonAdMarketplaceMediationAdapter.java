@@ -615,8 +615,8 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdError(final ApsAd apsAd)
         {
             // Catch all error callback, display failure callback. Ex: when a webview crashes, something crashes on the JS side, or the video stops playing midway. Implementation is not complete in the SDK
-            e( "AdView display failed" );
-            listener.onAdViewAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            // Do not call `onAdViewAdDisplayFailed()` because `onAdError()` is sometimes fired when ad display is successful.
+            e( "AdView error" );
         }
 
         @Override
@@ -671,8 +671,8 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdError(final ApsAd apsAd)
         {
             // Catch all error callback, display failure callback. Ex: when a webview crashes, something crashes on the JS side, or the video stops playing midway. Implementation is not complete in the SDK
-            e( "Interstitial display failed" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            // Do not call `onInterstitialAdDisplayFailed()` because `onAdError()` is sometimes fired when ad display is successful.
+            e( "Interstitial ad error" );
         }
 
         @Override
@@ -740,8 +740,8 @@ public class AmazonAdMarketplaceMediationAdapter
         public void onAdError(final ApsAd apsAd)
         {
             // Catch all error callback, display failure callback. Ex: when a webview crashes, something crashes on the JS side, or the video stops playing midway. Implementation is not complete in the SDK
-            e( "Rewarded ad display failed" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            // Do not call `onRewardedAdDisplayFailed()` because `onAdError()` is sometimes fired when ad display is successful.
+            e( "Rewarded ad error" );
         }
 
         @Override
