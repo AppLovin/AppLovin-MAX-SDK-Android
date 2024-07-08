@@ -158,12 +158,6 @@ public class InMobiMediationAdapter
 
             status = InitializationStatus.INITIALIZING;
 
-            if (accountId == null) {
-                status = InitializationStatus.INITIALIZED_FAILURE;
-                onCompletionListener.onCompletion( status, "Adapter received null account id" );
-                return;
-            }
-
             final JSONObject consentObject = getConsentJSONObject( parameters );
 
             if ( accountId == null )
