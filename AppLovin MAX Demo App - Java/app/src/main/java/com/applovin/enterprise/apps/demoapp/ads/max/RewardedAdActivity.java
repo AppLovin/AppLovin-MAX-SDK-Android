@@ -58,6 +58,13 @@ public class RewardedAdActivity
         }
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        rewardedAd.destroy();
+    }
+
     //region MAX Ad Listener
 
     @Override

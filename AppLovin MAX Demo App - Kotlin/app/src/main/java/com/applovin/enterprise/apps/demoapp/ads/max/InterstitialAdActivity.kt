@@ -49,6 +49,11 @@ class InterstitialAdActivity : BaseAdActivity(),
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        interstitialAd.destroy()
+    }
+
     //region MAX Ad Listener
 
     override fun onAdLoaded(ad: MaxAd) {
