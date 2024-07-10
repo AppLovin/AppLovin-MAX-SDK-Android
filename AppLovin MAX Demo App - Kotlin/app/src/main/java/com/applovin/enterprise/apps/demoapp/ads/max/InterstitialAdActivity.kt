@@ -43,15 +43,15 @@ class InterstitialAdActivity : BaseAdActivity(),
         interstitialAd.loadAd()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        interstitialAd.destroy()
+    }
+
     fun showAd(view: View) {
         if (interstitialAd.isReady) {
             interstitialAd.showAd()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        interstitialAd.destroy()
     }
 
     //region MAX Ad Listener

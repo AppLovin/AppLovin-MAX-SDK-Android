@@ -50,19 +50,19 @@ public class RewardedAdActivity
         rewardedAd.loadAd();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        rewardedAd.destroy();
+    }
+
     public void onShowAdClicked(View view)
     {
         if ( rewardedAd.isReady() )
         {
             rewardedAd.showAd();
         }
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        rewardedAd.destroy();
     }
 
     //region MAX Ad Listener
