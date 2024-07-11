@@ -40,6 +40,11 @@ class RewardedAdActivity : BaseAdActivity(),
         rewardedAd.loadAd()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        rewardedAd.destroy()
+    }
+
     fun showAd(view: View) {
         if (rewardedAd.isReady) {
             rewardedAd.showAd()

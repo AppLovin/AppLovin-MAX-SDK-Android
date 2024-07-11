@@ -49,6 +49,13 @@ public class InterstitialAdActivity
         interstitialAd.loadAd();
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        interstitialAd.destroy();
+    }
+
     public void onShowAdClicked(View view)
     {
         if ( interstitialAd.isReady() )
