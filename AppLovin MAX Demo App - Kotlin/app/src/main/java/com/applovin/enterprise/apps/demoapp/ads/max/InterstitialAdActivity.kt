@@ -45,7 +45,9 @@ class InterstitialAdActivity : BaseAdActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-        interstitialAd.destroy()
+
+        interstitialAd.setListener(null)
+        interstitialAd.setRevenueListener(null)
     }
 
     fun showAd(view: View) {

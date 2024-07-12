@@ -54,7 +54,9 @@ public class RewardedAdActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        rewardedAd.destroy();
+
+        rewardedAd.setListener( null );
+        rewardedAd.setRevenueListener( null );
     }
 
     public void onShowAdClicked(View view)
