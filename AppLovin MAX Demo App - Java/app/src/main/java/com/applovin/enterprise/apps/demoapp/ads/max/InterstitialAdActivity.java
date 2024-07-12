@@ -53,7 +53,8 @@ public class InterstitialAdActivity
     protected void onDestroy()
     {
         super.onDestroy();
-        interstitialAd.destroy();
+        interstitialAd.setListener( null );
+        interstitialAd.setRevenueListener( null );
     }
 
     public void onShowAdClicked(View view)

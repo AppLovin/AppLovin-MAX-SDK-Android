@@ -42,7 +42,8 @@ class RewardedAdActivity : BaseAdActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-        rewardedAd.destroy()
+        rewardedAd.setListener(null)
+        rewardedAd.setRevenueListener(null)
     }
 
     fun showAd(view: View) {
