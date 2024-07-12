@@ -53,6 +53,7 @@ public class InterstitialAdActivity
     protected void onDestroy()
     {
         super.onDestroy();
+
         interstitialAd.setListener( null );
         interstitialAd.setRevenueListener( null );
     }
