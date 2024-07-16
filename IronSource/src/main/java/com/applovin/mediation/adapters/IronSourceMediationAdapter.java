@@ -1,8 +1,8 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
+import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
@@ -31,12 +31,33 @@ import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.logger.IronSourceError;
 import com.ironsource.mediationsdk.utils.IronSourceConstants;
 import com.ironsource.mediationsdk.utils.IronSourceUtils;
+import com.unity3d.ironsourceads.AdSize;
+import com.unity3d.ironsourceads.InitListener;
+import com.unity3d.ironsourceads.InitRequest;
+import com.unity3d.ironsourceads.IronSourceAds;
+import com.unity3d.ironsourceads.banner.BannerAdLoader;
+import com.unity3d.ironsourceads.banner.BannerAdLoaderListener;
+import com.unity3d.ironsourceads.banner.BannerAdRequest;
+import com.unity3d.ironsourceads.banner.BannerAdView;
+import com.unity3d.ironsourceads.banner.BannerAdViewListener;
+import com.unity3d.ironsourceads.interstitial.InterstitialAd;
+import com.unity3d.ironsourceads.interstitial.InterstitialAdListener;
+import com.unity3d.ironsourceads.interstitial.InterstitialAdLoader;
+import com.unity3d.ironsourceads.interstitial.InterstitialAdLoaderListener;
+import com.unity3d.ironsourceads.interstitial.InterstitialAdRequest;
+import com.unity3d.ironsourceads.rewarded.RewardedAd;
+import com.unity3d.ironsourceads.rewarded.RewardedAdListener;
+import com.unity3d.ironsourceads.rewarded.RewardedAdLoader;
+import com.unity3d.ironsourceads.rewarded.RewardedAdLoaderListener;
+import com.unity3d.ironsourceads.rewarded.RewardedAdRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class IronSourceMediationAdapter
@@ -52,7 +73,16 @@ public class IronSourceMediationAdapter
     private String                   adViewPlacementIdentifier;
     private ISDemandOnlyBannerLayout adView;
 
+    private BannerAdView   biddingAdView;
+    private InterstitialAd biddingInterstitialAd;
+    private RewardedAd     biddingRewardedAd;
+
+    private BiddingRewardedListener     biddingRewardedListener;
+    private BiddingInterstitialListener biddingInterstitialListener;
+
     public IronSourceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
+
+    //region MaxAdapter Methods
 
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
@@ -87,13 +117,25 @@ public class IronSourceMediationAdapter
             IronSource.setISDemandOnlyInterstitialListener( ROUTER );
             IronSource.setISDemandOnlyRewardedVideoListener( ROUTER );
 
-            // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-            Application application = ( activity != null ) ? activity.getApplication() : (Application) getApplicationContext();
+            InitRequest initRequest = new InitRequest.Builder( appKey ).withLegacyAdFormats( getAdFormatsToInitialize( parameters ) ).build();
 
-            IronSource.initISDemandOnly( application, appKey, getAdFormatsToInitialize( parameters ) );
+            IronSourceAds.init( getApplicationContext(), initRequest, new InitListener()
+            {
+                @Override
+                public void onInitSuccess()
+                {
+                    log( "IronSource SDK initialized." );
+                    onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
+                }
+
+                @Override
+                public void onInitFailed(@NonNull final IronSourceError ironSourceError)
+                {
+                    log( "Failed to initialize IronSource SDK with error: " + ironSourceError );
+                    onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, ironSourceError.getErrorMessage() );
+                }
+            } );
         }
-
-        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
 
     @Override
@@ -107,6 +149,7 @@ public class IronSourceMediationAdapter
     {
         return BuildConfig.VERSION_NAME;
     }
+    //endregion
 
     @Override
     public void onDestroy()
@@ -120,7 +163,32 @@ public class IronSourceMediationAdapter
         }
 
         ROUTER.removeAdapter( this, mRouterPlacementIdentifier );
+
+        if ( biddingAdView != null )
+        {
+            biddingAdView.setListener( null );
+            biddingAdView = null;
+        }
+
+        if ( biddingInterstitialAd != null )
+        {
+            biddingInterstitialAd.setListener( null );
+            biddingInterstitialAd = null;
+        }
+
+        if ( biddingRewardedAd != null )
+        {
+            biddingRewardedAd.setListener( null );
+            biddingRewardedAd = null;
+        }
+
+        biddingInterstitialListener = null;
+        biddingRewardedListener = null;
     }
+
+    //endregion
+
+    //region MaxSignalProvider Methods
 
     @Override
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
@@ -129,9 +197,13 @@ public class IronSourceMediationAdapter
 
         setPrivacySettings( parameters );
 
-        String signal = IronSource.getISDemandOnlyBiddingData( getContext( activity ) );
+        String signal = IronSource.getISDemandOnlyBiddingData( getApplicationContext() );
         callback.onSignalCollected( signal );
     }
+
+    //endregion
+
+    //region MaxInterstitialAdapter Methods
 
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
@@ -144,16 +216,18 @@ public class IronSourceMediationAdapter
 
         log( "Loading ironSource " + ( isBiddingAd ? "bidding " : "" ) + "interstitial for instance ID: " + instanceId );
 
-        // Create a format specific router identifier to ensure that the router can distinguish between them.
-        mRouterPlacementIdentifier = IronSourceRouter.getInterstitialRouterIdentifier( instanceId );
-        ROUTER.addInterstitialAdapter( this, listener, mRouterPlacementIdentifier );
-
         if ( isBiddingAd )
         {
-            IronSource.loadISDemandOnlyInterstitialWithAdm( activity, instanceId, bidResponse );
+            InterstitialAdRequest adRequest = new InterstitialAdRequest.Builder( instanceId, bidResponse ).build();
+            biddingInterstitialListener = new BiddingInterstitialListener( listener );
+            InterstitialAdLoader.loadAd( adRequest, biddingInterstitialListener );
         }
         else
         {
+            // Create a format specific router identifier to ensure that the router can distinguish between them.
+            mRouterPlacementIdentifier = IronSourceRouter.getInterstitialRouterIdentifier( instanceId );
+            ROUTER.addInterstitialAdapter( this, listener, mRouterPlacementIdentifier );
+
             if ( IronSource.isISDemandOnlyInterstitialReady( instanceId ) )
             {
                 log( "Ad is available already for instance ID: " + instanceId );
@@ -169,22 +243,42 @@ public class IronSourceMediationAdapter
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         final String instanceId = parameters.getThirdPartyAdPlacementId();
 
         log( "Showing ironSource interstitial for instance ID: " + instanceId );
 
-        ROUTER.addShowingAdapter( this );
-
-        if ( IronSource.isISDemandOnlyInterstitialReady( instanceId ) )
+        if ( isBiddingAd )
         {
-            IronSource.showISDemandOnlyInterstitial( instanceId );
+            if ( biddingInterstitialAd == null || !biddingInterstitialAd.isReadyToShow() )
+            {
+                log( "Unable to show ironSource interstitial - ad is not ready for instance ID: " + instanceId );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+                return;
+            }
+
+            biddingInterstitialAd.setListener( biddingInterstitialListener );
+            biddingInterstitialAd.show( activity );
         }
         else
         {
-            log( "Unable to show ironSource interstitial - no ad loaded for instance ID: " + instanceId );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            ROUTER.addShowingAdapter( this );
+
+            if ( !IronSource.isISDemandOnlyInterstitialReady( instanceId ) )
+            {
+                log( "Unable to show ironSource interstitial - no ad loaded for instance ID: " + instanceId );
+                ROUTER.onAdDisplayFailed( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+                return;
+            }
+
+            IronSource.showISDemandOnlyInterstitial( instanceId );
         }
     }
+
+    //endregion
+
+    //region MaxRewardedAdapter Methods
 
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
@@ -197,16 +291,20 @@ public class IronSourceMediationAdapter
 
         log( "Loading ironSource " + ( isBiddingAd ? "bidding " : "" ) + "rewarded for instance ID: " + instanceId );
 
-        // Create a format specific router identifier to ensure that the router can distinguish between them.
-        mRouterPlacementIdentifier = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
-        ROUTER.addRewardedAdapter( this, listener, mRouterPlacementIdentifier );
-
         if ( isBiddingAd )
         {
-            IronSource.loadISDemandOnlyRewardedVideoWithAdm( activity, instanceId, bidResponse );
+            RewardedAdRequest adRequest = new RewardedAdRequest.Builder( instanceId, bidResponse ).build();
+
+            biddingRewardedListener = new BiddingRewardedListener( listener );
+
+            RewardedAdLoader.loadAd( adRequest, biddingRewardedListener );
         }
         else
         {
+            // Create a format specific router identifier to ensure that the router can distinguish between them.
+            mRouterPlacementIdentifier = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
+            ROUTER.addRewardedAdapter( this, listener, mRouterPlacementIdentifier );
+
             if ( IronSource.isISDemandOnlyRewardedVideoAvailable( instanceId ) )
             {
                 log( "Ad is available already for instance ID: " + instanceId );
@@ -222,24 +320,48 @@ public class IronSourceMediationAdapter
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
         final String instanceId = parameters.getThirdPartyAdPlacementId();
 
         log( "Showing ironSource rewarded for instance ID: " + instanceId );
 
-        ROUTER.addShowingAdapter( this );
-
-        if ( IronSource.isISDemandOnlyRewardedVideoAvailable( instanceId ) )
+        if ( isBiddingAd )
         {
+            if ( biddingRewardedAd == null || !biddingRewardedAd.isReadyToShow() )
+            {
+                log( "Unable to show ironSource rewarded - ad is not ready for instance ID: " + instanceId );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+                return;
+            }
+
             // Configure userReward from server.
             configureReward( parameters );
-            IronSource.showISDemandOnlyRewardedVideo( instanceId );
+
+            biddingRewardedAd.setListener( biddingRewardedListener );
+            biddingRewardedAd.show( activity );
         }
         else
         {
-            log( "Unable to show ironSource rewarded - no ad loaded..." );
-            ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            ROUTER.addShowingAdapter( this );
+
+            if ( !IronSource.isISDemandOnlyRewardedVideoAvailable( instanceId ) )
+            {
+                log( "Unable to show ironSource rewarded - no ad loaded..." );
+                ROUTER.onAdDisplayFailed( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ), new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+                return;
+            }
+
+            // Configure userReward from server.
+            configureReward( parameters );
+
+            IronSource.showISDemandOnlyRewardedVideo( instanceId );
         }
     }
+
+    //endregion
+
+    //region MaxAdViewAdapter Methods
 
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
@@ -251,29 +373,35 @@ public class IronSourceMediationAdapter
 
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + adFormat.getLabel() + " ad for instance ID: " + parameters.getThirdPartyAdPlacementId() );
 
-        // IronSource does not support b2b with same instance id for banners/MRECs
-        if ( loadedAdViewPlacementIdentifiers.contains( parameters.getThirdPartyAdPlacementId() ) )
-        {
-            log( "AdView ad failed to load for instance ID: " + parameters.getThirdPartyAdPlacementId() + ". An ad with the same instance ID is already loaded" );
-            listener.onAdViewAdLoadFailed( new MaxAdapterError( MaxAdapterError.INTERNAL_ERROR.getCode(), MaxAdapterError.INTERNAL_ERROR.getMessage(), 0, "An ad with the same instance ID is already loaded" ) );
-
-            return;
-        }
-
-        adViewPlacementIdentifier = parameters.getThirdPartyAdPlacementId(); // Set it only if it is not an instance id of an already loaded ad to avoid destroying the currently showing ad
-
-        adView = IronSource.createBannerForDemandOnly( activity, toISBannerSize( adFormat ) );
-        adView.setBannerDemandOnlyListener( new AdViewListener( listener ) );
+        adViewPlacementIdentifier = parameters.getThirdPartyAdPlacementId(); // Set it only if it is not an instance ID of an already loaded ad to avoid destroying the currently showing ad
 
         if ( isBiddingAd )
         {
-            IronSource.loadISDemandOnlyBannerWithAdm( activity, adView, adViewPlacementIdentifier, bidResponse );
+            AdSize adSize = toISAdSize( adFormat );
+            BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder( activity, adViewPlacementIdentifier, bidResponse, adSize ).build();
+            BannerAdLoader.loadAd( bannerAdRequest, new BiddingAdViewListener( listener ) );
         }
         else
         {
+            // IronSource does not support b2b with same instance ID for banners/MRECs
+            if ( loadedAdViewPlacementIdentifiers.contains( parameters.getThirdPartyAdPlacementId() ) )
+            {
+                log( "AdView ad failed to load for instance ID: " + parameters.getThirdPartyAdPlacementId() + ". An ad with the same instance ID is already loaded" );
+                listener.onAdViewAdLoadFailed( new MaxAdapterError( MaxAdapterError.INTERNAL_ERROR.getCode(), MaxAdapterError.INTERNAL_ERROR.getMessage(), 0, "An ad with the same instance ID is already loaded" ) );
+
+                return;
+            }
+
+            adView = IronSource.createBannerForDemandOnly( activity, toISBannerSize( adFormat ) );
+            adView.setBannerDemandOnlyListener( new AdViewListener( listener ) );
+
             IronSource.loadISDemandOnlyBanner( activity, adView, adViewPlacementIdentifier );
         }
     }
+
+    //endregion
+
+    //region Helper Methods
 
     private void setPrivacySettings(final MaxAdapterParameters parameters)
     {
@@ -284,32 +412,32 @@ public class IronSourceMediationAdapter
         }
     }
 
-    private IronSource.AD_UNIT[] getAdFormatsToInitialize(final MaxAdapterInitializationParameters parameters)
+    private List<IronSourceAds.AdFormat> getAdFormatsToInitialize(final MaxAdapterInitializationParameters parameters)
     {
         List<String> adFormats = parameters.getServerParameters().getStringArrayList( "init_ad_formats" );
         if ( adFormats == null || adFormats.isEmpty() )
         {
             // Default to initialize all ad formats if backend doesn't send down which ones to initialize
-            return new IronSource.AD_UNIT[] { IronSource.AD_UNIT.INTERSTITIAL, IronSource.AD_UNIT.REWARDED_VIDEO, IronSource.AD_UNIT.BANNER };
+            return Arrays.asList( IronSourceAds.AdFormat.INTERSTITIAL, IronSourceAds.AdFormat.REWARDED, IronSourceAds.AdFormat.BANNER );
         }
 
-        List<IronSource.AD_UNIT> adFormatsToInitialize = new ArrayList<>();
+        List<IronSourceAds.AdFormat> adFormatsToInitialize = new ArrayList<>();
         if ( adFormats.contains( "inter" ) )
         {
-            adFormatsToInitialize.add( IronSource.AD_UNIT.INTERSTITIAL );
+            adFormatsToInitialize.add( IronSourceAds.AdFormat.INTERSTITIAL );
         }
 
         if ( adFormats.contains( "rewarded" ) )
         {
-            adFormatsToInitialize.add( IronSource.AD_UNIT.REWARDED_VIDEO );
+            adFormatsToInitialize.add( IronSourceAds.AdFormat.REWARDED );
         }
 
         if ( adFormats.contains( "banner" ) )
         {
-            adFormatsToInitialize.add( IronSource.AD_UNIT.BANNER );
+            adFormatsToInitialize.add( IronSourceAds.AdFormat.BANNER );
         }
 
-        return adFormatsToInitialize.toArray( new IronSource.AD_UNIT[adFormatsToInitialize.size()] );
+        return adFormatsToInitialize;
     }
 
     private ISBannerSize toISBannerSize(final MaxAdFormat adFormat)
@@ -332,11 +460,161 @@ public class IronSourceMediationAdapter
         }
     }
 
-    private Context getContext(Activity activity)
+    private AdSize toISAdSize(final MaxAdFormat adFormat)
     {
-        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
-        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return AdSize.banner();
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return AdSize.leaderboard();
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return AdSize.mediumRectangle();
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+        }
     }
+
+    private static MaxAdapterError toMaxError(final IronSourceError ironSourceError)
+    {
+        final int ironSourceErrorCode = ironSourceError.getErrorCode();
+        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+        switch ( ironSourceErrorCode )
+        {
+            case IronSourceError.ERROR_CODE_DECRYPT_FAILED:
+            case IronSourceError.ERROR_NON_EXISTENT_INSTANCE:
+            case IronSourceError.ERROR_BN_LOAD_EXCEPTION:
+            case IronSourceError.ERROR_BN_INSTANCE_LOAD_EMPTY_BANNER:
+            case IronSourceError.ERROR_BN_INSTANCE_LOAD_EMPTY_ADAPTER:
+            case IronSourceError.ERROR_BN_RELOAD_SKIP_INVISIBLE:
+            case IronSourceError.ERROR_BN_RELOAD_SKIP_BACKGROUND:
+            case IronSourceError.AUCTION_ERROR_REQUEST:
+            case IronSourceError.AUCTION_ERROR_RESPONSE_CODE_NOT_VALID:
+            case IronSourceError.AUCTION_ERROR_PARSE:
+            case IronSourceError.AUCTION_ERROR_DECRYPTION:
+            case IronSourceError.AUCTION_ERROR_EMPTY_WATERFALL:
+            case IronSourceError.AUCTION_ERROR_NO_CANDIDATES:
+            case IronSourceError.AUCTION_REQUEST_ERROR_MISSING_PARAMS:
+            case IronSourceError.AUCTION_ERROR_DECOMPRESSION:
+            case IronSourceError.ERROR_RV_LOAD_SUCCESS_UNEXPECTED:
+            case IronSourceError.ERROR_RV_LOAD_FAIL_UNEXPECTED:
+            case IronSourceError.ERROR_RV_LOAD_UNEXPECTED_CALLBACK:
+            case IronSourceError.ERROR_RV_SHOW_EXCEPTION:
+            case IronSourceError.ERROR_IS_SHOW_EXCEPTION:
+            case IronSourceError.ERROR_RV_INSTANCE_INIT_EXCEPTION:
+            case IronSourceError.ERROR_IS_INSTANCE_INIT_EXCEPTION:
+            case IronSourceError.ERROR_DO_RV_LOAD_MISSING_ACTIVITY:
+            case IronSourceError.ERROR_DO_IS_LOAD_MISSING_ACTIVITY:
+            case 7101:
+            case 7102:
+            case 7103:
+            case 7104:
+            case 7201:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case IronSourceError.ERROR_CODE_NO_CONFIGURATION_AVAILABLE:
+            case IronSourceError.ERROR_CODE_USING_CACHED_CONFIGURATION:
+            case IronSourceError.ERROR_CODE_KEY_NOT_SET:
+            case IronSourceError.ERROR_CODE_INVALID_KEY_VALUE:
+            case IronSourceError.ERROR_BN_LOAD_NO_CONFIG:
+            case IronSourceError.ERROR_BN_UNSUPPORTED_SIZE:
+            case IronSourceError.ERROR_IS_EMPTY_DEFAULT_PLACEMENT:
+            case IronSourceError.ERROR_RV_EMPTY_DEFAULT_PLACEMENT:
+            case IronSourceError.ERROR_RV_LOAD_SUCCESS_WRONG_AUCTION_ID:
+            case IronSourceError.ERROR_RV_LOAD_FAIL_WRONG_AUCTION_ID:
+            case 7105:
+            case 7106:
+            case 7107:
+            case 7108:
+            case 7109:
+            case 7110:
+            case 7111:
+            case 7112:
+            case 7116:
+            case 7117:
+            case 7118:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case IronSourceError.ERROR_CODE_INIT_FAILED:
+            case IronSourceError.ERROR_BN_LOAD_AFTER_INIT_FAILED:
+            case IronSourceError.ERROR_BN_LOAD_AFTER_LONG_INITIATION:
+            case IronSourceError.ERROR_BN_INIT_FAILED_AFTER_LOAD:
+            case IronSourceError.ERROR_BN_LOAD_WHILE_LONG_INITIATION:
+            case IronSourceError.ERROR_BN_INSTANCE_INIT_TIMEOUT:
+            case IronSourceError.ERROR_BN_INSTANCE_INIT_EXCEPTION:
+            case IronSourceError.INIT_ERROR_NO_ADAPTERS_LOADED:
+            case 7001:
+            case 7002:
+            case 7003:
+            case 7004:
+            case 7115:
+                adapterError = MaxAdapterError.NOT_INITIALIZED;
+                break;
+            case IronSourceError.ERROR_CODE_NO_ADS_TO_SHOW:
+            case IronSourceError.ERROR_BN_LOAD_NO_FILL:
+            case IronSourceError.ERROR_RV_LOAD_FAILED_NO_CANDIDATES:
+            case IronSourceError.ERROR_IS_LOAD_FAILED_NO_CANDIDATES:
+            case IronSourceError.ERROR_RV_LOAD_NO_FILL:
+            case IronSourceError.ERROR_IS_LOAD_NO_FILL:
+            case IronSourceError.ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED:
+            case IronSourceConstants.BN_INSTANCE_LOAD_NO_FILL:
+                adapterError = MaxAdapterError.NO_FILL;
+                break;
+            case IronSourceError.ERROR_CODE_GENERIC:
+                adapterError = MaxAdapterError.UNSPECIFIED;
+                break;
+            case IronSourceError.ERROR_NO_INTERNET_CONNECTION:
+                adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case IronSourceError.ERROR_REACHED_CAP_LIMIT_PER_PLACEMENT:
+            case IronSourceError.ERROR_CAPPED_PER_SESSION:
+            case IronSourceError.ERROR_BN_LOAD_PLACEMENT_CAPPED:
+                adapterError = MaxAdapterError.AD_FREQUENCY_CAPPED;
+                break;
+            case IronSourceError.ERROR_BN_INSTANCE_LOAD_TIMEOUT:
+            case IronSourceError.ERROR_BN_INSTANCE_RELOAD_TIMEOUT:
+            case IronSourceError.ERROR_RV_INIT_FAILED_TIMEOUT:
+            case IronSourceError.ERROR_RV_LOAD_FAIL_DUE_TO_INIT:
+            case IronSourceError.ERROR_DO_IS_LOAD_TIMED_OUT:
+            case IronSourceError.ERROR_DO_RV_LOAD_TIMED_OUT:
+            case 7113:
+                adapterError = MaxAdapterError.TIMEOUT;
+                break;
+            case IronSourceError.AUCTION_ERROR_TIMED_OUT:
+                adapterError = MaxAdapterError.SIGNAL_COLLECTION_TIMEOUT;
+                break;
+            case IronSourceError.ERROR_RV_SHOW_CALLED_DURING_SHOW:
+            case IronSourceError.ERROR_RV_SHOW_CALLED_WRONG_STATE:
+            case IronSourceError.ERROR_RV_LOAD_DURING_LOAD:
+            case IronSourceError.ERROR_RV_LOAD_DURING_SHOW:
+            case IronSourceError.ERROR_IS_SHOW_CALLED_DURING_SHOW:
+            case IronSourceError.ERROR_IS_LOAD_DURING_SHOW:
+            case IronSourceError.ERROR_DO_IS_LOAD_ALREADY_IN_PROGRESS:
+            case IronSourceError.ERROR_DO_RV_LOAD_ALREADY_IN_PROGRESS:
+            case IronSourceError.ERROR_DO_RV_LOAD_DURING_SHOW:
+                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            case IronSourceError.ERROR_DO_IS_CALL_LOAD_BEFORE_SHOW:
+            case IronSourceError.ERROR_DO_RV_CALL_LOAD_BEFORE_SHOW:
+            case 7202:
+                adapterError = MaxAdapterError.AD_NOT_READY;
+                break;
+            case IronSourceError.ERROR_RV_EXPIRED_ADS:
+                adapterError = MaxAdapterError.AD_EXPIRED;
+                break;
+        }
+
+        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), ironSourceErrorCode, ironSourceError.getErrorMessage() );
+    }
+
+    //endregion
+
+    //region IronSource Router
 
     private static class IronSourceRouter
             extends MediationAdapterRouter
@@ -368,13 +646,6 @@ public class IronSourceMediationAdapter
         }
 
         @Override
-        public void onInterstitialAdClosed(final String instanceId)
-        {
-            log( "Interstitial ad closed for instance ID: " + instanceId );
-            onAdHidden( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ) );
-        }
-
-        @Override
         public void onInterstitialAdShowFailed(final String instanceId, final IronSourceError ironSourceError)
         {
             MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", ironSourceError.getErrorCode(), ironSourceError.getErrorMessage() );
@@ -390,31 +661,10 @@ public class IronSourceMediationAdapter
         }
 
         @Override
-        public void onRewardedVideoAdOpened(final String instanceId)
+        public void onInterstitialAdClosed(final String instanceId)
         {
-            log( "Rewarded ad shown for instance ID: " + instanceId );
-
-            final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
-            onAdDisplayed( routerPlacementId );
-        }
-
-        @Override
-        public void onRewardedVideoAdClosed(final String instanceId)
-        {
-            final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
-            if ( hasGrantedReward || shouldAlwaysRewardUser( routerPlacementId ) )
-            {
-                MaxReward reward = getReward( routerPlacementId );
-
-                log( "Rewarded  ad rewarded user with reward: " + reward + " for instance ID: " + instanceId );
-                onUserRewarded( routerPlacementId, reward );
-
-                // clear hasGrantedReward
-                hasGrantedReward = false;
-            }
-
-            log( "Rewarded ad hidden for instance ID: " + instanceId );
-            onAdHidden( routerPlacementId );
+            log( "Interstitial ad closed for instance ID: " + instanceId );
+            onAdHidden( IronSourceRouter.getInterstitialRouterIdentifier( instanceId ) );
         }
 
         @Override
@@ -432,11 +682,12 @@ public class IronSourceMediationAdapter
         }
 
         @Override
-        public void onRewardedVideoAdRewarded(final String instanceId)
+        public void onRewardedVideoAdOpened(final String instanceId)
         {
-            log( "Rewarded ad granted reward for instance ID: " + instanceId );
+            log( "Rewarded ad shown for instance ID: " + instanceId );
 
-            hasGrantedReward = true;
+            final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
+            onAdDisplayed( routerPlacementId );
         }
 
         @Override
@@ -454,125 +705,44 @@ public class IronSourceMediationAdapter
             onAdClicked( IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId ) );
         }
 
-        private static MaxAdapterError toMaxError(final IronSourceError ironSourceError)
+        @Override
+        public void onRewardedVideoAdClosed(final String instanceId)
         {
-            final int ironSourceErrorCode = ironSourceError.getErrorCode();
-            MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-            switch ( ironSourceErrorCode )
+            final String routerPlacementId = IronSourceRouter.getRewardedVideoRouterIdentifier( instanceId );
+            if ( hasGrantedReward || shouldAlwaysRewardUser( routerPlacementId ) )
             {
-                case IronSourceError.ERROR_CODE_DECRYPT_FAILED:
-                case IronSourceError.ERROR_NON_EXISTENT_INSTANCE:
-                case IronSourceError.ERROR_BN_LOAD_EXCEPTION:
-                case IronSourceError.ERROR_BN_INSTANCE_LOAD_EMPTY_BANNER:
-                case IronSourceError.ERROR_BN_INSTANCE_LOAD_EMPTY_ADAPTER:
-                case IronSourceError.ERROR_BN_RELOAD_SKIP_INVISIBLE:
-                case IronSourceError.ERROR_BN_RELOAD_SKIP_BACKGROUND:
-                case IronSourceError.AUCTION_ERROR_REQUEST:
-                case IronSourceError.AUCTION_ERROR_RESPONSE_CODE_NOT_VALID:
-                case IronSourceError.AUCTION_ERROR_PARSE:
-                case IronSourceError.AUCTION_ERROR_DECRYPTION:
-                case IronSourceError.AUCTION_ERROR_EMPTY_WATERFALL:
-                case IronSourceError.AUCTION_ERROR_NO_CANDIDATES:
-                case IronSourceError.AUCTION_REQUEST_ERROR_MISSING_PARAMS:
-                case IronSourceError.AUCTION_ERROR_DECOMPRESSION:
-                case IronSourceError.ERROR_RV_LOAD_SUCCESS_UNEXPECTED:
-                case IronSourceError.ERROR_RV_LOAD_FAIL_UNEXPECTED:
-                case IronSourceError.ERROR_RV_LOAD_UNEXPECTED_CALLBACK:
-                case IronSourceError.ERROR_RV_SHOW_EXCEPTION:
-                case IronSourceError.ERROR_IS_SHOW_EXCEPTION:
-                case IronSourceError.ERROR_RV_INSTANCE_INIT_EXCEPTION:
-                case IronSourceError.ERROR_IS_INSTANCE_INIT_EXCEPTION:
-                case IronSourceError.ERROR_DO_RV_LOAD_MISSING_ACTIVITY:
-                case IronSourceError.ERROR_DO_IS_LOAD_MISSING_ACTIVITY:
-                    adapterError = MaxAdapterError.INTERNAL_ERROR;
-                    break;
-                case IronSourceError.ERROR_CODE_NO_CONFIGURATION_AVAILABLE:
-                case IronSourceError.ERROR_CODE_USING_CACHED_CONFIGURATION:
-                case IronSourceError.ERROR_CODE_KEY_NOT_SET:
-                case IronSourceError.ERROR_CODE_INVALID_KEY_VALUE:
-                case IronSourceError.ERROR_BN_LOAD_NO_CONFIG:
-                case IronSourceError.ERROR_BN_UNSUPPORTED_SIZE:
-                case IronSourceError.ERROR_IS_EMPTY_DEFAULT_PLACEMENT:
-                case IronSourceError.ERROR_RV_EMPTY_DEFAULT_PLACEMENT:
-                case IronSourceError.ERROR_RV_LOAD_SUCCESS_WRONG_AUCTION_ID:
-                case IronSourceError.ERROR_RV_LOAD_FAIL_WRONG_AUCTION_ID:
-                    adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                    break;
-                case IronSourceError.ERROR_CODE_INIT_FAILED:
-                case IronSourceError.ERROR_BN_LOAD_AFTER_INIT_FAILED:
-                case IronSourceError.ERROR_BN_LOAD_AFTER_LONG_INITIATION:
-                case IronSourceError.ERROR_BN_INIT_FAILED_AFTER_LOAD:
-                case IronSourceError.ERROR_BN_LOAD_WHILE_LONG_INITIATION:
-                case IronSourceError.ERROR_BN_INSTANCE_INIT_TIMEOUT:
-                case IronSourceError.ERROR_BN_INSTANCE_INIT_EXCEPTION:
-                case IronSourceError.INIT_ERROR_NO_ADAPTERS_LOADED:
-                    adapterError = MaxAdapterError.NOT_INITIALIZED;
-                    break;
-                case IronSourceError.ERROR_CODE_NO_ADS_TO_SHOW:
-                case IronSourceError.ERROR_BN_LOAD_NO_FILL:
-                case IronSourceError.ERROR_RV_LOAD_FAILED_NO_CANDIDATES:
-                case IronSourceError.ERROR_IS_LOAD_FAILED_NO_CANDIDATES:
-                case IronSourceError.ERROR_RV_LOAD_NO_FILL:
-                case IronSourceError.ERROR_IS_LOAD_NO_FILL:
-                case IronSourceError.ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED:
-                case IronSourceConstants.BN_INSTANCE_LOAD_NO_FILL:
-                    adapterError = MaxAdapterError.NO_FILL;
-                    break;
-                case IronSourceError.ERROR_CODE_GENERIC:
-                    adapterError = MaxAdapterError.UNSPECIFIED;
-                    break;
-                case IronSourceError.ERROR_NO_INTERNET_CONNECTION:
-                    adapterError = MaxAdapterError.NO_CONNECTION;
-                    break;
-                case IronSourceError.ERROR_REACHED_CAP_LIMIT_PER_PLACEMENT:
-                case IronSourceError.ERROR_CAPPED_PER_SESSION:
-                case IronSourceError.ERROR_BN_LOAD_PLACEMENT_CAPPED:
-                    adapterError = MaxAdapterError.AD_FREQUENCY_CAPPED;
-                    break;
-                case IronSourceError.ERROR_BN_INSTANCE_LOAD_TIMEOUT:
-                case IronSourceError.ERROR_BN_INSTANCE_RELOAD_TIMEOUT:
-                case IronSourceError.ERROR_RV_INIT_FAILED_TIMEOUT:
-                case IronSourceError.ERROR_RV_LOAD_FAIL_DUE_TO_INIT:
-                case IronSourceError.ERROR_DO_IS_LOAD_TIMED_OUT:
-                case IronSourceError.ERROR_DO_RV_LOAD_TIMED_OUT:
-                    adapterError = MaxAdapterError.TIMEOUT;
-                    break;
-                case IronSourceError.AUCTION_ERROR_TIMED_OUT:
-                    adapterError = MaxAdapterError.SIGNAL_COLLECTION_TIMEOUT;
-                    break;
-                case IronSourceError.ERROR_RV_SHOW_CALLED_DURING_SHOW:
-                case IronSourceError.ERROR_RV_SHOW_CALLED_WRONG_STATE:
-                case IronSourceError.ERROR_RV_LOAD_DURING_LOAD:
-                case IronSourceError.ERROR_RV_LOAD_DURING_SHOW:
-                case IronSourceError.ERROR_IS_SHOW_CALLED_DURING_SHOW:
-                case IronSourceError.ERROR_IS_LOAD_DURING_SHOW:
-                case IronSourceError.ERROR_DO_IS_LOAD_ALREADY_IN_PROGRESS:
-                case IronSourceError.ERROR_DO_RV_LOAD_ALREADY_IN_PROGRESS:
-                case IronSourceError.ERROR_DO_RV_LOAD_DURING_SHOW:
-                    adapterError = MaxAdapterError.INVALID_LOAD_STATE;
-                    break;
-                case IronSourceError.ERROR_DO_IS_CALL_LOAD_BEFORE_SHOW:
-                case IronSourceError.ERROR_DO_RV_CALL_LOAD_BEFORE_SHOW:
-                    adapterError = MaxAdapterError.AD_NOT_READY;
-                    break;
-                case IronSourceError.ERROR_RV_EXPIRED_ADS:
-                    adapterError = MaxAdapterError.AD_EXPIRED;
-                    break;
+                MaxReward reward = getReward( routerPlacementId );
+
+                log( "Rewarded  ad rewarded user with reward: " + reward + " for instance ID: " + instanceId );
+                onUserRewarded( routerPlacementId, reward );
             }
 
-            return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), ironSourceErrorCode, ironSourceError.getErrorMessage() );
+            log( "Rewarded ad hidden for instance ID: " + instanceId );
+            onAdHidden( routerPlacementId );
+        }
+
+        @Override
+        public void onRewardedVideoAdRewarded(final String instanceId)
+        {
+            log( "Rewarded ad granted reward for instance ID: " + instanceId );
+
+            hasGrantedReward = true;
         }
 
         private static String getInterstitialRouterIdentifier(final String instanceId)
         {
-            return instanceId + "-" + IronSource.AD_UNIT.INTERSTITIAL.toString();
+            return instanceId + "-" + IronSource.AD_UNIT.INTERSTITIAL;
         }
 
         private static String getRewardedVideoRouterIdentifier(final String instanceId)
         {
-            return instanceId + "-" + IronSource.AD_UNIT.REWARDED_VIDEO.toString();
+            return instanceId + "-" + IronSource.AD_UNIT.REWARDED_VIDEO;
         }
     }
+
+    //endregion
+
+    //region AdView Listener
 
     private class AdViewListener
             implements ISDemandOnlyBannerListener
@@ -594,9 +764,16 @@ public class IronSourceMediationAdapter
         @Override
         public void onBannerAdLoadFailed(String instanceId, IronSourceError ironSourceError)
         {
-            MaxAdapterError adapterError = IronSourceRouter.toMaxError( ironSourceError );
+            MaxAdapterError adapterError = toMaxError( ironSourceError );
             log( "AdView ad failed to load for instance ID: " + instanceId + " with error: " + adapterError );
             listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onBannerAdClicked(String instanceId)
+        {
+            log( "AdView ad clicked for instance ID: " + instanceId );
+            listener.onAdViewAdClicked();
         }
 
         @Override
@@ -609,16 +786,242 @@ public class IronSourceMediationAdapter
         }
 
         @Override
-        public void onBannerAdClicked(String instanceId)
-        {
-            log( "AdView ad clicked for instance ID: " + instanceId );
-            listener.onAdViewAdClicked();
-        }
-
-        @Override
         public void onBannerAdLeftApplication(String instanceId)
         {
             log( "AdView ad left application for instance ID: " + instanceId );
         }
     }
+
+    //endregion
+
+    //region Bidding Interstitial Ad Listener
+
+    private class BiddingInterstitialListener
+            implements InterstitialAdLoaderListener, InterstitialAdListener
+    {
+        private final MaxInterstitialAdapterListener listener;
+
+        BiddingInterstitialListener(final MaxInterstitialAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onInterstitialAdLoaded(@NonNull final InterstitialAd ad)
+        {
+            log( "Interstitial loaded for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+
+            biddingInterstitialAd = ad;
+
+            listener.onInterstitialAdLoaded( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onInterstitialAdLoadFailed(@NonNull final IronSourceError ironSourceError)
+        {
+            log( "Interstitial ad failed to load for bidding instance with error: " + ironSourceError );
+            listener.onInterstitialAdLoadFailed( toMaxError( ironSourceError ) );
+        }
+
+        @Override
+        public void onInterstitialAdShown(@NonNull final InterstitialAd ad)
+        {
+            log( "Interstitial ad displayed for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onInterstitialAdDisplayed( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onInterstitialAdFailedToShow(@NonNull final InterstitialAd ad, @NonNull final IronSourceError ironSourceError)
+        {
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", ironSourceError.getErrorCode(), ironSourceError.getErrorMessage() );
+            log( "Interstitial ad failed to show for bidding instance ID: " + ad.getAdInfo().getInstanceId() + " with error: " + adapterError );
+            listener.onInterstitialAdDisplayFailed( adapterError, createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onInterstitialAdClicked(@NonNull final InterstitialAd ad)
+        {
+            log( "Interstitial ad clicked for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onInterstitialAdClicked( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onInterstitialAdDismissed(@NonNull final InterstitialAd ad)
+        {
+            log( "Interstitial ad closed for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onInterstitialAdHidden( createExtraInfo( ad ) );
+        }
+
+        @Nullable
+        private Bundle createExtraInfo(@NonNull final InterstitialAd ad)
+        {
+            String adId = ad.getAdInfo().getAdId();
+
+            if ( TextUtils.isEmpty( adId ) )
+            {
+                return null;
+            }
+
+            Bundle extraInfo = new Bundle( 1 );
+            extraInfo.putString( "creative_id", adId );
+            return extraInfo;
+        }
+    }
+
+    //endregion
+
+    //region Bidding Rewarded Ad Listener
+
+    private class BiddingRewardedListener
+            implements RewardedAdLoaderListener, RewardedAdListener
+    {
+        private final MaxRewardedAdapterListener listener;
+        private       boolean                    hasGrantedReward;
+
+        BiddingRewardedListener(final MaxRewardedAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onRewardedAdLoaded(@NonNull final RewardedAd ad)
+        {
+            log( "Rewarded ad loaded for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+
+            biddingRewardedAd = ad;
+
+            listener.onRewardedAdLoaded( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onRewardedAdLoadFailed(@NonNull final IronSourceError ironSourceError)
+        {
+            log( "Rewarded ad failed to load for bidding instance with error: " + ironSourceError );
+            listener.onRewardedAdLoadFailed( toMaxError( ironSourceError ) );
+        }
+
+        @Override
+        public void onRewardedAdShown(@NonNull final RewardedAd ad)
+        {
+            log( "Rewarded ad shown for bidding instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onRewardedAdDisplayed( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onRewardedAdFailedToShow(@NonNull final RewardedAd ad, @NonNull final IronSourceError ironSourceError)
+        {
+            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", ironSourceError.getErrorCode(), ironSourceError.getErrorMessage() );
+            log( "Rewarded ad failed to show for bidding instance ID: " + ad.getAdInfo().getInstanceId() + " with error: " + adapterError );
+            listener.onRewardedAdDisplayFailed( adapterError, createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onRewardedAdClicked(@NonNull final RewardedAd ad)
+        {
+            log( "Rewarded ad clicked for instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onRewardedAdClicked( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onRewardedAdDismissed(@NonNull final RewardedAd ad)
+        {
+            if ( hasGrantedReward || shouldAlwaysRewardUser() )
+            {
+                MaxReward reward = getReward();
+
+                log( "Rewarded ad rewarded user with reward: " + reward + " for instance ID: " + ad.getAdInfo().getInstanceId() );
+                listener.onUserRewarded( reward );
+            }
+
+            log( "Rewarded ad hidden for instance ID: " + ad.getAdInfo().getInstanceId() );
+            listener.onRewardedAdHidden( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onUserEarnedReward(@NonNull final RewardedAd ad)
+        {
+            log( "Rewarded ad granted reward for instance ID: " + ad.getAdInfo().getInstanceId() );
+            hasGrantedReward = true;
+        }
+
+        @Nullable
+        private Bundle createExtraInfo(@NonNull final RewardedAd ad)
+        {
+            String adId = ad.getAdInfo().getAdId();
+
+            if ( TextUtils.isEmpty( adId ) )
+            {
+                return null;
+            }
+
+            Bundle extraInfo = new Bundle( 1 );
+            extraInfo.putString( "creative_id", adId );
+            return extraInfo;
+        }
+    }
+
+    //endregion
+
+    //region Bidding AdView Ad Listener
+
+    private class BiddingAdViewListener
+            implements BannerAdLoaderListener, BannerAdViewListener
+    {
+        private final MaxAdViewAdapterListener listener;
+
+        BiddingAdViewListener(final MaxAdViewAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBannerAdLoaded(@NonNull final BannerAdView ad)
+        {
+            log( "AdView loaded for instance ID: " + ad.getAdInfo().getInstanceId() );
+
+            biddingAdView = ad;
+            biddingAdView.setListener( this );
+
+            listener.onAdViewAdLoaded( biddingAdView, createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onBannerAdLoadFailed(@NonNull final IronSourceError ironSourceError)
+        {
+            MaxAdapterError adapterError = toMaxError( ironSourceError );
+            log( "AdView ad failed to load for bidding instance with error: " + adapterError );
+            listener.onAdViewAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onBannerAdClicked(@NonNull final BannerAdView ad)
+        {
+            log( "AdView ad clicked" );
+            listener.onAdViewAdClicked( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onBannerAdShown(@NonNull final BannerAdView ad)
+        {
+            log( "AdView ad displayed" );
+            listener.onAdViewAdDisplayed( createExtraInfo( ad ) );
+        }
+
+        @Nullable
+        private Bundle createExtraInfo(@NonNull final BannerAdView ad)
+        {
+            String adId = ad.getAdInfo().getAdId();
+
+            if ( TextUtils.isEmpty( adId ) )
+            {
+                return null;
+            }
+
+            Bundle extraInfo = new Bundle( 1 );
+            extraInfo.putString( "creative_id", adId );
+            return extraInfo;
+        }
+    }
+
+    //endregion
 }

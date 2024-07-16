@@ -1,11 +1,15 @@
 # Changelog
 
+## 8.1.0.0.1
+* Add support for bidding.
+
 ## 8.1.0.0.0
 * Certified with IronSource SDK 8.1.0.
 
 ## 8.0.0.0.0
 * Certified with IronSource SDK 8.0.0.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
+* Requires minimum Android API level be 19 or higher.
 
 ## 7.9.0.0.0
 * Certified with IronSource SDK 7.9.0.
