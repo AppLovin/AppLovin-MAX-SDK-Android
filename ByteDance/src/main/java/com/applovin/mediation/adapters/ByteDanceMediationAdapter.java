@@ -275,16 +275,8 @@ public class ByteDanceMediationAdapter
             @Override
             public void onBiddingTokenCollected(final String biddingToken)
             {
-                if ( AppLovinSdkUtils.isValidString( biddingToken ) )
-                {
-                    log( "Signal collection successful" );
-                    callback.onSignalCollected( biddingToken );
-                }
-                else
-                {
-                    log( "Failed to collect signal" );
-                    callback.onSignalCollectionFailed( null );
-                }
+                log( "Signal collection successful" );
+                callback.onSignalCollected( biddingToken );
             }
         } );
     }
