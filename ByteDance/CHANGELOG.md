@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.1.0.5.0
+* Certified with ByteDance SDK 6.1.0.5.
+
 ## 6.0.0.5.0
 * Certified with ByteDance SDK 6.0.0.5.
 * Remove String validation for signal.
