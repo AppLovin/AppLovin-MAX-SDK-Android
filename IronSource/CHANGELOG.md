@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.1.0.0
+* Certified with IronSource SDK 8.2.1.
+
 ## 8.1.0.0.1
 * Add support for bidding.
 
