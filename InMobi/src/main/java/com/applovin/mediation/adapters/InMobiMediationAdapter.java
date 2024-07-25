@@ -81,7 +81,7 @@ public class InMobiMediationAdapter
 
     private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 5;
 
-    private static final AtomicBoolean        INITIALIZED = new AtomicBoolean();
+    private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
 
     private InMobiBanner       adView;
@@ -148,7 +148,7 @@ public class InMobiMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( INITIALIZED.compareAndSet( false, true ) )
+        if ( initialized.compareAndSet( false, true ) )
         {
             final String accountId = parameters.getServerParameters().getString( "account_id" );
             log( "Initializing InMobi SDK with account id: " + accountId + "..." );
