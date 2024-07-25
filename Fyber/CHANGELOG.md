@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.0.0
+* Certified with Fyber SDK 8.3.0.
+* Remove String validation for signal.
+
 ## 8.2.7.1
 * Fix `Unsupported class file major version 65` build error when using JDK < 21.
 
@@ -92,7 +96,7 @@
 * Update mute APIs to use `InneractiveAdManager.setMuteVideo(...)`.
 
 ## 7.8.4.2
-* Send MAX SDK version instead of adapter version. 
+* Send MAX SDK version instead of adapter version.
 
 ## 7.8.4.1
 * Fix potential memory leak by cleaning up ad view ad object.

@@ -150,15 +150,7 @@ public class InneractiveMediationAdapter
         updateUserInfo( parameters );
 
         String signal = BidTokenProvider.getBidderToken();
-        if ( signal != null )
-        {
-            callback.onSignalCollected( signal );
-        }
-        else
-        {
-            log( "Failed to collect signal" );
-            callback.onSignalCollectionFailed( null );
-        }
+        callback.onSignalCollected( signal );
     }
 
     @Override
