@@ -5,8 +5,8 @@ plugins {
     id("maven-publish")
 }
 
-private val versionMajor = 2
-private val versionMinor = 7
+private val versionMajor = 3
+private val versionMinor = 0
 private val versionPatch = 0
 private val versionAdapterPatch = 0
 
@@ -17,6 +17,7 @@ val libraryArtifactId by extra("bidmachine-adapter")
 val libraryGroupId by extra("com.applovin.mediation")
 
 android.namespace = "com.applovin.mediation.adapters.bidmachine"
+android.defaultConfig.minSdk = 21
 android.defaultConfig.versionCode = libraryVersionCode
 android.defaultConfig.versionName = libraryVersionName
 
