@@ -424,18 +424,18 @@ public class VungleMediationAdapter
             } catch (Exception ignored) {
             }
         }
-        int customWidth = -1;
-        Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
-        if (widthObj instanceof Integer) {
-            customWidth = (int) widthObj;
-        }
-        int customHeight = -1;
-        Object heightObj = localExtraParameters.get( "adaptive_banner_height" );
-        if (heightObj instanceof Integer) {
-            customHeight = (int) heightObj;
-        }
-        if ( !isAdaptiveBanner && customWidth != -1 && customHeight != -1 ) {
-            // Custom ad size
+        if ( isAdaptiveBanner ) {
+            int customWidth = 0;
+            Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
+            if (widthObj instanceof Integer) {
+                customWidth = (int) widthObj;
+            }
+            // Need to check `customHeight` to determine if the request is for Custom or Adaptive.
+            int customHeight = 0;
+            Object heightObj = localExtraParameters.get( "adaptive_banner_height" );
+            if (heightObj instanceof Integer) {
+                customHeight = (int) heightObj;
+            }
             return VungleAdSize.getAdSizeWithWidthAndHeight( customWidth, customHeight );
         }
         else if ( adFormat == MaxAdFormat.BANNER )
