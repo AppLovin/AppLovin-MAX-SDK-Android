@@ -544,10 +544,10 @@ public class VungleMediationAdapter
     {
         String creativeId = baseAd.getCreativeId();
 
-        if ( TextUtils.isEmpty( creativeId ) ) return null;
-
         Bundle extraInfo = new Bundle( 3 );
-        extraInfo.putString( "creative_id", creativeId );
+        if ( !TextUtils.isEmpty( creativeId ) ) {
+            extraInfo.putString( "creative_id", creativeId );
+        }
         if ( bannerView != null ) {
             extraInfo.putString( "ad_width",
                 String.valueOf( bannerView.getAdViewSize().getWidth() ) );
