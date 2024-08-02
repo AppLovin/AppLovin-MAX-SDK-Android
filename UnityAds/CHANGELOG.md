@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.12.1.1
+* Downgrade UnityAds SDK to 4.10.0 due to an initialization issue introduced in version 4.11.0 caused by missing ProGuard rules.
+
 ## 4.12.1.0
 * Certified with UnityAds SDK 4.12.1.
 
