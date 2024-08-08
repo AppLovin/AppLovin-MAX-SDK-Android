@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -245,12 +246,12 @@ public class PubMaticMediationAdapter
 
     private static String getPublisherId(MaxAdapterParameters parameters)
     {
-        return parameters.getServerParameters().getString( "publisher_id" );
+        return BundleUtils.getString( "publisher_id", parameters.getServerParameters() );
     }
 
     private static int getProfileId(MaxAdapterParameters parameters)
     {
-        return parameters.getServerParameters().getInt( "profile_id" );
+        return BundleUtils.getInt( "profile_id", parameters.getServerParameters() );
     }
 
     private static String getAdUnitId(MaxAdapterResponseParameters parameters)
