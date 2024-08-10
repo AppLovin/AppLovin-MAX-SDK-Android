@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PubMaticMediationAdapter
         extends MediationAdapterBase
@@ -119,6 +120,22 @@ public class PubMaticMediationAdapter
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
 
         callback.onSignalCollected( bidToken );
+    }
+
+    @Override
+    @Nullable
+    public Boolean shouldLoadAdsOnUiThread(final MaxAdFormat adFormat)
+    {
+        // PubMatic requires banner and interstitial ads to be loaded on UI thread.
+        return true;
+    }
+
+    @Override
+    @Nullable
+    public Boolean shouldShowAdsOnUiThread(final MaxAdFormat adFormat)
+    {
+        // PubMatic requires interstitial ads to be shown on UI thread.
+        return true;
     }
 
     @Override
