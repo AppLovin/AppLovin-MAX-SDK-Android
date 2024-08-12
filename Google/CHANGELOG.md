@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.3.0.0
+* Certified with Google SDK 23.3.0.
+
 ## 23.2.0.1
 * Add support for [inline adaptive banner ads](https://developers.applovin.com/en/android/ad-formats/banner-mrec-ads/#inline-adaptive-banners).
 
