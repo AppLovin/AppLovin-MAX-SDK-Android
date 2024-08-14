@@ -410,6 +410,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBInterstitial ad)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Interstitial impression" );
             listener.onInterstitialAdDisplayed();
         }
@@ -417,7 +418,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(final POBInterstitial ad, final POBError error)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getErrorMessage() );
+            final MaxAdapterError adapterError = toMaxError( error );
             log( "Interstitial failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -466,6 +467,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBRewardedAd ad)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Rewarded ad impression" );
             listener.onRewardedAdDisplayed();
         }
@@ -473,7 +475,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(final POBRewardedAd ad, final POBError error)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getErrorMessage() );
+            final MaxAdapterError adapterError = toMaxError( error );
             log( "Rewarded ad failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -535,6 +537,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBBannerView view)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Ad view impression" );
             listener.onAdViewAdDisplayed();
         }

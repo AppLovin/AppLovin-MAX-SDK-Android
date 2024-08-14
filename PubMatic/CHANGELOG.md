@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.0.0
+* Certified with PubMatic SDK 3.8.0.
+* Update ad display failed error code.
+
 ## 3.7.0.2
 * Fixed to load and show banner and interstitial ads on UI thread to avoid crash: `IllegalStateException: Calling View methods on another thread than the UI thread`.   
 
