@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.7.0.2
+* Add bidding support for banners, leaders, MRECs, interstitials, and rewarded ads.
+
 ## 9.7.0.1
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
 
