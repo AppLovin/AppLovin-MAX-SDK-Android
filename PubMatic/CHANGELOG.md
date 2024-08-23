@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.0.0
+* Certified with PubMatic SDK 3.9.0.
+* Updated PubMatic Maven repo URL.
+
 ## 3.8.0.0
 * Certified with PubMatic SDK 3.8.0.
 * Update ad display failed error code.
