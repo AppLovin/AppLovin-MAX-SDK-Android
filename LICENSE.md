@@ -1,4 +1,4 @@
-# AppLovin MAX Copyright ©2022 AppLovin
+# AppLovin MAX Copyright ©2024 AppLovin
 
 This software is subject to, and made available under, the AppLovin Software Development Kit End User License Agreement (“SDK EULA”), see https://www.applovin.com/eula/.
 
