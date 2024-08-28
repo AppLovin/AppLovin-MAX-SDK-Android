@@ -1,9 +1,12 @@
 package com.applovin.mediation.adapters;
 
+import android.content.Context;
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.applovin.mediation.MaxReward;
-import com.applovin.mediation.adapter.MaxAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
@@ -12,42 +15,42 @@ import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapters.maio.BuildConfig;
+import com.applovin.mediation.adapters.MediationAdapterBase;
 import com.applovin.sdk.AppLovinSdk;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import jp.maio.sdk.android.v2.Version;
+import jp.maio.sdk.android.v2.interstitial.IInterstitialLoadCallback;
+import jp.maio.sdk.android.v2.interstitial.IInterstitialShowCallback;
+import jp.maio.sdk.android.v2.interstitial.Interstitial;
+import jp.maio.sdk.android.v2.request.MaioRequest;
+import jp.maio.sdk.android.v2.rewarddata.RewardData;
+import jp.maio.sdk.android.v2.rewarded.IRewardedLoadCallback;
+import jp.maio.sdk.android.v2.rewarded.IRewardedShowCallback;
+import jp.maio.sdk.android.v2.rewarded.Rewarded;
 
-import jp.maio.sdk.android.FailNotificationReason;
-import jp.maio.sdk.android.MaioAds;
-import jp.maio.sdk.android.MaioAdsListenerInterface;
-
-/**
- * Created by Harry Arakkal on July 3 2019
- */
 public class MaioMediationAdapter
         extends MediationAdapterBase
         implements MaxInterstitialAdapter, MaxRewardedAdapter
 {
-    private static final MaioMediationAdapterRouter ROUTER;
-    private static final AtomicBoolean              INITIALIZED = new AtomicBoolean();
+    private Interstitial interstitialAd;
+    private Rewarded rewardedAd;
 
-    private static InitializationStatus initializationStatus;
-    private static Set<String>          zoneIds;
-    private        String               zoneId;
+    private InterstitialAdListener interstitialAdListener;
+    private RewardedAdListener rewardedAdListener;
 
-    static
-    {
-        ROUTER = (MaioMediationAdapterRouter) MediationAdapterRouter.getSharedInstance( MaioMediationAdapterRouter.class );
-    }
-
-    // Explicit default constructor declaration
     public MaioMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
+
+    @Override
+    public void initialize(MaxAdapterInitializationParameters parameters, Activity activity, OnCompletionListener onCompletionListener)
+    {
+        // Maio SDK does not have an API for initialization.
+        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
+    }
 
     @Override
     public String getSdkVersion()
     {
-        return MaioAds.getSdkVersion();
+        return Version.Companion.toString();
     }
 
     @Override
@@ -59,295 +62,320 @@ public class MaioMediationAdapter
     @Override
     public void onDestroy()
     {
-        ROUTER.removeAdapter( this, zoneId );
+        interstitialAd = null;
+        interstitialAdListener = null;
+
+        rewardedAd = null;
+        rewardedAdListener = null;
     }
 
-    @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
-    {
-        // NOTE: `activity` can only be null in 11.1.0+
-        if ( activity == null )
-        {
-            onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, "Activity context required to initialize" );
-            return;
-        }
-
-        if ( INITIALIZED.compareAndSet( false, true ) )
-        {
-            final String mediaId = parameters.getServerParameters().getString( "media_id" );
-            log( "Initializing Maio SDK with media id: " + mediaId + "..." );
-
-            ROUTER.completionListener = onCompletionListener;
-            initializationStatus = InitializationStatus.INITIALIZING;
-
-            zoneIds = new HashSet<>();
-            if ( parameters.getServerParameters().containsKey( "zone_ids" ) )
-            {
-                zoneIds.addAll( parameters.getServerParameters().getStringArrayList( "zone_ids" ) );
-            }
-
-            if ( parameters.isTesting() )
-            {
-                MaioAds.setAdTestMode( true );
-            }
-
-            // NOTE: Unlike iOS, Maio will call `onInitialized()` in the event of a failure.
-            MaioAds.init( activity, mediaId, ROUTER );
-        }
-        else
-        {
-            log( "Maio already Initialized" );
-
-            onCompletionListener.onCompletion( initializationStatus, null );
-        }
-    }
-
-    // MARK: Interstitial Ad functions
+    //region MAX Interstitial Adapter Methods
 
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        zoneId = parameters.getThirdPartyAdPlacementId();
+        String zoneId = parameters.getThirdPartyAdPlacementId();
 
-        log( "Loading interstitial ad: " + zoneId + "..." );
+        log( "Loading interstitial ad: " + zoneId );
 
-        ROUTER.addInterstitialAdapter( this, listener, zoneId );
-
-        if ( MaioAds.canShow( zoneId ) )
+        interstitialAdListener = new InterstitialAdListener( listener );
+        MaioRequest request = new MaioRequest( zoneId, parameters.isTesting(), "" );
+        activity.runOnUiThread( new Runnable()
         {
-            ROUTER.onAdLoaded( zoneId );
-        }
-        // NOTE: iOS does not have this check, checking of "can show" will NOT callback error on Android
-        else if ( !zoneIds.contains( zoneId ) )
-        {
-            log( "Ad failed to load. zone id = " + zoneId + " is invalid" );
-            ROUTER.onAdLoadFailed( zoneId, MaxAdapterError.INVALID_CONFIGURATION );
-        }
-        // Maio might lose out on the first impression.
-        else
-        {
-            log( "Ad failed to load for this zone: " + zoneId );
-            ROUTER.onAdLoadFailed( zoneId, MaxAdapterError.NO_FILL );
-        }
+            @Override
+            public void run()
+            {
+                interstitialAd = Interstitial.loadAd( request, getContext( activity ), interstitialAdListener );
+            }
+        } );
     }
 
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        log( "Showing interstitial ad " + zoneId );
+        log( "Showing interstitial ad: " + parameters.getThirdPartyAdPlacementId() );
 
-        ROUTER.addShowingAdapter( this );
+        if ( interstitialAd == null )
+        {
+            log( "Unable to show interstitial - ad not ready" );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
 
-        if ( MaioAds.canShow( zoneId ) )
-        {
-            MaioAds.show( zoneId );
+            return;
         }
-        else
-        {
-            log( "Interstitial not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
-        }
+
+        interstitialAd.show(getContext( activity ), interstitialAdListener);
     }
 
-    // MARK: Rewarded Ad functions
+    //endregion
+
+    //region MAX Rewarded Adapter Methods
 
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        zoneId = parameters.getThirdPartyAdPlacementId();
+        String zoneId = parameters.getThirdPartyAdPlacementId();
 
-        log( "Loading rewarded ad for zone id: " + zoneId + "..." );
+        log( "Loading rewarded ad: " + zoneId );
 
-        ROUTER.addRewardedAdapter( this, listener, zoneId );
-
-        if ( MaioAds.canShow( zoneId ) )
+        rewardedAdListener = new RewardedAdListener( listener );
+        MaioRequest request = new MaioRequest( zoneId, parameters.isTesting(), "" );
+        activity.runOnUiThread( new Runnable()
         {
-            ROUTER.onAdLoaded( zoneId );
-        }
-        // NOTE: iOS does not have this check, checking of "can show" will NOT callback error on Android
-        else if ( !zoneIds.contains( zoneId ) )
-        {
-            log( "Ad failed to load. zone id " + zoneId + " is invalid" );
-            ROUTER.onAdLoadFailed( zoneId, MaxAdapterError.INVALID_CONFIGURATION );
-        }
-        // Maio might lose out on the first impression.
-        else
-        {
-            log( "Ad failed to load for this zone: " + zoneId );
-            ROUTER.onAdLoadFailed( zoneId, MaxAdapterError.NO_FILL );
-        }
+            @Override
+            public void run()
+            {
+                rewardedAd = Rewarded.loadAd( request, getContext( activity ), rewardedAdListener );
+            }
+        } );
     }
 
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        log( "Showing rewarded ad " + zoneId );
+        log( "Showing rewarded ad: " + parameters.getThirdPartyAdPlacementId() );
 
-        ROUTER.addShowingAdapter( this );
-
-        if ( MaioAds.canShow( zoneId ) )
+        if ( rewardedAd == null )
         {
-            // Configure reward from server.
-            configureReward( parameters );
-            MaioAds.show( zoneId );
+            log( "Unable to show rewarded ad - ad not ready" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+
+            return;
         }
-        else
+
+        rewardedAd.show( getContext( activity ), rewardedAdListener );
+    }
+
+    //endregion
+
+    //region Helper Methods
+
+    private MaxAdapterError toMaxError(final int maioErrorCode)
+    {
+        // Maio's error codes are 5 digits but we need to check the first 3 digits to determine the error
+        int maioError = maioErrorCode / 100;
+        String maioErrorMessage = "Unknown";
+        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+
+        switch ( maioError )
         {
-            log( "Rewarded ad not ready" );
-            ROUTER.onAdDisplayFailed( zoneId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            case 101:
+                maioErrorMessage = "NoNetwork";
+                adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case 102:
+                maioErrorMessage = "NetworkTimeout";
+                adapterError = MaxAdapterError.TIMEOUT;
+                break;
+            case 103:
+                maioErrorMessage = "AbortedDownload";
+                adapterError = MaxAdapterError.AD_NOT_READY;
+                break;
+            case 104:
+                maioErrorMessage = "InvalidResponse";
+                adapterError = MaxAdapterError.SERVER_ERROR;
+                break;
+            case 105:
+                maioErrorMessage = "ZoneNotFound";
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case 106:
+                maioErrorMessage = "UnavailableZone";
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case 107:
+                maioErrorMessage = "NoFill";
+                adapterError = MaxAdapterError.NO_FILL;
+                break;
+            case 108:
+                maioErrorMessage = "NullArgMaioRequest";
+                adapterError = MaxAdapterError.BAD_REQUEST;
+                break;
+            case 109:
+                maioErrorMessage = "DiskSpaceNotEnough";
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case 110:
+                maioErrorMessage = "UnsupportedOsVer";
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case 201:
+                maioErrorMessage = "Expired";
+                adapterError = MaxAdapterError.AD_EXPIRED;
+                break;
+            case 202:
+                maioErrorMessage = "NotReadyYet";
+                adapterError = MaxAdapterError.AD_NOT_READY;
+                break;
+            case 203:
+                maioErrorMessage = "AlreadyShown";
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case 204:
+                maioErrorMessage = "FailedPlayback";
+                adapterError = MaxAdapterError.WEBVIEW_ERROR;
+                break;
+            case 205:
+                maioErrorMessage = "NullArgViewContext";
+                adapterError = MaxAdapterError.MISSING_ACTIVITY;
+                break;
+        }
+
+        return new MaxAdapterError( adapterError,
+                                    maioErrorCode,
+                                    maioErrorMessage );
+    }
+
+    private Context getContext(@Nullable Activity activity)
+    {
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    //endregion
+
+    private class InterstitialAdListener
+            implements IInterstitialLoadCallback, IInterstitialShowCallback
+    {
+        private final MaxInterstitialAdapterListener listener;
+
+        public InterstitialAdListener(final MaxInterstitialAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void loaded(@NonNull Interstitial interstitial)
+        {
+            log( "Interstitial ad loaded" );
+            listener.onInterstitialAdLoaded();
+        }
+
+        @Override
+        public void failed(@NonNull Interstitial interstitial, int errorCode)
+        {
+            MaxAdapterError adapterError = toMaxError( errorCode );
+
+            // Maio's error code will be 1XXXX for load errors and 2XXXX for display errors.
+            if ( 10000 <= errorCode && errorCode < 20000 )
+            {
+                // Failed to load
+                log( "Interstitial ad failed to load with error (" + adapterError + ")" );
+                listener.onInterstitialAdLoadFailed( adapterError );
+            }
+            else if ( 20000 <= errorCode && errorCode < 30000 )
+            {
+                // Failed to show
+                log( "Interstitial ad failed to display with error (" + adapterError + ")" );
+                listener.onInterstitialAdDisplayFailed( adapterError );
+            }
+            else
+            {
+                // Unknown error code
+                log( "Interstitial ad failed to load or show due to an unknown error (" + adapterError + ")" );
+                listener.onInterstitialAdLoadFailed( adapterError );
+            }
+        }
+
+        @Override
+        public void opened(@NonNull Interstitial interstitial)
+        {
+            log( "Interstitial ad displayed" );
+            listener.onInterstitialAdDisplayed();
+        }
+
+        @Override
+        public void clicked(@NonNull Interstitial interstitial)
+        {
+            log( "Interstitial ad clicked" );
+            listener.onInterstitialAdClicked();
+        }
+
+        @Override
+        public void closed(@NonNull Interstitial interstitial)
+        {
+            log( "Interstitial ad hidden" );
+            listener.onInterstitialAdHidden();
         }
     }
 
-    //MARK: Router Class
-
-    private static class MaioMediationAdapterRouter
-            extends MediationAdapterRouter
-            implements MaioAdsListenerInterface
+    private class RewardedAdListener
+            implements IRewardedLoadCallback, IRewardedShowCallback
     {
-        private static final AtomicBoolean isShowingAd      = new AtomicBoolean();
-        private              boolean       hasGrantedReward = false;
+        private final MaxRewardedAdapterListener listener;
 
-        OnCompletionListener completionListener;
+        private boolean hasGrantedReward;
 
-        // MARK: Listener Functions
+        public RewardedAdListener(final MaxRewardedAdapterListener listener)
+        {
+            this.listener = listener;
+        }
 
         @Override
-        public void onInitialized()
+        public void loaded(@NonNull Rewarded rewarded)
         {
-            log( "Maio SDK Initialized" );
+            log( "Rewarded ad loaded" );
+            listener.onRewardedAdLoaded();
+        }
 
-            if ( completionListener != null )
+        @Override
+        public void failed(@NonNull Rewarded rewarded, int errorCode) {
+            MaxAdapterError adapterError = toMaxError( errorCode );
+
+            // Maio's error code will be 1XXXX for load errors and 2XXXX for display errors.
+            if ( 10000 <= errorCode && errorCode < 20000 )
             {
-                initializationStatus = InitializationStatus.INITIALIZED_UNKNOWN;
-
-                completionListener.onCompletion( initializationStatus, null );
-                completionListener = null;
+                // Failed to load
+                log( "Rewarded ad failed to load with error (" + adapterError + ")" );
+                listener.onRewardedAdLoadFailed( adapterError );
             }
-        }
-
-        // Does not refer to a specific ad, but if ads can show in general.
-        @Override
-        public void onChangedCanShow(String zoneId, boolean newValue)
-        {
-            if ( newValue )
+            else if ( 20000 <= errorCode && errorCode < 30000 )
             {
-                log( "Maio can show ads: " + zoneId );
-            }
-            else
-            {
-                log( "Maio cannot show ads: " + zoneId );
-            }
-        }
-
-        @Override
-        public void onOpenAd(String zoneId)
-        {
-            log( "Ad video will start: " + zoneId );
-            onAdDisplayed( zoneId );
-        }
-
-        @Override
-        public void onStartedAd(String zoneId)
-        {
-            log( "Ad video started: " + zoneId );
-        }
-
-        @Override
-        public void onFinishedAd(int playtime, boolean skipped, int duration, String zoneId)
-        {
-            log( "Did finish ad = " + zoneId + " playtime = " + playtime + " skipped = " + skipped + " duration of ad = " + duration );
-
-            if ( !skipped )
-            {
-                hasGrantedReward = true;
-            }
-        }
-
-        @Override
-        public void onClickedAd(String zoneId)
-        {
-            log( "Ad clicked: " + zoneId );
-            onAdClicked( zoneId );
-        }
-
-        @Override
-        public void onClosedAd(String zoneId)
-        {
-            log( "Ad closed: " + zoneId );
-
-            if ( hasGrantedReward || shouldAlwaysRewardUser( zoneId ) )
-            {
-                MaxReward reward = getReward( zoneId );
-                log( "Rewarded ad user with reward: " + reward );
-                onUserRewarded( zoneId, reward );
-
-                hasGrantedReward = false;
-            }
-
-            isShowingAd.set( false );
-
-            onAdHidden( zoneId );
-        }
-
-        @Override
-        public void onFailed(FailNotificationReason reason, String zoneId)
-        {
-            if ( isShowingAd.compareAndSet( true, false ) )
-            {
-                MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", reason.ordinal(), reason.name() );
-                log( "Ad failed to display with Maio reason: " + reason + " Max error: " + error );
-                onAdDisplayFailed( zoneId, error );
+                // Failed to show
+                log( "Rewarded ad failed to display with error (" + adapterError + ")" );
+                listener.onRewardedAdDisplayFailed( adapterError );
             }
             else
             {
-                MaxAdapterError error = toMaxError( reason );
-                log( "Ad failed to load with Maio reason: " + reason + " Max error: " + error );
-                onAdLoadFailed( zoneId, error );
+                // Unknown error code
+                log( "Rewarded ad failed to load or show due to an unknown error (" + adapterError + ")" );
+                listener.onRewardedAdLoadFailed( adapterError );
             }
+
         }
 
         @Override
-        void initialize(MaxAdapterInitializationParameters parameters, Activity activity, OnCompletionListener onCompletionListener) { }
-
-        // MARK: Overrides for Ad Show State Management
-
-        @Override
-        public void addShowingAdapter(final MaxAdapter adapter)
+        public void opened(@NonNull Rewarded rewarded)
         {
-            super.addShowingAdapter( adapter );
-
-            // Maio uses the same callback for [AD LOAD FAILED] and [AD DISPLAY FAILED] callbacks
-            isShowingAd.set( true );
+            log( "Rewarded ad displayed" );
+            listener.onRewardedAdDisplayed();
         }
 
-        //MARK: Helper function
-
-        private static MaxAdapterError toMaxError(FailNotificationReason maioError)
+        @Override
+        public void clicked(@NonNull Rewarded rewarded)
         {
-            MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-            switch ( maioError )
+            log( "Rewarded ad clicked" );
+            listener.onRewardedAdClicked();
+        }
+
+        @Override
+        public void rewarded(@NonNull Rewarded rewarded, @NonNull RewardData rewardData)
+        {
+            log( "Rewarded ad should grant reward" );
+            hasGrantedReward = true;
+        }
+
+        @Override
+        public void closed(@NonNull Rewarded rewarded)
+        {
+            log( "Rewarded ad hidden" );
+
+            if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
-                case RESPONSE:
-                    adapterError = MaxAdapterError.SERVER_ERROR;
-                    break;
-                case NETWORK_NOT_READY:
-                    adapterError = MaxAdapterError.NO_CONNECTION;
-                    break;
-                case NETWORK:
-                    adapterError = MaxAdapterError.TIMEOUT;
-                    break;
-                case UNKNOWN:
-                    adapterError = MaxAdapterError.UNSPECIFIED;
-                    break;
-                case AD_STOCK_OUT:
-                    adapterError = MaxAdapterError.NO_FILL;
-                    break;
-                case VIDEO:
-                    adapterError = MaxAdapterError.INTERNAL_ERROR;
-                    break;
+                final MaxReward reward = getReward();
+                log( "Rewarded user with reward: " + reward );
+                listener.onUserRewarded( reward );
             }
 
-            return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), maioError.ordinal(), maioError.name() );
+            listener.onRewardedAdHidden();
         }
     }
 }
