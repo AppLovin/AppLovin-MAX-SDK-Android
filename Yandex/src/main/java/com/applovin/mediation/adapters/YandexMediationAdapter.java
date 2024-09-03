@@ -84,7 +84,11 @@ public class YandexMediationAdapter
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
     // Required parameters given by Yandex
-    private static final Map<String, String> adRequestParameters = new HashMap<>( 3 );
+    private final Map<String, String> adRequestParameters = new HashMap<>( 3 ) {{
+        put( "adapter_network_name", "applovin" );
+        put( "adapter_version", getAdapterVersion() );
+        put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
+    }};
 
     private static InitializationStatus status;
 
@@ -183,10 +187,6 @@ public class YandexMediationAdapter
         {
             onCompletionListener.onCompletion( status, null );
         }
-
-        adRequestParameters.put( "adapter_network_name", "applovin" );
-        adRequestParameters.put( "adapter_version", getAdapterVersion() );
-        adRequestParameters.put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
     }
 
     //endregion
