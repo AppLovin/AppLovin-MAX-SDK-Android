@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.0.5.1
+* Load Pangle ads on a background thread to reduce ANRs on MAX SDK version 12.6.1 or higher.
+
 ## 6.2.0.5.0
 * Certified with ByteDance SDK 6.2.0.5.
 
