@@ -3,6 +3,7 @@ package com.applovin.mediation.adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PubMaticMediationAdapter
         extends MediationAdapterBase
@@ -118,6 +120,22 @@ public class PubMaticMediationAdapter
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
 
         callback.onSignalCollected( bidToken );
+    }
+
+    @Override
+    @Nullable
+    public Boolean shouldLoadAdsOnUiThread(final MaxAdFormat adFormat)
+    {
+        // PubMatic requires banner and interstitial ads to be loaded on UI thread.
+        return true;
+    }
+
+    @Override
+    @Nullable
+    public Boolean shouldShowAdsOnUiThread(final MaxAdFormat adFormat)
+    {
+        // PubMatic requires interstitial ads to be shown on UI thread.
+        return true;
     }
 
     @Override
@@ -245,12 +263,12 @@ public class PubMaticMediationAdapter
 
     private static String getPublisherId(MaxAdapterParameters parameters)
     {
-        return parameters.getServerParameters().getString( "publisher_id" );
+        return BundleUtils.getString( "publisher_id", parameters.getServerParameters() );
     }
 
     private static int getProfileId(MaxAdapterParameters parameters)
     {
-        return parameters.getServerParameters().getInt( "profile_id" );
+        return BundleUtils.getInt( "profile_id", parameters.getServerParameters() );
     }
 
     private static String getAdUnitId(MaxAdapterResponseParameters parameters)
@@ -392,6 +410,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBInterstitial ad)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Interstitial impression" );
             listener.onInterstitialAdDisplayed();
         }
@@ -399,7 +418,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(final POBInterstitial ad, final POBError error)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getErrorMessage() );
+            final MaxAdapterError adapterError = toMaxError( error );
             log( "Interstitial failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -448,6 +467,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBRewardedAd ad)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Rewarded ad impression" );
             listener.onRewardedAdDisplayed();
         }
@@ -455,7 +475,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(final POBRewardedAd ad, final POBError error)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getErrorMessage() );
+            final MaxAdapterError adapterError = toMaxError( error );
             log( "Rewarded ad failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -517,6 +537,7 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdImpression(final POBBannerView view)
         {
+            // NOTE: This may fire on load, depending on the demand source
             log( "Ad view impression" );
             listener.onAdViewAdDisplayed();
         }

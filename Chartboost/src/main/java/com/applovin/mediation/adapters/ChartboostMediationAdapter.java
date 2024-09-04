@@ -12,12 +12,15 @@ import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
+import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.chartboost.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
@@ -54,7 +57,7 @@ import androidx.annotation.Nullable;
 
 public class ChartboostMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
     private static final AtomicBoolean initialized        = new AtomicBoolean();
     private static final Mediation     MEDIATION_PROVIDER = new Mediation( "MAX", AppLovinSdk.VERSION, BuildConfig.VERSION_NAME );
@@ -162,12 +165,23 @@ public class ChartboostMediationAdapter
             adView = null;
         }
     }
+    
+    @Override
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    {
+        log( "Collecting signal..." );
+
+        String signal = Chartboost.getBidderToken();
+        callback.onSignalCollected( signal );
+    }
 
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
-        log( "Loading interstitial ad for location \"" + location + "\"..." );
+        String bidResponse = parameters.getBidResponse();
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "interstitial ad for location \"" + location + "\"..." );
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
 
@@ -180,7 +194,14 @@ public class ChartboostMediationAdapter
         }
         else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
-            interstitialAd.cache();
+            if ( isBidding )
+            {
+                interstitialAd.cache( bidResponse );
+            }
+            else
+            {
+                interstitialAd.cache();
+            }
         }
         else // Chartboost does not support showing interstitial ads for devices with Android versions lower than 21
         {
@@ -210,7 +231,9 @@ public class ChartboostMediationAdapter
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
-        log( "Loading rewarded ad for location \"" + location + "\"..." );
+        String bidResponse = parameters.getBidResponse();
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "rewarded ad for location \"" + location + "\"..." );
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
 
@@ -223,7 +246,14 @@ public class ChartboostMediationAdapter
         }
         else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
-            rewardedAd.cache();
+            if ( isBidding )
+            {
+                rewardedAd.cache( bidResponse );
+            }
+            else
+            {
+                rewardedAd.cache();
+            }
         }
         else // Chartboost does not support showing rewarded ads for devices with Android versions lower than 21
         {
@@ -255,7 +285,9 @@ public class ChartboostMediationAdapter
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
-        log( "Loading " + adFormat.getLabel() + " ad for location \"" + location + "\"..." );
+        String bidResponse = parameters.getBidResponse();
+        boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + adFormat.getLabel() + " ad for location \"" + location + "\"..." );
 
         updateConsentStatus( parameters, activity.getApplicationContext() );
 
@@ -269,7 +301,14 @@ public class ChartboostMediationAdapter
         }
         else if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
         {
-            adView.cache();
+            if ( isBidding )
+            {
+                adView.cache( bidResponse );
+            }
+            else
+            {
+                adView.cache();
+            }
         }
         else  // Chartboost does not support showing ad view ads for devices with Android versions lower than 21
         {

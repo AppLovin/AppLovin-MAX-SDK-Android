@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.2.0
+* Certified with HyprMX SDK 6.4.2.
+
 ## 6.4.1.0
 * Certified with HyprMX SDK 6.4.1.
 

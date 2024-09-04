@@ -101,6 +101,8 @@ public class GoogleMediationAdapter
     private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
     private static final int ADVERTISER_VIEW_TAG      = 8;
 
+    private static final String ADAPTIVE_BANNER_TYPE_INLINE = "inline";
+
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
 
@@ -654,8 +656,7 @@ public class GoogleMediationAdapter
             adView.setAdListener( new AdViewListener( placementId, adFormat, listener ) );
 
             // Check if adaptive banner sizes should be used
-            boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
-
+            final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
             adView.setAdSize( toAdSize( adFormat, isAdaptiveBanner, parameters, context ) );
 
             adView.loadAd( adRequest );
@@ -742,7 +743,7 @@ public class GoogleMediationAdapter
         {
             if ( isAdaptiveBanner )
             {
-                return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, getAdaptiveBannerWidth( parameters, context ) );
+                return getAdaptiveAdSize( parameters, context );
             }
             else
             {
@@ -757,6 +758,39 @@ public class GoogleMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private AdSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        final int bannerWidth = getAdaptiveBannerWidth( parameters, context );
+
+        if ( isInlineAdaptiveBanner( parameters ) )
+        {
+            final int inlineMaxHeight = getInlineAdaptiveBannerMaxHeight( parameters );
+            if ( inlineMaxHeight > 0 )
+            {
+                return AdSize.getInlineAdaptiveBannerAdSize( bannerWidth, inlineMaxHeight );
+            }
+
+            return AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize( context, bannerWidth );
+        }
+
+        // Return anchored size by default.
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, bannerWidth );
+    }
+
+    private boolean isInlineAdaptiveBanner(final MaxAdapterParameters parameters)
+    {
+        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        final Object adaptiveBannerType = localExtraParameters.get( "adaptive_banner_type" );
+        return ( adaptiveBannerType instanceof String ) && ADAPTIVE_BANNER_TYPE_INLINE.equalsIgnoreCase( (String) adaptiveBannerType );
+    }
+
+    private int getInlineAdaptiveBannerMaxHeight(final MaxAdapterParameters parameters)
+    {
+        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        final Object inlineMaxHeight = localExtraParameters.get( "inline_adaptive_banner_max_height" );
+        return ( inlineMaxHeight instanceof Integer ) ? (int) inlineMaxHeight : 0;
     }
 
     private int getAdaptiveBannerWidth(final MaxAdapterParameters parameters, final Context context)

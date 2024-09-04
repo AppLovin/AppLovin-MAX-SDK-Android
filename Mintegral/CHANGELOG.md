@@ -1,5 +1,17 @@
 # Changelog
 
+## 16.8.41.0
+* Certified with Mintegral SDK 16.8.41.
+
+## 16.8.31.0
+* Certified with Mintegral SDK 16.8.31.
+
+## 16.8.21.0
+* Certified with Mintegral SDK 16.8.21.
+
+## 16.8.11.0
+* Certified with Mintegral SDK 16.8.11.
+
 ## 16.7.91.0
 * Certified with Mintegral SDK 16.7.91.
 
