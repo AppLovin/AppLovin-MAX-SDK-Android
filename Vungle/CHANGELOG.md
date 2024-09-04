@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.4.1.0
+* Certified with Vungle SDK 7.4.1.
+* Changes for config less SDK.
+
 ## 7.4.0.0
 * Certified with Vungle SDK 7.4.0.
 * Inline ad support.
