@@ -92,10 +92,7 @@ public class IronSourceMediationAdapter
             final String appKey = parameters.getServerParameters().getString( "app_key" );
             log( "Initializing IronSource SDK with app key: " + appKey + "..." );
 
-            if ( parameters.getServerParameters().getBoolean( "set_mediation_identifier" ) )
-            {
-                IronSource.setMediationType( mediationTag() );
-            }
+            IronSource.setMediationType( "MAX" + getAdapterVersionCode() + "SDK" + AppLovinSdk.VERSION_CODE );
 
             setPrivacySettings( parameters );
 
@@ -571,7 +568,6 @@ public class IronSourceMediationAdapter
             case IronSourceError.ERROR_NO_INTERNET_CONNECTION:
                 adapterError = MaxAdapterError.NO_CONNECTION;
                 break;
-            case IronSourceError.ERROR_REACHED_CAP_LIMIT_PER_PLACEMENT:
             case IronSourceError.ERROR_CAPPED_PER_SESSION:
             case IronSourceError.ERROR_BN_LOAD_PLACEMENT_CAPPED:
                 adapterError = MaxAdapterError.AD_FREQUENCY_CAPPED;
@@ -610,6 +606,28 @@ public class IronSourceMediationAdapter
         }
 
         return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), ironSourceErrorCode, ironSourceError.getErrorMessage() );
+    }
+
+    private long getAdapterVersionCode()
+    {
+        String simplifiedVersionString = getAdapterVersion().replaceAll( "[^0-9.]", "" );
+        String[] versionNumbers = simplifiedVersionString.split( "\\." );
+
+        long versionCode = 0;
+        for ( String num : versionNumbers )
+        {
+            versionCode *= 100;
+            if ( versionCode != 0 && num.length() > 2 )
+            {
+                versionCode += Integer.parseInt( num.substring( 0, 2 ) );
+            }
+            else
+            {
+                versionCode += num.isEmpty() ? 0 : Integer.parseInt( num );
+            }
+        }
+
+        return versionCode;
     }
 
     //endregion

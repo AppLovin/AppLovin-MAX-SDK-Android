@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.0.0.0
+* Certified with IronSource SDK 8.3.0.
+* Add support for passing mediation type to SDK.
+
 ## 8.2.1.0.0
 * Certified with IronSource SDK 8.2.1.
 
