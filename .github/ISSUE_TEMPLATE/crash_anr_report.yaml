@@ -1,0 +1,53 @@
+name: Crash/ANR Report
+description: Report a problem
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        *Before reporting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/releases) to see if the issue has already been addressed.*
+  - type: input
+    attributes:
+      label: "MAX SDK Version"
+      placeholder: "e.g., 11.4.3"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Device/Platform Info"
+      description: "Is the problem affecting any specific devices or platforms?"
+      placeholder: "e.g., iOS 15, iPhone X, etc."
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Crashes/ANRs per Day"
+      description: "What is the number of crashes/ANRs per day?"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Percentage of Users Affected"
+      description: "What percentage of the total number of users is experiencing the crash/ANR?"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Exception and Stack Trace"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "How to Reproduce"
+      description: "Step-by-step instructions, code snippets, or other details to reproduce the issue."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Additional Info"
+      description: |
+        - If applicable, include any info to provide further context, such as images, videos, or logs after [enabling verbose logging](https://dash.applovin.com/documentation/mediation/ios/getting-started/advanced-settings#enable-verbose-logging).
+        - If you don't want to post media publicly, please submit your file(s) in a [support request](https://support.applovin.com/hc/en-us/requests/new) with subject 'Issue #<ISSUE_NUMBER>: <ISSUE_LINK>' after filing this issue with a note saying you will do so here.
+      placeholder: "Tip: Attach files by clicking this area and dragging files in"
+    validations:
+      required: false
