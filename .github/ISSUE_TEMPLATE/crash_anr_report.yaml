@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        *Before reporting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-iOS/releases) to see if the issue has already been addressed.*
+        *Before reporting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/releases) to see if the issue has already been addressed.*
   - type: input
     attributes:
       label: "MAX SDK Version"
@@ -16,7 +16,7 @@ body:
     attributes:
       label: "Device/Platform Info"
       description: "Is the problem affecting any specific devices or platforms?"
-      placeholder: "e.g., iOS 15, iPhone X, etc."
+      placeholder: "e.g., Android 12, Google Pixel 5a, etc."
     validations:
       required: true
   - type: input
@@ -46,7 +46,7 @@ body:
     attributes:
       label: "Additional Info"
       description: |
-        - If applicable, include any info to provide further context, such as images, videos, or logs after [enabling verbose logging](https://dash.applovin.com/documentation/mediation/ios/getting-started/advanced-settings#enable-verbose-logging).
+        - If applicable, include any info to provide further context, such as images, videos, or logs after [enabling verbose logging](https://developers.applovin.com/en/max/android/overview/advanced-settings#enable-verbose-logging).
         - If you don't want to post media publicly, please submit your file(s) in a [support request](https://support.applovin.com/hc/en-us/requests/new) with subject 'Issue #<ISSUE_NUMBER>: <ISSUE_LINK>' after filing this issue with a note saying you will do so here.
       placeholder: "Tip: Attach files by clicking this area and dragging files in"
     validations:
