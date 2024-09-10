@@ -5,7 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        *Before reporting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/releases) to see if the issue has already been addressed.*
+        - To help us address issues efficiently, please provide clear and detailed bug reports. Reports lacking sufficient information may not be prioritized for review.
+        - Before reporting, search our [existing issues](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/issues?q=is%3Aissue) and [changelog](https://github.com/AppLovin/AppLovin-MAX-SDK-Android/releases) to see if the issue has already been addressed.
   - type: input
     attributes:
       label: "MAX SDK Version"
@@ -35,6 +36,17 @@ body:
     attributes:
       label: "How to Reproduce"
       description: "Step-by-step instructions, code snippets, or other details to reproduce the issue."
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: "Reproducible on demo app"
+      description: Please try and reproduce the issue in the [demo app](https://github.com/AppLovin/AppLovin-MAX-SDK-android)
+      options:
+        - "Yes"
+        - "No"
+        - "Not Tested"
+      default: 0
     validations:
       required: true
   - type: textarea
