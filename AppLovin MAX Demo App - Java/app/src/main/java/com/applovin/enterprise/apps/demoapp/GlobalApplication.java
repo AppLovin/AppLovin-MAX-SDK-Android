@@ -2,7 +2,6 @@ package com.applovin.enterprise.apps.demoapp;
 
 import android.app.Activity;
 import android.app.Application;
-import android.net.Uri;
 import android.os.Bundle;
 
 import com.adjust.sdk.Adjust;
@@ -10,11 +9,8 @@ import com.adjust.sdk.AdjustConfig;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkInitializationConfiguration;
-import com.applovin.sdk.AppLovinSdkSettings;
-import com.applovin.sdk.AppLovinTargetingData;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
