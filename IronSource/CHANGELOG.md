@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.0.0.1
+* Pass in application context instead of Activity context (which can potentially be null) for bidding banners/MRECs.
+* Gracefully fail zone-based ad requests for banners/MRECs instead.
+
 ## 8.3.0.0.0
 * Certified with IronSource SDK 8.3.0.
 * Add support for passing mediation type to SDK.

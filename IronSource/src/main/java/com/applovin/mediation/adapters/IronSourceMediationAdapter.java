@@ -291,9 +291,7 @@ public class IronSourceMediationAdapter
         if ( isBiddingAd )
         {
             RewardedAdRequest adRequest = new RewardedAdRequest.Builder( instanceId, bidResponse ).build();
-
             biddingRewardedListener = new BiddingRewardedListener( listener );
-
             RewardedAdLoader.loadAd( adRequest, biddingRewardedListener );
         }
         else
@@ -375,7 +373,7 @@ public class IronSourceMediationAdapter
         if ( isBiddingAd )
         {
             AdSize adSize = toISAdSize( adFormat );
-            BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder( activity, adViewPlacementIdentifier, bidResponse, adSize ).build();
+            BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder( getApplicationContext(), adViewPlacementIdentifier, bidResponse, adSize ).build();
             BannerAdLoader.loadAd( bannerAdRequest, new BiddingAdViewListener( listener ) );
         }
         else
@@ -389,6 +387,15 @@ public class IronSourceMediationAdapter
                 return;
             }
 
+            if ( activity == null )
+            {
+                log( adFormat.getLabel() + " ad load failed: Activity is null" );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_ACTIVITY );
+
+                return;
+            }
+
+            // If we pass in a null Activity, `createBannerForDemandOnly` will return null
             adView = IronSource.createBannerForDemandOnly( activity, toISBannerSize( adFormat ) );
             adView.setBannerDemandOnlyListener( new AdViewListener( listener ) );
 
