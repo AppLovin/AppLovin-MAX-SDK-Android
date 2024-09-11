@@ -34,6 +34,12 @@ body:
       required: true
   - type: textarea
     attributes:
+      label: "First Occurrence of Crash/ANR"
+      description: "Did the crash/ANR start on a specific day, after updating from an older SDK version, or on a new integration?"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
       label: "Exception and Stack Trace"
     validations:
       required: true
