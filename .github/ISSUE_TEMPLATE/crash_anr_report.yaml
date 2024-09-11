@@ -45,7 +45,7 @@ body:
       required: true
   - type: dropdown
     attributes:
-      label: "Reproducible on demo app"
+      label: "Reproducible in the demo app?"
       description: Please try and reproduce the issue in the [demo app](https://github.com/AppLovin/AppLovin-MAX-SDK-android)
       options:
         - "Yes"
