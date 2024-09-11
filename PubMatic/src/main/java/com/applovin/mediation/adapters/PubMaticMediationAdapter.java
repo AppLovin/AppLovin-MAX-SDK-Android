@@ -113,9 +113,15 @@ public class PubMaticMediationAdapter
     {
         log( "Collecting signal..." );
 
+        final POBAdFormat adFormat = toPubMaticAdFormat( parameters.getAdFormat() );
+        if ( adFormat == null )
+        {
+            callback.onSignalCollectionFailed( "Invalid ad format" );
+            return;
+        }
+
         updateAdSettings( parameters );
 
-        final POBAdFormat adFormat = toPubMaticAdFormat( parameters.getAdFormat() );
         final POBSignalConfig config = new POBSignalConfig.Builder( adFormat ).build();
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
 
@@ -299,6 +305,7 @@ public class PubMaticMediationAdapter
     /**
      * Translates a MaxAdFormat to a POBAdFormat. Returns null if ad format not supported by PubMatic.
      */
+    @Nullable
     private static POBAdFormat toPubMaticAdFormat(MaxAdFormat maxAdFormat)
     {
         if ( maxAdFormat == MaxAdFormat.BANNER )
@@ -323,7 +330,7 @@ public class PubMaticMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Invalid ad format: " + maxAdFormat );
+            return null;
         }
     }
 

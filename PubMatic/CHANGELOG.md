@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.0.1
+* Skip signal collection for unsupported ad formats (applicable for test mode).
+
 ## 3.9.0.0
 * Certified with PubMatic SDK 3.9.0.
 * Updated PubMatic Maven repo URL.
