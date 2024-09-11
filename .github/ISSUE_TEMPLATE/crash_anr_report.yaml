@@ -1,5 +1,5 @@
 name: Crash/ANR Report
-description: Report a problem
+description: Report a crash or ANR
 labels: [bug]
 body:
   - type: markdown
