@@ -1,5 +1,5 @@
-name: Bug Report
-description: Report a problem
+name: Crash/ANR Report
+description: Report a crash or ANR
 labels: [bug]
 body:
   - type: markdown
@@ -20,18 +20,29 @@ body:
       placeholder: "e.g., Android 12, Google Pixel 5a, etc."
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
-      label: "Current Behavior"
-      description: "A concise description of what you're experiencing."
+      label: "Crashes/ANRs per Day"
+      description: "What is the number of crashes/ANRs per day?"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: "Percentage of Users Affected"
+      description: "What percentage of users are experiencing the crash/ANR?"
     validations:
       required: true
   - type: textarea
     attributes:
-      label: "Expected Behavior"
-      description: "A concise description of what you expected to happen."
+      label: "First Occurrence of Crash/ANR"
+      description: "Did the crash/ANR start on a specific day, after updating from an older SDK version, or on a new integration?"
     validations:
-      required: false
+      required: true
+  - type: textarea
+    attributes:
+      label: "Exception and Stack Trace"
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: "How to Reproduce"
