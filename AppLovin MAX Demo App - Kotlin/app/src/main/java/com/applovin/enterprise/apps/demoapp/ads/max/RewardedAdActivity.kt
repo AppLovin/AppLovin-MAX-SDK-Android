@@ -96,14 +96,6 @@ class RewardedAdActivity : BaseAdActivity(),
         rewardedAd.loadAd()
     }
 
-    override fun onRewardedVideoStarted(ad: MaxAd) {
-        logCallback()
-    }
-
-    override fun onRewardedVideoCompleted(ad: MaxAd) {
-        logCallback()
-    }
-
     override fun onUserRewarded(ad: MaxAd, reward: MaxReward) {
         // Rewarded ad was displayed and user should receive the reward.
         logCallback()

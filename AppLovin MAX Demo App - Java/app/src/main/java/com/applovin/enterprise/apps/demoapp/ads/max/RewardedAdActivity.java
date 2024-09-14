@@ -124,12 +124,6 @@ public class RewardedAdActivity
     }
 
     @Override
-    public void onRewardedVideoStarted(@NonNull final MaxAd ad) { logCallback(); }
-
-    @Override
-    public void onRewardedVideoCompleted(@NonNull final MaxAd ad) { logCallback(); }
-
-    @Override
     public void onUserRewarded(@NonNull final MaxAd ad, @NonNull final MaxReward reward)
     {
         // Rewarded ad was displayed and user should receive the reward.
