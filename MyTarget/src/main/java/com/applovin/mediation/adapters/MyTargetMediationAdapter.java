@@ -28,7 +28,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.mytarget.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
-import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.my.target.ads.InterstitialAd;
@@ -49,7 +48,6 @@ import com.my.target.nativeads.factories.NativeViewsFactory;
 import com.my.target.nativeads.views.MediaAdView;
 import com.my.target.nativeads.views.NativeAdView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -284,14 +282,6 @@ public class MyTargetMediationAdapter
 
     private void updatePrivacyStates(final MaxAdapterParameters parameters)
     {
-        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=eno
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            MyTargetPrivacy.setUserAgeRestricted( isAgeRestrictedUser );
-        }
-
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
@@ -687,38 +677,6 @@ public class MyTargetMediationAdapter
         private MaxMyTargetNativeAd(final Builder builder) { super( builder ); }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = new ArrayList<>( 6 );
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             NativeAd nativeAd = MyTargetMediationAdapter.this.nativeAd;
