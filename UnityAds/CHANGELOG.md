@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.12.2.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+
 ## 4.12.2.0
 * Certified with UnityAds SDK 4.12.2, which includes a fix for the initialization issue caused by missing ProGuard rules introduced in version 4.11.0.
 

@@ -496,13 +496,6 @@ public class UnityAdsMediationAdapter
 
         privacyMetaData.set( "privacy.mode", "mixed" );
         privacyMetaData.commit();
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            privacyMetaData.set( "user.nonbehavioral", isAgeRestrictedUser );
-            privacyMetaData.commit();
-        }
     }
 
     private Context getContext(Activity activity)
