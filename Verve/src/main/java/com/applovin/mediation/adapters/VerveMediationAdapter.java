@@ -253,14 +253,6 @@ public class VerveMediationAdapter
             }
         }
 
-        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            HyBid.setCoppaEnabled( isAgeRestrictedUser );
-        }
-
         if ( userDataManager != null && TextUtils.isEmpty( userDataManager.getIABUSPrivacyString() ) )
         {
             Boolean isDoNotSell = parameters.isDoNotSell();
@@ -274,15 +266,12 @@ public class VerveMediationAdapter
 
     private void updateLocationCollectionEnabled(final MaxAdapterParameters parameters)
     {
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+        if ( isLocationCollectionEnabledObj instanceof Boolean )
         {
-            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
-            if ( isLocationCollectionEnabledObj instanceof Boolean )
-            {
-                log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
-                HyBid.setLocationUpdatesEnabled( (boolean) isLocationCollectionEnabledObj );
-            }
+            log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
+            HyBid.setLocationUpdatesEnabled( (boolean) isLocationCollectionEnabledObj );
         }
     }
 
