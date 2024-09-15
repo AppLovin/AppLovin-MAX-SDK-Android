@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.1.2
+* Add AppLovin MAX SDK version 13.0.0+ as a maven dependency.
+
 ## 3.0.1.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
