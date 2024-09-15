@@ -536,14 +536,6 @@ public class FacebookMediationAdapter
             AdSettings.setVideoAutoplay( videoAutoplay );
         }
 
-        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            AdSettings.setMixedAudience( isAgeRestrictedUser );
-        }
-
         final String testDevicesString = serverParameters.getString( "test_device_ids", null );
         if ( !TextUtils.isEmpty( testDevicesString ) )
         {
@@ -619,14 +611,7 @@ public class FacebookMediationAdapter
 
     private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
     {
-        if ( AppLovinSdk.VERSION_CODE >= 11_01_00_00 )
-        {
-            return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
-        }
-        else
-        {
-            return new MaxNativeAdView( maxNativeAd, templateName, activity );
-        }
+        return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
     }
 
     private Context getContext(@Nullable Activity activity)
@@ -952,11 +937,6 @@ public class FacebookMediationAdapter
                     final String templateName = BundleUtils.getString( "template", "", serverParameters );
                     if ( templateName.contains( "vertical" ) )
                     {
-                        if ( AppLovinSdk.VERSION_CODE < 9140500 )
-                        {
-                            log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default native template will be used." );
-                        }
-
                         if ( templateName.equals( "vertical" ) )
                         {
                             String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
@@ -966,12 +946,6 @@ public class FacebookMediationAdapter
                         {
                             maxNativeAdView = createMaxNativeAdView( maxNativeAd, templateName, activity );
                         }
-                    }
-                    else if ( AppLovinSdk.VERSION_CODE < 9140500 )
-                    {
-                        maxNativeAdView = createMaxNativeAdView( maxNativeAd,
-                                                                 AppLovinSdkUtils.isValidString( templateName ) ? templateName : "no_body_banner_template",
-                                                                 activity );
                     }
                     else
                     {
@@ -997,12 +971,12 @@ public class FacebookMediationAdapter
                     {
                         clickableViews.add( maxNativeAdView.getCallToActionButton() );
                     }
-                    if ( maxNativeAd.getIconView() != null && maxNativeAdView.getIconContentView() != null )
+                    if ( maxNativeAd.getIconView() != null )
                     {
-                        clickableViews.add( maxNativeAdView.getIconContentView() );
+                        clickableViews.add( maxNativeAd.getIconView() );
                     }
 
-                    final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+                    final View mediaContentView = maxNativeAdView.getMediaContentViewGroup();
                     if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
                     {
                         clickableViews.add( mediaContentView );
@@ -1216,45 +1190,6 @@ public class FacebookMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = new ArrayList<>( 6 );
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            // To avoid `java.lang.IllegalArgumentException: Invalid set of clickable views` with size=0
-            if ( clickableViews.isEmpty() )
-            {
-                e( "No clickable views to prepare" );
-                return;
-            }
-
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final NativeAdBase nativeAd = ( mNativeAd != null ) ? mNativeAd : mNativeBannerAd;

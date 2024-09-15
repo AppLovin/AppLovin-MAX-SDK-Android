@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.17.0.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 6.17.0.0
 * Certified with Facebook SDK 6.17.0.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()`, `onRewardedAdVideoCompleted()`, `onRewardedInterstitialAdVideoStarted()` and `onRewardedInterstitialAdVideoCompleted`.
@@ -77,7 +82,7 @@
 * Fix icon click registration for manual native banners.
 
 ## 6.8.0.10
-* Fix icon rendering for manual native banners. 
+* Fix icon rendering for manual native banners.
 
 ## 6.8.0.9
 * Add support for true [native banner ads](https://developers.facebook.com/docs/audience-network/guides/ad-formats/native-banner/), which can be enabled on your MAX dashboard.
@@ -87,7 +92,7 @@
 
 ## 6.8.0.7
 * Add support for new `MaxNativeAdView` constructor taking in non-Activity context.
-  
+
 ## 6.8.0.6
 * Fix headline and advertiser views in native ads.
 
