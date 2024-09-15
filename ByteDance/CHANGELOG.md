@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.2.0.5.2
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 6.2.0.5.1
 * Load Pangle ads on a background thread to reduce ANRs on MAX SDK version 12.6.1 or higher.
 

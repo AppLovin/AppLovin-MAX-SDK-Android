@@ -182,14 +182,6 @@ public class ByteDanceMediationAdapter
                 builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
             }
 
-            // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-            // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-            if ( isAgeRestrictedUser != null )
-            {
-                builder.setChildDirected( isAgeRestrictedUser ? 1 : 0 );
-            }
-
             Boolean isDoNotSell = parameters.isDoNotSell();
             if ( isDoNotSell != null )
             {
@@ -897,15 +889,7 @@ public class ByteDanceMediationAdapter
             log( "Native " + adFormat.getLabel() + " ad loaded: " + codeId + ". Preparing assets..." );
 
             final PAGNativeAdData nativeAdData = nativeAdViewAd.getNativeAdData();
-            final ExecutorService executorServiceToUse;
-            if ( AppLovinSdk.VERSION_CODE >= 11000000 )
-            {
-                executorServiceToUse = getCachingExecutorService();
-            }
-            else
-            {
-                executorServiceToUse = executor;
-            }
+            final ExecutorService executorServiceToUse = getCachingExecutorService();
 
             final Activity activity = activityRef.get();
             final Context context = getContext( activity );
@@ -924,9 +908,7 @@ public class ByteDanceMediationAdapter
                         // Pangle's image resource comes in the form of a URL which needs to be fetched in a non-blocking manner
                         log( "Adding native ad icon (" + imageUrl + ") to queue to be fetched" );
 
-                        iconDrawableFuture = ( AppLovinSdk.VERSION_CODE >= 11000000 )
-                                ? createDrawableFuture( imageUrl, resources )
-                                : executorServiceToUse.submit( createDrawableTask( imageUrl, resources ) );
+                        iconDrawableFuture = createDrawableFuture( imageUrl, resources );
                     }
 
                     // Execute and timeout tasks if incomplete within the given time
@@ -970,16 +952,7 @@ public class ByteDanceMediationAdapter
                                 log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default horizontal native template will be used." );
                             }
 
-                            MaxNativeAdView maxNativeAdView;
-                            if ( AppLovinSdk.VERSION_CODE >= 11010000 )
-                            {
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
-                            }
-                            else
-                            {
-                                maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
-                            }
-
+                            final MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
                             final List<View> clickableViews = new ArrayList<>( 4 );
                             if ( AppLovinSdkUtils.isValidString( maxNativeAd.getTitle() ) && maxNativeAdView.getTitleTextView() != null )
                             {
@@ -993,7 +966,7 @@ public class ByteDanceMediationAdapter
                             {
                                 clickableViews.add( maxNativeAdView.getIconImageView() );
                             }
-                            final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+                            final View mediaContentView = maxNativeAdView.getMediaContentViewGroup();
                             if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
                             {
                                 clickableViews.add( mediaContentView );
@@ -1238,30 +1211,6 @@ public class ByteDanceMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = new ArrayList<>( 4 );
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final PAGNativeAd nativeAd = ByteDanceMediationAdapter.this.nativeAd;
