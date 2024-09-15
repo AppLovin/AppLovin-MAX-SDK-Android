@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,6 +69,7 @@ import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -422,12 +424,6 @@ public class YandexMediationAdapter
         if ( hasUserConsent != null )
         {
             MobileAds.setUserConsent( hasUserConsent );
-        }
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            MobileAds.setAgeRestrictedUser( isAgeRestrictedUser );
         }
     }
 
@@ -907,17 +903,18 @@ public class YandexMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             if ( YandexMediationAdapter.this.nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
-                return;
+                return false;
             }
 
-            nativeAdView = new NativeAdView( maxNativeAdView.getContext() );
+            nativeAdView = new NativeAdView( container.getContext() );
 
             // The Yandex Native Ad View needs to be wrapped around the main native ad view to get impressions.
+            MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
             View mainView = maxNativeAdView.getMainView();
             maxNativeAdView.removeView( mainView );
             nativeAdView.addView( mainView );
@@ -946,6 +943,8 @@ public class YandexMediationAdapter
             {
                 e( "Failed to register native ad views.", exception );
             }
+
+            return true;
         }
     }
 }
