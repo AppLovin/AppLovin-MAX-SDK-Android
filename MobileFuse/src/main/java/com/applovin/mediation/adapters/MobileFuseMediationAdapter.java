@@ -326,12 +326,6 @@ public class MobileFuseMediationAdapter
             privacyPreferencesBuilder.setUsPrivacyConsentString( "1---" );
         }
 
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            privacyPreferencesBuilder.setSubjectToCoppa( isAgeRestrictedUser );
-        }
-
         String consentString = parameters.getConsentString();
         if ( consentString != null )
         {
@@ -818,12 +812,6 @@ public class MobileFuseMediationAdapter
         public MaxMobileFuseNativeAd(final Builder builder)
         {
             super( builder );
-        }
-
-        @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            prepareForInteraction( MobileFuseMediationAdapter.this.getClickableViews( maxNativeAdView ), maxNativeAdView );
         }
 
         @Override

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.6.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 1.7.6.0
 * Certified with MobileFuse SDK 1.7.6.
 
