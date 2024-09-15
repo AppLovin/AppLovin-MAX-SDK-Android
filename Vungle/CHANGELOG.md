@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.4.1.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 7.4.1.0
 * Certified with Vungle SDK 7.4.1.
 

@@ -403,12 +403,6 @@ public class VungleMediationAdapter
         {
             VunglePrivacySettings.setCCPAStatus( !isDoNotSell );
         }
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            VunglePrivacySettings.setCOPPAStatus( isAgeRestrictedUser );
-        }
     }
 
     private static BannerAdSize vungleAdSize(final MaxAdFormat adFormat)
@@ -445,8 +439,7 @@ public class VungleMediationAdapter
         if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
         if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
         if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
-        final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
-        if ( mediaContentView != null ) clickableViews.add( mediaContentView );
+        if ( maxNativeAdView.getMediaContentViewGroup() != null ) clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
 
         return clickableViews;
     }
@@ -914,7 +907,7 @@ public class VungleMediationAdapter
                                                        applicationContext );
             }
 
-            maxVungleNativeAd.prepareViewForInteraction( maxNativeAdView );
+            maxVungleNativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
 
             Bundle extraInfo = maybeCreateExtraInfoBundle( ad );
             listener.onAdViewAdLoaded( maxNativeAdView, extraInfo );
@@ -1082,32 +1075,34 @@ public class VungleMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final NativeAd nativeAd = VungleMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
                 e( "Failed to register native ad views: native ad is null." );
-                return;
+                return false;
             }
 
             if ( !nativeAd.canPlayAd() )
             {
                 e( "Failed to play native ad or native ad is registered." );
-                return;
+                return false;
             }
 
             View mediaView = getMediaView();
             if ( mediaView == null )
             {
                 e( "Failed to register native ad views: mediaView is null." );
-                return;
+                return false;
             }
 
             if ( mediaView.getParent() != null )
             {
                 ( (ViewGroup) mediaView.getParent() ).removeView( mediaView );
             }
+
+            MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
 
             ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
             if ( contentViewGroup != null )
@@ -1116,7 +1111,9 @@ public class VungleMediationAdapter
                 contentViewGroup.addView( mediaView );
             }
 
-            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), VungleMediationAdapter.this.getClickableViews( maxNativeAdView ) );
+            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
+
+            return true;
         }
     }
 }
