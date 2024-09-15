@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.4.2.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Add support for bidding on banners/MRECs, interstitials, and rewarded ads.
+
 ## 6.4.2.0
 * Certified with HyprMX SDK 6.4.2.
 
