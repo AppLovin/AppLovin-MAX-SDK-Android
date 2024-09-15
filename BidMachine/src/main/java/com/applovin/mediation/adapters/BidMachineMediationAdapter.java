@@ -29,11 +29,9 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.bidmachine.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
-import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -382,13 +380,6 @@ public class BidMachineMediationAdapter
 
     private void updateSettings(MaxAdapterParameters parameters)
     {
-        // NOTE: BidMachine's iOS SDK requires that the adapter passes the TCFv2 GDPR consent string, the BidMachine Android SDK does not.
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            BidMachine.setCoppa( isAgeRestrictedUser );
-        }
-
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
@@ -794,35 +785,6 @@ public class BidMachineMediationAdapter
         public MaxBidMachineNativeAd(Builder builder) { super( builder ); }
 
         @Override
-        public void prepareViewForInteraction(MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = new ArrayList<>( 5 );
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            ImageView iconImageView = maxNativeAdView.getIconImageView();
-            if ( getIcon() != null && iconImageView != null )
-            {
-                clickableViews.add( iconImageView );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             NativeAd nativeAd = BidMachineMediationAdapter.this.nativeAd;
