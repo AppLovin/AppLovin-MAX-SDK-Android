@@ -1,5 +1,10 @@
 # Changelog
 
+## 23.3.0.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 23.3.0.0
 * Certified with GoogleAdManager SDK 23.3.0.
 

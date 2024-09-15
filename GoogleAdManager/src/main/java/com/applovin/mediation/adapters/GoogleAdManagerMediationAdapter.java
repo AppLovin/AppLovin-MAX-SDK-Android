@@ -49,7 +49,6 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MediaContent;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.ResponseInfo;
 import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.admanager.AdManagerAdView;
@@ -68,7 +67,6 @@ import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -203,7 +201,6 @@ public class GoogleAdManagerMediationAdapter
         log( "Loading interstitial ad: " + placementId + "..." );
 
         updateMuteState( parameters );
-        setRequestConfiguration( parameters );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, activity );
 
         AdManagerInterstitialAd.load( activity, placementId, adRequest, new AdManagerInterstitialAdLoadCallback()
@@ -218,7 +215,7 @@ public class GoogleAdManagerMediationAdapter
 
                 ResponseInfo responseInfo = interstitialAd.getResponseInfo();
                 String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( responseId ) )
+                if ( AppLovinSdkUtils.isValidString( responseId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", responseId );
@@ -269,7 +266,6 @@ public class GoogleAdManagerMediationAdapter
         log( "Loading app open ad: " + placementId + "..." );
 
         updateMuteState( parameters );
-        setRequestConfiguration( parameters );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, activity );
         Context context = getContext( activity );
         int orientation = AppLovinSdkUtils.getOrientation( context );
@@ -339,7 +335,6 @@ public class GoogleAdManagerMediationAdapter
         log( "Loading rewarded interstitial ad: " + placementId + "..." );
 
         updateMuteState( parameters );
-        setRequestConfiguration( parameters );
         AdRequest adRequest = createAdRequestWithParameters( parameters, activity );
 
         RewardedInterstitialAd.load( activity, placementId, adRequest, new RewardedInterstitialAdLoadCallback()
@@ -355,7 +350,7 @@ public class GoogleAdManagerMediationAdapter
 
                 ResponseInfo responseInfo = rewardedInterstitialAd.getResponseInfo();
                 String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdk.VERSION_CODE > 9150000 && AppLovinSdkUtils.isValidString( responseId ) )
+                if ( AppLovinSdkUtils.isValidString( responseId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", responseId );
@@ -416,7 +411,6 @@ public class GoogleAdManagerMediationAdapter
         log( "Loading rewarded ad: " + placementId + "..." );
 
         updateMuteState( parameters );
-        setRequestConfiguration( parameters );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, activity );
 
         RewardedAd.load( activity, placementId, adRequest, new RewardedAdLoadCallback()
@@ -432,7 +426,7 @@ public class GoogleAdManagerMediationAdapter
 
                 ResponseInfo responseInfo = rewardedAd.getResponseInfo();
                 String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( responseId ) )
+                if ( AppLovinSdkUtils.isValidString( responseId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", responseId );
@@ -493,8 +487,6 @@ public class GoogleAdManagerMediationAdapter
         boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
         log( "Loading " + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for placement id: " + placementId + "..." );
 
-        setRequestConfiguration( parameters );
-
         Context context = getContext( activity );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, context );
 
@@ -538,8 +530,6 @@ public class GoogleAdManagerMediationAdapter
     {
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading native ad for placement id: " + placementId + "..." );
-
-        setRequestConfiguration( parameters );
 
         Context context = getContext( activity );
         AdRequest adRequest = createAdRequestWithParameters( parameters, context );
@@ -658,18 +648,15 @@ public class GoogleAdManagerMediationAdapter
 
     private int getAdaptiveBannerWidth(final MaxAdapterParameters parameters, final Context context)
     {
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
+        if ( widthObj instanceof Integer )
         {
-            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
-            if ( widthObj instanceof Integer )
-            {
-                return (int) widthObj;
-            }
-            else if ( widthObj != null )
-            {
-                e( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
-            }
+            return (int) widthObj;
+        }
+        else if ( widthObj != null )
+        {
+            e( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
         }
 
         int deviceWidthPx = getApplicationWindowWidth( context );
@@ -683,20 +670,6 @@ public class GoogleAdManagerMediationAdapter
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics( outMetrics );
         return outMetrics.widthPixels;
-    }
-
-    private void setRequestConfiguration(final MaxAdapterParameters parameters)
-    {
-        RequestConfiguration.Builder requestConfigurationBuilder = MobileAds.getRequestConfiguration().toBuilder();
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            int ageRestrictedUserTag = isAgeRestrictedUser ? RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE : RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE;
-            requestConfigurationBuilder.setTagForChildDirectedTreatment( ageRestrictedUserTag );
-        }
-
-        MobileAds.setRequestConfiguration( requestConfigurationBuilder.build() );
     }
 
     private AdManagerAdRequest createAdRequestWithParameters(final MaxAdapterParameters parameters, final Context context)
@@ -742,70 +715,67 @@ public class GoogleAdManagerMediationAdapter
                     .apply();
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+
+        Object maxContentRating = localExtraParameters.get( "google_max_ad_content_rating" );
+        if ( maxContentRating instanceof String )
         {
-            Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+            networkExtras.putString( "max_ad_content_rating", (String) maxContentRating );
+        }
 
-            Object maxContentRating = localExtraParameters.get( "google_max_ad_content_rating" );
-            if ( maxContentRating instanceof String )
+        Object contentUrlString = localExtraParameters.get( "google_content_url" );
+        if ( contentUrlString instanceof String )
+        {
+            requestBuilder.setContentUrl( (String) contentUrlString );
+        }
+
+        Object neighbouringContentUrlStringsObject = localExtraParameters.get( "google_neighbouring_content_url_strings" );
+        if ( neighbouringContentUrlStringsObject instanceof List )
+        {
+            // try-catching unsafe cast to List<String> in case an incorrect list type is set.
+            try
             {
-                networkExtras.putString( "max_ad_content_rating", (String) maxContentRating );
+                requestBuilder.setNeighboringContentUrls( (List<String>) neighbouringContentUrlStringsObject );
             }
-
-            Object contentUrlString = localExtraParameters.get( "google_content_url" );
-            if ( contentUrlString instanceof String )
+            catch ( Throwable th )
             {
-                requestBuilder.setContentUrl( (String) contentUrlString );
+                e( "Neighbouring content URL strings extra param needs to be of type List<String>.", th );
             }
+        }
 
-            Object neighbouringContentUrlStringsObject = localExtraParameters.get( "google_neighbouring_content_url_strings" );
-            if ( neighbouringContentUrlStringsObject instanceof List )
+        Object publisherProvidedId = localExtraParameters.get( "ppid" );
+        if ( publisherProvidedId instanceof String )
+        {
+            requestBuilder.setPublisherProvidedId( (String) publisherProvidedId );
+        }
+
+        Object customTargetingDataObject = localExtraParameters.get( "custom_targeting" );
+        if ( customTargetingDataObject instanceof Map )
+        {
+            // try-catching unsafe cast to List<String> or Map<String, Object> in case an incorrect type is set.
+            try
             {
-                // try-catching unsafe cast to List<String> in case an incorrect list type is set.
-                try
+                Map<String, Object> customTargetingDataMap = (Map<String, Object>) customTargetingDataObject;
+                for ( String key : customTargetingDataMap.keySet() )
                 {
-                    requestBuilder.setNeighboringContentUrls( (List<String>) neighbouringContentUrlStringsObject );
-                }
-                catch ( Throwable th )
-                {
-                    e( "Neighbouring content URL strings extra param needs to be of type List<String>.", th );
-                }
-            }
-
-            Object publisherProvidedId = localExtraParameters.get( "ppid" );
-            if ( publisherProvidedId instanceof String )
-            {
-                requestBuilder.setPublisherProvidedId( (String) publisherProvidedId );
-            }
-
-            Object customTargetingDataObject = localExtraParameters.get( "custom_targeting" );
-            if ( customTargetingDataObject instanceof Map )
-            {
-                // try-catching unsafe cast to List<String> or Map<String, Object> in case an incorrect type is set.
-                try
-                {
-                    Map<String, Object> customTargetingDataMap = (Map<String, Object>) customTargetingDataObject;
-                    for ( String key : customTargetingDataMap.keySet() )
+                    Object value = customTargetingDataMap.get( key );
+                    if ( value instanceof String )
                     {
-                        Object value = customTargetingDataMap.get( key );
-                        if ( value instanceof String )
-                        {
-                            requestBuilder.addCustomTargeting( key, (String) value );
-                        }
-                        else if ( value instanceof List )
-                        {
-                            requestBuilder.addCustomTargeting( key, (List<String>) value );
-                        }
-                        else
-                        {
-                            e( "Object in the map needs to be either of type String or List<String>." );
-                        }
+                        requestBuilder.addCustomTargeting( key, (String) value );
+                    }
+                    else if ( value instanceof List )
+                    {
+                        requestBuilder.addCustomTargeting( key, (List<String>) value );
+                    }
+                    else
+                    {
+                        e( "Object in the map needs to be either of type String or List<String>." );
                     }
                 }
-                catch ( Throwable th )
-                {
-                    e( "Custom targeting extra param value needs to be of type Map<String, Object>.", th );
-                }
+            }
+            catch ( Throwable th )
+            {
+                e( "Custom targeting extra param value needs to be of type Map<String, Object>.", th );
             }
         }
 
@@ -830,16 +800,10 @@ public class GoogleAdManagerMediationAdapter
     private int getAdChoicesPlacement(MaxAdapterResponseParameters parameters)
     {
         // Publishers can set via nativeAdLoader.setLocalExtraParameter( "gam_ad_choices_placement", ADCHOICES_BOTTOM_LEFT );
-        // Note: This feature requires AppLovin v11.0.0+
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
-        {
-            final Map<String, Object> localExtraParams = parameters.getLocalExtraParameters();
-            final Object adChoicesPlacementObj = localExtraParams != null ? localExtraParams.get( "gam_ad_choices_placement" ) : null;
+        final Map<String, Object> localExtraParams = parameters.getLocalExtraParameters();
+        final Object adChoicesPlacementObj = localExtraParams != null ? localExtraParams.get( "gam_ad_choices_placement" ) : null;
 
-            return isValidAdChoicesPlacement( adChoicesPlacementObj ) ? (Integer) adChoicesPlacementObj : NativeAdOptions.ADCHOICES_TOP_RIGHT;
-        }
-
-        return NativeAdOptions.ADCHOICES_TOP_RIGHT;
+        return isValidAdChoicesPlacement( adChoicesPlacementObj ) ? (Integer) adChoicesPlacementObj : NativeAdOptions.ADCHOICES_TOP_RIGHT;
     }
 
     private boolean isValidAdChoicesPlacement(Object placementObj)
@@ -1088,30 +1052,23 @@ public class GoogleAdManagerMediationAdapter
         {
             log( adFormat.getLabel() + " ad loaded: " + placementId );
 
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 )
+            Bundle extraInfo = new Bundle( 3 );
+
+            ResponseInfo responseInfo = adView.getResponseInfo();
+            String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
+            if ( AppLovinSdkUtils.isValidString( responseId ) )
             {
-                Bundle extraInfo = new Bundle( 3 );
-
-                ResponseInfo responseInfo = adView.getResponseInfo();
-                String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdkUtils.isValidString( responseId ) )
-                {
-                    extraInfo.putString( "creative_id", responseId );
-                }
-
-                AdSize adSize = adView.getAdSize();
-                if ( adSize != null )
-                {
-                    extraInfo.putInt( "ad_width", adSize.getWidth() );
-                    extraInfo.putInt( "ad_height", adSize.getHeight() );
-                }
-
-                listener.onAdViewAdLoaded( adView, extraInfo );
+                extraInfo.putString( "creative_id", responseId );
             }
-            else
+
+            AdSize adSize = adView.getAdSize();
+            if ( adSize != null )
             {
-                listener.onAdViewAdLoaded( adView );
+                extraInfo.putInt( "ad_width", adSize.getWidth() );
+                extraInfo.putInt( "ad_height", adSize.getHeight() );
             }
+
+            listener.onAdViewAdLoaded( adView, extraInfo );
         }
 
         @Override
@@ -1215,29 +1172,16 @@ public class GoogleAdManagerMediationAdapter
                     .setMediaView( mediaView )
                     .build();
 
-            final String templateName = BundleUtils.getString( "template", "", serverParameters );
-            if ( templateName.contains( "vertical" ) && AppLovinSdk.VERSION_CODE < 9140500 )
-            {
-                log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default native template will be used." );
-            }
-
             runOnUiThread( new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    MaxNativeAdView maxNativeAdView;
-                    if ( AppLovinSdk.VERSION_CODE >= 11010000 )
-                    {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
-                    }
-                    else
-                    {
-                        maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, activity );
-                    }
+                    final String templateName = BundleUtils.getString( "template", "", serverParameters );
+                    MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
 
                     nativeAdView = new NativeAdView( context );
-                    nativeAdView.setIconView( maxNativeAdView.getIconContentView() );
+                    nativeAdView.setIconView( maxNativeAdView.getIconImageView() );
                     nativeAdView.setHeadlineView( maxNativeAdView.getTitleTextView() );
                     nativeAdView.setBodyView( maxNativeAdView.getBodyTextView() );
                     nativeAdView.setMediaView( mediaView );
@@ -1248,7 +1192,7 @@ public class GoogleAdManagerMediationAdapter
 
                     ResponseInfo responseInfo = nativeAd.getResponseInfo();
                     String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                    if ( AppLovinSdk.VERSION_CODE >= 9150000 && AppLovinSdkUtils.isValidString( responseId ) )
+                    if ( AppLovinSdkUtils.isValidString( responseId ) )
                     {
                         Bundle extraInfo = new Bundle( 1 );
                         extraInfo.putString( "creative_id", responseId );
@@ -1459,12 +1403,6 @@ public class GoogleAdManagerMediationAdapter
             extends MaxNativeAd
     {
         public MaxGoogleAdManagerNativeAd(final Builder builder) { super( builder ); }
-
-        @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            prepareForInteraction( Collections.<View>emptyList(), maxNativeAdView );
-        }
 
         @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
