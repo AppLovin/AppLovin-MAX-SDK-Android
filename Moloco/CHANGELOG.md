@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 3.1.0.0
 * Certified with Moloco SDK 3.1.0.
 

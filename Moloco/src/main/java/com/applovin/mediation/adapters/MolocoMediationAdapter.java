@@ -478,10 +478,9 @@ public class MolocoMediationAdapter
     private void updatePrivacyPreferences(final MaxAdapterParameters parameters)
     {
         final Boolean hasUserConsent = parameters.hasUserConsent();
-        final Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
         final Boolean isDoNotSell = parameters.isDoNotSell();
 
-        final MolocoPrivacy.PrivacySettings privacySettings = new MolocoPrivacy.PrivacySettings( hasUserConsent, isAgeRestrictedUser, isDoNotSell );
+        final MolocoPrivacy.PrivacySettings privacySettings = new MolocoPrivacy.PrivacySettings( hasUserConsent, null, isDoNotSell );
         MolocoPrivacy.setPrivacy( privacySettings );
     }
 
@@ -895,12 +894,6 @@ public class MolocoMediationAdapter
         public MaxMolocoNativeAd(final Builder builder)
         {
             super( builder );
-        }
-
-        @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            prepareForInteraction( MolocoMediationAdapter.this.getClickableViews( maxNativeAdView ), maxNativeAdView );
         }
 
         @Override
