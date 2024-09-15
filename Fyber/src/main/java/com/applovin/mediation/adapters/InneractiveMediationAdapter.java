@@ -174,9 +174,8 @@ public class InneractiveMediationAdapter
             {
                 log( "Interstitial shown" );
 
-                // Passing extra info such as creative id supported in 9.15.0+
                 String creativeId = impressionData.getCreativeId();
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+                if ( !TextUtils.isEmpty( creativeId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", creativeId );
@@ -313,9 +312,8 @@ public class InneractiveMediationAdapter
             {
                 log( "Rewarded ad shown" );
 
-                // Passing extra info such as creative id supported in 9.15.0+
                 String creativeId = impressionData.getCreativeId();
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+                if ( !TextUtils.isEmpty( creativeId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", creativeId );
@@ -445,9 +443,8 @@ public class InneractiveMediationAdapter
             {
                 log( "AdView shown" );
 
-                // Passing extra info such as creative id supported in 9.15.0+
                 String creativeId = impressionData.getCreativeId();
-                if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+                if ( !TextUtils.isEmpty( creativeId ) )
                 {
                     Bundle extraInfo = new Bundle( 1 );
                     extraInfo.putString( "creative_id", creativeId );
@@ -579,12 +576,6 @@ public class InneractiveMediationAdapter
         else
         {
             InneractiveAdManager.setUSPrivacyString( "1---" );
-        }
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null && isAgeRestrictedUser )
-        {
-            InneractiveAdManager.currentAudienceAppliesToCoppa();
         }
     }
 
