@@ -103,13 +103,6 @@ public class IronSourceMediationAdapter
                 IronSource.setMetaData( "do_not_sell", Boolean.toString( isDoNotSell ) );
             }
 
-            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-            if ( isAgeRestrictedUser != null )
-            {
-                IronSource.setMetaData( "is_deviceid_optout", Boolean.toString( isAgeRestrictedUser ) );
-                IronSource.setMetaData( "is_child_directed", Boolean.toString( isAgeRestrictedUser ) );
-            }
-
             IronSource.setAdaptersDebug( parameters.isTesting() );
             IronSource.setISDemandOnlyInterstitialListener( ROUTER );
             IronSource.setISDemandOnlyRewardedVideoListener( ROUTER );

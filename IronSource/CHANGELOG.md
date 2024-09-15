@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.0.0.2
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+
 ## 8.3.0.0.1
 * Pass in application context instead of Activity context (which can potentially be null) for bidding banners/MRECs.
 * Gracefully fail zone-based ad requests for banners/MRECs instead.

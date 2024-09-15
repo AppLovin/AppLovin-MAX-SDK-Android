@@ -6,7 +6,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("8.3.0.0.1")
+val libraryVersionName by extra("8.3.0.0.2")
 
 android.defaultConfig.minSdk = 19
 
