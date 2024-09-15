@@ -1,5 +1,10 @@
 # Changelog
 
+## 16.8.51.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 16.8.51.0
 * Certified with Mintegral SDK 16.8.51.
 

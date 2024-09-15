@@ -183,13 +183,6 @@ public class MintegralMediationAdapter
                 mBridgeSDK.setDoNotTrackStatus( context, true );
             }
 
-            // Has to be _before_ their SDK init as well
-            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-            if ( isAgeRestrictedUser != null )
-            {
-                mBridgeSDK.setCoppaStatus( context, isAgeRestrictedUser );
-            }
-
             // Mintegral Docs - "It is recommended to use the API in the main thread"
             Map<String, String> map = mBridgeSDK.getMBConfigurationMap( appId, appKey );
             mBridgeSDK.init( map, context );
@@ -726,18 +719,6 @@ public class MintegralMediationAdapter
         }
     }
 
-    private ExecutorService getExecutorServiceToUse()
-    {
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
-        {
-            return getCachingExecutorService();
-        }
-        else
-        {
-            return executor;
-        }
-    }
-
     private static String toMintegralAdType(final MaxAdFormat adFormat)
     {
         if ( adFormat == MaxAdFormat.INTERSTITIAL )
@@ -1223,7 +1204,7 @@ public class MintegralMediationAdapter
             nativeAdCampaign = campaign;
             log( "Native " + adFormat.getLabel() + " ad loaded for unit id: " + unitId + " placement id: " + placementId );
 
-            getExecutorServiceToUse().submit( new Runnable()
+            getCachingExecutorService().submit( new Runnable()
             {
                 @Override
                 public void run()
@@ -1494,7 +1475,7 @@ public class MintegralMediationAdapter
 
         private void processNativeAd(final Campaign campaign)
         {
-            getExecutorServiceToUse().submit( new Runnable()
+            getCachingExecutorService().submit( new Runnable()
             {
                 @Override
                 public void run()
@@ -1572,12 +1553,6 @@ public class MintegralMediationAdapter
         public MaxMintegralNativeAd(final Builder builder) { super( builder ); }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            prepareForInteraction( MintegralMediationAdapter.this.getClickableViews( maxNativeAdView ), maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final Campaign nativeAdCampaign = MintegralMediationAdapter.this.nativeAdCampaign;
