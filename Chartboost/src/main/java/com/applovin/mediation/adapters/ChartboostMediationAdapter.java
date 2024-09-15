@@ -46,7 +46,6 @@ import com.chartboost.sdk.events.ShowError;
 import com.chartboost.sdk.events.ShowEvent;
 import com.chartboost.sdk.events.StartError;
 import com.chartboost.sdk.privacy.model.CCPA;
-import com.chartboost.sdk.privacy.model.COPPA;
 import com.chartboost.sdk.privacy.model.DataUseConsent;
 import com.chartboost.sdk.privacy.model.GDPR;
 
@@ -165,7 +164,7 @@ public class ChartboostMediationAdapter
             adView = null;
         }
     }
-    
+
     @Override
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
     {
@@ -333,13 +332,6 @@ public class ChartboostMediationAdapter
         {
             DataUseConsent ccpaConsent = new CCPA( isDoNotSell ? CCPA.CCPA_CONSENT.OPT_OUT_SALE : CCPA.CCPA_CONSENT.OPT_IN_SALE );
             Chartboost.addDataUseConsent( applicationContext, ccpaConsent );
-        }
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            DataUseConsent coppaConsent = new COPPA( isAgeRestrictedUser );
-            Chartboost.addDataUseConsent( applicationContext, coppaConsent );
         }
     }
 
@@ -548,8 +540,7 @@ public class ChartboostMediationAdapter
         {
             log( "Interstitial ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
@@ -638,8 +629,7 @@ public class ChartboostMediationAdapter
         {
             log( "Rewarded ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
@@ -702,8 +692,7 @@ public class ChartboostMediationAdapter
 
             log( adFormat.getLabel() + " ad loaded: " + location );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( cacheEvent.getAdID() ) )
+            if ( !TextUtils.isEmpty( cacheEvent.getAdID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", cacheEvent.getAdID() );
@@ -759,8 +748,7 @@ public class ChartboostMediationAdapter
         {
             log( adFormat.getLabel() + " ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
