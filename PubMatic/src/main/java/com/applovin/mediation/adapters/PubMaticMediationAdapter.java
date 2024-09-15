@@ -81,7 +81,7 @@ public class PubMaticMediationAdapter
                 }
 
                 @Override
-                public void onFailure(final POBError pobError)
+                public void onFailure(@NonNull final POBError pobError)
                 {
                     log( "PubMatic SDK failed to initialize with error: " + pobError );
                     status = InitializationStatus.INITIALIZED_FAILURE;
@@ -119,8 +119,6 @@ public class PubMaticMediationAdapter
             callback.onSignalCollectionFailed( "Invalid ad format" );
             return;
         }
-
-        updateAdSettings( parameters );
 
         final POBSignalConfig config = new POBSignalConfig.Builder( adFormat ).build();
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
@@ -177,8 +175,6 @@ public class PubMaticMediationAdapter
 
         log( "Loading interstitial ad: " + adUnitId + "..." );
 
-        updateAdSettings( parameters );
-
         interstitialAd = new POBInterstitial( getApplicationContext(), publisherId, profileId, adUnitId );
         interstitialAd.setListener( new InterstitialListener( listener ) );
         interstitialAd.loadAd( bidResponse );
@@ -210,9 +206,15 @@ public class PubMaticMediationAdapter
 
         log( "Loading rewarded ad: " + adUnitId + "..." );
 
-        updateAdSettings( parameters );
+        final POBRewardedAd pobRewardedAd = POBRewardedAd.getRewardedAd( getApplicationContext(), publisherId, profileId, adUnitId );
+        if ( pobRewardedAd == null )
+        {
+            // PubMatic returns null only if parameter validation fails.
+            listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            return;
+        }
 
-        rewardedAd = POBRewardedAd.getRewardedAd( getApplicationContext(), publisherId, profileId, adUnitId );
+        rewardedAd = pobRewardedAd;
         rewardedAd.setListener( new RewardedListener( listener ) );
         rewardedAd.loadAd( bidResponse );
     }
@@ -246,8 +248,6 @@ public class PubMaticMediationAdapter
 
         log( "Loading " + adFormat.getLabel() + " ad: " + adUnitId + "..." );
 
-        updateAdSettings( parameters );
-
         adView = new POBBannerView( getApplicationContext(), publisherId, profileId, adUnitId, adSize );
         adView.setListener( new AdViewListener( listener ) );
         adView.loadAd( bidResponse );
@@ -257,15 +257,6 @@ public class PubMaticMediationAdapter
     //endregion
 
     //region Helpers
-
-    private void updateAdSettings(final MaxAdapterParameters parameters)
-    {
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            OpenWrapSDK.setCoppa( isAgeRestrictedUser );
-        }
-    }
 
     private static String getPublisherId(MaxAdapterParameters parameters)
     {
@@ -400,14 +391,14 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdReceived(final POBInterstitial ad)
+        public void onAdReceived(@NonNull final POBInterstitial ad)
         {
             log( "Interstitial received" );
             listener.onInterstitialAdLoaded();
         }
 
         @Override
-        public void onAdFailedToLoad(final POBInterstitial ad, final POBError error)
+        public void onAdFailedToLoad(@NonNull final POBInterstitial ad, @NonNull final POBError error)
         {
             MaxAdapterError adapterError = toMaxError( error );
             log( "Interstitial failed to load with error: " + adapterError );
@@ -415,7 +406,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdImpression(final POBInterstitial ad)
+        public void onAdImpression(@NonNull final POBInterstitial ad)
         {
             // NOTE: This may fire on load, depending on the demand source
             log( "Interstitial impression" );
@@ -423,7 +414,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdFailedToShow(final POBInterstitial ad, final POBError error)
+        public void onAdFailedToShow(@NonNull final POBInterstitial ad, @NonNull final POBError error)
         {
             final MaxAdapterError adapterError = toMaxError( error );
             log( "Interstitial failed to show with error: " + adapterError );
@@ -431,14 +422,14 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdClicked(final POBInterstitial ad)
+        public void onAdClicked(@NonNull final POBInterstitial ad)
         {
             log( "Interstitial clicked" );
             listener.onInterstitialAdClicked();
         }
 
         @Override
-        public void onAdClosed(final POBInterstitial ad)
+        public void onAdClosed(@NonNull final POBInterstitial ad)
         {
             log( "Interstitial closed" );
             listener.onInterstitialAdHidden();
@@ -457,14 +448,14 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdReceived(final POBRewardedAd ad)
+        public void onAdReceived(@NonNull final POBRewardedAd ad)
         {
             log( "Rewarded ad received" );
             listener.onRewardedAdLoaded();
         }
 
         @Override
-        public void onAdFailedToLoad(final POBRewardedAd ad, final POBError error)
+        public void onAdFailedToLoad(@NonNull final POBRewardedAd ad, @NonNull final POBError error)
         {
             MaxAdapterError adapterError = toMaxError( error );
             log( "Rewarded ad failed to load with error: " + adapterError );
@@ -472,7 +463,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdImpression(final POBRewardedAd ad)
+        public void onAdImpression(@NonNull final POBRewardedAd ad)
         {
             // NOTE: This may fire on load, depending on the demand source
             log( "Rewarded ad impression" );
@@ -480,7 +471,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdFailedToShow(final POBRewardedAd ad, final POBError error)
+        public void onAdFailedToShow(@NonNull final POBRewardedAd ad, @NonNull final POBError error)
         {
             final MaxAdapterError adapterError = toMaxError( error );
             log( "Rewarded ad failed to show with error: " + adapterError );
@@ -488,7 +479,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdClicked(final POBRewardedAd ad)
+        public void onAdClicked(@NonNull final POBRewardedAd ad)
         {
             log( "Rewarded ad clicked" );
             listener.onRewardedAdClicked();
@@ -502,7 +493,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdClosed(final POBRewardedAd ad)
+        public void onAdClosed(@NonNull final POBRewardedAd ad)
         {
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
@@ -527,14 +518,14 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdReceived(final POBBannerView view)
+        public void onAdReceived(@NonNull final POBBannerView view)
         {
             log( "Ad view received" );
             listener.onAdViewAdLoaded( view );
         }
 
         @Override
-        public void onAdFailed(final POBBannerView view, final POBError error)
+        public void onAdFailed(@NonNull final POBBannerView view, @NonNull final POBError error)
         {
             MaxAdapterError adapterError = toMaxError( error );
             log( "Ad view failed to load with error: " + adapterError );
@@ -542,7 +533,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdImpression(final POBBannerView view)
+        public void onAdImpression(@NonNull final POBBannerView view)
         {
             // NOTE: This may fire on load, depending on the demand source
             log( "Ad view impression" );
@@ -550,7 +541,7 @@ public class PubMaticMediationAdapter
         }
 
         @Override
-        public void onAdClicked(final POBBannerView view)
+        public void onAdClicked(@NonNull final POBBannerView view)
         {
             log( "Ad view clicked" );
             listener.onAdViewAdClicked();
