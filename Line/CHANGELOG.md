@@ -1,5 +1,10 @@
 # Changelog
 
+## 2024.8.27.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 2024.8.27.0
 * Certified with Line SDK 2.8.20240827.
 

@@ -42,7 +42,6 @@ import com.five_corp.ad.FiveAdNativeEventListener;
 import com.five_corp.ad.FiveAdState;
 import com.five_corp.ad.FiveAdVideoReward;
 import com.five_corp.ad.FiveAdVideoRewardEventListener;
-import com.five_corp.ad.NeedChildDirectedTreatment;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
 import java.util.ArrayList;
@@ -100,16 +99,6 @@ public class LineMediationAdapter
             if ( hasUserConsent != null )
             {
                 config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
-            }
-
-            //
-            // COPPA options
-            // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-            // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-            Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-            if ( isAgeRestrictedUser != null )
-            {
-                config.needChildDirectedTreatment = isAgeRestrictedUser ? NeedChildDirectedTreatment.TRUE : NeedChildDirectedTreatment.FALSE;
             }
 
             FiveAd.initialize( getApplicationContext(), config );
@@ -648,10 +637,6 @@ public class LineMediationAdapter
 
                             // Backend will pass down `vertical` as the template to indicate using a vertical native template
                             final String templateName = BundleUtils.getString( "template", "", serverParameters );
-                            if ( templateName.contains( "vertical" ) && AppLovinSdk.VERSION_CODE < 9140500 )
-                            {
-                                log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default native template will be used." );
-                            }
 
                             final MaxNativeAdView maxNativeAdView;
                             // Fallback case to be removed when backend sends down full template names for vertical native ads
@@ -683,7 +668,7 @@ public class LineMediationAdapter
                             {
                                 clickableViews.add( maxNativeAdView.getIconImageView() );
                             }
-                            final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
+                            final View mediaContentView = maxNativeAdView.getMediaContentViewGroup();
                             if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
                             {
                                 clickableViews.add( mediaContentView );
@@ -823,38 +808,6 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = new ArrayList<>( 6 );
-            if ( AppLovinSdkUtils.isValidString( getTitle() ) && maxNativeAdView.getTitleTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getTitleTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getAdvertiser() ) && maxNativeAdView.getAdvertiserTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getBody() ) && maxNativeAdView.getBodyTextView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getBodyTextView() );
-            }
-            if ( AppLovinSdkUtils.isValidString( getCallToAction() ) && maxNativeAdView.getCallToActionButton() != null )
-            {
-                clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            }
-            if ( getIcon() != null && maxNativeAdView.getIconImageView() != null )
-            {
-                clickableViews.add( maxNativeAdView.getIconImageView() );
-            }
-            if ( getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
-            {
-                clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
-            }
-
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             FiveAdNative nativeAd = LineMediationAdapter.this.nativeAd;
