@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.7.0.1
+* Requires minimum AppLovin MAX SDK version be 13.0.0.
+* Removed support for COPPA.
+* Remove deprecated native API usages.
+
 ## 22.7.0.0
 * Certified with Smaato SDK 22.7.0.
 

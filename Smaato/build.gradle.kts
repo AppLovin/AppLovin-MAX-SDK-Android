@@ -8,7 +8,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("22.7.0.0")
+val libraryVersionName by extra("22.7.0.1")
 
 repositories {
     maven { url = uri("https://s3.amazonaws.com/smaato-sdk-releases/") }

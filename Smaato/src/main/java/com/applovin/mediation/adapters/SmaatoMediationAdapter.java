@@ -109,9 +109,6 @@ public class SmaatoMediationAdapter
 
             SmaatoSdk.init( application, config, pubId );
 
-            // Call all other APIs after `SmaatoSdk.init(...)`
-            updateAgeRestrictedUser( parameters );
-
             // NOTE: This does not work atm
             updateLocationCollectionEnabled( parameters );
         }
@@ -136,7 +133,6 @@ public class SmaatoMediationAdapter
     {
         log( "Collecting signal..." );
 
-        updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
         final String signal = SmaatoSdk.collectSignals( getContext( activity ) );
@@ -173,7 +169,6 @@ public class SmaatoMediationAdapter
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for placement: " + placementId + "..." );
 
-        updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
         if ( isNative )
@@ -237,7 +232,6 @@ public class SmaatoMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
-        updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
         ROUTER.addInterstitialAdapter( this, listener, placementId );
@@ -301,7 +295,6 @@ public class SmaatoMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
 
-        updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
         ROUTER.addRewardedAdapter( this, listener, placementId );
@@ -379,7 +372,6 @@ public class SmaatoMediationAdapter
             return;
         }
 
-        updateAgeRestrictedUser( parameters );
         updateLocationCollectionEnabled( parameters );
 
         final NativeAdRequest nativeAdRequest = createNativeAdRequest( placementId, bidResponse );
@@ -401,27 +393,13 @@ public class SmaatoMediationAdapter
     // TODO: Add local params support on init
     private void updateLocationCollectionEnabled(final MaxAdapterParameters parameters)
     {
-        if ( AppLovinSdk.VERSION_CODE >= 11_00_00_00 )
+        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+        final Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
+        if ( isLocationCollectionEnabledObj instanceof Boolean )
         {
-            final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-            final Object isLocationCollectionEnabledObj = localExtraParameters.get( "is_location_collection_enabled" );
-            if ( isLocationCollectionEnabledObj instanceof Boolean )
-            {
-                log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
-                // NOTE: According to docs - this is disabled by default
-                SmaatoSdk.setGPSEnabled( (boolean) isLocationCollectionEnabledObj );
-            }
-        }
-    }
-
-    private void updateAgeRestrictedUser(final MaxAdapterParameters parameters)
-    {
-        // NOTE: Adapter / mediated SDK has support for COPPA, but is not approved by Play Store and therefore will be filtered on COPPA traffic
-        // https://support.google.com/googleplay/android-developer/answer/9283445?hl=en
-        final Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            SmaatoSdk.setCoppa( isAgeRestrictedUser );
+            log( "Setting location collection enabled: " + isLocationCollectionEnabledObj );
+            // NOTE: According to docs - this is disabled by default
+            SmaatoSdk.setGPSEnabled( (boolean) isLocationCollectionEnabledObj );
         }
     }
 
@@ -560,8 +538,7 @@ public class SmaatoMediationAdapter
         {
             clickableViews.add( maxNativeAdView.getIconImageView() );
         }
-        final View mediaContentView = ( AppLovinSdk.VERSION_CODE >= 11000000 ) ? maxNativeAdView.getMediaContentViewGroup() : maxNativeAdView.getMediaContentView();
-        if ( maxNativeAd.getMediaView() != null && mediaContentView != null )
+        if ( maxNativeAd.getMediaView() != null && maxNativeAdView.getMediaContentViewGroup() != null )
         {
             clickableViews.add( maxNativeAdView.getMediaContentViewGroup() );
         }
@@ -588,8 +565,7 @@ public class SmaatoMediationAdapter
         {
             log( "AdView loaded" );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( bannerView.getCreativeId() ) )
+            if ( !TextUtils.isEmpty( bannerView.getCreativeId() ) )
             {
                 final Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", bannerView.getCreativeId() );
@@ -880,15 +856,7 @@ public class SmaatoMediationAdapter
     {
         private MaxSmaatoNativeAd(final Builder builder) { super( builder ); }
 
-        @SuppressWarnings("deprecation")
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            final List<View> clickableViews = SmaatoMediationAdapter.getClickableViews( this, maxNativeAdView );
-            prepareForInteraction( clickableViews, maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final NativeAdRenderer nativeAdRenderer = SmaatoMediationAdapter.this.nativeAdRenderer;
@@ -1174,8 +1142,7 @@ public class SmaatoMediationAdapter
 
         private void onAdLoaded(final String placementId, final String creativeId)
         {
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( creativeId ) )
+            if ( !TextUtils.isEmpty( creativeId ) )
             {
                 final Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
