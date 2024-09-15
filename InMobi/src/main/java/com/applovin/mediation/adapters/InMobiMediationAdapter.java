@@ -115,7 +115,7 @@ public class InMobiMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        String signal = InMobiSdk.getToken( getExtras( parameters ), null );
+        String signal = InMobiSdk.getToken( getExtras(), null );
         callback.onSignalCollected( signal );
     }
 
@@ -239,7 +239,7 @@ public class InMobiMediationAdapter
             nativeAd = new InMobiNative( context,
                                          placementId,
                                          new NativeAdViewListener( parameters, adFormat, activity, listener ) );
-            nativeAd.setExtras( getExtras( parameters ) );
+            nativeAd.setExtras( getExtras() );
 
             if ( isBiddingAd )
             {
@@ -253,7 +253,7 @@ public class InMobiMediationAdapter
         else
         {
             adView = new InMobiBanner( context, placementId );
-            adView.setExtras( getExtras( parameters ) );
+            adView.setExtras( getExtras() );
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
@@ -397,7 +397,7 @@ public class InMobiMediationAdapter
                                      placementId,
                                      new NativeAdListener( parameters, context, listener ) );
 
-        nativeAd.setExtras( getExtras( parameters ) );
+        nativeAd.setExtras( getExtras() );
 
         if ( isBiddingAd )
         {
@@ -429,7 +429,7 @@ public class InMobiMediationAdapter
     private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, Activity activity)
     {
         InMobiInterstitial interstitial = new InMobiInterstitial( activity, placementId, listener );
-        interstitial.setExtras( getExtras( parameters ) );
+        interstitial.setExtras( getExtras() );
 
         updatePrivacySettings( parameters );
 
@@ -484,13 +484,6 @@ public class InMobiMediationAdapter
     {
         InMobiSdk.setPartnerGDPRConsent( getConsentJSONObject( parameters ) );
 
-        // NOTE: Only for family apps and not related to COPPA
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            InMobiSdk.setIsAgeRestricted( isAgeRestrictedUser );
-        }
-
         Boolean isDoNotSell = parameters.isDoNotSell();
         if ( isDoNotSell != null )
         {
@@ -504,17 +497,11 @@ public class InMobiMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private Map<String, String> getExtras(MaxAdapterParameters parameters)
+    private Map<String, String> getExtras()
     {
-        Map<String, String> extras = new HashMap<>( 3 );
+        Map<String, String> extras = new HashMap<>( 2 );
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
-
-        Boolean isAgeRestrictedUser = parameters.isAgeRestrictedUser();
-        if ( isAgeRestrictedUser != null )
-        {
-            extras.put( "coppa", isAgeRestrictedUser ? "1" : "0" );
-        }
 
         return extras;
     }
@@ -555,16 +542,9 @@ public class InMobiMediationAdapter
         return null;
     }
 
-    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
+    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName)
     {
-        if ( AppLovinSdk.VERSION_CODE >= 11_01_00_00 )
-        {
-            return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
-        }
-        else
-        {
-            return new MaxNativeAdView( maxNativeAd, templateName, activity );
-        }
+        return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
     }
 
     private static MaxAdapterError toMaxError(InMobiAdRequestStatus inMobiError)
@@ -655,8 +635,7 @@ public class InMobiMediationAdapter
         {
             log( "AdView loaded" );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
@@ -735,8 +714,7 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial loaded" );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
@@ -828,8 +806,7 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad loaded" );
 
-            // Passing extra info such as creative id supported in 9.15.0+
-            if ( AppLovinSdk.VERSION_CODE >= 9150000 && !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
@@ -993,37 +970,24 @@ public class InMobiMediationAdapter
                             final String templateName = BundleUtils.getString( "template", "", serverParameters );
                             if ( templateName.contains( "vertical" ) )
                             {
-                                if ( AppLovinSdk.VERSION_CODE < 9_14_05_00 )
-                                {
-                                    log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default horizontal native template will be used." );
-                                }
-
                                 if ( templateName.equals( "vertical" ) )
                                 {
                                     String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
-                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, verticalTemplateName, activity );
+                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, verticalTemplateName );
                                 }
                                 else
                                 {
-                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, templateName, activity );
+                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, templateName );
                                 }
-                            }
-                            else if ( AppLovinSdk.VERSION_CODE < 9_14_05_00 )
-                            {
-                                maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd,
-                                                                         AppLovinSdkUtils.isValidString( templateName ) ? templateName : "no_body_banner_template",
-                                                                         activity );
                             }
                             else
                             {
-                                maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd,
-                                                                         AppLovinSdkUtils.isValidString( templateName ) ? templateName : "media_banner_template",
-                                                                         activity );
+                                maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, AppLovinSdkUtils.isValidString( templateName ) ? templateName : "media_banner_template" );
                             }
 
                             maxInMobiNativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
 
-                            if ( AppLovinSdk.VERSION_CODE >= 9_15_00_00 && AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
+                            if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
                             {
                                 Bundle extraInfo = new Bundle( 1 );
                                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
@@ -1260,12 +1224,6 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void prepareViewForInteraction(final MaxNativeAdView maxNativeAdView)
-        {
-            prepareForInteraction( InMobiMediationAdapter.this.getClickableViews( maxNativeAdView ), maxNativeAdView );
-        }
-
-        // @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
             final InMobiNative nativeAd = InMobiMediationAdapter.this.nativeAd;
