@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.18.0.0
+* Certified with Facebook SDK 6.18.0.
+
 ## 6.17.0.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
