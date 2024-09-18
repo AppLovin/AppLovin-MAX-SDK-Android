@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.0.6.0
+* Certified with ByteDance SDK 6.2.0.6.
+
 ## 6.2.0.5.2
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
