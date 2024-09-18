@@ -1282,20 +1282,7 @@ public class InMobiMediationAdapter
                 public void onClick(final View view)
                 {
                     log( "Native ad clicked from click listener" );
-
                     nativeAd.reportAdClickAndOpenLandingPage();
-                    if ( format == MaxAdFormat.NATIVE )
-                    {
-                        ( (MaxNativeAdAdapterListener) listener ).onNativeAdClicked();
-                    }
-                    else if ( format.isAdViewAd() )
-                    {
-                        ( (MaxAdViewAdapterListener) listener ).onAdViewAdClicked();
-                    }
-                    else
-                    {
-                        log( "Unsupported ad format: must be adView ad or native ad" );
-                    }
                 }
             };
 

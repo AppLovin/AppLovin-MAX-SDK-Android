@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.7.7.2
+* Fix firing click callback twice on single click for native ads.
+
 ## 10.7.7.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
