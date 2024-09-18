@@ -223,7 +223,7 @@ public class MolocoMediationAdapter
             return Unit.INSTANCE;
         };
 
-        Moloco.createInterstitial( placementId, createCallback );
+        Moloco.createInterstitial( placementId, null, createCallback );
     }
 
     @Override
@@ -281,7 +281,7 @@ public class MolocoMediationAdapter
             return Unit.INSTANCE;
         };
 
-        Moloco.createRewardedInterstitial( placementId, createCallback );
+        Moloco.createRewardedInterstitial( placementId, null, createCallback );
     }
 
     @Override
@@ -368,15 +368,15 @@ public class MolocoMediationAdapter
 
             if ( adFormat == MaxAdFormat.BANNER )
             {
-                Moloco.createBanner( placementId, createCallback );
+                Moloco.createBanner( placementId, null, createCallback );
             }
             else if ( adFormat == MaxAdFormat.LEADER )
             {
-                Moloco.createBannerTablet( placementId, createCallback );
+                Moloco.createBannerTablet( placementId, null, createCallback );
             }
             else if ( adFormat == MaxAdFormat.MREC )
             {
-                Moloco.createMREC( placementId, createCallback );
+                Moloco.createMREC( placementId, null, createCallback );
             }
             else
             {
