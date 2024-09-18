@@ -6,7 +6,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("1.2.4.2")
+val libraryVersionName by extra("1.2.6.0")
 val libraryArtifactId by extra("yso-network-adapter")
 
 android.defaultConfig.minSdk = 23

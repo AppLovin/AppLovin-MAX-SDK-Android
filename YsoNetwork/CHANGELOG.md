@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.6.0
+* Certified with YSO Network SDK 1.2.6.
+
 ## 1.2.4.2
 * Added ProGuard rule required by YSO Network SDK.
 * Requires minimum Android API level be 23 or higher.
