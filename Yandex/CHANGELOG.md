@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.5.0.0
+* Certified with Yandex SDK 7.5.0.
+
 ## 7.4.0.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
