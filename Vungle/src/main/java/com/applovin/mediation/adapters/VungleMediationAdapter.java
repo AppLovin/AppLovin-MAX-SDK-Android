@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -1097,21 +1099,43 @@ public class VungleMediationAdapter
                 return false;
             }
 
-            if ( mediaView.getParent() != null )
+            // Native integrations
+            if ( container instanceof MaxNativeAdView )
             {
-                ( (ViewGroup) mediaView.getParent() ).removeView( mediaView );
+                if ( mediaView.getParent() != null )
+                {
+                    ( (ViewGroup) mediaView.getParent() ).removeView( mediaView );
+                }
+
+                MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
+
+                ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
+                if ( contentViewGroup != null )
+                {
+                    contentViewGroup.removeAllViews();
+                    contentViewGroup.addView( mediaView );
+                }
+
+                nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
             }
-
-            MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
-
-            ViewGroup contentViewGroup = maxNativeAdView.getMediaContentViewGroup();
-            if ( contentViewGroup != null )
+            // Plugins
+            else
             {
-                contentViewGroup.removeAllViews();
-                contentViewGroup.addView( mediaView );
-            }
+                FrameLayout frameLayout = new FrameLayout( container.getContext() );
+                container.addView( frameLayout, 0, new FrameLayout.LayoutParams( FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT ) );
 
-            nativeAd.registerViewForInteraction( maxNativeAdView, (MediaView) mediaView, maxNativeAdView.getIconImageView(), clickableViews );
+                ImageView iconImageView = null;
+                for ( final View clickableView : clickableViews )
+                {
+                    if ( clickableView instanceof ImageView )
+                    {
+                        iconImageView = (ImageView) clickableView;
+                        break;
+                    }
+                }
+
+                nativeAd.registerViewForInteraction( frameLayout, (MediaView) mediaView, iconImageView, clickableViews );
+            }
 
             return true;
         }
