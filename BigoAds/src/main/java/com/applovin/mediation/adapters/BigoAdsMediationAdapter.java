@@ -173,7 +173,7 @@ public class BigoAdsMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return BigoAdSdk.getSDKVersion();
+        return BigoAdSdk.getSDKVersionName();
     }
 
     @Override
@@ -1083,11 +1083,7 @@ public class BigoAdsMediationAdapter
             }
 
             ImageView iconView = null;
-            if ( maxNativeAdView.getIconContentView() != null )
-            {
-                iconView = (ImageView) getIconView();
-            }
-            else if ( maxNativeAdView.getIconImageView() != null )
+            if ( maxNativeAdView.getIconImageView() != null )
             {
                 iconView = maxNativeAdView.getIconImageView();
             }

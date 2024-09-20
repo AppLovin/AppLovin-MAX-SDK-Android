@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.9.1.0
+* Certified with BigoAds SDK 4.9.1.
+* Remove deprecated native API usages.
+
 ## 4.7.0.0
 * Certified with BigoAds SDK 4.7.0.
 
