@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.8.51.2
+* Update to use new interstitial ad APIs.
+
 ## 16.8.51.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.

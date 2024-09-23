@@ -36,9 +36,9 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.mbridge.msdk.MBridgeConstans;
 import com.mbridge.msdk.MBridgeSDK;
 import com.mbridge.msdk.foundation.same.net.Aa;
-import com.mbridge.msdk.interstitialvideo.out.InterstitialVideoListener;
-import com.mbridge.msdk.interstitialvideo.out.MBBidInterstitialVideoHandler;
-import com.mbridge.msdk.interstitialvideo.out.MBInterstitialVideoHandler;
+import com.mbridge.msdk.newinterstitial.out.MBBidNewInterstitialHandler;
+import com.mbridge.msdk.newinterstitial.out.MBNewInterstitialHandler;
+import com.mbridge.msdk.newinterstitial.out.NewInterstitialListener;
 import com.mbridge.msdk.mbbid.out.BidConstants;
 import com.mbridge.msdk.mbbid.out.BidManager;
 import com.mbridge.msdk.nativex.view.MBMediaView;
@@ -119,8 +119,8 @@ public class MintegralMediationAdapter
     private static final int DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 5; // Mintegral ad load timeout is 10s, so this is 5s.
 
     // Mintegral suggested we keep a map of unit id -> handler to prevent re-creation / high error rates - https://app.asana.com/0/573104092700345/1166998599374502
-    private static final Map<String, MBInterstitialVideoHandler>    mbInterstitialVideoHandlers    = new HashMap<>();
-    private static final Map<String, MBBidInterstitialVideoHandler> mbBidInterstitialVideoHandlers = new HashMap<>();
+    private static final Map<String, MBNewInterstitialHandler>      mbInterstitialVideoHandlers    = new HashMap<>();
+    private static final Map<String, MBBidNewInterstitialHandler>   mbBidInterstitialVideoHandlers = new HashMap<>();
     private static final Map<String, MBRewardVideoHandler>          mbRewardVideoHandlers          = new HashMap<>();
     private static final Map<String, MBBidRewardVideoHandler>       mbBidRewardVideoHandlers       = new HashMap<>();
 
@@ -128,8 +128,8 @@ public class MintegralMediationAdapter
     private String mbUnitId;
 
     // Supports video, interactive, and banner ad formats
-    private MBInterstitialVideoHandler    mbInterstitialVideoHandler;
-    private MBBidInterstitialVideoHandler mbBidInterstitialVideoHandler;
+    private MBNewInterstitialHandler      mbInterstitialVideoHandler;
+    private MBBidNewInterstitialHandler   mbBidInterstitialVideoHandler;
     private MBSplashHandler               mbSplashHandler;
     private MBRewardVideoHandler          mbRewardVideoHandler;
     private MBBidRewardVideoHandler       mbBidRewardVideoHandler;
@@ -331,7 +331,7 @@ public class MintegralMediationAdapter
             }
             else
             {
-                mbBidInterstitialVideoHandler = new MBBidInterstitialVideoHandler( activity, placementId, mbUnitId );
+                mbBidInterstitialVideoHandler = new MBBidNewInterstitialHandler( activity, placementId, mbUnitId );
                 mbBidInterstitialVideoHandlers.put( mbUnitId, mbBidInterstitialVideoHandler );
             }
 
@@ -352,7 +352,7 @@ public class MintegralMediationAdapter
             }
             else
             {
-                mbInterstitialVideoHandler = new MBInterstitialVideoHandler( activity, placementId, mbUnitId );
+                mbInterstitialVideoHandler = new MBNewInterstitialHandler( activity, placementId, mbUnitId );
                 mbInterstitialVideoHandlers.put( mbUnitId, mbInterstitialVideoHandler );
             }
 
@@ -847,17 +847,24 @@ public class MintegralMediationAdapter
     private static class MintegralMediationAdapterRouter
             extends MediationAdapterRouter
     {
-        private final InterstitialVideoListener interstitialVideoListener = new InterstitialVideoListener()
+        private final NewInterstitialListener interstitialVideoListener = new NewInterstitialListener()
         {
             @Override
-            public void onVideoLoadSuccess(final MBridgeIds mBridgeIds)
+            public void onLoadCampaignSuccess(final MBridgeIds mBridgeIds)
             {
-                // Ad has loaded and video has been downloaded
-                log( "Interstitial successfully loaded and video has been downloaded for: " + mBridgeIds );
+                // Ad has filled
+                log( "Interstitial successfully loaded for: " + mBridgeIds );
+            }
+
+            @Override
+            public void onResourceLoadSuccess(final MBridgeIds mBridgeIds)
+            {
+                // Ad resources have downloaded successfully and ad is ready to show
+                log( "Interstitial resources downloaded successfully: " + mBridgeIds );
 
                 String unitId = mBridgeIds.getUnitId();
-                MBInterstitialVideoHandler mbInterstitialVideoHandler = MintegralMediationAdapter.mbInterstitialVideoHandlers.get( unitId );
-                MBBidInterstitialVideoHandler mbBidInterstitialVideoHandler = MintegralMediationAdapter.mbBidInterstitialVideoHandlers.get( unitId );
+                MBNewInterstitialHandler mbInterstitialVideoHandler = MintegralMediationAdapter.mbInterstitialVideoHandlers.get( unitId );
+                MBBidNewInterstitialHandler mbBidInterstitialVideoHandler = MintegralMediationAdapter.mbBidInterstitialVideoHandlers.get( unitId );
 
                 String creativeId;
                 if ( mbBidInterstitialVideoHandler != null )
@@ -883,14 +890,7 @@ public class MintegralMediationAdapter
             }
 
             @Override
-            public void onLoadSuccess(final MBridgeIds mBridgeIds)
-            {
-                // Ad has loaded but video still needs to be downloaded
-                log( "Interstitial successfully loaded but video still needs to be downloaded for: " + mBridgeIds );
-            }
-
-            @Override
-            public void onVideoLoadFail(final MBridgeIds mBridgeIds, String errorMsg)
+            public void onResourceLoadFail(final MBridgeIds mBridgeIds, String errorMsg)
             {
                 log( "Interstitial failed to load: " + errorMsg + " for: " + mBridgeIds );
                 onAdLoadFailed( mBridgeIds.getUnitId(), toMaxError( errorMsg ) );
@@ -912,10 +912,12 @@ public class MintegralMediationAdapter
             }
 
             @Override
-            public void onVideoAdClicked(final MBridgeIds mBridgeIds)
+            public void onAdClicked(final MBridgeIds mBridgeIds)
             {
                 log( "Interstitial clicked" );
-                onAdClicked( mBridgeIds.getUnitId() );
+
+                // Explicitly call `MintegralMediationAdapterRouter` since click callback is named the same for Mintegral and AppLovin.
+                MintegralMediationAdapterRouter.this.onAdClicked( mBridgeIds.getUnitId() );
             }
 
             @Override
@@ -932,7 +934,7 @@ public class MintegralMediationAdapter
             }
 
             @Override
-            public void onAdCloseWithIVReward(final MBridgeIds mBridgeIds, RewardInfo rewardInfo)
+            public void onAdCloseWithNIReward(final MBridgeIds mBridgeIds, RewardInfo rewardInfo)
             {
                 log( "Interstitial with reward hidden" );
             }
@@ -1048,7 +1050,7 @@ public class MintegralMediationAdapter
             }
         };
 
-        InterstitialVideoListener getInterstitialListener()
+        NewInterstitialListener getInterstitialListener()
         {
             return interstitialVideoListener;
         }
