@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.0.0
+* Certified with Verve SDK 3.1.0.
+
 ## 3.0.4.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
