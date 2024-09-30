@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.4.0.0
+* Certified with Google SDK 23.4.0.
+
 ## 23.3.0.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
