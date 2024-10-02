@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.4.0.0.0
+* Certified with IronSource SDK 8.4.0.
+
 ## 8.3.0.0.2
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
