@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.0.0.0
+* Certified with PubMatic SDK 4.0.0.
+
 ## 3.9.0.2
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
