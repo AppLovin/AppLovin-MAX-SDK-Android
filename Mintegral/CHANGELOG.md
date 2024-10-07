@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.8.61.0
+* Certified with Mintegral SDK 16.8.61.
+
 ## 16.8.51.2
 * Update to use new interstitial ad APIs.
 
