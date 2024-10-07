@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.7.8.0
+* Certified with InMobi SDK 10.7.8.
+
 ## 10.7.7.2
 * Fix firing click callback twice on single click for native ads.
 
