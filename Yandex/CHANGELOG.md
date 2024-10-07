@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.5.0.1
+* Simplify native ad options view binding.
+* Ensure non-empty parameters are passed in ad requests.
+
 ## 7.5.0.0
 * Certified with Yandex SDK 7.5.0.
 

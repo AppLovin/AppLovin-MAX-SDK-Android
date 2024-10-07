@@ -86,7 +86,14 @@ public class YandexMediationAdapter
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
     // Required parameters given by Yandex
-    private static final Map<String, String> adRequestParameters = new HashMap<>( 3 );
+    private static final Map<String, String> adRequestParameters = new HashMap<String, String>()
+    {
+        {
+            put( "adapter_network_name", "applovin" );
+            put( "adapter_version", BuildConfig.VERSION_NAME );
+            put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
+        }
+    };
 
     private static InitializationStatus status;
 
@@ -185,10 +192,6 @@ public class YandexMediationAdapter
         {
             onCompletionListener.onCompletion( status, null );
         }
-
-        adRequestParameters.put( "adapter_network_name", "applovin" );
-        adRequestParameters.put( "adapter_version", getAdapterVersion() );
-        adRequestParameters.put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
     }
 
     //endregion
@@ -828,16 +831,6 @@ public class YandexMediationAdapter
                         iconDrawable = new BitmapDrawable( applicationContext.getResources(), assets.getIcon().getBitmap() );
                     }
 
-                    LinearLayout disclaimerSponsoredOptionsViewContainer = new LinearLayout( applicationContext );
-                    TextView disclaimer = new TextView( applicationContext );
-                    TextView sponsored = new TextView( applicationContext );
-
-                    disclaimer.setText( assets.getWarning() );
-                    sponsored.setText( assets.getSponsored() );
-                    disclaimerSponsoredOptionsViewContainer.addView( disclaimer ); // new TextView as disclaimer view
-                    disclaimerSponsoredOptionsViewContainer.addView( sponsored ); // new TextView as sponsored view
-                    disclaimerSponsoredOptionsViewContainer.addView( new ImageView( applicationContext ) ); // new ImageView as options view
-
                     MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( assets.getTitle() )
@@ -845,7 +838,7 @@ public class YandexMediationAdapter
                             .setBody( assets.getBody() )
                             .setCallToAction( assets.getCallToAction() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                            .setOptionsView( disclaimerSponsoredOptionsViewContainer )
+                            .setOptionsView( new ImageView( applicationContext ) )
                             .setMediaView( new MediaView( applicationContext ) ); // Yandex requires rendering MediaView with their own bind method
 
                     if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 && assets.getRating() != null )
@@ -920,17 +913,13 @@ public class YandexMediationAdapter
             nativeAdView.addView( mainView );
             maxNativeAdView.addView( nativeAdView );
 
-            LinearLayout disclaimerSponsoredOptionsViewContainer = (LinearLayout) maxNativeAdView.getOptionsContentViewGroup().getChildAt( 0 );
-
             final NativeAdViewBinder binder = new NativeAdViewBinder.Builder( nativeAdView )
                     .setIconView( maxNativeAdView.getIconImageView() )
                     .setTitleView( maxNativeAdView.getTitleTextView() )
                     .setDomainView( maxNativeAdView.getAdvertiserTextView() )
                     .setBodyView( maxNativeAdView.getBodyTextView() )
                     .setMediaView( (MediaView) getMediaView() )
-                    .setWarningView( (TextView) disclaimerSponsoredOptionsViewContainer.getChildAt( 0 ) )
-                    .setSponsoredView( (TextView) disclaimerSponsoredOptionsViewContainer.getChildAt( 1 ) )
-                    .setFeedbackView( (ImageView) disclaimerSponsoredOptionsViewContainer.getChildAt( 2 ) )
+                    .setFeedbackView( (ImageView) getOptionsView() )
                     .setCallToActionView( maxNativeAdView.getCallToActionButton() )
                     .build();
 
