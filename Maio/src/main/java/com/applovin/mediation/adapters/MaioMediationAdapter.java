@@ -50,7 +50,7 @@ public class MaioMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return Version.Companion.toString();
+        return Version.Companion.getInstance().toString();
     }
 
     @Override

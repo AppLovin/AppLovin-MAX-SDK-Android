@@ -3,12 +3,10 @@
     <application>
         <activity
             android:name="jp.maio.sdk.android.v2.AdActivity"
-            android:configChanges="orientation|screenLayout|screenSize"
             android:hardwareAccelerated="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name="jp.maio.sdk.android.v2.PlayableActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
     </application>
 </manifest>
