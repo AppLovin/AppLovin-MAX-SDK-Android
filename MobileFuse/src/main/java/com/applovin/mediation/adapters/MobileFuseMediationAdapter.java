@@ -326,12 +326,6 @@ public class MobileFuseMediationAdapter
             privacyPreferencesBuilder.setUsPrivacyConsentString( "1---" );
         }
 
-        String consentString = parameters.getConsentString();
-        if ( consentString != null )
-        {
-            privacyPreferencesBuilder.setIabConsentString( consentString );
-        }
-
         MobileFuse.setPrivacyPreferences( privacyPreferencesBuilder.build() );
     }
 

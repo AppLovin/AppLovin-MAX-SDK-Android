@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.0.1
+* Remove passing in of consent string as it has been deprecated.
+
 ## 1.8.0.0
 * Certified with MobileFuse SDK 1.8.0.
 
