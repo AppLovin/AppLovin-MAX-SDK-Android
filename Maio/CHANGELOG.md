@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.0
+* Certified with Maio SDK 2.0.0.
+ 
 ## 1.1.16.3
 * Now requires MAX SDK version 9.8.2 or higher.
 * Add additional details for ad display failures.

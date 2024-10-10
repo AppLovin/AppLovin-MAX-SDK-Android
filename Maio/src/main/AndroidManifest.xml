@@ -2,13 +2,11 @@
 
     <application>
         <activity
-            android:name="jp.maio.sdk.android.AdFullscreenActivity"
-            android:configChanges="orientation|screenLayout|screenSize"
+            android:name="jp.maio.sdk.android.v2.AdActivity"
             android:hardwareAccelerated="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
-            android:name="jp.maio.sdk.android.HtmlBasedAdActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:name="jp.maio.sdk.android.v2.PlayableActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
     </application>
 </manifest>
