@@ -129,7 +129,7 @@ public class UnityAdsMediationAdapter
     {
         log( "Collecting signal..." );
 
-        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+        updatePrivacyConsent( parameters, getContext( activity ) );
 
         UnityAds.getToken( new IUnityAdsTokenListener()
         {
@@ -148,7 +148,7 @@ public class UnityAdsMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement \"" + placementId + "\"..." );
 
-        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+        updatePrivacyConsent( parameters, getContext( activity ) );
 
         // Every ad needs a random ID associated with each load and show
         biddingAdId = UUID.randomUUID().toString();
@@ -216,7 +216,7 @@ public class UnityAdsMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "rewarded ad for placement \"" + placementId + "\"..." );
 
-        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+        updatePrivacyConsent( parameters, getContext( activity ) );
 
         // Every ad needs a random ID associated with each load and show
         biddingAdId = UUID.randomUUID().toString();
@@ -302,7 +302,7 @@ public class UnityAdsMediationAdapter
             return;
         }
 
-        updatePrivacyConsent( parameters, activity.getApplicationContext() );
+        updatePrivacyConsent( parameters, getContext( activity ) );
 
         // Every ad needs a random ID associated with each load and show
         biddingAdId = UUID.randomUUID().toString();

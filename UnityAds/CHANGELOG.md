@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.12.3.1
+* Fix caught NPE caused by retrieving the application context with a null `Activity`.
+
 ## 4.12.3.0
 * Certified with UnityAds SDK 4.12.3.
 
