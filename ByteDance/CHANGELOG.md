@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.2.0.8.0
+* Certified with ByteDance SDK 6.2.0.8.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 6.2.0.7.0
 * Certified with ByteDance SDK 6.2.0.7.
 
