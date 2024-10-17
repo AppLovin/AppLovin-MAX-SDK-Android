@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.3.1.2
+* Fix NPE when binding `adViewGroup` after it has been destroyed.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 8.3.1.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
