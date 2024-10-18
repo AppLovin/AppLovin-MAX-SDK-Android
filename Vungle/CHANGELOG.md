@@ -10,6 +10,8 @@
 
 ## 7.4.1.0
 * Certified with Vungle SDK 7.4.1.
+* VungleBanner replaced with VungleBannerView.
+* Custom size ads support.
 
 ## 7.4.0.0
 * Certified with Vungle SDK 7.4.0.
