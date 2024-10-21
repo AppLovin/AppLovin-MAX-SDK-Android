@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.22.1.2
+* Add support for loading fullscreen ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 5.22.1.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.
