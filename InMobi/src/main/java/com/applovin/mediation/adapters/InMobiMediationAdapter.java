@@ -105,7 +105,7 @@ public class InMobiMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         if ( !InMobiSdk.isSDKInitialized() )
         {
@@ -146,7 +146,7 @@ public class InMobiMediationAdapter
     }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -214,7 +214,7 @@ public class InMobiMediationAdapter
     //region MaxAdViewAdAdapter Methods
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
@@ -303,7 +303,7 @@ public class InMobiMediationAdapter
     //region MaxInterstitialAdAdapter Methods
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
         log( "Loading interstitial ad for placement: " + placementId + "..." );
@@ -320,7 +320,7 @@ public class InMobiMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad..." );
 
@@ -337,7 +337,7 @@ public class InMobiMediationAdapter
     //region MaxRewardedAdAdapter Methods
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
         log( "Loading rewarded ad for placement: " + placementId + "..." );
@@ -354,7 +354,7 @@ public class InMobiMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad..." );
 
@@ -374,7 +374,7 @@ public class InMobiMediationAdapter
     //region MaxNativeAdAdapter Methods
 
     @Override
-    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         if ( !InMobiSdk.isSDKInitialized() )
         {
@@ -426,9 +426,9 @@ public class InMobiMediationAdapter
         }
     }
 
-    private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, Activity activity)
+    private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, @Nullable final Activity activity)
     {
-        InMobiInterstitial interstitial = new InMobiInterstitial( activity, placementId, listener );
+        InMobiInterstitial interstitial = new InMobiInterstitial( getContext( activity ), placementId, listener );
         interstitial.setExtras( getExtras() );
 
         updatePrivacySettings( parameters );
@@ -491,7 +491,7 @@ public class InMobiMediationAdapter
         }
     }
 
-    private Context getContext(@Nullable Activity activity)
+    private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
@@ -902,7 +902,7 @@ public class InMobiMediationAdapter
         private final MaxAdFormat              adFormat;
         private final float                    mediaContentAspectRatio;
 
-        NativeAdViewListener(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+        NativeAdViewListener(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
         {
             this.placementId = parameters.getThirdPartyAdPlacementId();
             this.serverParameters = parameters.getServerParameters();

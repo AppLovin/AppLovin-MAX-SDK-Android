@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.7.8.1
+* Add support for loading fullscreen ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 10.7.8.0
 * Certified with InMobi SDK 10.7.8.
 
