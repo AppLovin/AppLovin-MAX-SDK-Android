@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.18.0.1
+* Add support for loading fullscreen ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 6.18.0.0
 * Certified with Facebook SDK 6.18.0.
 

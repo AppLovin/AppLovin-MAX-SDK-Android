@@ -95,7 +95,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         // Update ad settings
         updateAdSettings( parameters );
@@ -203,7 +203,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -215,7 +215,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -223,7 +223,7 @@ public class FacebookMediationAdapter
 
         updateAdSettings( parameters );
 
-        mInterstitialAd = new InterstitialAd( activity.getApplicationContext(), placementId );
+        mInterstitialAd = new InterstitialAd( getContext( activity ), placementId );
         InterstitialAd.InterstitialAdLoadConfigBuilder adLoadConfigBuilder = mInterstitialAd.buildLoadAdConfig().withAdListener( new InterstitialAdListener( listener ) );
 
         if ( mInterstitialAd.isAdLoaded() && !mInterstitialAd.isAdInvalidated() )
@@ -239,7 +239,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad: " + parameters.getThirdPartyAdPlacementId() + "..." );
 
@@ -265,7 +265,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void loadRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
+    public void loadRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -273,7 +273,7 @@ public class FacebookMediationAdapter
 
         updateAdSettings( parameters );
 
-        mRewardedInterAd = new RewardedVideoAd( activity.getApplicationContext(), placementId );
+        mRewardedInterAd = new RewardedVideoAd( getContext( activity ), placementId );
         RewardedVideoAd.RewardedVideoAdLoadConfigBuilder adLoadConfigBuilder = mRewardedInterAd.buildLoadAdConfig()
                 .withAdExperience( AdExperienceType.AD_EXPERIENCE_TYPE_REWARDED_INTERSTITIAL )
                 .withAdListener( new RewardedVideoAdExtendedListener()
@@ -368,7 +368,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void showRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
+    public void showRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
     {
         log( "Showing rewarded interstitial ad: " + parameters.getThirdPartyAdPlacementId() + "..." );
 
@@ -396,7 +396,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -404,7 +404,7 @@ public class FacebookMediationAdapter
 
         updateAdSettings( parameters );
 
-        mRewardedVideoAd = new RewardedVideoAd( activity.getApplicationContext(), placementId );
+        mRewardedVideoAd = new RewardedVideoAd( getContext( activity ), placementId );
         RewardedVideoAd.RewardedVideoAdLoadConfigBuilder adLoadConfigBuilder = mRewardedVideoAd.buildLoadAdConfig().withAdListener( new RewardedAdListener( listener ) );
 
         if ( mRewardedVideoAd.isAdLoaded() && !mRewardedVideoAd.isAdInvalidated() )
@@ -420,7 +420,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad: " + parameters.getThirdPartyAdPlacementId() + "..." );
 
@@ -448,7 +448,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
@@ -477,7 +477,7 @@ public class FacebookMediationAdapter
     }
 
     @Override
-    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         final Bundle serverParameters = parameters.getServerParameters();
         final boolean isNativeBanner = BundleUtils.getBoolean( "is_native_banner", serverParameters );
@@ -609,12 +609,12 @@ public class FacebookMediationAdapter
         return "APPLOVIN_" + AppLovinSdk.VERSION + ":" + getAdapterVersion();
     }
 
-    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, final Activity activity)
+    private MaxNativeAdView createMaxNativeAdView(final MaxNativeAd maxNativeAd, final String templateName, @Nullable final Activity activity)
     {
         return new MaxNativeAdView( maxNativeAd, templateName, getApplicationContext() );
     }
 
-    private Context getContext(@Nullable Activity activity)
+    private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
@@ -838,7 +838,7 @@ public class FacebookMediationAdapter
         final MaxAdFormat              adFormat;
         final MaxAdViewAdapterListener listener;
 
-        NativeAdViewListener(final Bundle serverParameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+        NativeAdViewListener(final Bundle serverParameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
         {
             this.serverParameters = serverParameters;
             this.activityRef = new WeakReference<>( activity );
