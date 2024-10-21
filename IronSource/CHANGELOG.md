@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.4.0.0.1
+* Gracefully fail fullscreen ad display if `Activity` context is null.
+* Added comments noting that fullscreen ads can load without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 8.4.0.0.0
 * Certified with IronSource SDK 8.4.0.
 

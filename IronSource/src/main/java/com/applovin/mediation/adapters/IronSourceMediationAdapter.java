@@ -85,7 +85,7 @@ public class IronSourceMediationAdapter
     //region MaxAdapter Methods
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
@@ -181,7 +181,7 @@ public class IronSourceMediationAdapter
     //region MaxSignalProvider Methods
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -196,7 +196,7 @@ public class IronSourceMediationAdapter
     //region MaxInterstitialAdapter Methods
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         setPrivacySettings( parameters );
 
@@ -225,13 +225,14 @@ public class IronSourceMediationAdapter
             }
             else
             {
+                // Tested that ad still successfully loads with a `null` Activity
                 IronSource.loadISDemandOnlyInterstitial( activity, instanceId );
             }
         }
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
@@ -245,6 +246,13 @@ public class IronSourceMediationAdapter
             {
                 log( "Unable to show ironSource interstitial - ad is not ready for instance ID: " + instanceId );
                 listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+                return;
+            }
+
+            if ( activity == null )
+            {
+                log( "Interstitial ad display failed: Activity is null" );
+                listener.onInterstitialAdDisplayFailed( MaxAdapterError.MISSING_ACTIVITY );
                 return;
             }
 
@@ -271,7 +279,7 @@ public class IronSourceMediationAdapter
     //region MaxRewardedAdapter Methods
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         setPrivacySettings( parameters );
 
@@ -300,13 +308,14 @@ public class IronSourceMediationAdapter
             }
             else
             {
+                // Tested that ad still successfully loads with a `null` Activity
                 IronSource.loadISDemandOnlyRewardedVideo( activity, instanceId );
             }
         }
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
@@ -320,6 +329,13 @@ public class IronSourceMediationAdapter
             {
                 log( "Unable to show ironSource rewarded - ad is not ready for instance ID: " + instanceId );
                 listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+                return;
+            }
+
+            if ( activity == null )
+            {
+                log( "Rewarded ad display failed: Activity is null" );
+                listener.onRewardedAdDisplayFailed( MaxAdapterError.MISSING_ACTIVITY );
                 return;
             }
 
@@ -352,7 +368,7 @@ public class IronSourceMediationAdapter
     //region MaxAdViewAdapter Methods
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         setPrivacySettings( parameters );
 
@@ -640,7 +656,7 @@ public class IronSourceMediationAdapter
     {
         private boolean hasGrantedReward;
 
-        void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener) { }
+        void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener) { }
 
         @Override
         public void onInterstitialAdReady(final String instanceId)
