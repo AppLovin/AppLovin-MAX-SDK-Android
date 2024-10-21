@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.2.0
+* Certified with Fyber SDK 8.3.2.
+
 ## 8.3.1.2
 * Fix NPE when binding `adViewGroup` after it has been destroyed.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
