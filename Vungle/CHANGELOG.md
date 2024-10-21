@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.4.1.3
+* Add support for loading native ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 7.4.1.2
 * Support for native ads in external plugins (React Native/Flutter).
 
