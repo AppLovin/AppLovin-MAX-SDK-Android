@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.10.3.1
+* Add support for loading fullscreen ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 9.10.3.0
 * Certified with AmazonAdMarketplace SDK 9.10.3.
 

@@ -87,7 +87,7 @@ public class AmazonAdMarketplaceMediationAdapter
     public AmazonAdMarketplaceMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         // NOTE: Amazon wants publishers to initialize their SDK alongside MAX
         if ( parameters.isTesting() )
@@ -125,7 +125,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         long startTime = System.currentTimeMillis();
         ApsMetrics.Companion.setAdapterVersion( "MAX" + getAdapterVersion() );
@@ -370,7 +370,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         String encodedBidId = parameters.getServerParameters().getString( "encoded_bid_id" );
         d( "Loading " + adFormat.getLabel() + " ad view ad for encoded bid id: " + encodedBidId + "..." );
@@ -412,7 +412,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         String encodedBidId = parameters.getServerParameters().getString( "encoded_bid_id" );
         d( "Loading interstitial ad for encoded bid id: " + encodedBidId + "..." );
@@ -423,7 +423,7 @@ public class AmazonAdMarketplaceMediationAdapter
             return;
         }
 
-        interstitialAdController = new ApsAdController( activity, new InterstitialListener( listener ) );
+        interstitialAdController = new ApsAdController( getContext( activity ), new InterstitialListener( listener ) );
 
         final String mediationHintsCacheId = getMediationHintsCacheId( encodedBidId, MaxAdFormat.INTERSTITIAL );
         final boolean success = loadFullscreenAd( mediationHintsCacheId, interstitialAdController );
@@ -434,7 +434,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad..." );
 
@@ -450,7 +450,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         String encodedBidId = parameters.getServerParameters().getString( "encoded_bid_id" );
         d( "Loading rewarded ad for encoded bid id: " + encodedBidId + "..." );
@@ -461,7 +461,7 @@ public class AmazonAdMarketplaceMediationAdapter
             return;
         }
 
-        rewardedAdController = new ApsAdController( activity, new RewardedAdListener( listener ) );
+        rewardedAdController = new ApsAdController( getContext( activity ), new RewardedAdListener( listener ) );
 
         final String mediationHintsCacheId = getMediationHintsCacheId( encodedBidId, MaxAdFormat.REWARDED );
         final boolean success = loadFullscreenAd( mediationHintsCacheId, rewardedAdController );
@@ -472,7 +472,7 @@ public class AmazonAdMarketplaceMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad..." );
 
@@ -513,7 +513,7 @@ public class AmazonAdMarketplaceMediationAdapter
         return true;
     }
 
-    private Context getContext(@Nullable Activity activity)
+    private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
