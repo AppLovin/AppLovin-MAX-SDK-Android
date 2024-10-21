@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.6.0.0
+* Certified with Yandex SDK 7.6.0.
+
 ## 7.5.0.3
 * Gracefully fail fullscreen ad display if `Activity` context is null.
 * Add support for loading bidder token without an `Activity` context.
