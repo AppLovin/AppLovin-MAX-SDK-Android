@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.7.0.4
+* Add support for loading ads without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 9.7.0.3
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.

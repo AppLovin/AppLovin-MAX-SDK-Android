@@ -71,7 +71,7 @@ public class ChartboostMediationAdapter
     public ChartboostMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -166,7 +166,7 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -175,14 +175,14 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
         String bidResponse = parameters.getBidResponse();
         boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
         log( "Loading " + ( isBidding ? "bidding " : "" ) + "interstitial ad for location \"" + location + "\"..." );
 
-        updateConsentStatus( parameters, activity.getApplicationContext() );
+        updateConsentStatus( parameters, getContext( activity ) );
 
         interstitialAd = new Interstitial( location, new InterstitialAdListener( listener ), MEDIATION_PROVIDER );
 
@@ -210,7 +210,7 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
         log( "Showing interstitial ad for location \"" + location + "\"..." );
@@ -227,14 +227,14 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
         String bidResponse = parameters.getBidResponse();
         boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
         log( "Loading " + ( isBidding ? "bidding " : "" ) + "rewarded ad for location \"" + location + "\"..." );
 
-        updateConsentStatus( parameters, activity.getApplicationContext() );
+        updateConsentStatus( parameters, getContext( activity ) );
 
         rewardedAd = new Rewarded( location, new RewardedAdListener( listener ), MEDIATION_PROVIDER );
 
@@ -262,7 +262,7 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
         log( "Showing rewarded ad for location \"" + location + "\"..." );
@@ -281,16 +281,16 @@ public class ChartboostMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String location = retrieveLocation( parameters );
         String bidResponse = parameters.getBidResponse();
         boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
         log( "Loading " + ( isBidding ? "bidding " : "" ) + adFormat.getLabel() + " ad for location \"" + location + "\"..." );
 
-        updateConsentStatus( parameters, activity.getApplicationContext() );
+        updateConsentStatus( parameters, getContext( activity ) );
 
-        adView = new Banner( activity.getApplicationContext(), location, toAdSize( adFormat ), new AdViewAdListener( listener, adFormat ), MEDIATION_PROVIDER );
+        adView = new Banner( getContext( activity ), location, toAdSize( adFormat ), new AdViewAdListener( listener, adFormat ), MEDIATION_PROVIDER );
 
         if ( adView.isCached() )
         {
@@ -469,6 +469,12 @@ public class ChartboostMediationAdapter
                 }
             }
         }, 500 );
+    }
+
+    private Context getContext(@Nullable final Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     //endregion
