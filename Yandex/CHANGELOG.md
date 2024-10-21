@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.5.0.3
+* Gracefully fail fullscreen ad display if `Activity` context is null.
+* Add support for loading bidder token without an `Activity` context.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
+## 7.5.0.2
+* Add support for native ads in external plugins.
+
 ## 7.5.0.1
 * Simplify native ad options view binding.
 * Ensure non-empty parameters are passed in ad requests.
