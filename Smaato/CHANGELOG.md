@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.7.1.1
+* Gracefully fail interstitial ad display if `Activity` context is null.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 22.7.1.0
 * Certified with Smaato SDK 22.7.1.
 

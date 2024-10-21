@@ -63,6 +63,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by Christopher Cong on March 11 2019
@@ -93,7 +94,7 @@ public class SmaatoMediationAdapter
     //region MaxAdapter
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
@@ -129,7 +130,7 @@ public class SmaatoMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -161,7 +162,7 @@ public class SmaatoMediationAdapter
     //region MaxAdViewAdapter
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -226,7 +227,7 @@ public class SmaatoMediationAdapter
     //region MaxInterstitialAdapter
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -265,7 +266,7 @@ public class SmaatoMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for placement: " + placementId + "..." );
@@ -273,15 +274,21 @@ public class SmaatoMediationAdapter
         ROUTER.addShowingAdapter( this );
 
         interstitialAd = ROUTER.getInterstitialAd( placementId );
-        if ( interstitialAd != null && interstitialAd.isAvailableForPresentation() )
+        if ( interstitialAd == null || !interstitialAd.isAvailableForPresentation() )
         {
-            interstitialAd.showAd( activity );
-        }
-        else
-        {
-            log( "Interstitial not ready." );
+            log( "Interstitial ad failed to load - ad not ready" );
             ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            return;
         }
+
+        if ( activity == null )
+        {
+            log( "Interstitial ad display failed: Activity is null" );
+            ROUTER.onAdDisplayFailed( placementId, MaxAdapterError.MISSING_ACTIVITY );
+            return;
+        }
+
+        interstitialAd.showAd( activity );
     }
 
     //endregion
@@ -289,7 +296,7 @@ public class SmaatoMediationAdapter
     //region MaxRewardedAdapter
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -328,7 +335,7 @@ public class SmaatoMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for placement: " + placementId + "..." );
@@ -355,7 +362,7 @@ public class SmaatoMediationAdapter
     //region MaxNativeAdAdapter
 
     // @Override
-    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
         final String placementId = parameters.getThirdPartyAdPlacementId();
@@ -403,7 +410,7 @@ public class SmaatoMediationAdapter
         }
     }
 
-    private Context getContext(Activity activity)
+    private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplication() : getApplicationContext();
@@ -899,7 +906,7 @@ public class SmaatoMediationAdapter
         private boolean hasGrantedReward;
 
         @Override
-        void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener) { }
+        void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener) { }
 
         public InterstitialAd getInterstitialAd(final String placementId)
         {
