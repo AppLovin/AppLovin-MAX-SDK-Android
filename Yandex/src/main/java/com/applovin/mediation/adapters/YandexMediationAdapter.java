@@ -214,7 +214,7 @@ public class YandexMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( activity, parameters.getAdFormat() );
+        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( getContext( activity ), parameters.getAdFormat() );
 
         BidderTokenLoader.loadBidderToken( getContext( activity ), bidderTokenRequest, new BidderTokenLoadListener()
         {
@@ -325,7 +325,7 @@ public class YandexMediationAdapter
             @Override
             public void run()
             {
-                RewardedAdLoader rewardedAdLoader = new RewardedAdLoader( activity );
+                RewardedAdLoader rewardedAdLoader = new RewardedAdLoader( getContext( activity ) );
                 rewardedAdListener = new RewardedAdListener( parameters, listener );
                 rewardedAdLoader.setAdLoadListener( rewardedAdListener );
                 rewardedAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
@@ -940,14 +940,14 @@ public class YandexMediationAdapter
                 maxNativeAdView.addView( nativeAdView );
 
                 final NativeAdViewBinder binder = new NativeAdViewBinder.Builder( nativeAdView )
-                    .setIconView( maxNativeAdView.getIconImageView() )
-                    .setTitleView( maxNativeAdView.getTitleTextView() )
-                    .setDomainView( maxNativeAdView.getAdvertiserTextView() )
-                    .setBodyView( maxNativeAdView.getBodyTextView() )
-                    .setMediaView( (MediaView) getMediaView() )
-                    .setFeedbackView( (ImageView) getOptionsView() )
-                    .setCallToActionView( maxNativeAdView.getCallToActionButton() )
-                    .build();
+                        .setIconView( maxNativeAdView.getIconImageView() )
+                        .setTitleView( maxNativeAdView.getTitleTextView() )
+                        .setDomainView( maxNativeAdView.getAdvertiserTextView() )
+                        .setBodyView( maxNativeAdView.getBodyTextView() )
+                        .setMediaView( (MediaView) getMediaView() )
+                        .setFeedbackView( (ImageView) getOptionsView() )
+                        .setCallToActionView( maxNativeAdView.getCallToActionButton() )
+                        .build();
 
                 try
                 {
@@ -984,8 +984,8 @@ public class YandexMediationAdapter
                     else
                     {
                         nativeAdView.measure(
-                            View.MeasureSpec.makeMeasureSpec( mediaViewContainer.getWidth(), View.MeasureSpec.EXACTLY ),
-                            View.MeasureSpec.makeMeasureSpec( mediaViewContainer.getHeight(), View.MeasureSpec.EXACTLY ) );
+                                View.MeasureSpec.makeMeasureSpec( mediaViewContainer.getWidth(), View.MeasureSpec.EXACTLY ),
+                                View.MeasureSpec.makeMeasureSpec( mediaViewContainer.getHeight(), View.MeasureSpec.EXACTLY ) );
                         nativeAdView.layout( 0, 0, mediaViewContainer.getWidth(), mediaViewContainer.getHeight() );
                         mediaViewContainer.addView( nativeAdView );
                     }

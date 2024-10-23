@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.6.0.1
+* Add support for loading rewarded ads and configuring bidder token requests without `Activity` context.
+
 ## 7.6.0.0
 * Certified with Yandex SDK 7.6.0.
 
