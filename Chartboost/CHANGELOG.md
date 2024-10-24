@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.0.0
+* Certified with Chartboost SDK 9.8.0.
+
 ## 9.7.0.4
 * Add support for loading ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
