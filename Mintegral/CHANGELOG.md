@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.8.71.0
+* Certified with Mintegral SDK 16.8.71.
+
 ## 16.8.61.1
 * Add support for loading fullscreen ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
