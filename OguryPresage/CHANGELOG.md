@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.0.0.0
+* Certified with OguryPresage SDK 6.0.0.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 5.8.0.0
 * Certified with OguryPresage SDK 5.8.0.
 * Add support for passing in MAX SDK name and version.

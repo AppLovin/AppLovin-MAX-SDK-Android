@@ -20,24 +20,27 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParam
 import com.applovin.mediation.adapters.ogurypresage.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.ogury.ad.OguryAdError;
+import com.ogury.ad.OguryBannerAdSize;
+import com.ogury.ad.OguryBannerAdView;
+import com.ogury.ad.OguryBannerAdViewListener;
+import com.ogury.ad.OguryBidTokenListener;
+import com.ogury.ad.OguryBidTokenProvider;
+import com.ogury.ad.OguryInterstitialAd;
+import com.ogury.ad.OguryInterstitialAdListener;
+import com.ogury.ad.OguryLoadErrorCode;
+import com.ogury.ad.OguryReward;
+import com.ogury.ad.OguryRewardedAd;
+import com.ogury.ad.OguryRewardedAdListener;
+import com.ogury.ad.common.OguryMediation;
 import com.ogury.core.OguryError;
-import com.ogury.ed.OguryAdFormatErrorCode;
-import com.ogury.ed.OguryAdImpressionListener;
-import com.ogury.ed.OguryBannerAdListener;
-import com.ogury.ed.OguryBannerAdSize;
-import com.ogury.ed.OguryBannerAdView;
-import com.ogury.ed.OguryInterstitialAd;
-import com.ogury.ed.OguryInterstitialAdListener;
-import com.ogury.ed.OguryOptinVideoAd;
-import com.ogury.ed.OguryOptinVideoAdListener;
-import com.ogury.ed.OguryReward;
 import com.ogury.sdk.Ogury;
-import com.ogury.sdk.OguryConfiguration;
+import com.ogury.sdk.OguryOnStartListener;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.presage.common.Mediation;
-import io.presage.common.token.OguryTokenProvider;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This is an AppLovin Mediation Adapter for Ogury Presage SDK.
@@ -48,34 +51,48 @@ public class OguryPresageMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
-    private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
+    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static       InitializationStatus status;
 
     private OguryInterstitialAd interstitialAd;
-    private OguryOptinVideoAd   rewardedAd;
+    private OguryRewardedAd     rewardedAd;
     private OguryBannerAdView   adView;
-
-    // State to track if ad load finished. Unfortunately, Ogury's SDK's onAdError(...) callback is invoked on ad load and ad display errors (including ad expiration)
-    private boolean isFinishedLoading;
 
     // Explicit default constructor declaration
     public OguryPresageMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     //region MaxAdapter methods
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( INITIALIZED.compareAndSet( false, true ) )
+        if ( initialized.compareAndSet( false, true ) )
         {
             final String assetKey = parameters.getServerParameters().getString( "asset_key" );
             log( "Initializing Ogury Presage SDK with asset key: " + assetKey + "..." );
 
-            OguryConfiguration.Builder oguryConfigurationBuilder = new OguryConfiguration.Builder( getContext( activity ), assetKey )
-                    .putMonitoringInfo( "max_applovin_mediation_version", AppLovinSdk.VERSION );
+            Ogury.start( getContext( activity ), assetKey, new OguryOnStartListener()
+            {
+                @Override
+                public void onStarted()
+                {
+                    log( "Ogury Presage SDK initialized" );
+                    status = InitializationStatus.INITIALIZED_SUCCESS;
+                    onCompletionListener.onCompletion( status, null );
+                }
 
-            Ogury.start( oguryConfigurationBuilder.build() );
+                @Override
+                public void onFailed(@NonNull final OguryError oguryError)
+                {
+                    log( "Ogury Presage SDK failed to initialize with error: " + oguryError );
+                    status = InitializationStatus.INITIALIZED_FAILURE;
+                    onCompletionListener.onCompletion( status, oguryError.getMessage() );
+                }
+            } );
         }
-
-        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
+        else
+        {
+            onCompletionListener.onCompletion( status, null );
+        }
     }
 
     @Override
@@ -107,178 +124,188 @@ public class OguryPresageMediationAdapter
 
     //region Signal Collection
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
-        final String bidderToken = OguryTokenProvider.getBidderToken( getContext( activity ) );
-        callback.onSignalCollected( bidderToken );
+        OguryBidTokenProvider.getBidToken( getContext( activity ), new OguryBidTokenListener()
+        {
+            @Override
+            public void onBidTokenGenerated(@NonNull final String signal)
+            {
+                log( "Signal collection successful" );
+                callback.onSignalCollected( signal );
+            }
+
+            @Override
+            public void onBidTokenGenerationFailed(@NonNull final OguryError oguryError)
+            {
+                log( "Signal collection failed with error: " + oguryError );
+                callback.onSignalCollectionFailed( oguryError.getMessage() );
+            }
+        } );
     }
     //endregion
 
     //region MaxInterstitialAdapter methods
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad: " + placementId + "..." );
 
-        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId, new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
+        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId, new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
 
         InterstitialAdListener adListener = new InterstitialAdListener( placementId, listener );
         interstitialAd.setListener( adListener );
-        interstitialAd.setAdImpressionListener( adListener );
 
         if ( interstitialAd.isLoaded() )
         {
             log( "Ad is available already" );
             listener.onInterstitialAdLoaded();
+
+            return;
+        }
+
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            interstitialAd.load( bidResponse );
         }
         else
         {
-            if ( AppLovinSdkUtils.isValidString( bidResponse ) )
-            {
-                interstitialAd.setAdMarkup( bidResponse );
-            }
-
             interstitialAd.load();
         }
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad: " + placementId + "..." );
 
-        if ( interstitialAd.isLoaded() )
-        {
-            isFinishedLoading = true;
-            interstitialAd.show();
-        }
-        else
+        if ( !interstitialAd.isLoaded() )
         {
             log( "Interstitial ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+
+            return;
         }
+
+        interstitialAd.show();
     }
     //endregion
 
     //region MaxRewardedAdapter methods
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad: " + placementId + "..." );
 
-        rewardedAd = new OguryOptinVideoAd( getContext( activity ), placementId, new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
+        rewardedAd = new OguryRewardedAd( getContext( activity ), placementId, new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
 
         RewardedAdListener adListener = new RewardedAdListener( placementId, listener );
         rewardedAd.setListener( adListener );
-        rewardedAd.setAdImpressionListener( adListener );
 
         if ( rewardedAd.isLoaded() )
         {
             log( "Ad is available already" );
             listener.onRewardedAdLoaded();
+
+            return;
+        }
+
+        if ( AppLovinSdkUtils.isValidString( bidResponse ) )
+        {
+            rewardedAd.load( bidResponse );
         }
         else
         {
-            if ( AppLovinSdkUtils.isValidString( bidResponse ) )
-            {
-                rewardedAd.setAdMarkup( bidResponse );
-            }
-
             rewardedAd.load();
         }
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad: " + placementId + "..." );
 
-        if ( rewardedAd.isLoaded() )
-        {
-            // Configure userReward from server
-            configureReward( parameters );
-
-            isFinishedLoading = true;
-            rewardedAd.show();
-        }
-        else
+        if ( !rewardedAd.isLoaded() )
         {
             log( "Rewarded ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+
+            return;
         }
+
+        // Configure userReward from server
+        configureReward( parameters );
+
+        rewardedAd.show();
     }
     //endregion
 
     //region MaxAdViewAdapter methods
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad: " + placementId + "..." );
 
-        adView = new OguryBannerAdView( getContext( activity ), new Mediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
-        adView.setAdSize( toAdSize( adFormat ) );
-        adView.setAdUnit( placementId );
+        adView = new OguryBannerAdView( getContext( activity ), placementId, toAdSize( adFormat ) );
 
         AdViewListener adListener = new AdViewListener( placementId, listener );
         adView.setListener( adListener );
-        adView.setAdImpressionListener( adListener );
 
         if ( AppLovinSdkUtils.isValidString( bidResponse ) )
         {
-            adView.setAdMarkup( bidResponse );
+            adView.load( bidResponse );
         }
-
-        adView.loadAd();
+        else
+        {
+            adView.load();
+        }
     }
     //endregion
 
     //region Helper Methods
-    private static MaxAdapterError toMaxError(OguryError oguryError)
+    private static MaxAdapterError toMaxError(final OguryAdError oguryError)
     {
-        final int oguryErrorCode = oguryError.getErrorCode();
+        final int oguryErrorCode = oguryError.getCode();
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
         switch ( oguryErrorCode )
         {
-            case OguryAdFormatErrorCode.NO_INTERNET_CONNECTION: // 0
-                adapterError = MaxAdapterError.NO_CONNECTION;
-                break;
-            case OguryAdFormatErrorCode.LOAD_FAILED: // 2000
+            case OguryLoadErrorCode.AD_DISABLED_UNSPECIFIED_REASON:
                 // We are not sure what kind of load error it is - may be misconfigured ad unit id, et al...
                 adapterError = MaxAdapterError.UNSPECIFIED;
                 break;
-            case OguryAdFormatErrorCode.AD_DISABLED: // 2001
-            case OguryAdFormatErrorCode.PROFIG_NOT_SYNCED: // 2002
+            case OguryLoadErrorCode.NO_ACTIVE_INTERNET_CONNECTION:
+                adapterError = MaxAdapterError.NO_CONNECTION;
+                break;
+            case OguryLoadErrorCode.AD_DISABLED_COUNTRY_NOT_OPENED:
+            case OguryLoadErrorCode.AD_DISABLED_CONSENT_DENIED:
+            case OguryLoadErrorCode.AD_DISABLED_CONSENT_MISSING:
+            case OguryLoadErrorCode.INVALID_CONFIGURATION:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                 break;
-            case OguryAdFormatErrorCode.AD_EXPIRED: // 2003
-                adapterError = MaxAdapterError.AD_EXPIRED;
-                break;
-            case OguryAdFormatErrorCode.SDK_INIT_NOT_CALLED: // 2004
-            case OguryAdFormatErrorCode.SDK_INIT_FAILED: // 2006
+            case OguryLoadErrorCode.SDK_NOT_STARTED:
+            case OguryLoadErrorCode.SDK_NOT_PROPERLY_INITIALIZED:
                 adapterError = MaxAdapterError.NOT_INITIALIZED;
                 break;
-            case OguryAdFormatErrorCode.ANOTHER_AD_ALREADY_DISPLAYED: // 2005
-                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+            case OguryLoadErrorCode.AD_REQUEST_FAILED:
+                adapterError = MaxAdapterError.SERVER_ERROR;
                 break;
-            case OguryAdFormatErrorCode.ACTIVITY_IN_BACKGROUND: // 2007
-            case OguryAdFormatErrorCode.SHOW_FAILED: // 2010
+            case OguryLoadErrorCode.AD_PARSING_FAILED: // 2010
+            case OguryLoadErrorCode.AD_PRECACHING_FAILED: // 2010
+            case OguryLoadErrorCode.AD_PRECACHING_TIMEOUT: // 2010
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
-            case OguryAdFormatErrorCode.AD_NOT_AVAILABLE: // 2008
+            case OguryLoadErrorCode.NO_FILL: // 2008
                 adapterError = MaxAdapterError.NO_FILL;
-                break;
-            case OguryAdFormatErrorCode.AD_NOT_LOADED: // 2009
-                adapterError = MaxAdapterError.AD_NOT_READY;
                 break;
         }
 
@@ -293,7 +320,7 @@ public class OguryPresageMediationAdapter
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
-            return OguryBannerAdSize.MPU_300x250;
+            return OguryBannerAdSize.MREC_300x250;
         }
         else
         {
@@ -301,7 +328,7 @@ public class OguryPresageMediationAdapter
         }
     }
 
-    private Context getContext(Activity activity)
+    private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
@@ -309,7 +336,7 @@ public class OguryPresageMediationAdapter
     //endregion
 
     private class InterstitialAdListener
-            implements OguryInterstitialAdListener, OguryAdImpressionListener
+            implements OguryInterstitialAdListener
     {
         private final String                         placementId;
         private final MaxInterstitialAdapterListener listener;
@@ -321,43 +348,37 @@ public class OguryPresageMediationAdapter
         }
 
         @Override
-        public void onAdLoaded()
+        public void onAdLoaded(@NonNull final OguryInterstitialAd interstitialAd)
         {
             log( "Interstitial loaded: " + placementId );
             listener.onInterstitialAdLoaded();
         }
 
         @Override
-        public void onAdDisplayed()
-        {
-            log( "Interstitial shown: " + placementId );
-        }
-
-        @Override
-        public void onAdImpression()
+        public void onAdImpression(@NonNull final OguryInterstitialAd interstitialAd)
         {
             log( "Interstitial triggered impression: " + placementId );
             listener.onInterstitialAdDisplayed();
         }
 
         @Override
-        public void onAdClicked()
+        public void onAdClicked(@NonNull final OguryInterstitialAd interstitialAd)
         {
             log( "Interstitial clicked: " + placementId );
             listener.onInterstitialAdClicked();
         }
 
         @Override
-        public void onAdClosed()
+        public void onAdClosed(@NonNull final OguryInterstitialAd interstitialAd)
         {
             log( "Interstitial hidden: " + placementId );
             listener.onInterstitialAdHidden();
         }
 
         @Override
-        public void onAdError(OguryError oguryError)
+        public void onAdError(@NonNull final OguryInterstitialAd interstitialAd, @NonNull final OguryAdError oguryError)
         {
-            if ( isFinishedLoading )
+            if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
                 log( "Interstitial (" + placementId + ") failed to show with error: " + oguryError );
                 listener.onInterstitialAdDisplayFailed( toMaxError( oguryError ) );
@@ -371,7 +392,7 @@ public class OguryPresageMediationAdapter
     }
 
     private class RewardedAdListener
-            implements OguryOptinVideoAdListener, OguryAdImpressionListener
+            implements OguryRewardedAdListener
     {
         private final String                     placementId;
         private final MaxRewardedAdapterListener listener;
@@ -384,34 +405,28 @@ public class OguryPresageMediationAdapter
         }
 
         @Override
-        public void onAdLoaded()
+        public void onAdLoaded(@NonNull final OguryRewardedAd rewardedAd)
         {
             log( "Rewarded ad loaded: " + placementId );
             listener.onRewardedAdLoaded();
         }
 
         @Override
-        public void onAdDisplayed()
-        {
-            log( "Rewarded ad shown: " + placementId );
-        }
-
-        @Override
-        public void onAdImpression()
+        public void onAdImpression(@NonNull final OguryRewardedAd rewardedAd)
         {
             log( "Rewarded ad triggered impression: " + placementId );
             listener.onRewardedAdDisplayed();
         }
 
         @Override
-        public void onAdClicked()
+        public void onAdClicked(@NonNull final OguryRewardedAd rewardedAd)
         {
             log( "Rewarded ad clicked: " + placementId );
             listener.onRewardedAdClicked();
         }
 
         @Override
-        public void onAdClosed()
+        public void onAdClosed(@NonNull final OguryRewardedAd rewardedAd)
         {
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
@@ -425,16 +440,16 @@ public class OguryPresageMediationAdapter
         }
 
         @Override
-        public void onAdRewarded(OguryReward oguryReward)
+        public void onAdRewarded(@NonNull final OguryRewardedAd rewardedAd, final OguryReward oguryReward)
         {
             log( "Rewarded ad (" + placementId + ") granted reward with rewardName: " + oguryReward.getName() + ", rewardValue: " + oguryReward.getValue() );
             hasGrantedReward = true;
         }
 
         @Override
-        public void onAdError(OguryError oguryError)
+        public void onAdError(@NonNull final OguryRewardedAd rewardedAd, final OguryAdError oguryError)
         {
-            if ( isFinishedLoading )
+            if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
                 log( "Rewarded ad (" + placementId + ") failed to show with error: " + oguryError );
                 listener.onRewardedAdDisplayFailed( toMaxError( oguryError ) );
@@ -448,7 +463,7 @@ public class OguryPresageMediationAdapter
     }
 
     private class AdViewListener
-            implements OguryBannerAdListener, OguryAdImpressionListener
+            implements OguryBannerAdViewListener
     {
         private final String                   placementId;
         private final MaxAdViewAdapterListener listener;
@@ -460,43 +475,36 @@ public class OguryPresageMediationAdapter
         }
 
         @Override
-        public void onAdLoaded()
+        public void onAdLoaded(@NonNull final OguryBannerAdView bannerAd)
         {
             log( "AdView loaded: " + placementId );
-            isFinishedLoading = true;
             listener.onAdViewAdLoaded( adView );
         }
 
         @Override
-        public void onAdDisplayed()
-        {
-            log( "AdView shown: " + placementId );
-        }
-
-        @Override
-        public void onAdImpression()
+        public void onAdImpression(@NonNull final OguryBannerAdView bannerAd)
         {
             log( "AdView triggered impression: " + placementId );
             listener.onAdViewAdDisplayed();
         }
 
         @Override
-        public void onAdClicked()
+        public void onAdClicked(@NonNull final OguryBannerAdView bannerAd)
         {
             log( "AdView clicked: " + placementId );
             listener.onAdViewAdClicked();
         }
 
         @Override
-        public void onAdClosed()
+        public void onAdClosed(@NonNull final OguryBannerAdView bannerAd)
         {
             log( "AdView ad hidden: " + placementId );
         }
 
         @Override
-        public void onAdError(OguryError oguryError)
+        public void onAdError(@NonNull final OguryBannerAdView bannerAd, @NonNull final OguryAdError oguryError)
         {
-            if ( isFinishedLoading )
+            if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
                 log( "AdView ad (" + placementId + ") failed to show with error: " + oguryError );
                 listener.onAdViewAdDisplayFailed( toMaxError( oguryError ) );
