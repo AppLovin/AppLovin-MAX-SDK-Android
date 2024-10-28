@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0.0
+* Certified with Verve SDK 3.2.0.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 3.1.0.0
 * Certified with Verve SDK 3.1.0.
 
