@@ -243,6 +243,7 @@ public class GoogleAdManagerMediationAdapter
 
         if ( interstitialAd != null )
         {
+            // Tested that ad still successfully shows with a `null` Activity
             interstitialAd.show( activity );
         }
         else
@@ -382,6 +383,8 @@ public class GoogleAdManagerMediationAdapter
         if ( rewardedInterstitialAd != null )
         {
             configureReward( parameters );
+
+            // Tested that ad still successfully shows with a `null` Activity
             rewardedInterstitialAd.show( activity, rewardItem -> {
                 log( "Rewarded interstitial ad user earned reward: " + placementId );
                 rewardedInterstitialAdListener.hasGrantedReward = true;
@@ -454,6 +457,8 @@ public class GoogleAdManagerMediationAdapter
         if ( rewardedAd != null )
         {
             configureReward( parameters );
+
+            // Tested that ad still successfully shows with a `null` Activity
             rewardedAd.show( activity, rewardItem -> {
                 log( "Rewarded ad user earned reward: " + placementId );
                 rewardedAdListener.hasGrantedReward = true;
