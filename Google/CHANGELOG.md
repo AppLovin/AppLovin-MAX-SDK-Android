@@ -1,5 +1,9 @@
 # Changelog
 
+## 23.5.0.0
+* Certified with Google SDK 23.5.0.
+* Added comments noting that fullscreen ads can be shown without an `Activity` context.
+
 ## 23.4.0.1
 * Add support for loading ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
