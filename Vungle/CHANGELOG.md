@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.4.1.4
+* Updated deprecated ad view APIs.
+
 ## 7.4.1.3
 * Add support for loading native ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.

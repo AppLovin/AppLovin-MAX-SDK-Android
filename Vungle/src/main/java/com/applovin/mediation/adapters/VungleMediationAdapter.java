@@ -35,10 +35,7 @@ import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.vungle.ads.AdConfig;
-import com.vungle.ads.BannerAd;
 import com.vungle.ads.BannerAdListener;
-import com.vungle.ads.BannerAdSize;
-import com.vungle.ads.BannerView;
 import com.vungle.ads.BaseAd;
 import com.vungle.ads.InitializationListener;
 import com.vungle.ads.InterstitialAd;
@@ -47,7 +44,9 @@ import com.vungle.ads.NativeAd;
 import com.vungle.ads.NativeAdListener;
 import com.vungle.ads.RewardedAd;
 import com.vungle.ads.RewardedAdListener;
+import com.vungle.ads.VungleAdSize;
 import com.vungle.ads.VungleAds;
+import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
 import com.vungle.ads.internal.ui.view.MediaView;
@@ -66,11 +65,11 @@ public class VungleMediationAdapter
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus initializationStatus;
 
-    private BannerAd       bannerAd;
-    private InterstitialAd interstitialAd;
-    private RewardedAd     rewardedAd;
-    private NativeAd       nativeAd;
-    private InterstitialAd appOpenAd;
+    private VungleBannerView adViewAd;
+    private InterstitialAd   interstitialAd;
+    private RewardedAd       rewardedAd;
+    private NativeAd         nativeAd;
+    private InterstitialAd   appOpenAd;
 
     // Explicit default constructor declaration
     public VungleMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -135,11 +134,11 @@ public class VungleMediationAdapter
     @Override
     public void onDestroy()
     {
-        if ( bannerAd != null )
+        if ( adViewAd != null )
         {
-            bannerAd.setAdListener( null );
-            bannerAd.finishAd();
-            bannerAd = null;
+            adViewAd.setAdListener( null );
+            adViewAd.finishAd();
+            adViewAd = null;
         }
 
         if ( nativeAd != null )
@@ -348,11 +347,11 @@ public class VungleMediationAdapter
             return;
         }
 
-        BannerAdSize adSize = vungleAdSize( adFormat );
-        bannerAd = new BannerAd( context, placementId, adSize );
-        bannerAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
+        VungleAdSize adSize = vungleAdSize( adFormat );
+        adViewAd = new VungleBannerView( context, placementId, adSize );
+        adViewAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
-        bannerAd.load( bidResponse );
+        adViewAd.load( bidResponse );
     }
 
     //endregion
@@ -407,19 +406,19 @@ public class VungleMediationAdapter
         }
     }
 
-    private static BannerAdSize vungleAdSize(final MaxAdFormat adFormat)
+    private static VungleAdSize vungleAdSize(final MaxAdFormat adFormat)
     {
         if ( adFormat == MaxAdFormat.BANNER )
         {
-            return BannerAdSize.BANNER;
+            return VungleAdSize.BANNER;
         }
         else if ( adFormat == MaxAdFormat.LEADER )
         {
-            return BannerAdSize.BANNER_LEADERBOARD;
+            return VungleAdSize.BANNER_LEADERBOARD;
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
-            return BannerAdSize.VUNGLE_MREC;
+            return VungleAdSize.MREC;
         }
         else
         {
@@ -767,14 +766,13 @@ public class VungleMediationAdapter
         {
             log( "Showing " + adFormatLabel + " ad for placement: " + baseAd.getPlacementId() + "..." );
 
-            if ( bannerAd != null && bannerAd.getBannerView() != null )
+            if ( adViewAd != null )
             {
-                BannerView bannerView = bannerAd.getBannerView();
-                bannerView.setGravity( Gravity.CENTER );
+                adViewAd.setGravity( Gravity.CENTER );
                 log( adFormatLabel + " ad loaded" );
 
                 Bundle extraInfo = maybeCreateExtraInfoBundle( baseAd );
-                listener.onAdViewAdLoaded( bannerView, extraInfo );
+                listener.onAdViewAdLoaded( adViewAd, extraInfo );
             }
             else
             {
