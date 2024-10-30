@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.4.2.2
+* Added a guard to attempt HyprMX SDK initialization only once to match other adapters and avoid HyprMX SDK initialization errors.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 6.4.2.1
 * Requires minimum AppLovin MAX SDK version be 13.0.0.
 * Removed support for COPPA.

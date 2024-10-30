@@ -30,19 +30,24 @@ import com.hyprmx.android.sdk.banner.HyprMXBannerView;
 import com.hyprmx.android.sdk.consent.ConsentStatus;
 import com.hyprmx.android.sdk.core.HyprMX;
 import com.hyprmx.android.sdk.core.HyprMXErrors;
-import com.hyprmx.android.sdk.core.HyprMXState;
 import com.hyprmx.android.sdk.placement.HyprMXLoadAdListener;
 import com.hyprmx.android.sdk.placement.HyprMXRewardedShowListener;
 import com.hyprmx.android.sdk.placement.HyprMXShowListener;
 import com.hyprmx.android.sdk.placement.Placement;
 import com.hyprmx.android.sdk.utility.HyprMXLog;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class HyprMXMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter
 {
+    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static       InitializationStatus initializationStatus;
+
     private HyprMXBannerView adView;
     private Placement        interstitialAd;
     private Placement        rewardedAd;
@@ -80,10 +85,12 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( HyprMX.INSTANCE.getInitializationState() == HyprMXState.NOT_INITIALIZED )
+        if ( initialized.compareAndSet( false, true ) )
         {
+            initializationStatus = InitializationStatus.INITIALIZING;
+
             final String distributorId = parameters.getServerParameters().getString( "distributor_id" );
 
             log( "Initializing HyprMX SDK with distributor id: " + distributorId );
@@ -99,37 +106,24 @@ public class HyprMXMediationAdapter
                 if ( !initResult.isSuccess() )
                 {
                     log( "HyprMX SDK failed to initialize for distributorId: " + distributorId );
-                    onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, initResult.getMessage() );
+                    initializationStatus = InitializationStatus.INITIALIZED_FAILURE;
+                    onCompletionListener.onCompletion( initializationStatus, initResult.getMessage() );
                     return;
                 }
 
                 log( "HyprMX SDK initialized for distributorId: " + distributorId );
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
+                initializationStatus = InitializationStatus.INITIALIZED_SUCCESS;
+                onCompletionListener.onCompletion( initializationStatus, null );
             } );
         }
         else
         {
-            if ( HyprMX.INSTANCE.getInitializationState() == HyprMXState.INITIALIZATION_COMPLETE )
-            {
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
-            }
-            else if ( HyprMX.INSTANCE.getInitializationState() == HyprMXState.INITIALIZATION_FAILED )
-            {
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, null );
-            }
-            else if ( HyprMX.INSTANCE.getInitializationState() == HyprMXState.INITIALIZING )
-            {
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZING, null );
-            }
-            else
-            {
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
-            }
+            onCompletionListener.onCompletion( initializationStatus, null );
         }
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -140,7 +134,7 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -189,7 +183,7 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -225,7 +219,7 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for placement: " + placementId );
@@ -241,7 +235,7 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -277,7 +271,7 @@ public class HyprMXMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for placement: " + placementId );
