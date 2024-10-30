@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 public class MolocoMediationAdapter
         extends MediationAdapterBase
@@ -77,7 +77,7 @@ public class MolocoMediationAdapter
     public MolocoMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -125,12 +125,6 @@ public class MolocoMediationAdapter
     }
 
     @Override
-    public boolean isBeta()
-    {
-        return true;
-    }
-
-    @Override
     public void onDestroy()
     {
         if ( interstitialAd != null )
@@ -163,7 +157,7 @@ public class MolocoMediationAdapter
     //region MAX Signal Provider Methods
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal" );
 
@@ -189,7 +183,7 @@ public class MolocoMediationAdapter
     //region MAX Interstitial Adapter Methods
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -207,11 +201,13 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        final Function1<InterstitialAd, Unit> createCallback = interstitialAd -> {
+        final Function2<InterstitialAd, MolocoAdError.AdCreateError, Unit> createCallback = (interstitialAd, error) -> {
 
             if ( interstitialAd == null )
             {
-                listener.onInterstitialAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                MaxAdapterError adapterError = toMaxError( error );
+                log( "Interstitial ad load failed with error (" + adapterError + ")" );
+                listener.onInterstitialAdLoadFailed( adapterError );
             }
             else
             {
@@ -227,7 +223,7 @@ public class MolocoMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad: " + parameters.getThirdPartyAdPlacementId() );
 
@@ -247,7 +243,7 @@ public class MolocoMediationAdapter
     //region MAX Rewarded Adapter Methods
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -265,11 +261,13 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        final Function1<RewardedInterstitialAd, Unit> createCallback = rewardedAd -> {
+        final Function2<RewardedInterstitialAd, MolocoAdError.AdCreateError, Unit> createCallback = (rewardedAd, error) -> {
 
             if ( rewardedAd == null )
             {
-                listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                MaxAdapterError adapterError = toMaxError( error );
+                log( "Rewarded ad load failed with error (" + adapterError + ")" );
+                listener.onRewardedAdLoadFailed( adapterError );
             }
             else
             {
@@ -285,7 +283,7 @@ public class MolocoMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad: " + parameters.getThirdPartyAdPlacementId() );
 
@@ -307,7 +305,7 @@ public class MolocoMediationAdapter
     //region MAX Ad View Adapter Methods
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
@@ -328,11 +326,13 @@ public class MolocoMediationAdapter
 
         if ( isNative )
         {
-            final Function1<NativeAdForMediation, Unit> createCallback = nativeAd -> {
+            final Function2<NativeAdForMediation, MolocoAdError.AdCreateError, Unit> createCallback = (nativeAd, error) -> {
 
                 if ( nativeAd == null )
                 {
-                    listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                    MaxAdapterError adapterError = toMaxError( error );
+                    log( "Native " + adFormat.getLabel() + " ad load failed with error (" + adapterError + ")" );
+                    listener.onAdViewAdLoadFailed( adapterError );
                 }
                 else
                 {
@@ -349,11 +349,13 @@ public class MolocoMediationAdapter
         }
         else
         {
-            final Function1<Banner, Unit> createCallback = adView -> {
+            final Function2<Banner, MolocoAdError.AdCreateError, Unit> createCallback = (adView, error) -> {
 
                 if ( adView == null )
                 {
-                    listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                    MaxAdapterError adapterError = toMaxError( error );
+                    log( adFormat.getLabel() + " ad load failed with error (" + adapterError + ")" );
+                    listener.onAdViewAdLoadFailed( adapterError );
                 }
                 else
                 {
@@ -390,7 +392,7 @@ public class MolocoMediationAdapter
     //region MAX Native Ad Adapter Methods
 
     @Override
-    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
@@ -408,11 +410,13 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        final Function1<NativeAdForMediation, Unit> createCallback = nativeAd -> {
+        final Function2<NativeAdForMediation, MolocoAdError.AdCreateError, Unit> createCallback = (nativeAd, error) -> {
 
             if ( nativeAd == null )
             {
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
+                MaxAdapterError adapterError = toMaxError( error );
+                log( "Native ad load failed with error (" + adapterError + ")" );
+                listener.onNativeAdLoadFailed( adapterError );
             }
             else
             {
@@ -473,6 +477,33 @@ public class MolocoMediationAdapter
         return new MaxAdapterError( adapterError,
                                     molocoAdError.getErrorType().getErrorCode(),
                                     molocoAdError.getDescription() );
+    }
+
+    private MaxAdapterError toMaxError(@Nullable final MolocoAdError.AdCreateError error)
+    {
+        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
+
+        if ( error == null )
+        {
+            return adapterError;
+        }
+
+        switch ( error )
+        {
+            case INVALID_AD_UNIT_ID:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case SDK_INIT_FAILED:
+                adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case SDK_INIT_WAS_NOT_COMPLETED:
+                adapterError = MaxAdapterError.NOT_INITIALIZED;
+                break;
+        }
+
+        return new MaxAdapterError( adapterError,
+                                    error.getErrorCode(),
+                                    error.getDescription() );
     }
 
     private void updatePrivacyPreferences(final MaxAdapterParameters parameters)
