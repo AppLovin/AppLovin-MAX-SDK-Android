@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.9.1.2
+* Explicitly fail ad load with code `-5202` if unable to map ad view ad format to that of the network's.
+* Revert minimum AppLovin MAX SDK version to 12.4.1.
+
 ## 4.9.1.1
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
 * Add support for native ads in external plugins. Requires minimum React Native Plugin 8.0.4 or Flutter Plugin 4.0.2.

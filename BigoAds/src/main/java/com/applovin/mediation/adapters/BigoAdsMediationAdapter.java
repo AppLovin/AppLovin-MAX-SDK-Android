@@ -427,6 +427,16 @@ public class BigoAdsMediationAdapter
         }
         else
         {
+            AdSize adSize = toAdSize( adFormat );
+            if ( adSize == null )
+            {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.ERROR_CODE_INVALID_CONFIGURATION, "Unsupported ad format: " + adFormat );
+                log( adFormat.getLabel() + " ad failed to load with error: " + adapterError );
+                listener.onAdViewAdLoadFailed( adapterError );
+
+                return;
+            }
+
             adViewListener = new AdViewListener( slotId, adFormat, listener );
             final BannerAdLoader bannerAdLoader = new BannerAdLoader.Builder()
                     .withAdLoadListener( adViewListener )
@@ -436,7 +446,7 @@ public class BigoAdsMediationAdapter
             final BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder()
                     .withSlotId( slotId )
                     .withBid( parameters.getBidResponse() )
-                    .withAdSizes( toAdSize( adFormat ) )
+                    .withAdSizes( adSize )
                     .build();
 
             bannerAdLoader.loadAd( bannerAdRequest );
@@ -473,6 +483,7 @@ public class BigoAdsMediationAdapter
         nativeAdLoader.loadAd( nativeAdRequest );
     }
 
+    @Nullable
     private AdSize toAdSize(final MaxAdFormat adFormat)
     {
         // TODO: Bigo does not currently have a leader of size 728x90 but they will be adding it in a later SDK release.
@@ -487,7 +498,7 @@ public class BigoAdsMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+            return null;
         }
     }
 
