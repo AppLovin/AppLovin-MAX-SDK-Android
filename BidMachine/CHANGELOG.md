@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.0.0
+* Certified with BidMachine SDK 3.1.0.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 3.0.1.2
 * Add AppLovin MAX SDK version 13.0.0+ as a maven dependency.
 

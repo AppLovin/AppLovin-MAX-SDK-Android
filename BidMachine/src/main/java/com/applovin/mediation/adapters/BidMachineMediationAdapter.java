@@ -80,7 +80,7 @@ public class BidMachineMediationAdapter
     public BidMachineMediationAdapter(AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(MaxAdapterInitializationParameters parameters, Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -159,7 +159,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal for " + parameters.getAdFormat().getLabel() + " ad..." );
 
@@ -178,7 +178,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(MaxAdapterResponseParameters parameters, Activity activity, MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxInterstitialAdapterListener listener)
     {
         log( "Loading interstitial ad..." );
 
@@ -192,7 +192,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(MaxAdapterResponseParameters parameters, Activity activity, MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad..." );
 
@@ -216,7 +216,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(MaxAdapterResponseParameters parameters, Activity activity, MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxRewardedAdapterListener listener)
     {
         log( "Loading rewarded ad..." );
 
@@ -230,7 +230,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(MaxAdapterResponseParameters parameters, Activity activity, MaxRewardedAdapterListener listener)
+    public void showRewardedAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad..." );
 
@@ -256,7 +256,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(MaxAdapterResponseParameters parameters, MaxAdFormat adFormat, Activity activity, MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(MaxAdapterResponseParameters parameters, MaxAdFormat adFormat, @Nullable final Activity activity, MaxAdViewAdapterListener listener)
     {
         log( "Loading " + adFormat.getLabel() + " ad..." );
 
@@ -271,7 +271,7 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadNativeAd(MaxAdapterResponseParameters parameters, Activity activity, MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxNativeAdAdapterListener listener)
     {
         log( "Loading native ad..." );
 
