@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.0.0
+* Certified with PubMatic SDK 4.1.0.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 4.0.1.0
 * Certified with PubMatic SDK 4.0.1.
 

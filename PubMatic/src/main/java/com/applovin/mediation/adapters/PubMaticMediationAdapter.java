@@ -57,7 +57,7 @@ public class PubMaticMediationAdapter
     //region MaxAdapter
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
@@ -109,7 +109,7 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -166,7 +166,7 @@ public class PubMaticMediationAdapter
 
     @SuppressLint("MissingPermission")
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String publisherId = getPublisherId( parameters );
         final int profileId = getProfileId( parameters );
@@ -181,7 +181,7 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String adUnitId = getAdUnitId( parameters );
         log( "Showing interstitial ad: " + adUnitId + "..." );
@@ -197,7 +197,7 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String publisherId = getPublisherId( parameters );
         final int profileId = getProfileId( parameters );
@@ -220,7 +220,7 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String adUnitId = getAdUnitId( parameters );
         log( "Showing rewarded ad: " + adUnitId + "..." );
@@ -238,7 +238,7 @@ public class PubMaticMediationAdapter
 
     @SuppressLint("MissingPermission")
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String publisherId = getPublisherId( parameters );
         final int profileId = getProfileId( parameters );
