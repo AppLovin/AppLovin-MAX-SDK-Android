@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.23.0.0
+* Certified with MyTarget SDK 5.23.0.
+* Implement `onFailedToShow()` callbacks for interstitial and rewarded ads.
+
 ## 5.22.1.2
 * Add support for loading fullscreen ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.

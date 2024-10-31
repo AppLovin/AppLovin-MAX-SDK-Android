@@ -400,6 +400,13 @@ public class MyTargetMediationAdapter
         }
 
         @Override
+        public void onFailedToShow(@NonNull final InterstitialAd interstitialAd)
+        {
+            log( "Interstitial ad display failed" );
+            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_DISPLAY_FAILED );
+        }
+
+        @Override
         public void onClick(@NonNull final InterstitialAd interstitialAd)
         {
             log( "Interstitial clicked" );
@@ -451,6 +458,13 @@ public class MyTargetMediationAdapter
         {
             log( "Rewarded ad displayed" );
             listener.onRewardedAdDisplayed();
+        }
+
+        @Override
+        public void onFailedToShow(@NonNull final RewardedAd rewardedAd)
+        {
+            log( "Rewarded ad display failed" );
+            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_DISPLAY_FAILED );
         }
 
         @Override
