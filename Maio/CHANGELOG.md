@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1.0
+* Certified with Maio SDK 2.0.1.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+
 ## 2.0.0.0
 * Certified with Maio SDK 2.0.0.
  

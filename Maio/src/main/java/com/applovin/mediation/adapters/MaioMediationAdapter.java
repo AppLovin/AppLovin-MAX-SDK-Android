@@ -40,7 +40,7 @@ public class MaioMediationAdapter
     public MaioMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
@@ -81,7 +81,7 @@ public class MaioMediationAdapter
     //region MaxInterstitialAdapter
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String zoneId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad: " + zoneId + "..." );
@@ -107,7 +107,7 @@ public class MaioMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Showing interstitial ad: " + parameters.getThirdPartyAdPlacementId() );
         if ( interstitialAd == null )
@@ -126,7 +126,7 @@ public class MaioMediationAdapter
     //region MaxRewardedAdapter
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         String zoneId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad for " + zoneId );
@@ -152,7 +152,7 @@ public class MaioMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Showing rewarded ad for " + parameters.getThirdPartyAdPlacementId() );
 
