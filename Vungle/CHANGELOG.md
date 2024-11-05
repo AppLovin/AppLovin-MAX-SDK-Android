@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.4.2.0
+* Certified with Vungle SDK 7.4.2.
+
 ## 7.4.1.4
 * Updated deprecated ad view APIs.
 
