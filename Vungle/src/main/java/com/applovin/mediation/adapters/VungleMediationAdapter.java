@@ -37,6 +37,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.vungle.ads.AdConfig;
 import com.vungle.ads.BannerAdListener;
 import com.vungle.ads.BaseAd;
+import com.vungle.ads.BidTokenCallback;
 import com.vungle.ads.InitializationListener;
 import com.vungle.ads.InterstitialAd;
 import com.vungle.ads.InterstitialAdListener;
@@ -176,8 +177,18 @@ public class VungleMediationAdapter
 
         updateUserPrivacySettings( parameters );
 
-        String signal = VungleAds.getBiddingToken( getContext( activity ) );
-        callback.onSignalCollected( signal );
+        VungleAds.getBiddingToken( getContext( activity ), new BidTokenCallback()
+        {
+            @Override
+            public void onBidTokenError(@NonNull String errorMessage) {
+                callback.onSignalCollectionFailed( errorMessage );
+            }
+
+            @Override
+            public void onBidTokenCollected(@NonNull String bidToken) {
+                callback.onSignalCollected( bidToken );
+            }
+        } );
     }
 
     //endregion
