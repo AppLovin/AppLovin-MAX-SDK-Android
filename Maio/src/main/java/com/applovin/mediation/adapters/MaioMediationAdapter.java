@@ -17,6 +17,7 @@ import com.applovin.sdk.AppLovinSdk;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import jp.maio.sdk.android.v2.Version;
+import jp.maio.sdk.android.v2.errorcode.ErrorCode;
 import jp.maio.sdk.android.v2.interstitial.IInterstitialLoadCallback;
 import jp.maio.sdk.android.v2.interstitial.IInterstitialShowCallback;
 import jp.maio.sdk.android.v2.interstitial.Interstitial;
@@ -177,44 +178,43 @@ public class MaioMediationAdapter
     private MaxAdapterError toMaxError(final int maioErrorCode, final String maioErrorMessage)
     {
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-
-        switch ( maioErrorCode )
+        switch ( ErrorCode.getMajorCode( maioErrorCode ) )
         {
-            case 10100:
+            case 101:
                 adapterError = MaxAdapterError.NO_CONNECTION;
                 break;
-            case 10200:
+            case 102:
                 adapterError = MaxAdapterError.TIMEOUT;
                 break;
-            case 10300:
-            case 20200:
+            case 103:
+            case 202:
                 adapterError = MaxAdapterError.AD_NOT_READY;
                 break;
-            case 10400:
+            case 104:
                 adapterError = MaxAdapterError.SERVER_ERROR;
                 break;
-            case 10500:
-            case 10600:
-            case 11000:
+            case 105:
+            case 106:
+            case 110:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                 break;
-            case 10700:
+            case 107:
                 adapterError = MaxAdapterError.NO_FILL;
                 break;
-            case 10800:
+            case 108:
                 adapterError = MaxAdapterError.BAD_REQUEST;
                 break;
-            case 10900:
-            case 20300:
+            case 109:
+            case 203:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
-            case 20100:
+            case 201:
                 adapterError = MaxAdapterError.AD_EXPIRED;
                 break;
-            case 20400:
+            case 204:
                 adapterError = MaxAdapterError.WEBVIEW_ERROR;
                 break;
-            case 20500:
+            case 205:
                 adapterError = MaxAdapterError.MISSING_ACTIVITY;
                 break;
         }

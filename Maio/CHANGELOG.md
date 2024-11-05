@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1.1
+* Improve error code mapping by using Maio's major error codes.
+
 ## 2.0.1.0
 * Certified with Maio SDK 2.0.1.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
