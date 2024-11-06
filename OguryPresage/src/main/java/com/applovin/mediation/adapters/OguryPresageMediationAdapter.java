@@ -256,7 +256,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad: " + placementId + "..." );
 
-        adView = new OguryBannerAdView( getContext( activity ), placementId, toAdSize( adFormat ) );
+        adView = new OguryBannerAdView( getContext( activity ), placementId, toAdSize( adFormat ), new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
 
         AdViewListener adListener = new AdViewListener( placementId, listener );
         adView.setListener( adListener );
