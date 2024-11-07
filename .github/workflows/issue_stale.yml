@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
+          operations-per-run: 250
           exempt-issue-labels: "in progress"
           days-before-pr-stale: -1
           days-before-pr-close: -1
