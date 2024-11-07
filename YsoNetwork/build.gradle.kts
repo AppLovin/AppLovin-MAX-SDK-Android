@@ -6,10 +6,10 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("1.2.6.0")
+val libraryVersionName by extra("1.2.7.0")
 val libraryArtifactId by extra("yso-network-adapter")
 
-android.defaultConfig.minSdk = 23
+android.defaultConfig.minSdk = 21
 
 repositories {
     maven { url = uri("https://ysonetwork.s3.eu-west-3.amazonaws.com/sdk/android") }

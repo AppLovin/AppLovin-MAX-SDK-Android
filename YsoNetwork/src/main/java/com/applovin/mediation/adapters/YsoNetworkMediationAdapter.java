@@ -26,6 +26,8 @@ import com.ysocorp.ysonetwork.enums.YNEnumActionError;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Kenny Bui on 7/5/24.
  */
@@ -44,7 +46,7 @@ public class YsoNetworkMediationAdapter
     public YsoNetworkMediationAdapter(AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
@@ -99,7 +101,7 @@ public class YsoNetworkMediationAdapter
     //region MaxSignalProvider Methods
 
     @Override
-    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback)
     {
         log( "Collecting signal..." );
 
@@ -112,7 +114,7 @@ public class YsoNetworkMediationAdapter
     //region MaxInterstitialAdAdapter Methods
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String key = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -123,7 +125,7 @@ public class YsoNetworkMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         final String key = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for key: " + key + "..." );
@@ -136,7 +138,7 @@ public class YsoNetworkMediationAdapter
     //region MaxRewardedAdAdapter Methods
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String key = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -147,7 +149,7 @@ public class YsoNetworkMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         final String key = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for key: " + key + "..." );
@@ -162,7 +164,7 @@ public class YsoNetworkMediationAdapter
     //region MaxAdViewAdapter Methods
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         final String key = parameters.getThirdPartyAdPlacementId();
         final String bidResponse = parameters.getBidResponse();
@@ -334,7 +336,7 @@ public class YsoNetworkMediationAdapter
         private final MaxAdViewAdapterListener listener;
         private final Activity                 activity;
 
-        private AdViewLoadListener(final String key, final MaxAdViewAdapterListener listener, final Activity activity)
+        private AdViewLoadListener(final String key, final MaxAdViewAdapterListener listener, @Nullable final Activity activity)
         {
             this.key = key;
             this.listener = listener;
