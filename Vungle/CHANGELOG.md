@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.4.2.1
+* Update signal collection API.
+
 ## 7.4.2.0
 * Certified with Vungle SDK 7.4.2.
 
