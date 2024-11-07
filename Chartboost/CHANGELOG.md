@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.0.1
+* Downgrade Chartboost SDK to version 9.7.0 due to removal of 9.8.0.
+
 ## 9.8.0.0
 * Certified with Chartboost SDK 9.8.0.
 

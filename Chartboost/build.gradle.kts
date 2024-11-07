@@ -6,7 +6,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("9.8.0.0")
+val libraryVersionName by extra("9.8.0.1")
 
 repositories {
     maven { url = uri("https://cboost.jfrog.io/artifactory/chartboost-ads/") }
