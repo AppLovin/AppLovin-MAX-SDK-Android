@@ -423,7 +423,14 @@ public class AmazonAdMarketplaceMediationAdapter
             return;
         }
 
-        interstitialAdController = new ApsAdController( getContext( activity ), new InterstitialListener( listener ) );
+        if ( activity == null )
+        {
+            log( "Interstitial ad load failed: Activity is null" );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.MISSING_ACTIVITY );
+            return;
+        }
+
+        interstitialAdController = new ApsAdController( activity, new InterstitialListener( listener ) );
 
         final String mediationHintsCacheId = getMediationHintsCacheId( encodedBidId, MaxAdFormat.INTERSTITIAL );
         final boolean success = loadFullscreenAd( mediationHintsCacheId, interstitialAdController );
@@ -461,7 +468,14 @@ public class AmazonAdMarketplaceMediationAdapter
             return;
         }
 
-        rewardedAdController = new ApsAdController( getContext( activity ), new RewardedAdListener( listener ) );
+        if ( activity == null )
+        {
+            log( "Rewarded ad load failed: Activity is null" );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.MISSING_ACTIVITY );
+            return;
+        }
+
+        rewardedAdController = new ApsAdController( activity, new RewardedAdListener( listener ) );
 
         final String mediationHintsCacheId = getMediationHintsCacheId( encodedBidId, MaxAdFormat.REWARDED );
         final boolean success = loadFullscreenAd( mediationHintsCacheId, rewardedAdController );
