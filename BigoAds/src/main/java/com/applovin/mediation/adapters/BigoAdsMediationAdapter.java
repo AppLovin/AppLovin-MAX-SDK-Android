@@ -1025,7 +1025,8 @@ public class BigoAdsMediationAdapter
                     .setCallToAction( ad.getCallToAction() )
                     .setIconView( iconView )
                     .setOptionsView( optionsView )
-                    .setMediaView( mediaView );
+                    .setMediaView( mediaView )
+                    .setMediaContentAspectRatio( ad.getMediaContentAspectRatio() );
 
             final MaxBigoAdsNativeAd maxNativeAd = new MaxBigoAdsNativeAd( builder );
 
