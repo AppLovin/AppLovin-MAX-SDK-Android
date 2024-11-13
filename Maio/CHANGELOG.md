@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.1.2
+* Updated ProGuard rules.
+
 ## 2.0.1.1
 * Improve error code mapping by using Maio's major error codes.
 
@@ -53,7 +56,7 @@
 
 ## 1.1.10.1
 * Add configuration of rewards from server parameters.
-* Add proguard rule for Mediation Debugger support.
+* Add ProGuard rule for Mediation Debugger support.
 
 ## 1.1.10.0
 * Certified with SDK 1.1.10.

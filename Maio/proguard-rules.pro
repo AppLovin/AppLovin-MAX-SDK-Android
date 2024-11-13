@@ -21,4 +21,4 @@
 -dontwarn android.app.Activity
 
 # For Mediation Debugger support
--keepnames class jp.maio.sdk.android.*
+-keepnames class jp.maio.sdk.android.**
