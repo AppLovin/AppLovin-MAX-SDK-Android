@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.3.0.1
+* Removed unnecessary `Activity` null checks for ad loads.
+
 ## 3.3.0.0
 * Certified with Moloco SDK 3.3.0.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.

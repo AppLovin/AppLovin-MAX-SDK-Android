@@ -189,16 +189,6 @@ public class MolocoMediationAdapter
 
         log( "Loading interstitial ad: " + placementId );
 
-        if ( activity == null )
-        {
-            log( "Interstitial ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.ERROR_CODE_MISSING_ACTIVITY, "Missing Activity" );
-            listener.onInterstitialAdLoadFailed( error );
-
-            return;
-        }
-
         updatePrivacyPreferences( parameters );
 
         final Function2<InterstitialAd, MolocoAdError.AdCreateError, Unit> createCallback = (interstitialAd, error) -> {
@@ -248,16 +238,6 @@ public class MolocoMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
         log( "Loading rewarded ad: " + placementId );
-
-        if ( activity == null )
-        {
-            log( "Rewarded ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.ERROR_CODE_MISSING_ACTIVITY, "Missing Activity" );
-            listener.onRewardedAdLoadFailed( error );
-
-            return;
-        }
 
         updatePrivacyPreferences( parameters );
 
@@ -311,16 +291,6 @@ public class MolocoMediationAdapter
         final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
 
         log( "Loading " + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad: " + placementId );
-
-        if ( activity == null )
-        {
-            log( adFormat.getLabel() + " ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.ERROR_CODE_MISSING_ACTIVITY, "Missing Activity" );
-            listener.onAdViewAdLoadFailed( error );
-
-            return;
-        }
 
         updatePrivacyPreferences( parameters );
 
@@ -397,16 +367,6 @@ public class MolocoMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
 
         log( "Loading native ad: " + placementId );
-
-        if ( activity == null )
-        {
-            log( "Native ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.ERROR_CODE_MISSING_ACTIVITY, "Missing Activity" );
-            listener.onNativeAdLoadFailed( error );
-
-            return;
-        }
 
         updatePrivacyPreferences( parameters );
 
