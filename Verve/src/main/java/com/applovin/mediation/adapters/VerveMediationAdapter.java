@@ -94,7 +94,6 @@ public class VerveMediationAdapter
         }
         else
         {
-            log( "Verve attempted to initialize already - marking initialization as " + status );
             onCompletionListener.onCompletion( status, null );
         }
     }
