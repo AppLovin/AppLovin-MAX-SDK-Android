@@ -122,8 +122,6 @@ public class ChartboostMediationAdapter
         }
         else
         {
-            log( "Chartboost SDK already initialized..." );
-
             onCompletionListener.onCompletion( status, null );
         }
     }
