@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.4.0.0.2
+* Prevent destroying currently displayed banners/MRECs when loading others with the same instance ID.
+* Ensure that initialization completion handler is called for subsequent initializations.
+
 ## 8.4.0.0.1
 * Gracefully fail fullscreen ad display if `Activity` context is null.
 * Added comments noting that fullscreen ads can load without an `Activity` context.

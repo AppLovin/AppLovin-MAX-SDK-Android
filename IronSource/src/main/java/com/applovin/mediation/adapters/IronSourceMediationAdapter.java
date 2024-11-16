@@ -64,9 +64,10 @@ public class IronSourceMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
-    private static final IronSourceRouter ROUTER                           = new IronSourceRouter();
-    private static final AtomicBoolean    INITIALIZED                      = new AtomicBoolean();
-    private static final List<String>     loadedAdViewPlacementIdentifiers = Collections.synchronizedList( new ArrayList<>() );
+    private static final IronSourceRouter       ROUTER                           = new IronSourceRouter();
+    private static final AtomicBoolean          INITIALIZED                      = new AtomicBoolean();
+    private static final List<String>           loadedAdViewPlacementIdentifiers = Collections.synchronizedList( new ArrayList<>() );
+    private static       InitializationStatus   status;
 
     private String                   mRouterPlacementIdentifier;
     @Nullable
@@ -89,6 +90,8 @@ public class IronSourceMediationAdapter
     {
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
+            status = InitializationStatus.INITIALIZING;
+
             final String appKey = parameters.getServerParameters().getString( "app_key" );
             log( "Initializing IronSource SDK with app key: " + appKey + "..." );
 
@@ -115,16 +118,22 @@ public class IronSourceMediationAdapter
                 public void onInitSuccess()
                 {
                     log( "IronSource SDK initialized." );
-                    onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_SUCCESS, null );
+                    status = InitializationStatus.INITIALIZED_SUCCESS;
+                    onCompletionListener.onCompletion( status, null );
                 }
 
                 @Override
                 public void onInitFailed(@NonNull final IronSourceError ironSourceError)
                 {
                     log( "Failed to initialize IronSource SDK with error: " + ironSourceError );
-                    onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, ironSourceError.getErrorMessage() );
+                    status = InitializationStatus.INITIALIZED_FAILURE;
+                    onCompletionListener.onCompletion( status, ironSourceError.getErrorMessage() );
                 }
             } );
+        }
+        else
+        {
+            onCompletionListener.onCompletion( status, null );
         }
     }
 
@@ -377,16 +386,22 @@ public class IronSourceMediationAdapter
 
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + adFormat.getLabel() + " ad for instance ID: " + parameters.getThirdPartyAdPlacementId() );
 
-        adViewPlacementIdentifier = parameters.getThirdPartyAdPlacementId(); // Set it only if it is not an instance ID of an already loaded ad to avoid destroying the currently showing ad
-
         if ( isBiddingAd )
         {
             AdSize adSize = toISAdSize( adFormat );
-            BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder( getApplicationContext(), adViewPlacementIdentifier, bidResponse, adSize ).build();
+            BannerAdRequest bannerAdRequest = new BannerAdRequest.Builder( getApplicationContext(), parameters.getThirdPartyAdPlacementId(), bidResponse, adSize ).build();
             BannerAdLoader.loadAd( bannerAdRequest, new BiddingAdViewListener( listener ) );
         }
         else
         {
+            if ( activity == null )
+            {
+                log( adFormat.getLabel() + " ad load failed: Activity is null" );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_ACTIVITY );
+
+                return;
+            }
+
             // IronSource does not support b2b with same instance ID for banners/MRECs
             if ( loadedAdViewPlacementIdentifiers.contains( parameters.getThirdPartyAdPlacementId() ) )
             {
@@ -396,13 +411,7 @@ public class IronSourceMediationAdapter
                 return;
             }
 
-            if ( activity == null )
-            {
-                log( adFormat.getLabel() + " ad load failed: Activity is null" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_ACTIVITY );
-
-                return;
-            }
+            adViewPlacementIdentifier = parameters.getThirdPartyAdPlacementId(); // Set it only if it is not an instance ID of an already loaded ad to avoid destroying the currently showing ad
 
             // If we pass in a null Activity, `createBannerForDemandOnly` will return null
             adView = IronSource.createBannerForDemandOnly( activity, toISBannerSize( adFormat ) );
