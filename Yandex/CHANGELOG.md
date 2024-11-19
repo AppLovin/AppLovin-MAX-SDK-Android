@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.7.0.0
+* Certified with Yandex SDK 7.7.0.
+* Removed exception throwing if unable to map ad view ad format to that of the network's.
+
 ## 7.6.0.1
 * Add support for loading rewarded ads and configuring bidder token requests without `Activity` context.
 

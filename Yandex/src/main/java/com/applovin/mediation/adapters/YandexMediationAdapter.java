@@ -214,9 +214,11 @@ public class YandexMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( getContext( activity ), parameters.getAdFormat() );
+        Context context = getContext( activity );
 
-        BidderTokenLoader.loadBidderToken( getContext( activity ), bidderTokenRequest, new BidderTokenLoadListener()
+        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( context, parameters.getAdFormat() );
+
+        BidderTokenLoader.loadBidderToken( context, bidderTokenRequest, new BidderTokenLoadListener()
         {
             @Override
             public void onBidderTokenLoaded(@NonNull final String bidderToken)
@@ -553,7 +555,7 @@ public class YandexMediationAdapter
         }
         else
         {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+            return BannerAdSize.fixedSize( context, adFormat.getSize().getWidth(), adFormat.getSize().getHeight() );
         }
     }
 
