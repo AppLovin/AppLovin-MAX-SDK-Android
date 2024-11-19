@@ -108,7 +108,6 @@ public class BidMachineMediationAdapter
         }
         else
         {
-            log( "BidMachine SDK is already initialized" );
             onCompletionListener.onCompletion( status, null );
         }
     }

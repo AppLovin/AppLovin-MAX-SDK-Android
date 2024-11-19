@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1.0
+* Certified with BidMachine SDK 3.1.1.
+* Removed redundant log output when initialization was already completed.
+
 ## 3.1.0.0
 * Certified with BidMachine SDK 3.1.0.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
