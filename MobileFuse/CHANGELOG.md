@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.1.0
+* Certified with MobileFuse SDK 1.8.1.
+* Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
+* Removed redundant log output when initialization was already completed.
+
 ## 1.8.0.1
 * Remove passing in of consent string as it has been deprecated.
 
