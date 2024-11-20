@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.5.0.0.0
+* Certified with IronSource SDK 8.5.0.
+
 ## 8.4.0.0.2
 * Prevent destroying currently displayed banners/MRECs when loading others with the same instance ID.
 * Ensure that initialization completion handler is called for subsequent initializations.
