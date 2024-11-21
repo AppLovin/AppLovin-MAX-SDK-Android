@@ -99,7 +99,6 @@ public class UnityAdsMediationAdapter
         }
         else
         {
-            log( "UnityAds SDK already initialized" );
             onCompletionListener.onCompletion( initializationStatus, null );
         }
     }
