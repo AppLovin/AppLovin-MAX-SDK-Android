@@ -107,7 +107,6 @@ public class MolocoMediationAdapter
         }
         else
         {
-            log( "Moloco SDK already initialized" );
             onCompletionListener.onCompletion( initializationStatus, null );
         }
     }
@@ -163,7 +162,7 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        Moloco.getBidToken( (signal, errorType) -> {
+        Moloco.getBidToken( getContext( activity ), (signal, errorType) -> {
 
             if ( errorType == null )
             {
