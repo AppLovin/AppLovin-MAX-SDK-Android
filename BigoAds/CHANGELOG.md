@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.0.0
+* Certified with BigoAds SDK 5.1.0.
+* Removed redundant log output when initialization was already completed.
+
 ## 5.0.2.0
 * Certified with BigoAds SDK 5.0.2.
 * Add support for providing native media content aspect ratio in `MaxNativeAdView`.

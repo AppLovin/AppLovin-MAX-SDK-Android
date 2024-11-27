@@ -173,7 +173,6 @@ public class BigoAdsMediationAdapter
         }
         else
         {
-            log( "Bigo Ads SDK attempted initialization already" );
             onCompletionListener.onCompletion( status, null );
         }
     }
