@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.Nullable;
+
 public class LineMediationAdapter
         extends MediationAdapterBase
         implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
@@ -74,7 +76,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void initialize(final MaxAdapterInitializationParameters parameters, final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( INITIALIZED.compareAndSet( false, true ) )
         {
@@ -109,7 +111,6 @@ public class LineMediationAdapter
         {
             if ( FiveAd.isInitialized() )
             {
-                log( "Line SDK is already initialized" );
                 onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
             }
             else
@@ -130,7 +131,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad for slot id: " + slotId + "..." );
@@ -144,7 +145,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxInterstitialAdapterListener listener)
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
@@ -153,7 +154,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad for slot id: " + slotId + "..." );
@@ -167,7 +168,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void showRewardedAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxRewardedAdapterListener listener)
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for slot id: " + slotId + "..." );
@@ -177,7 +178,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, final Activity activity, final MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
         String slotId = parameters.getThirdPartyAdPlacementId();
@@ -211,7 +212,7 @@ public class LineMediationAdapter
     }
 
     @Override
-    public void loadNativeAd(final MaxAdapterResponseParameters parameters, final Activity activity, final MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading native ad for slot id: " + slotId + "..." );
