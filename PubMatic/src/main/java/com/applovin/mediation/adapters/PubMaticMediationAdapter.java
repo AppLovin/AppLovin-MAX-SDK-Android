@@ -91,7 +91,6 @@ public class PubMaticMediationAdapter
         }
         else
         {
-            log( "PubMatic SDK already initializing" );
             onCompletionListener.onCompletion( status, null );
         }
     }

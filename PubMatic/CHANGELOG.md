@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.2.0.0
+* Certified with PubMatic SDK 4.2.0.
+* Removed redundant log output when initialization was already completed.
+
 ## 4.1.0.0
 * Certified with PubMatic SDK 4.1.0.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
