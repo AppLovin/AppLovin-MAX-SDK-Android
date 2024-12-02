@@ -168,14 +168,12 @@ public class PubMaticMediationAdapter
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        final String publisherId = getPublisherId( parameters );
-        final int profileId = getProfileId( parameters );
         final String adUnitId = getAdUnitId( parameters );
         final String bidResponse = parameters.getBidResponse();
 
         log( "Loading interstitial ad: " + adUnitId + "..." );
 
-        interstitialAd = new POBInterstitial( getApplicationContext(), publisherId, profileId, adUnitId );
+        interstitialAd = new POBInterstitial( getApplicationContext() );
         interstitialAd.setListener( new InterstitialListener( listener ) );
         interstitialAd.loadAd( bidResponse );
     }
@@ -199,22 +197,19 @@ public class PubMaticMediationAdapter
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        final String publisherId = getPublisherId( parameters );
-        final int profileId = getProfileId( parameters );
         final String adUnitId = getAdUnitId( parameters );
         final String bidResponse = parameters.getBidResponse();
 
         log( "Loading rewarded ad: " + adUnitId + "..." );
 
-        final POBRewardedAd pobRewardedAd = POBRewardedAd.getRewardedAd( getApplicationContext(), publisherId, profileId, adUnitId );
-        if ( pobRewardedAd == null )
+        rewardedAd = POBRewardedAd.getRewardedAd( getApplicationContext() );
+        if ( rewardedAd == null )
         {
             // PubMatic returns null only if parameter validation fails.
             listener.onRewardedAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
             return;
         }
 
-        rewardedAd = pobRewardedAd;
         rewardedAd.setListener( new RewardedListener( listener ) );
         rewardedAd.loadAd( bidResponse );
     }
@@ -240,15 +235,12 @@ public class PubMaticMediationAdapter
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
-        final String publisherId = getPublisherId( parameters );
-        final int profileId = getProfileId( parameters );
         final String adUnitId = getAdUnitId( parameters );
-        final POBAdSize adSize = toPubMaticAdSize( adFormat );
         final String bidResponse = parameters.getBidResponse();
 
         log( "Loading " + adFormat.getLabel() + " ad: " + adUnitId + "..." );
 
-        adView = new POBBannerView( getApplicationContext(), publisherId, profileId, adUnitId, adSize );
+        adView = new POBBannerView( getApplicationContext() );
         adView.setListener( new AdViewListener( listener ) );
         adView.loadAd( bidResponse );
         adView.pauseAutoRefresh();
