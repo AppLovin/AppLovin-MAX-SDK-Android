@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.6.0.0
+* Certified with GoogleAdManager SDK 23.6.0.
+
 ## 23.5.0.0
 * Certified with GoogleAdManager SDK 23.5.0.
 * Added comments noting that fullscreen ads can be shown without an `Activity` context.
