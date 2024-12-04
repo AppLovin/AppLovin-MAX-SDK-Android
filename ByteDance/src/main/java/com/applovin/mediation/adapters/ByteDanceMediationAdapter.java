@@ -216,7 +216,6 @@ public class ByteDanceMediationAdapter
         }
         else
         {
-            log( "attempted initialization already - marking initialization as completed" );
             onCompletionListener.onCompletion( status, null );
         }
     }
