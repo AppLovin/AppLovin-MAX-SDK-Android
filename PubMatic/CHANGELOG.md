@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.2.0.1
+* Updated to use bidding specific APIs .
+
 ## 4.2.0.0
 * Certified with PubMatic SDK 4.2.0.
 * Removed redundant log output when initialization was already completed.
