@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.0.1.0
+* Certified with OguryPresage SDK 6.0.1.
+
 ## 6.0.0.1
 * Fix missing MAX SDK name and version for AdView ad requests.
 
