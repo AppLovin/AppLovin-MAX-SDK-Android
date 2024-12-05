@@ -76,7 +76,7 @@ public class MobileFuseMediationAdapter
                 MobileFuseSettings.setTestMode( isTesting );
             }
 
-            MobileFuseSettings.setSdkAdapter( "applovin_custom", getAdapterVersion() );
+            MobileFuseSettings.setSdkAdapter( "applovin_bidding", getAdapterVersion() );
 
             MobileFuse.init( new SdkInitListener()
             {
