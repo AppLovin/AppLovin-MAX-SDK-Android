@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.6.0.1
+* Fixed native ads to no longer require the media view in external plugins to be clickable.
+
 ## 23.6.0.0
 * Certified with GoogleAdManager SDK 23.6.0.
 

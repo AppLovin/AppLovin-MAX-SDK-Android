@@ -1444,6 +1444,8 @@ public class GoogleAdManagerMediationAdapter
             // Plugins
             else
             {
+                View mediaView = null;
+
                 for ( View view : clickableViews )
                 {
                     Object viewTag = view.getTag();
@@ -1471,60 +1473,71 @@ public class GoogleAdManagerMediationAdapter
                     {
                         nativeAdView.setAdvertiserView( view );
                     }
+                    else if ( tag == MEDIA_VIEW_CONTAINER_TAG )
+                    {
+                        mediaView = getMediaView();
+                    }
                 }
 
                 //
                 // Logic required for proper media view rendering in plugins (e.g. Flutter / React Native)
                 //
 
-                View mediaView = getMediaView();
-                if ( mediaView == null ) return true;
-
-                ViewGroup pluginContainer = (ViewGroup) mediaView.getParent();
+                ViewGroup pluginContainer = ( mediaView != null ) ? (ViewGroup) mediaView.getParent() : container;
                 if ( pluginContainer == null ) return true;
-
-                // Re-parent mediaView - mediaView must be a child of nativeAdView for Google native ads
-
-                // 1. Remove mediaView from the plugin
-                pluginContainer.removeView( mediaView );
 
                 // NOTE: Will be false for React Native (will extend `ReactViewGroup`), but true for Flutter
                 boolean hasPluginLayout = ( pluginContainer instanceof RelativeLayout || pluginContainer instanceof FrameLayout );
-                if ( !hasPluginLayout )
+
+                // Handle re-parenting of mediaView for enabling clicks on other asset views
+                if ( mediaView != null )
                 {
-                    if ( mediaView instanceof MediaView )
+                    // Remove mediaView from the plugin container
+                    pluginContainer.removeView( mediaView );
+
+                    // Special handling for Google MediaView on React Native
+                    if ( !hasPluginLayout && mediaView instanceof MediaView )
                     {
                         MediaView googleMediaView = (MediaView) mediaView;
                         MediaContent googleMediaContent = googleMediaView.getMediaContent();
                         if ( googleMediaContent != null && googleMediaContent.hasVideoContent() )
                         {
-                            mediaView = new AutoMeasuringMediaView( container.getContext() );
+                            mediaView = new AutoMeasuringMediaView( pluginContainer.getContext() );
                             googleMediaView.setMediaContent( nativeAd.getMediaContent() );
                         }
                     }
-                }
 
-                // 2. Add mediaView to nativeAdView
-                ViewGroup.LayoutParams mediaViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
-                nativeAdView.addView( mediaView, mediaViewLayout );
+                    // Add mediaView to the NativeAdView
+                    ViewGroup.LayoutParams mediaViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+                    nativeAdView.addView( mediaView, mediaViewLayout );
 
-                // Set mediaView or imageView based on the instance type
-                if ( mediaView instanceof MediaView )
-                {
-                    nativeAdView.setMediaView( (MediaView) mediaView );
+                    // Set mediaView or imageView based on the instance type
+                    if ( mediaView instanceof MediaView )
+                    {
+                        nativeAdView.setMediaView( (MediaView) mediaView );
+                    }
+                    else if ( mediaView instanceof ImageView )
+                    {
+                        nativeAdView.setImageView( (ImageView) mediaView );
+                    }
                 }
-                else if ( mediaView instanceof ImageView )
+                // Insert a placeholder view for enabling clicks on other asset views
+                else
                 {
-                    nativeAdView.setImageView( (ImageView) mediaView );
+                    ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+                    View view = new View( pluginContainer.getContext() );
+
+                    nativeAdView.addView( view, layoutParams );
+                    nativeAdView.setStoreView( view );
                 }
 
                 nativeAdView.setNativeAd( nativeAd );
 
-                // 3. Add nativeAdView to the plugin
-                ViewGroup.LayoutParams nativeAdViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+                // Add the NativeAdView back to the plugin container
 
                 if ( hasPluginLayout )
                 {
+                    ViewGroup.LayoutParams nativeAdViewLayout = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
                     pluginContainer.addView( nativeAdView, nativeAdViewLayout );
                 }
                 else
