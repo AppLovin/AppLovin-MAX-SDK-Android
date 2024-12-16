@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.2.0
+* Certified with Chartboost SDK 9.8.2.
+
 ## 9.8.1.0
 * Certified with Chartboost SDK 9.8.1.
 * Removed redundant log output when initialization was already completed.
