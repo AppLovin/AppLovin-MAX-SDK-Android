@@ -8,7 +8,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("2.0.1.2")
+val libraryVersionName by extra("2.0.2.0")
 
 repositories {
     maven { url = uri("https://imobile-maio.github.io/maven") }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.2.0
+* Certified with Maio SDK 2.0.2.
+
 ## 2.0.1.2
 * Updated ProGuard rules.
 
