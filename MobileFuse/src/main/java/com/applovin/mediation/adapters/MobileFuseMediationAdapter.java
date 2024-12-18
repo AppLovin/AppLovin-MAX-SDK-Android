@@ -134,7 +134,7 @@ public class MobileFuseMediationAdapter
         if ( nativeAd != null )
         {
             nativeAd.unregisterViews();
-            nativeAd.setListener( null );
+            nativeAd.setAdListener( null );
             nativeAd = null;
         }
     }
@@ -254,7 +254,7 @@ public class MobileFuseMediationAdapter
         if ( isNative )
         {
             nativeAd = new MobileFuseNativeAd( getContext( activity ), placementId );
-            nativeAd.setListener( new NativeAdViewListener( adFormat, parameters, listener ) );
+            nativeAd.setAdListener( new NativeAdViewListener( adFormat, parameters, listener ) );
             nativeAd.loadAdFromBiddingToken( parameters.getBidResponse() );
         }
         else
@@ -281,7 +281,7 @@ public class MobileFuseMediationAdapter
         updatePrivacyPreferences( parameters );
 
         nativeAd = new MobileFuseNativeAd( getContext( activity ), placementId );
-        nativeAd.setListener( new NativeAdListener( parameters, listener ) );
+        nativeAd.setAdListener( new NativeAdListener( parameters, listener ) );
         nativeAd.loadAdFromBiddingToken( parameters.getBidResponse() );
     }
 
