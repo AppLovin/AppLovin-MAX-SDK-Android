@@ -70,7 +70,13 @@ public class MobileFuseMediationAdapter
             log( "Initializing MobileFuse SDK" );
             initializationStatus = InitializationStatus.INITIALIZING;
 
-            MobileFuseSettings.setTestMode( parameters.isTesting() );
+            boolean isTesting = parameters.isTesting();
+
+            if (isTesting) {
+                MobileFuseSettings.setTestMode( isTesting );
+            }
+
+            MobileFuseSettings.setSdkAdapter( "applovin_bidding", getAdapterVersion() );
 
             MobileFuse.init( new SdkInitListener()
             {
