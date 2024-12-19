@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.2.1
+* Added support for an optional listener in Native Ads.
+* Set Adapter version via `MobileFuseSettings`.
+
 ## 1.8.2.0
 * Certified with MobileFuse SDK 1.8.2.
 
