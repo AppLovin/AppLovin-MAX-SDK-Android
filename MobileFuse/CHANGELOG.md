@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.2.1
+* Fix NPE caused when clearing native ad listener while destroying the ad.
+* Pass adapter version to MobileFuse SDK.
+
 ## 1.8.2.0
 * Certified with MobileFuse SDK 1.8.2.
 
