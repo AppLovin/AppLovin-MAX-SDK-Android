@@ -99,11 +99,6 @@ public class InneractiveMediationAdapter
         }
         else
         {
-            if ( InneractiveAdManager.wasInitialized() )
-            {
-                log( "Inneractive SDK already initialized" );
-            }
-
             onCompletionListener.onCompletion( status, null );
         }
     }
