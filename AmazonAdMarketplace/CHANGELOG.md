@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.10.4.0
+* Certified with AmazonAdMarketplace SDK 9.10.4.
+
 ## 9.10.3.2
 * Fixed ad display failures caused by loading fullscreen ads without an `Activity` context. AmazonAdMarketplace SDK needs an `Activity` context.
 
