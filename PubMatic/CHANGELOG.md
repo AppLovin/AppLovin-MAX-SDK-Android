@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.0
+* Certified with PubMatic SDK 4.3.0.
+
 ## 4.2.0.1
 * Updated to use bidding specific APIs .
 
