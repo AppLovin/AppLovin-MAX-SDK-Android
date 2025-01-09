@@ -115,7 +115,6 @@ public class VungleMediationAdapter
         }
         else
         {
-            log( "Vungle SDK already initialized" );
             onCompletionListener.onCompletion( initializationStatus, null );
         }
     }

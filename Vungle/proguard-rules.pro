@@ -17,8 +17,7 @@
 #}
 
 # Vungle
--keep class com.vungle.warren.** { *; }
--dontwarn com.vungle.warren.error.VungleError$ErrorCode
+-keep class com.vungle.ads.** { *; }
 
 # Moat SDK
 -keep class com.moat.** { *; }
