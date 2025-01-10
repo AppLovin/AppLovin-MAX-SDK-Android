@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025.1.10.0
+* Certified with Line SDK 2.9.20250110.
+
 ## 2024.11.29.0
 * Certified with Line SDK 2.9.20241129.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
