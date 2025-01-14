@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.13.0.0
+* Certified with UnityAds SDK 4.13.0.
+
 ## 4.12.5.0
 * Certified with UnityAds SDK 4.12.5.
 * Removed redundant log output when initialization was already completed.
