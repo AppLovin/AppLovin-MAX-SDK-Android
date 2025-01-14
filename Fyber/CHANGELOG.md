@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.5.0
+* Certified with Fyber SDK 8.3.5.
+
 ## 8.3.4.0
 * Certified with Fyber SDK 8.3.4.
 * Removed redundant log output when initialization was already completed.
