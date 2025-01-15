@@ -25,14 +25,12 @@ import com.applovin.mediation.adapter.MaxAppOpenAdapter;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
-import com.applovin.mediation.adapter.MaxRewardedInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxAppOpenAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
-import com.applovin.mediation.adapter.listeners.MaxRewardedInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
@@ -69,8 +67,6 @@ import com.google.android.gms.ads.query.QueryInfo;
 import com.google.android.gms.ads.query.QueryInfoGenerationCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -84,7 +80,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 
 public class GoogleMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxAppOpenAdapter, MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxAppOpenAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
 {
     private static final int TITLE_LABEL_TAG          = 1;
     private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
@@ -98,19 +94,17 @@ public class GoogleMediationAdapter
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
 
-    private InterstitialAd         interstitialAd;
-    private AppOpenAd              appOpenAd;
-    private InterstitialAd         appOpenInterstitialAd;
-    private RewardedInterstitialAd rewardedInterstitialAd;
-    private RewardedAd             rewardedAd;
-    private AdView                 adView;
-    private NativeAd               nativeAd;
-    private NativeAdView           nativeAdView;
+    private InterstitialAd interstitialAd;
+    private AppOpenAd      appOpenAd;
+    private InterstitialAd appOpenInterstitialAd;
+    private RewardedAd     rewardedAd;
+    private AdView         adView;
+    private NativeAd       nativeAd;
+    private NativeAdView   nativeAdView;
 
-    private AppOpenAdListener              appOpenAdListener;
-    private AppOpenAdListener              appOpenInterstitialAdListener;
-    private RewardedInterstitialAdListener rewardedInterstitialAdListener;
-    private RewardedAdListener             rewardedAdListener;
+    private AppOpenAdListener  appOpenAdListener;
+    private AppOpenAdListener  appOpenInterstitialAdListener;
+    private RewardedAdListener rewardedAdListener;
 
     // Explicit default constructor declaration
     public GoogleMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -196,13 +190,6 @@ public class GoogleMediationAdapter
             appOpenInterstitialAd.setFullScreenContentCallback( null );
             appOpenInterstitialAd = null;
             appOpenInterstitialAdListener = null;
-        }
-
-        if ( rewardedInterstitialAd != null )
-        {
-            rewardedInterstitialAd.setFullScreenContentCallback( null );
-            rewardedInterstitialAd = null;
-            rewardedInterstitialAdListener = null;
         }
 
         if ( rewardedAd != null )
@@ -448,81 +435,6 @@ public class GoogleMediationAdapter
 
     //endregion
 
-    //region MaxRewardedInterstitialAdapter Methods
-
-    @Override
-    public void loadRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
-    {
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
-        log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "rewarded interstitial ad: " + placementId + "..." );
-
-        updateMuteState( parameters );
-
-        Context context = getContext( activity );
-        AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.REWARDED_INTERSTITIAL, parameters, context );
-
-        RewardedInterstitialAd.load( context, placementId, adRequest, new RewardedInterstitialAdLoadCallback()
-        {
-            @Override
-            public void onAdLoaded(@NonNull final RewardedInterstitialAd ad)
-            {
-                log( "Rewarded interstitial ad loaded: " + placementId );
-
-                rewardedInterstitialAd = ad;
-                rewardedInterstitialAdListener = new RewardedInterstitialAdListener( placementId, listener );
-                rewardedInterstitialAd.setFullScreenContentCallback( rewardedInterstitialAdListener );
-
-                ResponseInfo responseInfo = rewardedInterstitialAd.getResponseInfo();
-                String responseId = ( responseInfo != null ) ? responseInfo.getResponseId() : null;
-                if ( AppLovinSdkUtils.isValidString( responseId ) )
-                {
-                    Bundle extraInfo = new Bundle( 1 );
-                    extraInfo.putString( "creative_id", responseId );
-
-                    listener.onRewardedInterstitialAdLoaded( extraInfo );
-                }
-                else
-                {
-                    listener.onRewardedInterstitialAdLoaded();
-                }
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull final LoadAdError loadAdError)
-            {
-                MaxAdapterError adapterError = toMaxError( loadAdError );
-                log( "Rewarded interstitial ad (" + placementId + ") failed to load with error: " + adapterError );
-                listener.onRewardedInterstitialAdLoadFailed( adapterError );
-            }
-        } );
-    }
-
-    @Override
-    public void showRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
-    {
-        String placementId = parameters.getThirdPartyAdPlacementId();
-        log( "Showing rewarded interstitial ad: " + placementId + "..." );
-
-        if ( rewardedInterstitialAd != null )
-        {
-            configureReward( parameters );
-
-            // Tested that ad still successfully shows with a `null` Activity
-            rewardedInterstitialAd.show( activity, rewardItem -> {
-                log( "Rewarded interstitial ad user earned reward: " + placementId );
-                rewardedInterstitialAdListener.hasGrantedReward = true;
-            } );
-        }
-        else
-        {
-            log( "Rewarded interstitial ad failed to show: " + placementId );
-            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded Interstitial ad not ready" ) );
-        }
-    }
-
-    //endregion
-
     //region MaxRewardedAdapter Methods
 
     @Override
@@ -715,16 +627,18 @@ public class GoogleMediationAdapter
                             final MaxAdapterParameters parameters,
                             final Context context)
     {
-        if ( adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER )
+        if ( isAdaptiveBanner && isAdaptiveAdFormat( adFormat, parameters ) )
         {
-            if ( isAdaptiveBanner )
-            {
-                return getAdaptiveAdSize( parameters, context );
-            }
-            else
-            {
-                return adFormat == MaxAdFormat.BANNER ? AdSize.BANNER : AdSize.LEADERBOARD;
-            }
+            return getAdaptiveAdSize( parameters, context );
+        }
+
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return AdSize.BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return AdSize.LEADERBOARD;
         }
         else if ( adFormat == MaxAdFormat.MREC )
         {
@@ -751,8 +665,15 @@ public class GoogleMediationAdapter
             return AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize( context, bannerWidth );
         }
 
-        // Return anchored size by default.
+        // Return anchored size by default
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, bannerWidth );
+    }
+
+    private boolean isAdaptiveAdFormat(final MaxAdFormat adFormat, final MaxAdapterParameters parameters)
+    {
+        // Adaptive banners must be inline for MRECs
+        final boolean isInlineAdaptiveMRec = ( adFormat == MaxAdFormat.MREC ) && isInlineAdaptiveBanner( parameters );
+        return isInlineAdaptiveMRec || adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER;
     }
 
     private boolean isInlineAdaptiveBanner(final MaxAdapterParameters parameters)
@@ -814,10 +735,6 @@ public class GoogleMediationAdapter
         else if ( adFormat == MaxAdFormat.REWARDED )
         {
             return AdFormat.REWARDED;
-        }
-        else if ( adFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
-        {
-            return AdFormat.REWARDED_INTERSTITIAL;
         }
         // NOTE: App open ads were added in AppLovin v11.5.0 and must be checked after all the other ad formats to avoid throwing an exception
         else if ( adFormat == MaxAdFormat.APP_OPEN )
@@ -1073,63 +990,6 @@ public class GoogleMediationAdapter
         {
             log( "App open ad hidden: " + placementId );
             listener.onAppOpenAdHidden();
-        }
-    }
-
-    private class RewardedInterstitialAdListener
-            extends FullScreenContentCallback
-    {
-        private final String                                 placementId;
-        private final MaxRewardedInterstitialAdapterListener listener;
-
-        private boolean hasGrantedReward;
-
-        private RewardedInterstitialAdListener(final String placementId, final MaxRewardedInterstitialAdapterListener listener)
-        {
-            this.placementId = placementId;
-            this.listener = listener;
-        }
-
-        @Override
-        public void onAdShowedFullScreenContent()
-        {
-            log( "Rewarded interstitial ad shown: " + placementId );
-        }
-
-        @Override
-        public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
-        {
-            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
-            log( "Rewarded interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
-            listener.onRewardedInterstitialAdDisplayFailed( adapterError );
-        }
-
-        @Override
-        public void onAdImpression()
-        {
-            log( "Rewarded interstitial ad impression recorded: " + placementId );
-            listener.onRewardedInterstitialAdDisplayed();
-        }
-
-        @Override
-        public void onAdClicked()
-        {
-            log( "Rewarded interstitial ad clicked: " + placementId );
-            listener.onRewardedInterstitialAdClicked();
-        }
-
-        @Override
-        public void onAdDismissedFullScreenContent()
-        {
-            if ( hasGrantedReward || shouldAlwaysRewardUser() )
-            {
-                MaxReward reward = getReward();
-                log( "Rewarded interstitial ad rewarded user with reward: " + reward );
-                listener.onUserRewarded( reward );
-            }
-
-            log( "Rewarded interstitial ad hidden: " + placementId );
-            listener.onRewardedInterstitialAdHidden();
         }
     }
 
