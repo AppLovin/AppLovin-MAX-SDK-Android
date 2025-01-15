@@ -6,7 +6,8 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("23.6.0.1")
+val libraryVersionName by extra("23.6.0.2")
+
 val libraryArtifactId by extra("google-ad-manager-adapter")
 
 android.defaultConfig.minSdk = 21

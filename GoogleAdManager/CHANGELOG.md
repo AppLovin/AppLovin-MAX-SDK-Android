@@ -1,5 +1,9 @@
 # Changelog
 
+## 23.6.0.2
+* Add support for [inline adaptive banners in MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-banners-in-mrecs).
+* Remove support for rewarded interstitial ads.
+
 ## 23.6.0.1
 * Fixed native ads to no longer require the media view in external plugins to be clickable.
 
