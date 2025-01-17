@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.0.0.0
+* Certified with AmazonAdMarketplace SDK 10.0.0.
+
 ## 9.10.4.0
 * Certified with AmazonAdMarketplace SDK 9.10.4.
 

@@ -9,10 +9,12 @@ import com.amazon.aps.ads.Aps;
 import com.amazon.aps.ads.ApsAd;
 import com.amazon.aps.ads.ApsAdController;
 import com.amazon.aps.ads.ApsAdError;
+import com.amazon.aps.ads.ApsAdNetworkInfo;
 import com.amazon.aps.ads.ApsAdRequest;
 import com.amazon.aps.ads.ApsConstants;
 import com.amazon.aps.ads.listeners.ApsAdListener;
 import com.amazon.aps.ads.listeners.ApsAdRequestListener;
+import com.amazon.aps.ads.model.ApsAdNetwork;
 import com.amazon.aps.shared.APSAnalytics;
 import com.amazon.aps.shared.ApsMetrics;
 import com.amazon.aps.shared.analytics.APSEventSeverity;
@@ -274,8 +276,25 @@ public class AmazonAdMarketplaceMediationAdapter
         }
 
         ApsAdRequest apsAdRequest = (ApsAdRequest) adLoader;
-
         apsAdRequest.setCorrelationId( corrId );
+
+        if ( apsAdRequest.getAdNetworkInfo() == null )
+        {
+            apsAdRequest.setNetworkInfo( new ApsAdNetworkInfo( ApsAdNetwork.MAX ) );
+            ApsMetrics.customEvent( "APPLOVIN_SET_NETWORK_EVENT", "AdNetwork Type : null", null );
+        }
+        else
+        {
+            String adNetworkName = apsAdRequest.getAdNetworkInfo().getAdNetworkName();
+            if ( !ApsAdNetwork.MAX.toString().equalsIgnoreCase( adNetworkName ) )
+            {
+                apsAdRequest.setNetworkInfo( new ApsAdNetworkInfo( ApsAdNetwork.MAX ) );
+
+                String customEventValue = "AdNetwork Type : mismatch . Network name set as " + adNetworkName + ", instead of " + ApsAdNetwork.MAX;
+                ApsMetrics.customEvent( "APPLOVIN_SET_NETWORK_EVENT", customEventValue, null );
+            }
+        }
+
         apsAdRequest.loadAd( new ApsAdRequestListener()
         {
             @Override
