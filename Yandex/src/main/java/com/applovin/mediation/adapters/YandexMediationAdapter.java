@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -521,7 +520,7 @@ public class YandexMediationAdapter
         {
             return AdType.INTERSTITIAL;
         }
-        else if ( adFormat == MaxAdFormat.REWARDED || adFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
+        else if ( adFormat == MaxAdFormat.REWARDED )
         {
             return AdType.REWARDED;
         }
