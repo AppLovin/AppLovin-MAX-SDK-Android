@@ -50,6 +50,7 @@ import com.vungle.ads.VungleAds;
 import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
+import com.vungle.ads.internal.protos.Sdk.SDKError.Reason;
 import com.vungle.ads.internal.ui.view.MediaView;
 
 import java.util.ArrayList;
@@ -462,59 +463,58 @@ public class VungleMediationAdapter
     {
         final int vungleErrorCode = vungleError.getCode();
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-        switch ( vungleErrorCode )
-        {
-            case VungleError.NO_SERVE:
-                adapterError = MaxAdapterError.NO_FILL;
-                break;
-            case VungleError.UNKNOWN_ERROR:
-                adapterError = MaxAdapterError.UNSPECIFIED;
-                break;
-            case VungleError.INVALID_APP_ID:
-            case VungleError.CONFIGURATION_ERROR:
-            case VungleError.INVALID_SIZE:
-            case VungleError.NETWORK_PERMISSIONS_NOT_GRANTED:
-            case VungleError.NO_SPACE_TO_DOWNLOAD_ASSETS:
-            case VungleError.PLACEMENT_NOT_FOUND:
-            case VungleError.SDK_VERSION_BELOW_REQUIRED_VERSION:
-            case VungleError.PLACEMENT_AD_TYPE_MISMATCH:
-                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                break;
-            case VungleError.AD_EXPIRED:
-                adapterError = MaxAdapterError.AD_EXPIRED;
-                break;
-            case VungleError.SDK_NOT_INITIALIZED:
-            case VungleError.CURRENTLY_INITIALIZING:
+        switch (vungleErrorCode) {
+            case Reason.SDK_NOT_INITIALIZED_VALUE:
                 adapterError = MaxAdapterError.NOT_INITIALIZED;
                 break;
-            case VungleError.AD_UNABLE_TO_PLAY:
-            case VungleError.CREATIVE_ERROR:
-            case VungleError.OUT_OF_MEMORY:
-            case VungleError.AD_MARKUP_INVALID:
-            case VungleError.MRAID_DOWNLOAD_JS_ERROR:
-            case VungleError.ASSET_RESPONSE_DATA_ERROR:
+            case Reason.INVALID_APP_ID_VALUE:
+            case Reason.INVALID_PLACEMENT_ID_VALUE:
+            case Reason.PLACEMENT_AD_TYPE_MISMATCH_VALUE:
+            case Reason.INVALID_WATERFALL_PLACEMENT_ID_VALUE:
+            case Reason.BANNER_VIEW_INVALID_SIZE_VALUE:
+            case Reason.AD_PUBLISHER_MISMATCH_VALUE:
+                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case Reason.JSON_ENCODE_ERROR_VALUE:
+            case Reason.AD_INTERNAL_INTEGRATION_ERROR_VALUE:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
-            case VungleError.AD_FAILED_TO_DOWNLOAD:
-            case VungleError.AD_RENDER_NETWORK_ERROR:
-            case VungleError.ASSET_DOWNLOAD_ERROR:
-            case VungleError.NETWORK_ERROR:
-            case VungleError.NETWORK_UNREACHABLE:
-                adapterError = MaxAdapterError.NO_CONNECTION;
-                break;
-            case VungleError.SERVER_RETRY_ERROR:
-                adapterError = MaxAdapterError.SERVER_ERROR;
-                break;
-            case VungleError.ALREADY_PLAYING_ANOTHER_AD:
-            case VungleError.INVALID_AD_STATE:
+            case Reason.AD_CONSUMED_VALUE:
+            case Reason.AD_IS_LOADING_VALUE:
+            case Reason.AD_ALREADY_LOADED_VALUE:
+            case Reason.AD_IS_PLAYING_VALUE:
+            case Reason.AD_ALREADY_FAILED_VALUE:
                 adapterError = MaxAdapterError.INVALID_LOAD_STATE;
                 break;
-            case VungleError.WEBVIEW_RENDER_UNRESPONSIVE:
-            case VungleError.WEB_CRASH:
-                adapterError = MaxAdapterError.WEBVIEW_ERROR;
+            case Reason.AD_NOT_LOADED_VALUE:
+                adapterError = MaxAdapterError.AD_NOT_READY;
                 break;
-            case VungleError.NETWORK_TIMEOUT:
+            case Reason.INVALID_INDEX_URL_VALUE:
+            case Reason.CONCURRENT_PLAYBACK_UNSUPPORTED_VALUE:
+                adapterError = MaxAdapterError.AD_DISPLAY_FAILED;
+                break;
+            case Reason.PLACEMENT_SLEEP_VALUE:
+            case Reason.AD_NO_FILL_VALUE:
+            case Reason.AD_LOAD_TOO_FREQUENTLY_VALUE:
+                adapterError = MaxAdapterError.NO_FILL;
+                break;
+            case Reason.AD_RESPONSE_TIMED_OUT_VALUE:
                 adapterError = MaxAdapterError.TIMEOUT;
+                break;
+            case Reason.AD_RESPONSE_RETRY_AFTER_VALUE:
+            case Reason.AD_LOAD_FAIL_RETRY_AFTER_VALUE:
+            case Reason.AD_SERVER_ERROR_VALUE:
+                adapterError = MaxAdapterError.SERVER_ERROR;
+                break;
+            case Reason.AD_EXPIRED_VALUE:
+            case Reason.AD_EXPIRED_ON_PLAY_VALUE:
+                adapterError = MaxAdapterError.AD_EXPIRED;
+                break;
+            case Reason.NATIVE_ASSET_ERROR_VALUE:
+                adapterError = MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS;
+                break;
+            case Reason.WEBVIEW_ERROR_VALUE:
+                adapterError = MaxAdapterError.WEBVIEW_ERROR;
                 break;
         }
 
