@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.9.31.1
+* Call `setConsentStatus(Context)` API when `hasUserConsent` is `null` to ensure that Mintegral's SDK is able to read the TCF string from device storage.
+* Update to use new initialization API.
+
 ## 16.9.31.0
 * Certified with Mintegral SDK 16.9.31.
 
