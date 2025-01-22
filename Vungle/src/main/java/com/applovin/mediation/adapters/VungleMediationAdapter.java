@@ -1113,6 +1113,8 @@ public class VungleMediationAdapter
             // Native integrations
             if ( container instanceof MaxNativeAdView )
             {
+                clickableViews.add( mediaView );
+
                 if ( mediaView.getParent() != null )
                 {
                     ( (ViewGroup) mediaView.getParent() ).removeView( mediaView );
