@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.4.3.0
+* Certified with Vungle SDK 7.4.3.
+* Updated error codes.
+* Fixed the media view in native ads to be responsive to clicks.
+
 ## 7.4.2.2
 * Removed redundant log output when initialization was already completed.
 * Update ProGuard rules to prevent obfuscating Vungle SDK classes.
