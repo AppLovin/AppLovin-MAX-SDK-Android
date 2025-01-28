@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.0.0
+* Certified with Moloco SDK 3.6.0.
+
 ## 3.5.0.0
 * Certified with Moloco SDK 3.5.0.
 * Add support for native and native ad view ads.
