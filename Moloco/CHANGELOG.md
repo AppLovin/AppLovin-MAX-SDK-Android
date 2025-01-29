@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.1.0
+* Certified with Moloco SDK 3.6.1.
+
 ## 3.6.0.1
 * Downgrade Moloco SDK to 3.5.0 due to crashes with Moloco SDK 3.6.0.
 
