@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.3.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 2.0.3.0
 * Certified with Maio SDK 2.0.3.
 
