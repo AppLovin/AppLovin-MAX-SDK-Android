@@ -72,7 +72,6 @@ public class YsoNetworkMediationAdapter
         }
         else
         {
-            log( "YSO Network attempted initialization already" );
             onCompletionListener.onCompletion( status, null );
         }
     }
