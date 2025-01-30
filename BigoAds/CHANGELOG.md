@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.1.0.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 5.1.0.0
 * Certified with BigoAds SDK 5.1.0.
 * Removed redundant log output when initialization was already completed.
