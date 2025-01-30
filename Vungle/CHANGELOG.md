@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.4.3.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 7.4.3.0
 * Certified with Vungle SDK 7.4.3.
 * Updated error codes.
