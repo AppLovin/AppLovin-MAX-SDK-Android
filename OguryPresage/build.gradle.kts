@@ -6,7 +6,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("6.0.1.0")
+val libraryVersionName by extra("6.0.1.1")
 val libraryArtifactId by extra("ogury-presage-adapter")
 
 repositories {
