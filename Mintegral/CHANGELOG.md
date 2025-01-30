@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.9.31.2
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 16.9.31.1
 * Call `setConsentStatus(Context)` API when `hasUserConsent` is `null` to ensure that Mintegral's SDK is able to read the TCF string from device storage.
 * Update to use new initialization API.
