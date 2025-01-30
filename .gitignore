@@ -17,3 +17,5 @@
 .externalNativeBuild
 
 */dependency-reduced-pom.xml
+
+**/verification.properties
