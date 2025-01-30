@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.6.0.3
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 23.6.0.2
 * Add support for [inline adaptive banners in MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-banners-in-mrecs).
 * Remove support for rewarded interstitial ads.
