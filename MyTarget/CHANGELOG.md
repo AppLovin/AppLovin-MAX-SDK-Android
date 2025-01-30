@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.27.1.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 5.27.1.0
 * Certified with MyTarget SDK 5.27.1.
 
