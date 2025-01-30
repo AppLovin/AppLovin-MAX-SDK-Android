@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.2.3
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console. 
+
 ## 6.4.2.2
 * Added a guard to attempt HyprMX SDK initialization only once to match other adapters and avoid HyprMX SDK initialization errors.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
