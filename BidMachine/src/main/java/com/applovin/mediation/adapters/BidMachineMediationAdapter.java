@@ -367,7 +367,7 @@ public class BidMachineMediationAdapter
         {
             return AdsFormat.Interstitial;
         }
-        else if ( adFormat == MaxAdFormat.REWARDED || adFormat == MaxAdFormat.REWARDED_INTERSTITIAL )
+        else if ( adFormat == MaxAdFormat.REWARDED )
         {
             return AdsFormat.Rewarded;
         }

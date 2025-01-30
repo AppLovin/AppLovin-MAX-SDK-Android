@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.1.1.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 3.1.1.0
 * Certified with BidMachine SDK 3.1.1.
 * Removed redundant log output when initialization was already completed.
