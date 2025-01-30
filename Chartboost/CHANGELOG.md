@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.8.2.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 9.8.2.0
 * Certified with Chartboost SDK 9.8.2.
 
