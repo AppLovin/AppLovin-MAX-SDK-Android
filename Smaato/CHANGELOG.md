@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.7.1.2
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 22.7.1.1
 * Gracefully fail interstitial ad display if `Activity` context is null.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.
