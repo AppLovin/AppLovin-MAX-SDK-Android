@@ -1,5 +1,10 @@
 # Changelog
 
+## 6.18.0.2
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+* Removed redundant log output when initialization was already completed.
+* Remove support for rewarded interstitial ads.
+
 ## 6.18.0.1
 * Add support for loading fullscreen ads without an `Activity` context.
 * Annotated all `Activity` parameters with `@Nullable` to better avoid potential NPEs.

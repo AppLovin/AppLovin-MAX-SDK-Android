@@ -17,13 +17,11 @@ import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
-import com.applovin.mediation.adapter.MaxRewardedInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
-import com.applovin.mediation.adapter.listeners.MaxRewardedInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
@@ -35,7 +33,6 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.facebook.ads.Ad;
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdExperienceType;
 import com.facebook.ads.AdListener;
 import com.facebook.ads.AdOptionsView;
 import com.facebook.ads.AdSettings;
@@ -72,7 +69,7 @@ import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
  */
 public class FacebookMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
+        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider /* MaxNativeAdAdapter */
 {
     private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
 
@@ -83,7 +80,6 @@ public class FacebookMediationAdapter
     private NativeBannerAd  mNativeBannerAd;
     private InterstitialAd  mInterstitialAd;
     private RewardedVideoAd mRewardedVideoAd;
-    private RewardedVideoAd mRewardedInterAd;
 
     private final AtomicBoolean onInterstitialAdHiddenCalled = new AtomicBoolean();
     private final AtomicBoolean onRewardedAdHiddenCalled     = new AtomicBoolean();
@@ -142,8 +138,6 @@ public class FacebookMediationAdapter
         }
         else
         {
-            log( "Facebook attempted initialization already - marking initialization as completed" );
-
             onCompletionListener.onCompletion( sStatus, null );
         }
     }
@@ -173,12 +167,6 @@ public class FacebookMediationAdapter
         {
             mRewardedVideoAd.destroy();
             mRewardedVideoAd = null;
-        }
-
-        if ( mRewardedInterAd != null )
-        {
-            mRewardedInterAd.destroy();
-            mRewardedInterAd = null;
         }
 
         if ( mAdView != null )
@@ -261,137 +249,6 @@ public class FacebookMediationAdapter
         {
             log( "Unable to show interstitial - no ad loaded..." );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
-        }
-    }
-
-    @Override
-    public void loadRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
-    {
-        final String placementId = parameters.getThirdPartyAdPlacementId();
-
-        log( "Loading rewarded interstitial: " + placementId + "..." );
-
-        updateAdSettings( parameters );
-
-        mRewardedInterAd = new RewardedVideoAd( getContext( activity ), placementId );
-        RewardedVideoAd.RewardedVideoAdLoadConfigBuilder adLoadConfigBuilder = mRewardedInterAd.buildLoadAdConfig()
-                .withAdExperience( AdExperienceType.AD_EXPERIENCE_TYPE_REWARDED_INTERSTITIAL )
-                .withAdListener( new RewardedVideoAdExtendedListener()
-                {
-                    private boolean hasGrantedReward;
-
-                    @Override
-                    public void onAdLoaded(final Ad ad)
-                    {
-                        log( "Rewarded interstitial ad loaded: " + placementId );
-                        listener.onRewardedInterstitialAdLoaded();
-                    }
-
-                    @Override
-                    public void onError(final Ad ad, final AdError adError)
-                    {
-                        MaxAdapterError adapterError = toMaxError( adError );
-                        log( "Rewarded interstitial ad (" + placementId + ") failed to load with error: " + adapterError );
-                        listener.onRewardedInterstitialAdLoadFailed( adapterError );
-                    }
-
-                    @Override
-                    public void onAdClicked(final Ad ad)
-                    {
-                        log( "Rewarded interstitial ad clicked: " + placementId );
-                        listener.onRewardedInterstitialAdClicked();
-                    }
-
-                    @Override
-                    public void onRewardedVideoClosed()
-                    {
-                        if ( onRewardedAdHiddenCalled.compareAndSet( false, true ) )
-                        {
-                            if ( hasGrantedReward || shouldAlwaysRewardUser() )
-                            {
-                                final MaxReward reward = getReward();
-                                log( "Rewarded user with reward: " + reward );
-                                listener.onUserRewarded( reward );
-                            }
-
-                            log( "Rewarded interstitial ad hidden: " + placementId );
-                            listener.onRewardedInterstitialAdHidden();
-                        }
-                        else
-                        {
-                            log( "Rewarded interstitial ad hidden: " + placementId );
-                        }
-                    }
-
-                    @Override
-                    public void onRewardedVideoCompleted()
-                    {
-                        log( "Rewarded interstitial ad video completed: " + placementId );
-
-                        hasGrantedReward = true;
-                    }
-
-                    @Override
-                    public void onLoggingImpression(final Ad ad)
-                    {
-                        log( "Rewarded interstitial ad logging impression: " + placementId );
-
-                        listener.onRewardedInterstitialAdDisplayed();
-                    }
-
-                    @Override
-                    public void onRewardedVideoActivityDestroyed()
-                    {
-                        log( "Rewarded interstitial ad Activity destroyed: " + placementId );
-
-                        //
-                        // We will not reward the user if Activity is destroyed - this may be due to launching from app icon and having the `android:launchMode="singleTask"` flag
-                        //
-
-                        if ( onRewardedAdHiddenCalled.compareAndSet( false, true ) )
-                        {
-                            listener.onRewardedInterstitialAdHidden();
-                        }
-                    }
-                } );
-
-        if ( mRewardedInterAd.isAdLoaded() && !mRewardedInterAd.isAdInvalidated() )
-        {
-            log( "A rewarded interstitial ad has been loaded already" );
-            listener.onRewardedInterstitialAdLoaded();
-        }
-        else
-        {
-            log( "Loading bidding rewarded interstitial ad..." );
-            mRewardedInterAd.loadAd( adLoadConfigBuilder.withBid( parameters.getBidResponse() ).build() );
-        }
-    }
-
-    @Override
-    public void showRewardedInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedInterstitialAdapterListener listener)
-    {
-        log( "Showing rewarded interstitial ad: " + parameters.getThirdPartyAdPlacementId() + "..." );
-
-        if ( mRewardedInterAd != null && mRewardedInterAd.isAdLoaded() )
-        {
-            // Check if ad is already expired or invalidated, and do not show ad if that is the case. You will not get paid to show an invalidated ad.
-            if ( !mRewardedInterAd.isAdInvalidated() )
-            {
-                // Configure userReward from server.
-                configureReward( parameters );
-
-                mRewardedInterAd.show();
-            }
-            else
-            {
-                log( "Unable to show rewarded interstitial ad - ad expired..." );
-                listener.onRewardedInterstitialAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
-            }
-        }
-        else
-        {
-            log( "Unable to show rewarded interstitial ad - no ad loaded..." );
-            listener.onRewardedInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded Interstitial ad not ready" ) );
         }
     }
 
