@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.6.1.0.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 8.6.1.0.0
 * Certified with IronSource SDK 8.6.1.
 
