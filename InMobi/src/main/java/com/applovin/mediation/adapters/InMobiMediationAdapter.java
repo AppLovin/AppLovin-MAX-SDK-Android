@@ -205,8 +205,6 @@ public class InMobiMediationAdapter
         }
         else
         {
-            log( "InMobi SDK already initialized" );
-
             onCompletionListener.onCompletion( status, null );
         }
     }

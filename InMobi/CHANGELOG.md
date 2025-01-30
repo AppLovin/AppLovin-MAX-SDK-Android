@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.8.0.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+* Removed redundant log output when initialization was already completed.
+
 ## 10.8.0.0
 * Certified with InMobi SDK 10.8.0.
 
