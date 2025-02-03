@@ -1,5 +1,8 @@
 # Changelog
 
+## 22.7.2.0
+* Certified with Smaato SDK 22.7.2.
+
 ## 22.7.1.2
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
