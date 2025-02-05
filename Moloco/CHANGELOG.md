@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.1.1
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 3.6.1.0
 * Certified with Moloco SDK 3.6.1.
 
