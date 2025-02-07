@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.0.7.0
+* Certified with ByteDance SDK 6.4.0.7.
+
 ## 6.4.0.6.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
