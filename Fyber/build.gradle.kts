@@ -6,4 +6,4 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("8.3.5.1")
+val libraryVersionName by extra("8.3.6.0")

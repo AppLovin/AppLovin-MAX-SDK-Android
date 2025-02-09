@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.6.0
+* Certified with Fyber SDK 8.3.6.
+
 ## 8.3.5.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
