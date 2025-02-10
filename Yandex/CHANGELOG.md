@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.10.0.0
+* Certified with Yandex SDK 7.10.0.
+
 ## 7.9.0.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
