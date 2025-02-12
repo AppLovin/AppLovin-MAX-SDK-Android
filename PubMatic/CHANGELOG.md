@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.4.0.0
+* Certified with PubMatic SDK 4.4.0.
+
 ## 4.3.0.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
