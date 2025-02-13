@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.9.41.0
+* Certified with Mintegral SDK 16.9.41.
+
 ## 16.9.31.2
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
