@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.19.0.0
+* Certified with Facebook SDK 6.19.0.
+
 ## 6.18.0.2
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 * Removed redundant log output when initialization was already completed.
