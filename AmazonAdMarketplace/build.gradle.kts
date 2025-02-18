@@ -8,7 +8,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("10.0.0.1")
+val libraryVersionName by extra("10.1.0.0")
 val libraryArtifactId by extra("amazon-tam-adapter")
 
 android.defaultConfig.minSdk = 19

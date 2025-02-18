@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.1.0.0
+* Certified with AmazonAdMarketplace SDK 10.1.0.
+
 ## 10.0.0.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
