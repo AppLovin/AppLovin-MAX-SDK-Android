@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.3.0.0
+* Certified with Verve SDK 3.3.0.
+
 ## 3.2.1.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
