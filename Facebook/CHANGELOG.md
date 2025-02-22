@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.19.0.1
+* Downgrade Facebook SDK to 6.18.0 due to banner crashes with Facebook SDK 6.19.0.
+
 ## 6.19.0.0
 * Certified with Facebook SDK 6.19.0.
 
