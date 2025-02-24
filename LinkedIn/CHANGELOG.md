@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.6.2
+* Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
+
 ## 0.0.6.1
 * Add ProGuard rules to prevent obfuscation of LinkedIn SDK classes.
 
