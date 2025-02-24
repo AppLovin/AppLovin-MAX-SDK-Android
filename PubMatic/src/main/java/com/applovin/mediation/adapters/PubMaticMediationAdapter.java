@@ -6,7 +6,6 @@ import android.app.Activity;
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
-import com.applovin.sdk.AppLovinSdkUtils;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
@@ -26,6 +25,7 @@ import com.pubmatic.sdk.common.OpenWrapSDKConfig;
 import com.pubmatic.sdk.common.OpenWrapSDKInitializer;
 import com.pubmatic.sdk.common.POBAdFormat;
 import com.pubmatic.sdk.common.POBError;
+import com.pubmatic.sdk.common.utility.POBUtils;
 import com.pubmatic.sdk.openwrap.banner.POBBannerView;
 import com.pubmatic.sdk.openwrap.core.POBReward;
 import com.pubmatic.sdk.openwrap.core.signal.POBBiddingHost;
@@ -142,7 +142,9 @@ public class PubMaticMediationAdapter
 
     @Override
     public void onDestroy() {
-        AppLovinSdkUtils.runOnUiThread(new Runnable() {
+        // Explicitly invoke OpenWrap SDKs destroy() API on main thread, to make sure OpenWrap SDK
+        // does not go into race condition.
+        POBUtils.runOnMainThread(new Runnable() {
             @Override
             public void run() {
                 if ( interstitialAd != null )

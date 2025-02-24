@@ -1,8 +1,8 @@
 # Changelog
 
 ## 4.4.0.1
-* Updated to support gpid (Global Placement ID)
-* Invoking destroy() call on Mainthread to resolve NPE issue
+* Updated to support gpid (Global Placement ID).
+* Invoking destroy() method on MainThread to resolve intermittent NPE's.
 
 ## 4.4.0.0
 * Certified with PubMatic SDK 4.4.0.
