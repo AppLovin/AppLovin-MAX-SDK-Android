@@ -2,6 +2,7 @@
 
 ## 4.4.0.1
 * Updated to support gpid (Global Placement ID)
+* invoking destroy() call on Mainthread to resolve NPE issue
 
 ## 4.4.0.0
 * Certified with PubMatic SDK 4.4.0.
