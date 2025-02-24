@@ -6,6 +6,7 @@ import android.app.Activity;
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
+import com.applovin.sdk.AppLovinSdkUtils;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
@@ -140,25 +141,29 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void onDestroy()
-    {
-        if ( interstitialAd != null )
-        {
-            interstitialAd.destroy();
-            interstitialAd = null;
-        }
+    public void onDestroy() {
+        AppLovinSdkUtils.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if ( interstitialAd != null )
+                {
+                    interstitialAd.destroy();
+                    interstitialAd = null;
+                }
 
-        if ( rewardedAd != null )
-        {
-            rewardedAd.destroy();
-            rewardedAd = null;
-        }
+                if ( rewardedAd != null )
+                {
+                    rewardedAd.destroy();
+                    rewardedAd = null;
+                }
 
-        if ( adView != null )
-        {
-            adView.destroy();
-            adView = null;
-        }
+                if ( adView != null )
+                {
+                    adView.destroy();
+                    adView = null;
+                }
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
