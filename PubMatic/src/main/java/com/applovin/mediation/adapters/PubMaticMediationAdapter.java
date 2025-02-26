@@ -25,6 +25,7 @@ import com.pubmatic.sdk.common.OpenWrapSDKConfig;
 import com.pubmatic.sdk.common.OpenWrapSDKInitializer;
 import com.pubmatic.sdk.common.POBAdFormat;
 import com.pubmatic.sdk.common.POBError;
+import com.pubmatic.sdk.common.utility.POBUtils;
 import com.pubmatic.sdk.openwrap.banner.POBBannerView;
 import com.pubmatic.sdk.openwrap.core.POBReward;
 import com.pubmatic.sdk.openwrap.core.signal.POBBiddingHost;
@@ -117,7 +118,7 @@ public class PubMaticMediationAdapter
             return;
         }
 
-        final POBSignalConfig config = new POBSignalConfig.Builder( adFormat ).build();
+        final POBSignalConfig config = new POBSignalConfig.Builder( adFormat ).setGpid( parameters.getAdUnitId() ).build();
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
 
         callback.onSignalCollected( bidToken );
@@ -140,25 +141,31 @@ public class PubMaticMediationAdapter
     }
 
     @Override
-    public void onDestroy()
-    {
-        if ( interstitialAd != null )
-        {
-            interstitialAd.destroy();
-            interstitialAd = null;
-        }
+    public void onDestroy() {
+        // Explicitly invoke OpenWrap SDKs destroy() API on main thread, to make sure OpenWrap SDK
+        // does not go into race condition.
+        POBUtils.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                if ( interstitialAd != null )
+                {
+                    interstitialAd.destroy();
+                    interstitialAd = null;
+                }
 
-        if ( rewardedAd != null )
-        {
-            rewardedAd.destroy();
-            rewardedAd = null;
-        }
+                if ( rewardedAd != null )
+                {
+                    rewardedAd.destroy();
+                    rewardedAd = null;
+                }
 
-        if ( adView != null )
-        {
-            adView.destroy();
-            adView = null;
-        }
+                if ( adView != null )
+                {
+                    adView.destroy();
+                    adView = null;
+                }
+            }
+        });
     }
 
     @SuppressLint("MissingPermission")
