@@ -1,5 +1,10 @@
 # Changelog
 
+## 24.0.0.0
+* Certified with Google SDK 24.0.0.
+* Now requires minimum Android API level be 21 or higher.
+* Remove support for the interstitial option of app open ads.
+
 ## 23.6.0.3
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
