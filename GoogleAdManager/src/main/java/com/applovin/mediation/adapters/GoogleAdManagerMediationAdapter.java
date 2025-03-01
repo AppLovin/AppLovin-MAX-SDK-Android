@@ -236,7 +236,9 @@ public class GoogleAdManagerMediationAdapter
         else
         {
             log( "Interstitial ad failed to show: " + placementId );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" );
+            listener.onInterstitialAdDisplayFailed( error );
         }
     }
 
@@ -254,9 +256,7 @@ public class GoogleAdManagerMediationAdapter
 
         Context context = getContext( activity );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, context );
-        int orientation = AppLovinSdkUtils.getOrientation( context );
-
-        AppOpenAd.load( context, placementId, adRequest, orientation, new AppOpenAd.AppOpenAdLoadCallback()
+        AppOpenAd.load( context, placementId, adRequest, new AppOpenAd.AppOpenAdLoadCallback()
         {
             @Override
             public void onAdLoaded(@NonNull final AppOpenAd ad)
@@ -306,7 +306,9 @@ public class GoogleAdManagerMediationAdapter
         else
         {
             log( "App open ad failed to show: " + placementId );
-            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "App open ad not ready" ) );
+
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "App open ad not ready" );
+            listener.onAppOpenAdDisplayFailed( error );
         }
     }
 
@@ -380,7 +382,9 @@ public class GoogleAdManagerMediationAdapter
         else
         {
             log( "Rewarded ad failed to show: " + placementId );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" );
+            listener.onRewardedAdDisplayFailed( error );
         }
     }
 
@@ -595,10 +599,7 @@ public class GoogleAdManagerMediationAdapter
         AdManagerAdRequest.Builder requestBuilder = new AdManagerAdRequest.Builder();
 
         Bundle serverParameters = parameters.getServerParameters();
-        if ( serverParameters.getBoolean( "set_mediation_identifier", true ) )
-        {
-            requestBuilder.setRequestAgent( mediationTag() );
-        }
+        requestBuilder.setRequestAgent( mediationTag() );
 
         Bundle networkExtras = new Bundle();
 
@@ -762,7 +763,7 @@ public class GoogleAdManagerMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
             log( "Interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -810,7 +811,7 @@ public class GoogleAdManagerMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad display failed", adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
             log( "App open ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onAppOpenAdDisplayFailed( adapterError );
         }
@@ -860,7 +861,7 @@ public class GoogleAdManagerMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
             log( "Rewarded ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -991,7 +992,7 @@ public class GoogleAdManagerMediationAdapter
             if ( TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load: Google native ad is missing one or more required assets" );
-                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 nativeAd.destroy();
 
@@ -1135,7 +1136,7 @@ public class GoogleAdManagerMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getHeadline() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1196,22 +1197,10 @@ public class GoogleAdManagerMediationAdapter
                             .setBody( nativeAd.getBody() )
                             .setCallToAction( nativeAd.getCallToAction() )
                             .setIcon( iconImage )
-                            .setMediaView( mediaView );
-
-                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-                    {
-                        builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( mainImage ) );
-                    }
-
-                    if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
-                    {
-                        builder.setMediaContentAspectRatio( mediaContentAspectRatio );
-                    }
-
-                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
-                    {
-                        builder.setStarRating( nativeAd.getStarRating() );
-                    }
+                            .setMediaView( mediaView )
+                            .setMainImage( new MaxNativeAd.MaxNativeAdImage( mainImage ) )
+                            .setMediaContentAspectRatio( mediaContentAspectRatio )
+                            .setStarRating( nativeAd.getStarRating() );
 
                     MaxNativeAd maxNativeAd = new MaxGoogleAdManagerNativeAd( builder );
 
