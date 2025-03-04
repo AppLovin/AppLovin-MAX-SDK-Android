@@ -2,7 +2,7 @@
 
 ## 24.0.0.0
 * Certified with GoogleAdManager SDK 24.0.0.
-* Now requires minimum Android API level be 21 or higher.
+* Now requires minimum Android API level be 23 or higher.
 
 ## 23.6.0.3
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
