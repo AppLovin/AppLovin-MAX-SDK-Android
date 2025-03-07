@@ -369,6 +369,7 @@ public class YandexMediationAdapter
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
+        // NOTE: Native banners and MRECs are not supported due to the Yandex SDK's requirement for a media view.
         final String adFormatLabel = adFormat.getLabel();
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + adFormatLabel + " ad for placement: " + placementId + "..." );
