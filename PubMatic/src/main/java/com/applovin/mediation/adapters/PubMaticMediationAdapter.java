@@ -117,7 +117,9 @@ public class PubMaticMediationAdapter
             return;
         }
 
-        final POBSignalConfig config = new POBSignalConfig.Builder( adFormat ).build();
+        final POBSignalConfig config = new POBSignalConfig.Builder( adFormat )
+                .setGpid( parameters.getAdUnitId() )
+                .build();
         final String bidToken = POBSignalGenerator.generateSignal( getApplicationContext(), POBBiddingHost.ALMAX, config );
 
         callback.onSignalCollected( bidToken );
