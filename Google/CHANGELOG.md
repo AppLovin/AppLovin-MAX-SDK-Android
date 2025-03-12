@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.1.0.0
+* Certified with Google SDK 24.1.0.
+
 ## 24.0.0.0
 * Certified with Google SDK 24.0.0.
 * Now requires minimum Android API level be 23 or higher.
