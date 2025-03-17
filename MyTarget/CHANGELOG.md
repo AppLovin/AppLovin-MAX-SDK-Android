@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.27.1.2
+* Fixed `getSdkVersion()` to return the installed SDK version.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 5.27.1.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 

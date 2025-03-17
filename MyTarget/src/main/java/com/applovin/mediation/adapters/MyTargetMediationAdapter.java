@@ -75,7 +75,7 @@ public class MyTargetMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return MyTargetVersion.VERSION;
+        return getVersionString( MyTargetVersion.class, "VERSION" );
     }
 
     @Override
@@ -180,7 +180,7 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Interstitial ad is null" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad is null" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad is null" ) );
         }
     }
 
@@ -220,7 +220,7 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Rewarded ad is null" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad is null" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad is null" ) );
         }
     }
 
@@ -360,7 +360,7 @@ public class MyTargetMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), myTargetErrorCode, myTargetError.getMessage() );
+        return new MaxAdapterError( adapterError, myTargetErrorCode, myTargetError.getMessage() );
     }
 
     //endregion
@@ -573,7 +573,7 @@ public class MyTargetMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeBanner.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -617,17 +617,9 @@ public class MyTargetMediationAdapter
                     .setCallToAction( nativeBanner.getCtaText() )
                     .setIcon( iconImage )
                     .setMediaView( mediaView )
-                    .setAdvertiser( nativeBanner.getAdvertisingLabel() );
-
-            if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-            {
-                builder.setMainImage( mainImage );
-            }
-
-            if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
-            {
-                builder.setMediaContentAspectRatio( mediaView.getMediaAspectRatio() );
-            }
+                    .setAdvertiser( nativeBanner.getAdvertisingLabel() )
+                    .setMainImage( mainImage )
+                    .setMediaContentAspectRatio( mediaView.getMediaAspectRatio() );
 
             final MaxNativeAd maxNativeAd = new MaxMyTargetNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
