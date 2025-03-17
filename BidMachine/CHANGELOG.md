@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0.1
+* Fixed `getSdkVersion()` to return the installed SDK version.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 3.2.0.0
 * Certified with BidMachine SDK 3.2.0.
 

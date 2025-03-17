@@ -115,7 +115,7 @@ public class BidMachineMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return BidMachine.VERSION;
+        return getVersionString( BidMachine.class, "VERSION" );
     }
 
     @Override
@@ -206,7 +206,7 @@ public class BidMachineMediationAdapter
         if ( !interstitialAd.canShow() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
 
             return;
         }
@@ -244,7 +244,7 @@ public class BidMachineMediationAdapter
         if ( !rewardedAd.canShow() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
 
             return;
         }
@@ -647,7 +647,7 @@ public class BidMachineMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
                 return;
             }
 
@@ -756,7 +756,7 @@ public class BidMachineMediationAdapter
                             .setIcon( iconMaxNativeAdImage )
                             .setOptionsView( nativeAd.getProviderView( getApplicationContext() ) )
                             .setMediaView( mediaView );
-                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 && nativeAd.getMainImage() != null )
+                    if ( nativeAd.getMainImage() != null )
                     {
                         MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( nativeAd.getMainImage().getImage() );
                         builder.setMainImage( mainImage );
