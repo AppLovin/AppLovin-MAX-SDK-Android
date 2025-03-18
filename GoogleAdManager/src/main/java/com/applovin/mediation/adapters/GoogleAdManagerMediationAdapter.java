@@ -494,8 +494,7 @@ public class GoogleAdManagerMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(),
-                                    adapterError.getErrorMessage(),
+        return new MaxAdapterError( adapterError,
                                     googleAdManagerErrorCode,
                                     googleAdManagerError.getMessage() );
     }

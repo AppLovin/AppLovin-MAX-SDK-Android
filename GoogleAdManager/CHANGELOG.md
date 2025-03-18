@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.1.0.0
+* Certified with GoogleAdManager SDK 24.1.0.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 24.0.0.0
 * Certified with GoogleAdManager SDK 24.0.0.
 * Now requires minimum Android API level be 23 or higher.
