@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.5.0.0
+* Certified with PubMatic SDK 4.5.0.
+
 ## 4.4.0.1
 * Updated to support gpid (Global Placement ID).
 
