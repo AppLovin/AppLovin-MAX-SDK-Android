@@ -185,7 +185,7 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Interstitial placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), message ) );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.ordinal(), message ) );
             }
 
             @Override
@@ -256,7 +256,7 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Rewarded ad placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", error.ordinal(), message ) );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.ordinal(), message ) );
             }
 
             @Override
@@ -418,7 +418,7 @@ public class UnityAdsMediationAdapter
         {
             adapterError = MaxAdapterError.UNSPECIFIED;
         }
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), unityAdsBannerError.errorCode.ordinal(), unityAdsBannerError.errorMessage );
+        return new MaxAdapterError( adapterError, unityAdsBannerError.errorCode.ordinal(), unityAdsBannerError.errorMessage );
     }
 
     private static MaxAdapterError toMaxError(final UnityAds.UnityAdsLoadError loadError, final String errorMessage)
@@ -443,7 +443,7 @@ public class UnityAdsMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), loadError.ordinal(), errorMessage );
+        return new MaxAdapterError( adapterError, loadError.ordinal(), errorMessage );
     }
 
     private static MaxAdapterError toMaxError(final UnityAds.UnityAdsShowError showError, final String errorMessage)
@@ -474,7 +474,7 @@ public class UnityAdsMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), showError.ordinal(), errorMessage );
+        return new MaxAdapterError( adapterError, showError.ordinal(), errorMessage );
     }
 
     private void updatePrivacyConsent(final MaxAdapterParameters parameters, final Context context)

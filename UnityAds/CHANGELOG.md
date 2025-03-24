@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.14.1.0
+* Certified with UnityAds SDK 4.14.1.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 4.14.0.0
 * Certified with UnityAds SDK 4.14.0.
 
