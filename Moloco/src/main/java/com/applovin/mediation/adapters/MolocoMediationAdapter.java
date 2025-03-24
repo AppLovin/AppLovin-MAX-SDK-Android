@@ -448,12 +448,10 @@ public class MolocoMediationAdapter
 
         switch ( error )
         {
-            case INVALID_AD_UNIT_ID:
-                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                break;
             case SDK_INIT_FAILED:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
+            case UNABLE_TO_CREATE_AD:
             case SDK_INIT_WAS_NOT_COMPLETED:
                 adapterError = MaxAdapterError.NOT_INITIALIZED;
                 break;
