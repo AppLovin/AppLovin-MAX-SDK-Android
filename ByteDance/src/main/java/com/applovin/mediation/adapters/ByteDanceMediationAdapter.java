@@ -380,11 +380,7 @@ public class ByteDanceMediationAdapter
 
         PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
 
-        Map<String, Object> extraInfo = new HashMap<>();
-        extraInfo.put( "user_id", getWrappingSdk().getUserIdentifier() );
-
         PAGRewardedRequest request = new PAGRewardedRequest();
-        request.setExtraInfo( extraInfo );
 
         if ( isBidding )
         {
@@ -463,14 +459,6 @@ public class ByteDanceMediationAdapter
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "native ad for code id \"" + codeId + "\"..." );
 
         PAGConfig.setUserData( createAdConfigData( parameters.getServerParameters(), false ) );
-
-        // Minimum supported Android SDK version is 11.1.0+, previous version has `MaxNativeAdView` requiring an Activity context which might leak
-        if ( AppLovinSdk.VERSION_CODE < 11010000 )
-        {
-            log( "Failing ad load for AppLovin SDK < 11.1.0 which requires an Activity context" );
-            listener.onNativeAdLoadFailed( MaxAdapterError.UNSPECIFIED );
-            return;
-        }
 
         PAGNativeRequest request = new PAGNativeRequest();
 
@@ -569,7 +557,7 @@ public class ByteDanceMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), byteDanceErrorCode, byteDanceErrorMessage );
+        return new MaxAdapterError( adapterError, byteDanceErrorCode, byteDanceErrorMessage );
     }
 
     private Context getContext(@Nullable final Activity activity)
@@ -946,10 +934,6 @@ public class ByteDanceMediationAdapter
                                     .build();
 
                             String templateName = BundleUtils.getString( "template", "", serverParameters );
-                            if ( templateName.contains( "vertical" ) && AppLovinSdk.VERSION_CODE < 9140500 )
-                            {
-                                log( "Vertical native banners are only supported on MAX SDK 9.14.5 and above. Default horizontal native template will be used." );
-                            }
 
                             final MaxNativeAdView maxNativeAdView = new MaxNativeAdView( maxNativeAd, templateName, context );
                             final List<View> clickableViews = new ArrayList<>( 4 );
@@ -1081,7 +1065,7 @@ public class ByteDanceMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeAdData.getTitle() ) )
             {
                 e( "Native ad (" + ad + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
