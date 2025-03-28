@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.9.61.0
+* Certified with Mintegral SDK 16.9.61.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 16.9.51.0
 * Certified with Mintegral SDK 16.9.51.
 

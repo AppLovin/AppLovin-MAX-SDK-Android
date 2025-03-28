@@ -211,7 +211,7 @@ public class MintegralMediationAdapter
                     status = InitializationStatus.INITIALIZED_FAILURE;
                     onCompletionListener.onCompletion( status, errorMessage );
                 }
-            });
+            } );
         }
         else
         {
@@ -432,7 +432,7 @@ public class MintegralMediationAdapter
             log( "Unable to show interstitial - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -593,7 +593,7 @@ public class MintegralMediationAdapter
             log( "Unable to show rewarded ad - no ad loaded..." );
 
             // Ad load failed
-            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            router.onAdDisplayFailed( mbUnitId, new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -809,7 +809,7 @@ public class MintegralMediationAdapter
             adapterError = MaxAdapterError.UNSPECIFIED;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), 0, mintegralError );
+        return new MaxAdapterError( adapterError, 0, mintegralError );
     }
 
     private Context getContext(@Nullable final Activity activity)
@@ -837,21 +837,7 @@ public class MintegralMediationAdapter
 
     private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
     {
-        if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
-        {
-            final List<View> clickableViews = new ArrayList<>( 5 );
-            if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
-            if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
-            if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
-
-            return clickableViews;
-        }
-        else
-        {
-            return maxNativeAdView.getClickableViews();
-        }
+        return maxNativeAdView.getClickableViews();
     }
 
     /**
@@ -934,7 +920,7 @@ public class MintegralMediationAdapter
             @Override
             public void onShowFail(final MBridgeIds mBridgeIds, String errorMsg)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, errorMsg );
                 log( "Interstitial failed to show: " + adapterError );
                 onAdDisplayFailed( mBridgeIds.getUnitId(), adapterError );
             }
@@ -1035,7 +1021,7 @@ public class MintegralMediationAdapter
             @Override
             public void onShowFail(final MBridgeIds mBridgeIds, String errorMsg)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, errorMsg );
                 log( "Rewarded ad failed to show: " + adapterError );
                 onAdDisplayFailed( mBridgeIds.getUnitId(), adapterError );
             }
@@ -1148,7 +1134,7 @@ public class MintegralMediationAdapter
         @Override
         public void onShowFailed(final MBridgeIds mBridgeIds, final String errorMsg)
         {
-            final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, errorMsg );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, errorMsg );
             log( "App open ad failed to show: " + adapterError );
             listener.onAppOpenAdDisplayFailed( adapterError );
         }
@@ -1226,7 +1212,7 @@ public class MintegralMediationAdapter
             if ( TextUtils.isEmpty( campaign.getAppName() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad failed to load for unit id: " + unitId + " placement id: " + placementId + " with error: missing required assets" );
-                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1413,7 +1399,7 @@ public class MintegralMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( campaign.getAppName() ) )
             {
                 log( "Native ad failed to load for unit id: " + unitId + " placement id: " + placementId + " with error: missing required assets" );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1554,17 +1540,9 @@ public class MintegralMediationAdapter
                                     .setCallToAction( campaign.getAdCall() )
                                     .setIcon( finalIconImage )
                                     .setOptionsView( adChoiceView )
-                                    .setMediaView( mediaView );
-                            if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-                            {
-                                builder.setMainImage( mainImage );
-                            }
-
-                            if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
-                            {
-                                // Only Android supports star rating for now
-                                builder.setStarRating( campaign.getRating() );
-                            }
+                                    .setMediaView( mediaView )
+                                    .setMainImage( mainImage )
+                                    .setStarRating( campaign.getRating() );
 
                             nativeAd = new MaxMintegralNativeAd( builder );
                             listener.onNativeAdLoaded( nativeAd, null );
