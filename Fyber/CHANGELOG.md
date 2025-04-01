@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.3.6.1
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.2.0.
+* Updated minimum Android API level to 19 to match AppLovin SDK.
+* Requires minimum AppLovin MAX SDK version be 13.2.0.
+
 ## 8.3.6.0
 * Certified with Fyber SDK 8.3.6.
 

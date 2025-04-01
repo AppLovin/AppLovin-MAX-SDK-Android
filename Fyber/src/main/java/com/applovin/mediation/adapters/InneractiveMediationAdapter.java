@@ -74,7 +74,6 @@ public class InneractiveMediationAdapter
             final String appId = parameters.getServerParameters().getString( "app_id", null );
             log( "Initializing Inneractive SDK with app id: " + appId + "..." );
 
-            InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
             InneractiveAdManager.setMediationName( "Max" );
             InneractiveAdManager.setMediationVersion( AppLovinSdk.VERSION );
             InneractiveAdManager.initialize( getContext( activity ), appId, new OnFyberMarketplaceInitializedListener()
@@ -202,7 +201,7 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
                 log( "Interstitial failed to show: " + adapterError );
 
                 listener.onInterstitialAdDisplayFailed( adapterError );
@@ -260,7 +259,7 @@ public class InneractiveMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -293,7 +292,7 @@ public class InneractiveMediationAdapter
             public void onPlayerError()
             {
                 log( "Rewarded video failed to display for unspecified error" );
-                listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+                listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_DISPLAY_FAILED );
             }
         } );
 
@@ -347,7 +346,7 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
                 log( "Rewarded ad failed to show: " + adapterError );
 
                 listener.onRewardedAdDisplayFailed( adapterError );
@@ -418,7 +417,7 @@ public class InneractiveMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -478,7 +477,7 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
                 log( "AdView failed to show: " + adapterError );
 
                 listener.onAdViewAdDisplayFailed( adapterError );
@@ -546,8 +545,6 @@ public class InneractiveMediationAdapter
 
     private void updateUserInfo(final MaxAdapterParameters parameters)
     {
-        InneractiveAdManager.setUserId( getWrappingSdk().getUserIdentifier() );
-
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
@@ -558,12 +555,9 @@ public class InneractiveMediationAdapter
             InneractiveAdManager.clearGdprConsentData();
         }
 
-        if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+        if ( parameters.getConsentString() != null )
         {
-            if ( parameters.getConsentString() != null )
-            {
-                InneractiveAdManager.setGdprConsentString( parameters.getConsentString() );
-            }
+            InneractiveAdManager.setGdprConsentString( parameters.getConsentString() );
         }
 
         Bundle serverParameters = parameters.getServerParameters();
@@ -646,7 +640,7 @@ public class InneractiveMediationAdapter
             adapterErrorStr = "";
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), adapterErrorCode, adapterErrorStr );
+        return new MaxAdapterError( adapterError, adapterErrorCode, adapterErrorStr );
     }
 
     private Context getContext(@Nullable final Activity activity)
