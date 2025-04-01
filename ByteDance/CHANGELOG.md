@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.5.0.8.1
+* Requires minimum AppLovin MAX SDK version be 13.2.0.
+
 ## 6.5.0.8.0
 * Certified with ByteDance SDK 6.5.0.8.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.2.0.
