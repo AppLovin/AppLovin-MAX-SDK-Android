@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.4.0
+* Certified with Maio SDK 2.0.4.
+* Updated minimum Android API level to 21 to match Maio SDK.
+
 ## 2.0.3.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 

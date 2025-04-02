@@ -8,7 +8,9 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("2.0.3.1")
+val libraryVersionName by extra("2.0.4.0")
+
+android.defaultConfig.minSdk = 21
 
 repositories {
     maven { url = uri("https://imobile-maio.github.io/maven") }
