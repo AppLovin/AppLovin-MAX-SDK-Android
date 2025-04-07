@@ -233,7 +233,7 @@ public class VungleMediationAdapter
         else
         {
             log( "Interstitial ad is not ready: " + parameters.getThirdPartyAdPlacementId() + "..." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad is not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad is not ready" ) );
         }
     }
 
@@ -274,7 +274,7 @@ public class VungleMediationAdapter
         else
         {
             log( "App open ad is not ready: " + parameters.getThirdPartyAdPlacementId() + "..." );
-            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "App open ad is not ready" ) );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "App open ad is not ready" ) );
         }
     }
 
@@ -319,7 +319,7 @@ public class VungleMediationAdapter
         else
         {
             log( "Rewarded ad is not ready: " + parameters.getThirdPartyAdPlacementId() + "..." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad is not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad is not ready" ) );
         }
     }
 
@@ -361,7 +361,15 @@ public class VungleMediationAdapter
             return;
         }
 
-        VungleAdSize adSize = vungleAdSize( adFormat );
+        // Check if adaptive ad view sizes should be used
+        boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
+        {
+            isAdaptiveAdViewEnabled = false;
+            userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Vungle adaptive ads" );
+        }
+
+        VungleAdSize adSize = vungleAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, context );
         adViewAd = new VungleBannerView( context, placementId, adSize );
         adViewAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
@@ -420,8 +428,16 @@ public class VungleMediationAdapter
         }
     }
 
-    private static VungleAdSize vungleAdSize(final MaxAdFormat adFormat)
+    private VungleAdSize vungleAdSize(final MaxAdFormat adFormat,
+                                      final boolean isAdaptiveAdViewEnabled,
+                                      final MaxAdapterParameters parameters,
+                                      final Context context)
     {
+        if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            return getAdaptiveAdSize( parameters, context );
+        }
+
         if ( adFormat == MaxAdFormat.BANNER )
         {
             return VungleAdSize.BANNER;
@@ -438,6 +454,28 @@ public class VungleMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad view ad format: " + adFormat.getLabel() );
         }
+    }
+
+    private VungleAdSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        final int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        if ( isInlineAdaptiveAdView( parameters ) )
+        {
+            final int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                // NOTE: Inline adaptive ad will be a fixed height equal to inlineMaximumHeight. Dynamic maximum height will be supported once the Vungle iOS SDK respects the maximum height
+                return VungleAdSize.getAdSizeWithWidthAndHeight( adaptiveAdWidth, inlineMaximumHeight );
+            }
+
+            // If not specified, inline maximum height will be the device height according to current device orientation
+            return VungleAdSize.getAdSizeWithWidth( context, adaptiveAdWidth );
+        }
+
+        // Return anchored size by default
+        final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( adaptiveAdWidth, context ).getHeight();
+        return VungleAdSize.getAdSizeWithWidthAndHeight( adaptiveAdWidth, anchoredHeight );
     }
 
     private Context getContext(@Nullable final Activity activity)
@@ -523,18 +561,25 @@ public class VungleMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), vungleErrorCode, vungleError.getLocalizedMessage() );
+        return new MaxAdapterError( adapterError, vungleErrorCode, vungleError.getLocalizedMessage() );
     }
 
-    @Nullable
     private Bundle maybeCreateExtraInfoBundle(final BaseAd baseAd)
     {
+        Bundle extraInfo = new Bundle( 3 );
+
         String creativeId = baseAd.getCreativeId();
+        if ( AppLovinSdkUtils.isValidString( creativeId ) )
+        {
+            extraInfo.putString( "creative_id", creativeId );
+        }
 
-        if ( TextUtils.isEmpty( creativeId ) ) return null;
-
-        Bundle extraInfo = new Bundle( 1 );
-        extraInfo.putString( "creative_id", creativeId );
+        if ( adViewAd != null )
+        {
+            VungleAdSize adSize = adViewAd.getAdViewSize();
+            extraInfo.putInt( "ad_width", adSize.getWidth() );
+            extraInfo.putInt( "ad_height", adSize.getHeight() );
+        }
 
         return extraInfo;
     }
@@ -882,7 +927,7 @@ public class VungleMediationAdapter
             if ( TextUtils.isEmpty( nativeAd.getAdTitle() ) )
             {
                 e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1010,7 +1055,7 @@ public class VungleMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getAdTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
