@@ -565,8 +565,7 @@ public class GoogleMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(),
-                                    adapterError.getErrorMessage(),
+        return new MaxAdapterError( adapterError,
                                     googleErrorCode,
                                     googleAdsError.getMessage() );
     }
