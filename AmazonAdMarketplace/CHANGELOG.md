@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.1.0
+* Certified with AmazonAdMarketplace SDK 10.1.1.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 11.7.0+.
+
 ## 10.1.0.0
 * Certified with AmazonAdMarketplace SDK 10.1.0.
 
