@@ -1,1 +1,0 @@
-# Maio Adapter
