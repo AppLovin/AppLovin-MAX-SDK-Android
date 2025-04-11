@@ -417,6 +417,13 @@ public class MintegralMediationAdapter
     {
         router.addShowingAdapter( this );
 
+        //Fix the issue where callbacks are not received when the listener is set to null.
+        if (mbBidInterstitialVideoHandler != null) {
+            mbBidInterstitialVideoHandler.setInterstitialVideoListener( router.getInterstitialListener() );
+        } else if (mbInterstitialVideoHandler != null) {
+            mbBidInterstitialVideoHandler.setInterstitialVideoListener( router.getInterstitialListener() );
+        }
+
         if ( mbBidInterstitialVideoHandler != null && mbBidInterstitialVideoHandler.isBidReady() )
         {
             log( "Showing bidding interstitial..." );
@@ -577,6 +584,13 @@ public class MintegralMediationAdapter
         final Bundle serverParameters = parameters.getServerParameters();
         final String rewardId = serverParameters.getString( "reward_id", "" );
         final String userId = serverParameters.getString( "user_id", "" );
+
+        //Fix the issue where callbacks are not received when the listener is set to null.
+        if (mbBidRewardVideoHandler != null) {
+            mbBidRewardVideoHandler.setRewardVideoListener( router.getRewardedListener() );
+        } else if (mbRewardVideoHandler != null) {
+            mbRewardVideoHandler.setRewardVideoListener( router.getRewardedListener() );
+        }
 
         if ( mbBidRewardVideoHandler != null && mbBidRewardVideoHandler.isBidReady() )
         {
