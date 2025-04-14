@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.9.61.1
+* Fixed issue where fullscreen ad callbacks were not fired when sequential ads are enabled.
+
 ## 16.9.61.0
 * Certified with Mintegral SDK 16.9.61.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.

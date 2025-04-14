@@ -246,11 +246,7 @@ public class MintegralMediationAdapter
             mbInterstitialVideoHandler = null;
         }
 
-        if ( mbBidInterstitialVideoHandler != null )
-        {
-            mbBidInterstitialVideoHandler.setInterstitialVideoListener( null );
-            mbBidInterstitialVideoHandler = null;
-        }
+        mbBidInterstitialVideoHandler = null;
 
         if ( mbSplashHandler != null )
         {
@@ -266,11 +262,7 @@ public class MintegralMediationAdapter
             mbRewardVideoHandler = null;
         }
 
-        if ( mbBidRewardVideoHandler != null )
-        {
-            mbBidRewardVideoHandler.setRewardVideoListener( null );
-            mbBidRewardVideoHandler = null;
-        }
+        mbBidRewardVideoHandler = null;
 
         if ( mbBannerView != null )
         {
