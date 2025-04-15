@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -17,26 +18,31 @@ import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
+import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.line.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.five_corp.ad.AdLoader;
+import com.five_corp.ad.AdSlotConfig;
+import com.five_corp.ad.BidData;
 import com.five_corp.ad.FiveAd;
 import com.five_corp.ad.FiveAdConfig;
 import com.five_corp.ad.FiveAdCustomLayout;
 import com.five_corp.ad.FiveAdCustomLayoutEventListener;
 import com.five_corp.ad.FiveAdErrorCode;
-import com.five_corp.ad.FiveAdInterface;
 import com.five_corp.ad.FiveAdInterstitial;
 import com.five_corp.ad.FiveAdInterstitialEventListener;
-import com.five_corp.ad.FiveAdLoadListener;
 import com.five_corp.ad.FiveAdNative;
 import com.five_corp.ad.FiveAdNativeEventListener;
 import com.five_corp.ad.FiveAdState;
@@ -46,20 +52,24 @@ import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class LineMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
-    private static final AtomicBoolean INITIALIZED = new AtomicBoolean();
-
     private FiveAdInterstitial interstitialAd;
     private FiveAdVideoReward  rewardedAd;
     private FiveAdCustomLayout adView;
     private FiveAdNative       nativeAd;
+
+    private InterstitialListener interstitialListener;
+    private RewardedListener     rewardedListener;
+    private AdViewListener       adViewListener;
+    private NativeAdViewListener nativeAdViewListener;
+    private NativeAdListener     nativeAdListener;
 
     public LineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -78,47 +88,7 @@ public class LineMediationAdapter
     @Override
     public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
-        if ( INITIALIZED.compareAndSet( false, true ) )
-        {
-            final String appId = parameters.getServerParameters().getString( "app_id" );
-            log( "Initializing Line SDK with app id: " + appId + "..." );
-
-            FiveAdConfig config = new FiveAdConfig( appId );
-            config.isTest = parameters.isTesting();
-
-            Bundle serverParameters = parameters.getServerParameters();
-            // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-            if ( serverParameters.containsKey( "is_muted" ) )
-            {
-                boolean muted = serverParameters.getBoolean( "is_muted" );
-                config.enableSoundByDefault( !muted );
-            }
-
-            //
-            // GDPR options
-            //
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
-            }
-
-            FiveAd.initialize( getApplicationContext(), config );
-
-            onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
-        }
-        else
-        {
-            if ( FiveAd.isInitialized() )
-            {
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_UNKNOWN, null );
-            }
-            else
-            {
-                log( "Line SDK still initializing" );
-                onCompletionListener.onCompletion( InitializationStatus.INITIALIZING, null );
-            }
-        }
+        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
 
     @Override
@@ -128,110 +98,266 @@ public class LineMediationAdapter
         rewardedAd = null;
         adView = null;
         nativeAd = null;
+
+        interstitialListener = null;
+        rewardedListener = null;
+        adViewListener = null;
+        nativeAdViewListener = null;
+        nativeAdListener = null;
+    }
+
+    @Override
+    public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, final Activity activity, final MaxSignalCollectionListener callback)
+    {
+        log( "Collecting signal..." );
+
+        final String adUnitId = parameters.getAdUnitId();
+        if ( TextUtils.isEmpty( adUnitId ) )
+        {
+            final String errorMessage = "invalid ad unit id";
+            log( "Signal collection failed with error: " + errorMessage );
+            callback.onSignalCollectionFailed( errorMessage );
+
+            return;
+        }
+
+        final Bundle credentials = BundleUtils.getBundle( "placement_ids", Bundle.EMPTY, parameters.getServerParameters() );
+        final String slotId = credentials.getString( adUnitId );
+
+        if ( TextUtils.isEmpty( slotId ) )
+        {
+            final String errorMessage = "invalid slot id";
+            log( "Signal collection failed with error: " + errorMessage );
+            callback.onSignalCollectionFailed( errorMessage );
+
+            return;
+        }
+
+        final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+        adLoader.collectSignal( slotId, new AdLoader.CollectSignalCallback()
+        {
+
+            @Override
+            public void onCollect(@NonNull final String token)
+            {
+                log( "Signal collection successful" );
+                callback.onSignalCollected( token );
+            }
+
+            @Override
+            public void onError(@NonNull final FiveAdErrorCode fiveAdErrorCode)
+            {
+                log( "Signal collection failed for " + slotId + " with error : " + fiveAdErrorCode );
+                callback.onSignalCollectionFailed( fiveAdErrorCode.name() );
+            }
+        } );
     }
 
     @Override
     public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        String slotId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading interstitial ad for slot id: " + slotId + "..." );
+        final String slotId = parameters.getThirdPartyAdPlacementId();
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
 
-        interstitialAd = new FiveAdInterstitial( getApplicationContext(), slotId );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "interstitial ad for slot id: " + slotId + "..." );
 
-        InterstitialListener interstitialListener = new InterstitialListener( listener );
-        interstitialAd.setLoadListener( interstitialListener );
-        interstitialAd.setEventListener( interstitialListener );
-        interstitialAd.loadAdAsync();
+        interstitialListener = new InterstitialListener( listener );
+
+        if ( isBidding )
+        {
+            final BidData bidData = new BidData( bidResponse, null );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadInterstitialAd( bidData, interstitialListener );
+        }
+        else
+        {
+            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadInterstitialAd( slotConfig, interstitialListener );
+        }
     }
 
     @Override
     public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
-        String slotId = parameters.getThirdPartyAdPlacementId();
+        final String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing interstitial ad for slot id: " + slotId + "..." );
 
+        if ( interstitialAd == null )
+        {
+            log( "Interstitial ad failed to show for slot id: " + slotId + " - no ad loaded" );
+
+            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" );
+            listener.onInterstitialAdDisplayFailed( error );
+            return;
+        }
+
+        interstitialAd.setEventListener( interstitialListener );
         interstitialAd.showAd();
     }
 
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        String slotId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading rewarded ad for slot id: " + slotId + "..." );
+        final String slotId = parameters.getThirdPartyAdPlacementId();
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
 
-        rewardedAd = new FiveAdVideoReward( getApplicationContext(), slotId );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "rewarded ad for slot id: " + slotId + "..." );
 
-        RewardedListener rewardedListener = new RewardedListener( listener );
-        rewardedAd.setLoadListener( rewardedListener );
-        rewardedAd.setEventListener( rewardedListener );
-        rewardedAd.loadAdAsync();
+        rewardedListener = new RewardedListener( listener );
+
+        if ( isBidding )
+        {
+            final BidData bidData = new BidData( bidResponse, null );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadRewardAd( bidData, rewardedListener );
+        }
+        else
+        {
+            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadRewardAd( slotConfig, rewardedListener );
+        }
     }
 
     @Override
     public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
-        String slotId = parameters.getThirdPartyAdPlacementId();
+        final String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing rewarded ad for slot id: " + slotId + "..." );
 
+        if ( rewardedAd == null )
+        {
+            log( "Rewarded ad failed to show for slot id: " + slotId + " - no ad loaded" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+
+            return;
+        }
+
         configureReward( parameters );
+
+        rewardedAd.setEventListener( rewardedListener );
         rewardedAd.showAd();
     }
 
     @Override
     public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
-        boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
-        String slotId = parameters.getThirdPartyAdPlacementId();
+        final boolean isNative = parameters.getServerParameters().getBoolean( "is_native" );
+        final String slotId = parameters.getThirdPartyAdPlacementId();
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
 
-        log( "Loading " + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for slot id: " + slotId + "..." );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + ( isNative ? "native " : "" ) + adFormat.getLabel() + " ad for slot id: " + slotId + "..." );
 
         if ( isNative )
         {
-            nativeAd = new FiveAdNative( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
-            NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters() );
-            nativeAd.setLoadListener( nativeAdViewListener );
-            nativeAd.setEventListener( nativeAdViewListener );
+            nativeAdViewListener = new NativeAdViewListener( listener, adFormat, parameters.getServerParameters() );
 
-            // We always want to mute banners and MRECs
-            nativeAd.enableSound( false );
-
-            nativeAd.loadAdAsync();
+            if ( isBidding )
+            {
+                final BidData bidData = new BidData( bidResponse, null );
+                final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+                adLoader.loadNativeAd( bidData, new DisplayMetrics().widthPixels, nativeAdViewListener );
+            }
+            else
+            {
+                final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+                final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+                adLoader.loadNativeAd( slotConfig, new DisplayMetrics().widthPixels, nativeAdViewListener );
+            }
         }
         else
         {
-            adView = new FiveAdCustomLayout( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
-            AdViewListener adViewListener = new AdViewListener( listener, adFormat );
-            adView.setLoadListener( adViewListener );
-            adView.setEventListener( adViewListener );
+            adViewListener = new AdViewListener( listener, adFormat );
 
-            // We always want to mute banners and MRECs
-            adView.enableSound( false );
-
-            adView.loadAdAsync();
+            if ( isBidding )
+            {
+                final BidData bidData = new BidData( bidResponse, null );
+                final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+                adLoader.loadBannerAd( bidData, new DisplayMetrics().widthPixels, adViewListener );
+            }
+            else
+            {
+                final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+                final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+                adLoader.loadBannerAd( slotConfig, new DisplayMetrics().widthPixels, adViewListener );
+            }
         }
     }
 
     @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
-        String slotId = parameters.getThirdPartyAdPlacementId();
-        log( "Loading native ad for slot id: " + slotId + "..." );
+        final String slotId = parameters.getThirdPartyAdPlacementId();
+        final String bidResponse = parameters.getBidResponse();
+        final boolean isBidding = AppLovinSdkUtils.isValidString( bidResponse );
 
-        nativeAd = new FiveAdNative( getApplicationContext(), slotId, new DisplayMetrics().widthPixels );
-        NativeAdListener nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters() );
-        nativeAd.setLoadListener( nativeAdListener );
-        nativeAd.setEventListener( nativeAdListener );
+        log( "Loading " + ( isBidding ? "bidding " : "" ) + "native ad for slot id: " + slotId + "..." );
 
-        // We always want to mute banners and MRECs
-        nativeAd.enableSound( false );
+        nativeAdListener = new NativeAdListener( listener, parameters.getServerParameters() );
 
-        nativeAd.loadAdAsync();
+        if ( isBidding )
+        {
+            final BidData bidData = new BidData( bidResponse, null );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadNativeAd( bidData, nativeAdListener );
+        }
+        else
+        {
+            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
+            adLoader.loadNativeAd( slotConfig, new DisplayMetrics().widthPixels, nativeAdListener );
+        }
+    }
+
+    private Context getContext(@Nullable final Activity activity)
+    {
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    private AdLoader retrieveAdLoader(final MaxAdapterParameters parameters, final Context context)
+    {
+        final FiveAdConfig config = getConfigFromParameters( parameters );
+        final AdLoader adLoader = AdLoader.forConfig( context, config );
+        if ( adLoader == null )
+        {
+            throw new IllegalStateException( "Failed to retrieve ad loader for ad unit id: " + parameters.getAdUnitId() );
+        }
+
+        return adLoader;
+    }
+
+    private FiveAdConfig getConfigFromParameters(MaxAdapterParameters parameters)
+    {
+        final String appId = parameters.getServerParameters().getString( "app_id" );
+
+        final FiveAdConfig config = new FiveAdConfig( appId );
+        config.isTest = parameters.isTesting();
+
+        final Bundle serverParameters = parameters.getServerParameters();
+        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
+        if ( serverParameters.containsKey( "is_muted" ) )
+        {
+            final boolean muted = serverParameters.getBoolean( "is_muted" );
+            config.enableSoundByDefault( !muted );
+        }
+
+        final Boolean hasUserConsent = parameters.hasUserConsent();
+        if ( hasUserConsent != null )
+        {
+            config.needGdprNonPersonalizedAdsTreatment = hasUserConsent ? NeedGdprNonPersonalizedAdsTreatment.FALSE : NeedGdprNonPersonalizedAdsTreatment.TRUE;
+        }
+
+        return config;
     }
 
     private static MaxAdapterError toMaxError(FiveAdErrorCode lineAdsError)
     {
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-        String thirdPartySdkErrorMessage = "Please contact us.";
+        String thirdPartySdkErrorMessage = "Unspecified.";
         switch ( lineAdsError )
         {
             case NETWORK_ERROR:
@@ -252,7 +378,7 @@ public class LineMediationAdapter
                 break;
             case INTERNAL_ERROR:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
-                thirdPartySdkErrorMessage = "Please contact us.";
+                thirdPartySdkErrorMessage = "Unspecified.";
                 break;
             case INVALID_STATE:
                 adapterError = MaxAdapterError.INVALID_LOAD_STATE;
@@ -265,15 +391,15 @@ public class LineMediationAdapter
             case SUPPRESSED:
             case PLAYER_ERROR:
                 adapterError = MaxAdapterError.UNSPECIFIED;
-                thirdPartySdkErrorMessage = "Please contact us.";
+                thirdPartySdkErrorMessage = "Unspecified.";
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), lineAdsError.ordinal(), thirdPartySdkErrorMessage );
+        return new MaxAdapterError( adapterError, lineAdsError.ordinal(), thirdPartySdkErrorMessage );
     }
 
     private class InterstitialListener
-            implements FiveAdLoadListener, FiveAdInterstitialEventListener
+            implements AdLoader.LoadInterstitialAdCallback, FiveAdInterstitialEventListener
     {
         private final MaxInterstitialAdapterListener listener;
 
@@ -283,16 +409,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdLoad(final FiveAdInterface ad)
+        public void onLoad(@NonNull final FiveAdInterstitial ad)
         {
             log( "Interstitial ad loaded for slot id: " + ad.getSlotId() + "..." );
+            interstitialAd = ad;
             listener.onInterstitialAdLoaded();
         }
 
         @Override
-        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onError(@NonNull final FiveAdErrorCode errorCode)
         {
-            log( "Interstitial ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            log( "Interstitial ad failed to load with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
             listener.onInterstitialAdLoadFailed( error );
         }
@@ -301,7 +428,7 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdInterstitial ad, final FiveAdErrorCode errorCode)
         {
             log( "Interstitial ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
             listener.onInterstitialAdDisplayFailed( error );
         }
 
@@ -352,7 +479,7 @@ public class LineMediationAdapter
     }
 
     private class RewardedListener
-            implements FiveAdLoadListener, FiveAdVideoRewardEventListener
+            implements AdLoader.LoadRewardAdCallback, FiveAdVideoRewardEventListener
     {
         private final MaxRewardedAdapterListener listener;
         private       boolean                    hasGrantedReward;
@@ -363,16 +490,17 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdLoad(final FiveAdInterface ad)
+        public void onLoad(@NonNull final FiveAdVideoReward ad)
         {
             log( "Rewarded ad loaded for slot id: " + ad.getSlotId() + "..." );
+            rewardedAd = ad;
             listener.onRewardedAdLoaded();
         }
 
         @Override
-        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onError(@NonNull final FiveAdErrorCode errorCode)
         {
-            log( "Rewarded ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            log( "Rewarded ad failed to load with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
             listener.onRewardedAdLoadFailed( error );
         }
@@ -381,7 +509,7 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdVideoReward ad, final FiveAdErrorCode errorCode)
         {
             log( "Rewarded ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
             listener.onRewardedAdDisplayFailed( error );
         }
 
@@ -449,7 +577,7 @@ public class LineMediationAdapter
     }
 
     private class AdViewListener
-            implements FiveAdLoadListener, FiveAdCustomLayoutEventListener
+            implements AdLoader.LoadBannerAdCallback, FiveAdCustomLayoutEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -461,16 +589,22 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdLoad(final FiveAdInterface ad)
+        public void onLoad(final FiveAdCustomLayout ad)
         {
             log( adFormat.getLabel() + " ad loaded for slot id: " + ad.getSlotId() + "..." );
+            adView = ad;
+            adView.setEventListener( adViewListener );
+
+            // We always want to mute banners and MRECs
+            adView.enableSound( false );
+
             listener.onAdViewAdLoaded( adView );
         }
 
         @Override
-        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onError(final FiveAdErrorCode errorCode)
         {
-            log( adFormat.getLabel() + " ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            log( adFormat.getLabel() + " ad failed to load with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
             listener.onAdViewAdLoadFailed( error );
         }
@@ -479,7 +613,7 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdCustomLayout ad, final FiveAdErrorCode errorCode)
         {
             log( adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 
@@ -524,7 +658,7 @@ public class LineMediationAdapter
     }
 
     private class NativeAdViewListener
-            implements FiveAdLoadListener, FiveAdNativeEventListener
+            implements AdLoader.LoadNativeAdCallback, FiveAdNativeEventListener
     {
         private final MaxAdViewAdapterListener listener;
         private final MaxAdFormat              adFormat;
@@ -538,7 +672,7 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdLoad(final FiveAdInterface ad)
+        public void onLoad(final FiveAdNative ad)
         {
             log( "Native " + adFormat.getLabel() + " ad loaded for slot id: " + ad.getSlotId() + "..." );
 
@@ -549,13 +683,19 @@ public class LineMediationAdapter
                 return;
             }
 
+            nativeAd = ad;
+            nativeAd.setEventListener( nativeAdViewListener );
+
+            // We always want to mute banners and MRECs
+            nativeAd.enableSound( false );
+
             renderCustomNativeBanner( ad.getSlotId() );
         }
 
         @Override
-        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onError(final FiveAdErrorCode errorCode)
         {
-            log( "Native " + adFormat.getLabel() + " ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            log( "Native " + adFormat.getLabel() + " ad failed to load with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
             listener.onAdViewAdLoadFailed( error );
         }
@@ -564,7 +704,7 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdNative ad, final FiveAdErrorCode errorCode)
         {
             log( "Native " + adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( -4205, "Ad Display Failed", errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 
@@ -685,7 +825,7 @@ public class LineMediationAdapter
     }
 
     private class NativeAdListener
-            implements FiveAdLoadListener, FiveAdNativeEventListener
+            implements AdLoader.LoadNativeAdCallback, FiveAdNativeEventListener
     {
         private final MaxNativeAdAdapterListener listener;
         private final Bundle                     serverParameters;
@@ -697,30 +837,21 @@ public class LineMediationAdapter
         }
 
         @Override
-        public void onFiveAdLoad(final FiveAdInterface ad)
+        public void onLoad(final FiveAdNative ad)
         {
             log( "Native ad loaded for slot id: " + ad.getSlotId() + "..." );
 
-            FiveAdNative loadedNativeAd = nativeAd;
-            if ( loadedNativeAd == null )
-            {
-                log( "Native ad destroyed before the ad successfully loaded: " + ad.getSlotId() + "..." );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                return;
-            }
-
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( isTemplateAd && TextUtils.isEmpty( loadedNativeAd.getAdTitle() ) )
+            if ( isTemplateAd && TextUtils.isEmpty( ad.getAdTitle() ) )
             {
                 e( "Native ad (" + ad + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
 
-            loadedNativeAd.loadIconImageAsync( new FiveAdNative.LoadImageCallback()
+            ad.loadIconImageAsync( new FiveAdNative.LoadImageCallback()
             {
                 @Override
                 public void onImageLoad(final Bitmap bitmap)
@@ -745,12 +876,18 @@ public class LineMediationAdapter
                     listener.onNativeAdLoaded( maxNativeAd, null );
                 }
             } );
+
+            nativeAd = ad;
+            nativeAd.setEventListener( nativeAdListener );
+
+            // We always want to mute banners and MRECs
+            nativeAd.enableSound( false );
         }
 
         @Override
-        public void onFiveAdLoadError(final FiveAdInterface ad, final FiveAdErrorCode errorCode)
+        public void onError(final FiveAdErrorCode errorCode)
         {
-            log( "Native ad failed to load for slot id: " + ad.getSlotId() + " with error: " + errorCode );
+            log( "Native ad failed to load with error: " + errorCode );
             MaxAdapterError error = toMaxError( errorCode );
             listener.onNativeAdLoadFailed( error );
         }

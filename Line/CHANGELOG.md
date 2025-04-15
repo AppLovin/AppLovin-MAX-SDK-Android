@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025.1.10.2
+* Add support for bidding.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 2025.1.10.1
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
