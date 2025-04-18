@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.8.0.0.1
+* Certified with ironSource SDK 8.8.0.
+* Updated to use ironSource SDK hosted on MavenCentral.
+* Removed AndroidManifest.xml from adapter to fix conflict with AndroidManifest.xml in ironSource SDK.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 8.7.0.0.0
 * Certified with IronSource SDK 8.7.0.
 
@@ -51,7 +57,7 @@
 ## 8.0.0.0.0
 * Certified with IronSource SDK 8.0.0.
 * Remove deprecated callbacks `onRewardedAdVideoStarted()` and `onRewardedAdVideoCompleted()`.
-* Requires minimum Android API level be 19 or higher.
+* Updated minimum Android API level to 19 to match IronSource SDK.
 
 ## 7.9.0.0.0
 * Certified with IronSource SDK 7.9.0.
