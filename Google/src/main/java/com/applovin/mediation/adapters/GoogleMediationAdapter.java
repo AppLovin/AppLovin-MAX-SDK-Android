@@ -720,8 +720,16 @@ public class GoogleMediationAdapter
                 if ( isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj ) )
                 {
                     AdSize adaptiveAdSize = toAdSize( adFormat, true, parameters, context );
-                    networkExtras.putInt( "adaptive_banner_w", adaptiveAdSize.getWidth() );
-                    networkExtras.putInt( "adaptive_banner_h", adaptiveAdSize.getHeight() );
+                    if ( isInlineAdaptiveBanner( parameters ) )
+                    {
+                        networkExtras.putInt( "inlined_adaptive_banner_w", adaptiveAdSize.getWidth() );
+                        networkExtras.putInt( "inlined_adaptive_banner_h", adaptiveAdSize.getHeight() );
+                    }
+                    else
+                    {
+                        networkExtras.putInt( "adaptive_banner_w", adaptiveAdSize.getWidth() );
+                        networkExtras.putInt( "adaptive_banner_h", adaptiveAdSize.getHeight() );
+                    }
                 }
             }
 

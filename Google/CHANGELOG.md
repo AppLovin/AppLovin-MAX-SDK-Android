@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.2.0.1
+* Fixed the request parameters for inline adaptive banners.
+
 ## 24.2.0.0
 * Certified with Google SDK 24.2.0.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
