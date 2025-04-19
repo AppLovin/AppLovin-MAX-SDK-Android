@@ -247,17 +247,6 @@ public class YandexMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "interstitial ad for placement: " + placementId + "..." );
 
-        // Yandex team advises passing in an `Activity` context to fix any launcher task issues
-        if ( activity == null )
-        {
-            log( "Interstitial ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
-            listener.onInterstitialAdLoadFailed( error );
-
-            return;
-        }
-
         updatePrivacySettings( parameters );
 
         Runnable loadInterstitialAdRunnable = new Runnable()
@@ -307,17 +296,6 @@ public class YandexMediationAdapter
     {
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "rewarded ad for placement: " + placementId + "..." );
-
-        // Yandex team advises passing in an `Activity` context to fix any launcher task issues
-        if ( activity == null )
-        {
-            log( "Rewarded ad load failed: Activity is null" );
-
-            final MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
-            listener.onRewardedAdLoadFailed( error );
-
-            return;
-        }
 
         updatePrivacySettings( parameters );
 
