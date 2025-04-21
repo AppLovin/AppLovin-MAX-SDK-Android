@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.12.1.1
+* Remove null Activity check when loading interstitial and rewarded ads.
+
 ## 7.12.1.0
 * Certified with Yandex SDK 7.12.1.
 
