@@ -28,6 +28,7 @@ import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.bytedance.BuildConfig;
@@ -40,6 +41,7 @@ import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdInteractionListener;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdLoadListener;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerRequest;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerSize;
+import com.bytedance.sdk.openadsdk.api.bidding.PAGBiddingRequest;
 import com.bytedance.sdk.openadsdk.api.init.BiddingTokenCallback;
 import com.bytedance.sdk.openadsdk.api.init.PAGConfig;
 import com.bytedance.sdk.openadsdk.api.init.PAGSdk;
@@ -67,9 +69,7 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,6 +78,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
+
+import static com.bytedance.sdk.openadsdk.api.PAGConstant.PAGPAConsentType.PAG_PA_CONSENT_TYPE_CONSENT;
+import static com.bytedance.sdk.openadsdk.api.PAGConstant.PAGPAConsentType.PAG_PA_CONSENT_TYPE_NO_CONSENT;
 
 /**
  * Created by Thomas So on April 14 2020
@@ -145,6 +148,7 @@ public class ByteDanceMediationAdapter
     private static final AtomicBoolean        initialized                        = new AtomicBoolean();
     private static       InitializationStatus status;
     private static final int                  DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
+    private static final String               MAX_EXCHANGE_ID                    = "105";
     private static final ExecutorService      executor                           = Executors.newCachedThreadPool();
 
     private PAGInterstitialAd interstitialAd;
@@ -185,11 +189,12 @@ public class ByteDanceMediationAdapter
             Boolean isDoNotSell = parameters.isDoNotSell();
             if ( isDoNotSell != null )
             {
-                builder.setDoNotSell( isDoNotSell ? 1 : 0 );
+                builder.setPAConsent( isDoNotSell ? PAG_PA_CONSENT_TYPE_NO_CONSENT : PAG_PA_CONSENT_TYPE_CONSENT );
             }
 
             PAGConfig adConfig = builder.appId( appId )
                     .debugLog( parameters.isTesting() )
+                    .setAdxId( MAX_EXCHANGE_ID )
                     .supportMultiProcess( false )
                     .build();
 
@@ -277,7 +282,10 @@ public class ByteDanceMediationAdapter
     {
         log( "Collecting signal..." );
 
-        PAGSdk.getBiddingToken( new BiddingTokenCallback()
+        Context context = getContext( activity );
+        PAGBiddingRequest request = createBiddingRequestWithParameters( parameters, context );
+
+        PAGSdk.getBiddingToken( context, request, new BiddingTokenCallback()
         {
             @Override
             public void onBiddingTokenCollected(final String biddingToken)
@@ -433,8 +441,10 @@ public class ByteDanceMediationAdapter
         }
         else
         {
-            AppLovinSdkUtils.Size adSize = adFormat.getSize();
-            PAGBannerRequest request = new PAGBannerRequest( new PAGBannerSize( adSize.getWidth(), adSize.getHeight() ) );
+            boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+
+            PAGBannerSize adSize = toPAGBannerSize( adFormat, isAdaptiveAdViewEnabled, parameters, getContext( activity ) );
+            PAGBannerRequest request = new PAGBannerRequest( adSize );
 
             if ( isBidding )
             {
@@ -560,6 +570,53 @@ public class ByteDanceMediationAdapter
         return new MaxAdapterError( adapterError, byteDanceErrorCode, byteDanceErrorMessage );
     }
 
+    private PAGBannerSize toPAGBannerSize(final MaxAdFormat adFormat,
+                                          final boolean isAdaptiveAdViewEnabled,
+                                          final MaxAdapterParameters parameters,
+                                          final Context context)
+    {
+        if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            return getAdaptiveAdSize( parameters, context );
+        }
+
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return PAGBannerSize.BANNER_W_320_H_50;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return PAGBannerSize.BANNER_W_728_H_90;
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return PAGBannerSize.BANNER_W_300_H_250;
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Unsupported ad view ad format: " + adFormat.getLabel() );
+        }
+    }
+
+    private PAGBannerSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        if ( isInlineAdaptiveAdView( parameters ) )
+        {
+            int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                return PAGBannerSize.getInlineAdaptiveBannerAdSize( adaptiveAdWidth, inlineMaximumHeight );
+            }
+
+            return PAGBannerSize.getCurrentOrientationInlineAdaptiveBannerAdSize( context, adaptiveAdWidth );
+        }
+
+        // Return anchored size by default
+        return PAGBannerSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize( context, adaptiveAdWidth );
+    }
+
     private Context getContext(@Nullable final Activity activity)
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
@@ -576,6 +633,40 @@ public class ByteDanceMediationAdapter
         {
             return String.format( "[{\"name\":\"mediation\",\"value\":\"MAX\"},{\"name\":\"adapter_version\",\"value\":\"%s\"},{\"name\":\"hybrid_id\",\"value\":\"%s\"}]", getAdapterVersion(), BundleUtils.getString( "event_id", serverParameters ) );
         }
+    }
+
+    private PAGBiddingRequest createBiddingRequestWithParameters(final MaxAdapterSignalCollectionParameters parameters, final Context context)
+    {
+        PAGBiddingRequest request = new PAGBiddingRequest();
+
+        if ( parameters.getAdFormat().isAdViewAd() )
+        {
+            Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+            boolean isAdaptiveAdViewEnabled = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+
+            PAGBannerSize adSize = toPAGBannerSize( parameters.getAdFormat(), isAdaptiveAdViewEnabled, parameters, context );
+            request.setBannerSize( adSize );
+        }
+
+        request.setAdxId( MAX_EXCHANGE_ID );
+
+        String adUnitId = parameters.getAdUnitId();
+        Bundle credentials = BundleUtils.getBundle( "placement_ids", Bundle.EMPTY, parameters.getServerParameters() );
+
+        if ( AppLovinSdkUtils.isValidString( adUnitId ) )
+        {
+            String slotId = credentials.getString( adUnitId );
+            if ( AppLovinSdkUtils.isValidString( slotId ) )
+            {
+                request.setSlotId( slotId );
+            }
+            else
+            {
+                log( "No valid slot ID found during signal collection" );
+            }
+        }
+
+        return request;
     }
 
     //endregion
@@ -810,8 +901,13 @@ public class ByteDanceMediationAdapter
             log( adFormat.getLabel() + " ad (" + codeId + ") loaded" );
             adViewAd = ad;
 
+            Bundle extraInfo = new Bundle( 2 );
+            PAGBannerSize adSize = adViewAd.getBannerSize();
+            extraInfo.putInt( "ad_width", adSize.getWidth() );
+            extraInfo.putInt( "ad_height", adSize.getHeight() );
+
             adViewAd.setAdInteractionListener( this );
-            listener.onAdViewAdLoaded( ad.getBannerView() );
+            listener.onAdViewAdLoaded( ad.getBannerView(), extraInfo );
         }
 
         @Override
