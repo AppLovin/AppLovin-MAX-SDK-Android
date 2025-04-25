@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.9.71.0
+* Certified with Mintegral SDK 16.9.71.
+
 ## 16.9.61.1
 * Fixed issue where fullscreen ad callbacks were not fired when sequential ads are enabled.
 
