@@ -50,6 +50,7 @@ import com.vungle.ads.VungleAds;
 import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
+import com.vungle.ads.VungleWrapperFramework;
 import com.vungle.ads.internal.protos.Sdk.SDKError.Reason;
 import com.vungle.ads.internal.ui.view.MediaView;
 
@@ -88,7 +89,7 @@ public class VungleMediationAdapter
 
             initializationStatus = InitializationStatus.INITIALIZING;
 
-            VungleAds.setIntegrationName( VungleAds.WrapperFramework.max, getAdapterVersion() );
+            VungleAds.setIntegrationName( VungleWrapperFramework.max, getAdapterVersion() );
 
             // Note: Vungle requires the Application Context
             VungleAds.init( getContext( activity ), appId, new InitializationListener()
