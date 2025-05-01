@@ -50,6 +50,7 @@ import com.vungle.ads.VungleAds;
 import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
 import com.vungle.ads.VunglePrivacySettings;
+import com.vungle.ads.VungleWrapperFramework;
 import com.vungle.ads.internal.protos.Sdk.SDKError.Reason;
 import com.vungle.ads.internal.ui.view.MediaView;
 
@@ -88,7 +89,7 @@ public class VungleMediationAdapter
 
             initializationStatus = InitializationStatus.INITIALIZING;
 
-            VungleAds.setIntegrationName( VungleAds.WrapperFramework.max, getAdapterVersion() );
+            VungleAds.setIntegrationName( VungleWrapperFramework.max, getAdapterVersion() );
 
             // Note: Vungle requires the Application Context
             VungleAds.init( getContext( activity ), appId, new InitializationListener()
@@ -369,7 +370,7 @@ public class VungleMediationAdapter
             userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Vungle adaptive ads" );
         }
 
-        VungleAdSize adSize = vungleAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, context );
+        VungleAdSize adSize = toVungleAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, context );
         adViewAd = new VungleBannerView( context, placementId, adSize );
         adViewAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
 
@@ -428,10 +429,10 @@ public class VungleMediationAdapter
         }
     }
 
-    private VungleAdSize vungleAdSize(final MaxAdFormat adFormat,
-                                      final boolean isAdaptiveAdViewEnabled,
-                                      final MaxAdapterParameters parameters,
-                                      final Context context)
+    private VungleAdSize toVungleAdSize(final MaxAdFormat adFormat,
+                                        final boolean isAdaptiveAdViewEnabled,
+                                        final MaxAdapterParameters parameters,
+                                        final Context context)
     {
         if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
