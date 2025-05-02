@@ -248,7 +248,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show interstitial - no ad loaded..." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -300,7 +300,7 @@ public class FacebookMediationAdapter
         else
         {
             log( "Unable to show rewarded ad - no ad loaded..." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -443,7 +443,7 @@ public class FacebookMediationAdapter
             case AdError.MEDIAVIEW_MISSING_ERROR_CODE:
             case AdError.ICONVIEW_MISSING_ERROR_CODE:
             case AdError.AD_ASSETS_UNSUPPORTED_TYPE_ERROR_CODE:
-                adapterError = new MaxAdapterError( -5400, "Missing Native Ad Assets" );
+                adapterError = MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS;
                 break;
             case AdError.CLEAR_TEXT_SUPPORT_NOT_ALLOWED:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
@@ -455,8 +455,7 @@ public class FacebookMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(),
-                                    adapterError.getErrorMessage(),
+        return new MaxAdapterError( adapterError,
                                     facebookErrorCode,
                                     facebookError.getErrorMessage() );
     }
@@ -894,7 +893,7 @@ public class FacebookMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getAdHeadline() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1004,7 +1003,7 @@ public class FacebookMediationAdapter
                     .setCallToAction( nativeAd.getAdCallToAction() )
                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                     .setOptionsView( new AdOptionsView( context, nativeAd, null ) );
-            if ( nativeAd instanceof NativeAd && AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
+            if ( nativeAd instanceof NativeAd )
             {
                 builder.setMainImage( mainImage );
             }
@@ -1028,10 +1027,7 @@ public class FacebookMediationAdapter
                 mediaViewAspectRatio = (float) mediaView.getMediaWidth() / (float) mediaView.getMediaHeight();
             }
 
-            if ( AppLovinSdk.VERSION_CODE >= 11_04_00_00 )
-            {
-                builder.setMediaContentAspectRatio( mediaViewAspectRatio );
-            }
+            builder.setMediaContentAspectRatio( mediaViewAspectRatio );
 
             final MaxFacebookNativeAd maxNativeAd = new MaxFacebookNativeAd( builder );
             listener.onNativeAdLoaded( maxNativeAd, null );
