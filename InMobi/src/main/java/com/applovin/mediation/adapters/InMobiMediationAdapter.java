@@ -169,36 +169,27 @@ public class InMobiMediationAdapter
                 return;
             }
 
-            Runnable initializeSdkRunnable = new Runnable()
+            InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
             {
                 @Override
-                public void run()
+                public void onInitializationComplete(@Nullable final Error error)
                 {
-                    InMobiSdk.init( context, accountId, consentObject, new SdkInitializationListener()
+                    if ( error != null )
                     {
-                        @Override
-                        public void onInitializationComplete(@Nullable final Error error)
-                        {
-                            if ( error != null )
-                            {
-                                log( "InMobi SDK initialization failed with error: " + error.getMessage() );
+                        log( "InMobi SDK initialization failed with error: " + error.getMessage() );
 
-                                status = InitializationStatus.INITIALIZED_FAILURE;
-                                onCompletionListener.onCompletion( status, error.getMessage() );
-                            }
-                            else
-                            {
-                                log( "InMobi SDK successfully initialized." );
+                        status = InitializationStatus.INITIALIZED_FAILURE;
+                        onCompletionListener.onCompletion( status, error.getMessage() );
+                    }
+                    else
+                    {
+                        log( "InMobi SDK successfully initialized." );
 
-                                status = InitializationStatus.INITIALIZED_SUCCESS;
-                                onCompletionListener.onCompletion( status, null );
-                            }
-                        }
-                    } );
+                        status = InitializationStatus.INITIALIZED_SUCCESS;
+                        onCompletionListener.onCompletion( status, null );
+                    }
                 }
-            };
-
-            initializeSdkOnUiThread( initializeSdkRunnable );
+            } );
 
             InMobiSdk.LogLevel logLevel = parameters.isTesting() ? InMobiSdk.LogLevel.DEBUG : InMobiSdk.LogLevel.ERROR;
             InMobiSdk.setLogLevel( logLevel );
@@ -326,7 +317,7 @@ public class InMobiMediationAdapter
         if ( !success )
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
         }
     }
 
@@ -363,7 +354,7 @@ public class InMobiMediationAdapter
         if ( !success )
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -410,19 +401,6 @@ public class InMobiMediationAdapter
     //endregion
 
     //region Helper Methods
-
-    private void initializeSdkOnUiThread(final Runnable initializeRunnable)
-    {
-        if ( AppLovinSdk.VERSION_CODE >= 11_09_00_00 )
-        {
-            // The `shouldInitializeOnUiThread` setting is added in SDK version 11.9.0. So, the SDK should already be running this on UI thread.
-            initializeRunnable.run();
-        }
-        else
-        {
-            AppLovinSdkUtils.runOnUiThread( initializeRunnable );
-        }
-    }
 
     private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, @Nullable final Activity activity)
     {
@@ -594,26 +572,12 @@ public class InMobiMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), inMobiErrorCode.ordinal(), inMobiError.getMessage() );
+        return new MaxAdapterError( adapterError, inMobiErrorCode.ordinal(), inMobiError.getMessage() );
     }
 
     private List<View> getClickableViews(final MaxNativeAdView maxNativeAdView)
     {
-        if ( AppLovinSdk.VERSION_CODE < 11_05_03_00 )
-        {
-            final List<View> clickableViews = new ArrayList<>( 5 );
-            if ( maxNativeAdView.getTitleTextView() != null ) clickableViews.add( maxNativeAdView.getTitleTextView() );
-            if ( maxNativeAdView.getAdvertiserTextView() != null ) clickableViews.add( maxNativeAdView.getAdvertiserTextView() );
-            if ( maxNativeAdView.getBodyTextView() != null ) clickableViews.add( maxNativeAdView.getBodyTextView() );
-            if ( maxNativeAdView.getCallToActionButton() != null ) clickableViews.add( maxNativeAdView.getCallToActionButton() );
-            if ( maxNativeAdView.getIconImageView() != null ) clickableViews.add( maxNativeAdView.getIconImageView() );
-
-            return clickableViews;
-        }
-        else
-        {
-            return maxNativeAdView.getClickableViews();
-        }
+        return maxNativeAdView.getClickableViews();
     }
 
     //endregion
@@ -738,7 +702,7 @@ public class InMobiMediationAdapter
         public void onAdDisplayFailed(@NonNull final InMobiInterstitial inMobiInterstitial)
         {
             log( "Interstitial failed to display" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed" ) );
+            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_DISPLAY_FAILED );
         }
 
         @Override
@@ -926,7 +890,7 @@ public class InMobiMediationAdapter
             if ( TextUtils.isEmpty( inMobiNative.getAdTitle() ) )
             {
                 log( "Native " + adFormat.getLabel() + " ad does not have required assets." );
-                listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
@@ -1130,12 +1094,8 @@ public class InMobiMediationAdapter
                             .setCallToAction( inMobiNative.getAdCtaText() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
                             .setMediaView( frameLayout )
-                            .setMediaContentAspectRatio( mediaContentAspectRatio );
-
-                    if ( AppLovinSdk.VERSION_CODE >= 11_07_00_00 )
-                    {
-                        builder.setStarRating( (double) inMobiNative.getAdRating() );
-                    }
+                            .setMediaContentAspectRatio( mediaContentAspectRatio )
+                            .setStarRating( (double) inMobiNative.getAdRating() );
 
                     final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, MaxAdFormat.NATIVE );
                     if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
@@ -1243,12 +1203,6 @@ public class InMobiMediationAdapter
 
                     final boolean isHorizontalBanner = ( format == MaxAdFormat.BANNER ) && ( primaryViewWidth > primaryViewHeight );
 
-                    // For horizontal banners before AppLovin SDK version 11.6.0, scale primary view appropriately.
-                    if ( AppLovinSdk.VERSION_CODE < 11_06_00_00 && isHorizontalBanner )
-                    {
-                        primaryViewWidth = (int) ( primaryViewHeight * getMediaContentAspectRatio() );
-                    }
-
                     ViewGroup.LayoutParams layoutParams = mediaView.getLayoutParams();
 
                     // Compute primaryViewWidth when it is a dynamic layout value before getting the actual measurement.
@@ -1265,12 +1219,6 @@ public class InMobiMediationAdapter
                     if ( primaryView == null ) return;
 
                     mediaView.addView( primaryView );
-
-                    // For horizontal banners before AppLovin SDK version 11.6.0, center primary view.
-                    if ( AppLovinSdk.VERSION_CODE < 11_06_00_00 && isHorizontalBanner )
-                    {
-                        ( (FrameLayout.LayoutParams) primaryView.getLayoutParams() ).gravity = Gravity.CENTER;
-                    }
                 }
             } );
 
