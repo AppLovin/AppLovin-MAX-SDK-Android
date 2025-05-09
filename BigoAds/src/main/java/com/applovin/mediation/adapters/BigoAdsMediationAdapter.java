@@ -70,6 +70,7 @@ import sg.bigo.ads.api.SplashAd;
 import sg.bigo.ads.api.SplashAdInteractionListener;
 import sg.bigo.ads.api.SplashAdLoader;
 import sg.bigo.ads.api.SplashAdRequest;
+import sg.bigo.ads.api.VideoController;
 
 import static sg.bigo.ads.api.AdError.ERROR_CODE_ACTIVITY_CREATE_ERROR;
 import static sg.bigo.ads.api.AdError.ERROR_CODE_AD_EXPIRED;
@@ -501,6 +502,16 @@ public class BigoAdsMediationAdapter
         }
     }
 
+    private static void updateMuteState(final Bundle serverParameters, final MediaView mediaView)
+    {
+        VideoController videoController = mediaView.getVideoController();
+
+        if ( serverParameters.containsKey( "is_muted" ) && videoController != null )
+        {
+            videoController.mute( serverParameters.getBoolean( "is_muted" ) );
+        }
+    }
+
     private static MaxAdapterError toMaxError(final AdError error)
     {
         final int bigoAdsErrorCode = error.getCode();
@@ -898,6 +909,7 @@ public class BigoAdsMediationAdapter
             final ImageView iconView = new ImageView( context );
             final AdOptionsView optionsView = new AdOptionsView( context );
             final MediaView mediaView = new MediaView( context );
+            updateMuteState( serverParameters, mediaView );
 
             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                     .setAdFormat( adFormat )
@@ -1015,6 +1027,7 @@ public class BigoAdsMediationAdapter
             final ImageView iconView = new ImageView( context );
             final AdOptionsView optionsView = new AdOptionsView( context );
             final MediaView mediaView = new MediaView( context );
+            updateMuteState( serverParameters, mediaView );
 
             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                     .setAdFormat( MaxAdFormat.NATIVE )
