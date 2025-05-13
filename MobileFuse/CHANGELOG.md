@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1.0
+* Certified with MobileFuse SDK 1.9.1.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+
 ## 1.9.0.0
 * Certified with MobileFuse SDK 1.9.0.
 
