@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -215,7 +216,7 @@ public class YandexMediationAdapter
 
         Context context = getContext( activity );
 
-        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( context, parameters.getAdFormat() );
+        BidderTokenRequestConfiguration bidderTokenRequest = createBidderTokenRequestConfiguration( parameters, context, parameters.getAdFormat() );
 
         BidderTokenLoader.loadBidderToken( context, bidderTokenRequest, new BidderTokenLoadListener()
         {
@@ -272,7 +273,7 @@ public class YandexMediationAdapter
         if ( interstitialAd == null )
         {
             log( "Interstitial ad failed to load - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
             return;
         }
 
@@ -322,7 +323,7 @@ public class YandexMediationAdapter
         if ( rewardedAd == null )
         {
             log( "Rewarded ad failed to load - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
             return;
         }
 
@@ -361,9 +362,18 @@ public class YandexMediationAdapter
             @Override
             public void run()
             {
+                // Check if adaptive ad view sizes should be used
+                boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+                if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
+                {
+                    isAdaptiveAdViewEnabled = false;
+                    userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Yandex adaptive ads" );
+                }
+
+                BannerAdSize adSize = toYandexBannerAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, getContext( activity ) );
                 adView = new BannerAdView( applicationContext );
                 adView.setAdUnitId( placementId );
-                adView.setAdSize( toBannerAdSize( adFormat, getContext( activity ) ) );
+                adView.setAdSize( adSize );
                 adView.setBannerAdEventListener( new AdViewListener( adFormatLabel, listener ) );
                 adView.loadAd( createAdRequest( parameters ) );
             }
@@ -476,14 +486,23 @@ public class YandexMediationAdapter
         return builder.build();
     }
 
-    private BidderTokenRequestConfiguration createBidderTokenRequestConfiguration(final Context context, final MaxAdFormat adFormat)
+    private BidderTokenRequestConfiguration createBidderTokenRequestConfiguration(final MaxAdapterSignalCollectionParameters parameters, final Context context, final MaxAdFormat adFormat)
     {
         AdType adType = toAdType( adFormat );
         BidderTokenRequestConfiguration.Builder requestBuilder = new BidderTokenRequestConfiguration.Builder( adType );
 
         if ( adType == AdType.BANNER )
         {
-            requestBuilder.setBannerAdSize( toBannerAdSize( adFormat, context ) );
+            Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+            boolean isAdaptiveAdViewEnabled = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+
+            if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
+            {
+                isAdaptiveAdViewEnabled = false;
+                userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Yandex adaptive ads" );
+            }
+            BannerAdSize adSize = toYandexBannerAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, context );
+            requestBuilder.setBannerAdSize( adSize );
         }
 
         return requestBuilder.setParameters( adRequestParameters ).build();
@@ -517,24 +536,44 @@ public class YandexMediationAdapter
         }
     }
 
-    private static BannerAdSize toBannerAdSize(final MaxAdFormat adFormat, final Context context)
+    private BannerAdSize toYandexBannerAdSize(final MaxAdFormat adFormat,
+                                              final boolean isAdaptiveAdViewEnabled,
+                                              final MaxAdapterParameters parameters,
+                                              final Context context)
     {
-        if ( adFormat == MaxAdFormat.BANNER )
+        if ( !adFormat.isAdViewAd() )
         {
-            return BannerAdSize.fixedSize( context, 320, 50 );
+            throw new IllegalArgumentException( "Unsupported ad view ad format: " + adFormat.getLabel() );
         }
-        else if ( adFormat == MaxAdFormat.MREC )
+
+        if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
-            return BannerAdSize.fixedSize( context, 300, 250 );
+            return getAdaptiveAdSize( parameters, context );
         }
-        else if ( adFormat == MaxAdFormat.LEADER )
+
+        return BannerAdSize.fixedSize( context, adFormat.getSize().getWidth(), adFormat.getSize().getHeight() );
+    }
+
+    private BannerAdSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        final int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        if ( isInlineAdaptiveAdView( parameters ) )
         {
-            return BannerAdSize.fixedSize( context, 728, 90 );
+            final int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                return BannerAdSize.inlineSize( context, adaptiveAdWidth, inlineMaximumHeight );
+            }
+
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            int deviceHeight = AppLovinSdkUtils.pxToDp( context, displayMetrics.heightPixels );
+            return BannerAdSize.inlineSize( context, adaptiveAdWidth, deviceHeight );
         }
-        else
-        {
-            return BannerAdSize.fixedSize( context, adFormat.getSize().getWidth(), adFormat.getSize().getHeight() );
-        }
+
+        // Anchored banners use the default adaptive height
+        final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( adaptiveAdWidth, context ).getHeight();
+        return BannerAdSize.fixedSize( context, adaptiveAdWidth, anchoredHeight );
     }
 
     private static MaxAdapterError toMaxError(final AdRequestError yandexError)
@@ -561,7 +600,7 @@ public class YandexMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), yandexError.getCode(), yandexError.getDescription() );
+        return new MaxAdapterError( adapterError, yandexError.getCode(), yandexError.getDescription() );
     }
 
     //endregion
@@ -745,7 +784,16 @@ public class YandexMediationAdapter
         public void onAdLoaded()
         {
             log( adFormatLabel + " ad loaded" );
-            listener.onAdViewAdLoaded( adView );
+
+            Bundle extraInfo = new Bundle( 2 );
+            if ( adView != null )
+            {
+                BannerAdSize adSize = adView.getAdSize();
+                extraInfo.putInt( "ad_width", adSize.getWidth() );
+                extraInfo.putInt( "ad_height", adSize.getHeight() );
+            }
+
+            listener.onAdViewAdLoaded( adView, extraInfo );
         }
 
         @Override
@@ -818,7 +866,7 @@ public class YandexMediationAdapter
             if ( isTemplateAd && TextUtils.isEmpty( assets.getTitle() ) )
             {
                 e( "Native ad (" + nativeAd + ") does not have required assets." );
-                listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
