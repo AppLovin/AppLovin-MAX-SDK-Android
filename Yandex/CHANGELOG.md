@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.12.3.0
+* Certified with Yandex SDK 7.12.3.
+
 ## 7.12.2.1
 * Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-mrecs). Requires AppLovin MAX SDK 13.2.0 or higher.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
