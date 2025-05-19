@@ -45,7 +45,6 @@ import com.five_corp.ad.FiveAdInterstitial;
 import com.five_corp.ad.FiveAdInterstitialEventListener;
 import com.five_corp.ad.FiveAdNative;
 import com.five_corp.ad.FiveAdNativeEventListener;
-import com.five_corp.ad.FiveAdState;
 import com.five_corp.ad.FiveAdVideoReward;
 import com.five_corp.ad.FiveAdVideoRewardEventListener;
 import com.five_corp.ad.NeedGdprNonPersonalizedAdsTreatment;
@@ -337,13 +336,7 @@ public class LineMediationAdapter
         final FiveAdConfig config = new FiveAdConfig( appId );
         config.isTest = parameters.isTesting();
 
-        final Bundle serverParameters = parameters.getServerParameters();
-        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-        if ( serverParameters.containsKey( "is_muted" ) )
-        {
-            final boolean muted = serverParameters.getBoolean( "is_muted" );
-            config.enableSoundByDefault( !muted );
-        }
+        updateMuteState( parameters.getServerParameters(), config );
 
         final Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
@@ -352,6 +345,14 @@ public class LineMediationAdapter
         }
 
         return config;
+    }
+
+    private static void updateMuteState(final Bundle serverParameters, final FiveAdConfig config)
+    {
+        if ( serverParameters.containsKey( "is_muted" ) )
+        {
+            config.enableSoundByDefault( !serverParameters.getBoolean( "is_muted" ) );
+        }
     }
 
     private static MaxAdapterError toMaxError(FiveAdErrorCode lineAdsError)
@@ -530,16 +531,14 @@ public class LineMediationAdapter
         @Override
         public void onFullScreenClose(final FiveAdVideoReward ad)
         {
-            if ( ad.getState() != FiveAdState.ERROR )
+            if ( hasGrantedReward || shouldAlwaysRewardUser() )
             {
-                if ( hasGrantedReward || shouldAlwaysRewardUser() )
-                {
-                    final MaxReward reward = getReward();
+                final MaxReward reward = getReward();
 
-                    log( "Rewarded ad user with reward: " + reward + " for slot id: " + ad.getSlotId() + "..." );
-                    listener.onUserRewarded( reward );
-                }
+                log( "Rewarded ad user with reward: " + reward + " for slot id: " + ad.getSlotId() + "..." );
+                listener.onUserRewarded( reward );
             }
+
             log( "Rewarded ad hidden for slot id: " + ad.getSlotId() + "..." );
             listener.onRewardedAdHidden();
         }
