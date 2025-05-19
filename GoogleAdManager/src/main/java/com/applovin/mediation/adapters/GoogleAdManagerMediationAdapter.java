@@ -182,7 +182,7 @@ public class GoogleAdManagerMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading interstitial ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, context );
@@ -252,7 +252,7 @@ public class GoogleAdManagerMediationAdapter
         String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading app open ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, context );
@@ -322,7 +322,7 @@ public class GoogleAdManagerMediationAdapter
         final String placementId = parameters.getThirdPartyAdPlacementId();
         log( "Loading rewarded ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdManagerAdRequest adRequest = createAdRequestWithParameters( parameters, context );
@@ -705,11 +705,9 @@ public class GoogleAdManagerMediationAdapter
     /**
      * Update the global mute state for Play Services Ads - must be done _before_ ad load to restrict inventory which requires playing with volume.
      */
-    private static void updateMuteState(final MaxAdapterResponseParameters parameters)
+    private static void updateMuteState(final Bundle serverParameters)
     {
-        Bundle serverParameters = parameters.getServerParameters();
-        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-        if ( serverParameters.containsKey( "is_muted" ) ) // Introduced in 9.10.0
+        if ( serverParameters.containsKey( "is_muted" ) )
         {
             MobileAds.setAppMuted( serverParameters.getBoolean( "is_muted" ) );
         }
