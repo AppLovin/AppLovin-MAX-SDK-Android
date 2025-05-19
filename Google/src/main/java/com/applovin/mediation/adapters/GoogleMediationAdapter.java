@@ -249,7 +249,7 @@ public class GoogleMediationAdapter
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "interstitial ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.INTERSTITIAL, parameters, context );
@@ -320,7 +320,7 @@ public class GoogleMediationAdapter
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "app open ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.APP_OPEN, parameters, context );
@@ -391,7 +391,7 @@ public class GoogleMediationAdapter
         boolean isBiddingAd = AppLovinSdkUtils.isValidString( parameters.getBidResponse() );
         log( "Loading " + ( isBiddingAd ? "bidding " : "" ) + "rewarded ad: " + placementId + "..." );
 
-        updateMuteState( parameters );
+        updateMuteState( parameters.getServerParameters() );
 
         Context context = getContext( activity );
         AdRequest adRequest = createAdRequestWithParameters( isBiddingAd, MaxAdFormat.REWARDED, parameters, context );
@@ -814,11 +814,9 @@ public class GoogleMediationAdapter
     /**
      * Update the global mute state for AdMob - must be done _before_ ad load to restrict inventory which requires playing with volume.
      */
-    private static void updateMuteState(final MaxAdapterResponseParameters parameters)
+    private static void updateMuteState(final Bundle serverParameters)
     {
-        Bundle serverParameters = parameters.getServerParameters();
-        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-        if ( serverParameters.containsKey( "is_muted" ) ) // Introduced in 9.10.0
+        if ( serverParameters.containsKey( "is_muted" ) )
         {
             MobileAds.setAppMuted( serverParameters.getBoolean( "is_muted" ) );
         }
