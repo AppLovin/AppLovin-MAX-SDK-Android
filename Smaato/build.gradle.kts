@@ -8,7 +8,10 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("22.7.2.0")
+val libraryVersionName by extra("22.7.2.1")
+val minAppLovinSdkVersion by extra("13.0.0")
+
+android.defaultConfig.minSdk = 21
 
 repositories {
     maven { url = uri("https://s3.amazonaws.com/smaato-sdk-releases/") }

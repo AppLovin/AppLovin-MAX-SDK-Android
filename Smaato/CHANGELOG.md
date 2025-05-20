@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.7.2.1
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+* Updated minimum Android API level to 21 to match Smaato SDK.
+* Removed requirement of the title asset for native banners and MRECs.
+
 ## 22.7.2.0
 * Certified with Smaato SDK 22.7.2.
 

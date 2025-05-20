@@ -277,7 +277,7 @@ public class SmaatoMediationAdapter
         if ( interstitialAd == null || !interstitialAd.isAvailableForPresentation() )
         {
             log( "Interstitial ad failed to load - ad not ready" );
-            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
             return;
         }
 
@@ -353,7 +353,7 @@ public class SmaatoMediationAdapter
         else
         {
             log( "Rewarded ad not ready." );
-            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            ROUTER.onAdDisplayFailed( placementId, new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
         }
     }
 
@@ -462,7 +462,7 @@ public class SmaatoMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), smaatoBannerError.ordinal(), smaatoBannerError.name() );
+        return new MaxAdapterError( adapterError, smaatoBannerError.ordinal(), smaatoBannerError.name() );
     }
 
     private static MaxAdapterError toMaxError(final NativeAdError smaatoNativeError)
@@ -485,7 +485,7 @@ public class SmaatoMediationAdapter
                 break;
         }
 
-        return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), smaatoNativeError.ordinal(), smaatoNativeError.name() );
+        return new MaxAdapterError( adapterError, smaatoNativeError.ordinal(), smaatoNativeError.name() );
     }
 
     private AdRequestParams createBiddingAdRequestParams(final String bidResponse)
@@ -654,13 +654,6 @@ public class SmaatoMediationAdapter
                 public void run()
                 {
                     final NativeAdAssets assets = renderer.getAssets();
-                    if ( TextUtils.isEmpty( assets.title() ) )
-                    {
-                        e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                        listener.onAdViewAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
-
-                        return;
-                    }
 
                     MaxNativeAd.MaxNativeAdImage iconMaxNativeAdImage = null;
                     if ( assets.icon() != null && assets.icon().drawable() != null )
@@ -785,7 +778,7 @@ public class SmaatoMediationAdapter
                     if ( isTemplateAd && TextUtils.isEmpty( assets.title() ) )
                     {
                         e( "Native ad (" + nativeAd + ") does not have required assets." );
-                        listener.onNativeAdLoadFailed( new MaxAdapterError( -5400, "Missing Native Ad Assets" ) );
+                        listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                         return;
                     }
@@ -816,11 +809,9 @@ public class SmaatoMediationAdapter
                             .setBody( assets.text() )
                             .setCallToAction( assets.cta() )
                             .setIcon( maxNativeAdIcon )
-                            .setMediaView( maxNativeAdMediaView );
-                    if ( AppLovinSdk.VERSION_CODE >= 11_04_03_99 )
-                    {
-                        builder.setMainImage( maxNativeMainImage );
-                    }
+                            .setMediaView( maxNativeAdMediaView )
+                            .setMainImage( maxNativeMainImage );
+
                     final MaxNativeAd maxNativeAd = new MaxSmaatoNativeAd( builder );
 
                     log( "Native ad fully loaded: " + placementId );
@@ -964,7 +955,7 @@ public class SmaatoMediationAdapter
                     interstitialAds.remove( placementId );
                 }
 
-                final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", interstitialError.ordinal(), interstitialError.name() );
+                final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, interstitialError.ordinal(), interstitialError.name() );
                 onAdDisplayFailed( placementId, adapterError );
             }
         }
@@ -1041,7 +1032,7 @@ public class SmaatoMediationAdapter
                     break;
             }
 
-            return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), smaatoInterstitialError.ordinal(), smaatoInterstitialError.name() );
+            return new MaxAdapterError( adapterError, smaatoInterstitialError.ordinal(), smaatoInterstitialError.name() );
         }
 
         //endregion
@@ -1085,7 +1076,7 @@ public class SmaatoMediationAdapter
                     rewardedAds.remove( placementId );
                 }
 
-                final MaxAdapterError adapterError = new MaxAdapterError( -4205, "Ad Display Failed", rewardedError.ordinal(), rewardedError.name() );
+                final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, rewardedError.ordinal(), rewardedError.name() );
                 onAdDisplayFailed( placementId, adapterError );
             }
         }
@@ -1185,7 +1176,7 @@ public class SmaatoMediationAdapter
                     break;
             }
 
-            return new MaxAdapterError( adapterError.getErrorCode(), adapterError.getErrorMessage(), smaatoRewardedError.ordinal(), smaatoRewardedError.name() );
+            return new MaxAdapterError( adapterError, smaatoRewardedError.ordinal(), smaatoRewardedError.name() );
         }
 
         //endregion
