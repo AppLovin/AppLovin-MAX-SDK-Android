@@ -986,16 +986,6 @@ public class GoogleAdManagerMediationAdapter
         {
             log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
 
-            if ( TextUtils.isEmpty( nativeAd.getHeadline() ) )
-            {
-                log( "Native " + adFormat.getLabel() + " ad failed to load: Google native ad is missing one or more required assets" );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                nativeAd.destroy();
-
-                return;
-            }
-
             GoogleAdManagerMediationAdapter.this.nativeAd = nativeAd;
 
             final Activity activity = activityRef.get();
