@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.0.1
+* Removed requirement of the title asset for native banners and MRECs.
+
 ## 3.9.0.0
 * Certified with Moloco SDK 3.9.0.
 

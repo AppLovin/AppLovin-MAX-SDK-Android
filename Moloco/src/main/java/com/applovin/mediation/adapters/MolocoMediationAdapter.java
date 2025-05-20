@@ -719,14 +719,6 @@ public class MolocoMediationAdapter
                 return;
             }
 
-            if ( TextUtils.isEmpty( assets.getTitle() ) )
-            {
-                e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                return;
-            }
-
             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                     .setAdFormat( adFormat )
                     .setTitle( assets.getTitle() )
