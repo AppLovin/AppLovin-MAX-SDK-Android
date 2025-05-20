@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.5.0.1
+* Removed requirement of the title asset for native banners and MRECs.
+
 ## 7.5.0.0
 * Certified with Vungle SDK 7.5.0.
 * Updated ad view sizing API method signature to be consistent with codebase.

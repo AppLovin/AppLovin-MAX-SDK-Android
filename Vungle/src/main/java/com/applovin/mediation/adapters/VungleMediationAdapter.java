@@ -925,14 +925,6 @@ public class VungleMediationAdapter
                 return;
             }
 
-            if ( TextUtils.isEmpty( nativeAd.getAdTitle() ) )
-            {
-                e( "Native " + adFormat.getLabel() + " ad (" + nativeAd + ") does not have required assets." );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                return;
-            }
-
             log( "Native " + adFormat.getLabel() + " ad loaded: " + nativeAd.getPlacementId() );
 
             final MediaView mediaView = new MediaView( applicationContext );
