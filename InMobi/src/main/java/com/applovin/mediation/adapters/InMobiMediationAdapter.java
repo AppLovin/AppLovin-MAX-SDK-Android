@@ -887,14 +887,6 @@ public class InMobiMediationAdapter
                 return;
             }
 
-            if ( TextUtils.isEmpty( inMobiNative.getAdTitle() ) )
-            {
-                log( "Native " + adFormat.getLabel() + " ad does not have required assets." );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                return;
-            }
-
             log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
 
             final Activity activity = activityRef.get();

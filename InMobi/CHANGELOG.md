@@ -1,5 +1,8 @@
 # Changelog
 
+## 10.8.3.1
+* Removed requirement of the title asset for native banners and MRECs.
+
 ## 10.8.3.0
 * Certified with InMobi SDK 10.8.3.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
