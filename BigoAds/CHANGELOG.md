@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.3.0.2
+* Removed requirement of the title asset for native banners and MRECs.
+
 ## 5.3.0.1
 * Add support for respecting mute state for native ads.
 

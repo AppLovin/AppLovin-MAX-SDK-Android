@@ -894,14 +894,6 @@ public class BigoAdsMediationAdapter
                 return;
             }
 
-            if ( TextUtils.isEmpty( ad.getTitle() ) )
-            {
-                log( "Native " + adFormat.getLabel() + " ad (" + ad + ") does not have required assets." );
-                listener.onAdViewAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
-
-                return;
-            }
-
             ad.setAdInteractionListener( nativeAdViewListener );
             BigoAdsMediationAdapter.this.nativeAd = ad;
 
