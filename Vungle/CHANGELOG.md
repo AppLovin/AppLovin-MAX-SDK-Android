@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.5.0.2
+* Add check to enable adaptive ads only when using a Vungle inline ad placement identifier.
+
 ## 7.5.0.1
 * Removed requirement of the title asset for native banners and MRECs.
 

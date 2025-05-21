@@ -363,7 +363,7 @@ public class VungleMediationAdapter
         }
 
         // Check if adaptive ad view sizes should be used
-        boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        boolean isAdaptiveAdViewEnabled = isAdaptiveAdViewEnabled( parameters );
         if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
         {
             isAdaptiveAdViewEnabled = false;
@@ -412,6 +412,21 @@ public class VungleMediationAdapter
     private boolean shouldFailAdLoadWhenSdkNotInitialized(final MaxAdapterResponseParameters parameters)
     {
         return parameters.getServerParameters().getBoolean( "fail_ad_load_when_sdk_not_initialized", true );
+    }
+
+    private boolean isAdaptiveAdViewEnabled(final MaxAdapterResponseParameters parameters)
+    {
+        if ( !parameters.getServerParameters().getBoolean( "adaptive_banner", false ) ) return false;
+
+        if ( VungleAds.isInline( parameters.getThirdPartyAdPlacementId() ) )
+        {
+            return true;
+        }
+        else
+        {
+            userError( "Please use a Vungle inline placement ID in order to use Vungle adaptive ads" );
+            return false;
+        }
     }
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
