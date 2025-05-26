@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.3.0.0
+* Certified with BidMachine SDK 3.3.0.
+
 ## 3.2.1.0
 * Certified with BidMachine SDK 3.2.1.
 
@@ -32,7 +35,7 @@
 
 ## 3.0.0.0
 * Certified with BidMachine SDK 3.0.0.
-* Requires minimum Android API level be 21 or higher.
+* Updated minimum Android API level to 21 to match BidMachine SDK.
 
 ## 2.7.0.0
 * Certified with BidMachine SDK 2.7.0.
