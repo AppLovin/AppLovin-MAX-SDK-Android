@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.9.0.0.0
+* Certified with IronSource SDK 8.9.0.
+
 ## 8.8.0.0.1
 * Certified with ironSource SDK 8.8.0.
 * Updated to use ironSource SDK hosted on MavenCentral.
