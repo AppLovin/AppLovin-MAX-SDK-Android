@@ -29,9 +29,6 @@ public class GlobalApplication
     {
         super.onCreate();
 
-        // If you want to test your own AppLovin SDK key,
-        // update the value in AndroidManifest.xml under the "applovin.sdk.key" key, and update the package name to your app's name.
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute( () -> {
 
