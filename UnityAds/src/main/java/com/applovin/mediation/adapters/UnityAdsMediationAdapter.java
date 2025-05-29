@@ -21,6 +21,7 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParam
 import com.applovin.mediation.adapters.unityads.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.unity3d.ads.AdFormat;
 import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
@@ -132,15 +133,37 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters, getContext( activity ) );
 
-        UnityAds.getToken( new IUnityAdsTokenListener()
-        {
+        AdFormat unityAdFormat = toAdFormat(parameters);
+
+        IUnityAdsTokenListener unityAdsTokenListener = new IUnityAdsTokenListener() {
             @Override
-            public void onUnityAdsTokenReady(final String token)
-            {
-                log( "Collected signal" );
-                callback.onSignalCollected( token );
+            public void onUnityAdsTokenReady(final String token) {
+                log("Collected signal: " + token);
+                callback.onSignalCollected(token);
             }
-        } );
+        };
+
+        if (unityAdFormat == null) {
+            UnityAds.getToken(unityAdsTokenListener);
+        } else {
+            UnityAds.getToken(new TokenConfiguration(unityAdFormat, unityAdsTokenListener);
+        }
+    }
+
+    private AdFormat toAdFormat(final MaxAdapterSignalCollectionParameters parameters)
+    {
+        MaxAdFormat adFormat = parameters.getAdFormat();
+        AdFormat unityAdFormat = null;
+        if (parameters.isAdViewAd()) {
+            adFormat = MaxAdFormat.BANNER;
+        } else if ( adFormat == MaxAdFormat.INTERSTITIAL ) {
+            unityAdFormat = AdFormat.INTERSTITIAL;
+        } else if ( adFormat == MaxAdFormat.REWARDED ) {
+            unityAdFormat = AdFormat.REWARDED;
+        } else {
+            log("Unsupported ad format encountered: " + adFormat);
+        }
+        return unityAdFormat;
     }
 
     @Override
