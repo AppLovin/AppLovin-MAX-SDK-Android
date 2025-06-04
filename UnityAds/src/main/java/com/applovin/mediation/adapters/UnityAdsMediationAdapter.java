@@ -21,10 +21,12 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParam
 import com.applovin.mediation.adapters.unityads.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.unity3d.ads.AdFormat;
 import com.unity3d.ads.IUnityAdsInitializationListener;
 import com.unity3d.ads.IUnityAdsLoadListener;
 import com.unity3d.ads.IUnityAdsShowListener;
 import com.unity3d.ads.IUnityAdsTokenListener;
+import com.unity3d.ads.TokenConfiguration;
 import com.unity3d.ads.UnityAds;
 import com.unity3d.ads.UnityAdsLoadOptions;
 import com.unity3d.ads.UnityAdsShowOptions;
@@ -132,14 +134,10 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters, getContext( activity ) );
 
-        UnityAds.getToken( new IUnityAdsTokenListener()
-        {
-            @Override
-            public void onUnityAdsTokenReady(final String token)
-            {
-                log( "Collected signal" );
-                callback.onSignalCollected( token );
-            }
+        AdFormat unityFormat = toUnityAdFormat( parameters );
+        UnityAds.getToken( new TokenConfiguration( unityFormat ), token -> {
+            log( "Collected signal" );
+            callback.onSignalCollected( token );
         } );
     }
 
@@ -185,7 +183,9 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Interstitial placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.ordinal(), message ) );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                             error.ordinal(),
+                                                                             message ) );
             }
 
             @Override
@@ -256,7 +256,9 @@ public class UnityAdsMediationAdapter
             public void onUnityAdsShowFailure(final String placementId, final UnityAds.UnityAdsShowError error, final String message)
             {
                 log( "Rewarded ad placement \"" + placementId + "\" failed to display with error: " + error + ": " + message );
-                listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, error.ordinal(), message ) );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         error.ordinal(),
+                                                                         message ) );
             }
 
             @Override
@@ -297,7 +299,7 @@ public class UnityAdsMediationAdapter
         {
             log( adFormat.getLabel() + " ad placement \"" + placementId + "\" load failed: Activity is null" );
 
-            MaxAdapterError error = new MaxAdapterError( -5601, "Missing Activity" );
+            MaxAdapterError error = MaxAdapterError.MISSING_ACTIVITY;
             listener.onAdViewAdLoadFailed( error );
 
             return;
@@ -376,6 +378,27 @@ public class UnityAdsMediationAdapter
         }
 
         return options;
+    }
+
+    private AdFormat toUnityAdFormat(final MaxAdapterSignalCollectionParameters parameters)
+    {
+        MaxAdFormat adFormat = parameters.getAdFormat();
+        if ( adFormat.isAdViewAd() )
+        {
+            return AdFormat.BANNER;
+        }
+        else if ( adFormat == MaxAdFormat.INTERSTITIAL )
+        {
+            return AdFormat.INTERSTITIAL;
+        }
+        else if ( adFormat == MaxAdFormat.REWARDED )
+        {
+            return AdFormat.REWARDED;
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
+        }
     }
 
     private UnityBannerSize toUnityBannerSize(final MaxAdFormat adFormat)
