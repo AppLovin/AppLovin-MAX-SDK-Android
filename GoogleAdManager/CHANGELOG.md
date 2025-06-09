@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.4.0.0
+* Certified with GoogleAdManager SDK 24.4.0.
+* Updated ad display failed error code.
+
 ## 24.3.0.1
 * Removed requirement of the title asset for native banners and MRECs.
 
