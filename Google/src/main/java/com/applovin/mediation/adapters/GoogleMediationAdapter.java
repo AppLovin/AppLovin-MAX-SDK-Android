@@ -304,7 +304,9 @@ public class GoogleMediationAdapter
         {
             log( "Interstitial ad failed to show: " + placementId );
 
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                         MaxAdapterError.AD_NOT_READY.getMessage() );
             listener.onInterstitialAdDisplayFailed( error );
         }
     }
@@ -375,7 +377,9 @@ public class GoogleMediationAdapter
         {
             log( "App open ad failed to show: " + placementId );
 
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "App open ad not ready" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                         MaxAdapterError.AD_NOT_READY.getMessage() );
             listener.onAppOpenAdDisplayFailed( error );
         }
     }
@@ -452,7 +456,9 @@ public class GoogleMediationAdapter
         {
             log( "Rewarded ad failed to show: " + placementId );
 
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                         MaxAdapterError.AD_NOT_READY.getMessage() );
             listener.onRewardedAdDisplayFailed( error );
         }
     }
@@ -869,7 +875,9 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                adError.getCode(),
+                                                                adError.getMessage() );
             log( "Interstitial ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -917,7 +925,9 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                adError.getCode(),
+                                                                adError.getMessage() );
             log( "App open ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onAppOpenAdDisplayFailed( adapterError );
         }
@@ -967,7 +977,9 @@ public class GoogleMediationAdapter
         @Override
         public void onAdFailedToShowFullScreenContent(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, adError.getCode(), adError.getMessage() );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                adError.getCode(),
+                                                                adError.getMessage() );
             log( "Rewarded ad (" + placementId + ") failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
