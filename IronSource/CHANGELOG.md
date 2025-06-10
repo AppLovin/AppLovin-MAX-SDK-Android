@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.9.1.0.0
+* Certified with IronSource SDK 8.9.1.
+* Replaced deprecated `IronSource` method calls with `IronSourceAds` equivalents.
+* Updated ad display failed error code.
+
 ## 8.9.0.0.0
 * Certified with IronSource SDK 8.9.0.
 
