@@ -173,7 +173,7 @@ public class PubMaticMediationAdapter
 
         interstitialAd = new POBInterstitial( getApplicationContext() );
         interstitialAd.setListener( new InterstitialListener( listener ) );
-        interstitialAd.loadAd( bidResponse );
+        interstitialAd.loadAd( bidResponse, POBBiddingHost.ALMAX );
     }
 
     @Override
@@ -183,14 +183,17 @@ public class PubMaticMediationAdapter
 
         if ( interstitialAd == null )
         {
-            log( "Interstitial ad failed to load - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            log( "Interstitial ad failed to show - ad not ready" );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
         interstitialAd.show();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
@@ -208,7 +211,7 @@ public class PubMaticMediationAdapter
 
         rewardedAd = pobRewardedAd;
         rewardedAd.setListener( new RewardedListener( listener ) );
-        rewardedAd.loadAd( bidResponse );
+        rewardedAd.loadAd( bidResponse, POBBiddingHost.ALMAX );
     }
 
     @Override
@@ -218,8 +221,10 @@ public class PubMaticMediationAdapter
 
         if ( rewardedAd == null )
         {
-            log( "Rewarded ad failed to load - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            log( "Rewarded ad failed to show - ad not ready" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -237,7 +242,7 @@ public class PubMaticMediationAdapter
 
         adView = new POBBannerView( getApplicationContext() );
         adView.setListener( new AdViewListener( listener ) );
-        adView.loadAd( bidResponse );
+        adView.loadAd( bidResponse, POBBiddingHost.ALMAX );
         adView.pauseAutoRefresh();
     }
 
@@ -368,7 +373,9 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(@NonNull final POBInterstitial ad, @NonNull final POBError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                error.getErrorCode(),
+                                                                error.getErrorMessage() );
             log( "Interstitial failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -392,7 +399,7 @@ public class PubMaticMediationAdapter
             extends POBRewardedAd.POBRewardedAdListener
     {
         private final MaxRewardedAdapterListener listener;
-        private       boolean                    hasGrantedReward = false;
+        private       boolean                    hasGrantedReward;
 
         public RewardedListener(final MaxRewardedAdapterListener listener)
         {
@@ -425,7 +432,9 @@ public class PubMaticMediationAdapter
         @Override
         public void onAdFailedToShow(@NonNull final POBRewardedAd ad, @NonNull final POBError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                error.getErrorCode(),
+                                                                error.getErrorMessage() );
             log( "Rewarded ad failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
