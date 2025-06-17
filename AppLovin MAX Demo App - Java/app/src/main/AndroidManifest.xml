@@ -74,10 +74,6 @@
             android:label="Natives"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
         <activity
-            android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.TemplateNativeAdActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />
-        <activity
             android:name="com.applovin.enterprise.apps.demoapp.ads.max.nativead.ManualNativeAdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.applovin.enterprise.apps.demoapp.MainActivity" />

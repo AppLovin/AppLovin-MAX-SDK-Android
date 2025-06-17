@@ -16,10 +16,8 @@
     <string name="activity_recycler_view_mrecs">Recycler View MRECs</string>
     <string name="activity_jetpack_compose_mrecs">Jetpack Compose MRECs</string>
 
-    <string name="activity_template_native_ad">Templates API</string>
     <string name="activity_manual_native_ad">Manual API</string>
     <string name="activity_manual_native_late_binding_ad">Manual Late Bidding API</string>
-    <string name="activity_jetpack_compose_template_native_ad">Jetpack Compose Templates</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
 </resources>
