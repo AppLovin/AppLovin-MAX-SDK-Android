@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.bidmachine.AdPlacementConfig;
 import io.bidmachine.AdsFormat;
 import io.bidmachine.BidMachine;
 import io.bidmachine.BidTokenCallback;
@@ -164,8 +165,22 @@ public class BidMachineMediationAdapter
 
         updateSettings( parameters );
 
+        AdsFormat adsFormat = toAdsFormat( parameters );
+        if ( adsFormat == null )
+        {
+            callback.onSignalCollectionFailed( "Invalid ad format" );
+            return;
+        }
+
+        AdPlacementConfig.Builder adPlacementConfigBuilder = new AdPlacementConfig.Builder( adsFormat );
+        String bmPlacementId = BundleUtils.getString( "bdm_placement", null, parameters.getServerParameters() );
+        if (bmPlacementId != null)
+        {
+            adPlacementConfigBuilder.withPlacementId( bmPlacementId );
+        }
+
         // NOTE: Must be ran on bg thread
-        BidMachine.getBidToken( getApplicationContext(), toAdsFormat( parameters ), new BidTokenCallback()
+        BidMachine.getBidToken( getApplicationContext(), adPlacementConfigBuilder.build(), new BidTokenCallback()
         {
             @Override
             public void onCollected(@NonNull final String bidToken)
