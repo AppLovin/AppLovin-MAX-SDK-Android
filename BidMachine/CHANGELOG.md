@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.3.0.1
+* Updated ad display failed error code.
+
 ## 3.3.0.0
 * Certified with BidMachine SDK 3.3.0.
 
