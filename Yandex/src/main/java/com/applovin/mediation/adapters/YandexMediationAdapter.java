@@ -272,8 +272,10 @@ public class YandexMediationAdapter
 
         if ( interstitialAd == null )
         {
-            log( "Interstitial ad failed to load - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            log( "Interstitial ad failed to show - ad not ready" );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -322,8 +324,10 @@ public class YandexMediationAdapter
 
         if ( rewardedAd == null )
         {
-            log( "Rewarded ad failed to load - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            log( "Rewarded ad failed to show - ad not ready" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -661,7 +665,9 @@ public class YandexMediationAdapter
         public void onAdFailedToShow(@NonNull final AdError adError)
         {
             log( "Interstitial ad failed to show with error description: " + adError.getDescription() );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.ERROR_CODE_UNSPECIFIED, adError.getDescription() ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         0,
+                                                                         adError.getDescription() ) );
         }
 
         @Override
@@ -735,7 +741,9 @@ public class YandexMediationAdapter
         public void onAdFailedToShow(@NonNull final AdError adError)
         {
             log( "Rewarded ad failed to show with error description: " + adError.getDescription() );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.ERROR_CODE_UNSPECIFIED, adError.getDescription() ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     0,
+                                                                     adError.getDescription() ) );
         }
 
         @Override
