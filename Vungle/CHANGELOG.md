@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.5.0.3
+* Added additional Vungle's error code mappings.
+* Exposed `mediaContentAspectRatio` for native ads.
+* Updated ad display failed error code.
+
 ## 7.5.0.2
 * Add check to enable adaptive ads only when using a Vungle inline ad placement identifier.
 
