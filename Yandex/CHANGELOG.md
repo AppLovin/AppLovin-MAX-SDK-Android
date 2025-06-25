@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.14.1.0
+* Certified with Yandex SDK 7.14.1.
+
 ## 7.14.0.0
 * Certified with Yandex SDK 7.14.0.
 * Updated ad display failed error code.
