@@ -217,7 +217,9 @@ public class MolocoMediationAdapter
         if ( !interstitialAd.isLoaded() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -267,7 +269,9 @@ public class MolocoMediationAdapter
         if ( !rewardedAd.isLoaded() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -526,7 +530,9 @@ public class MolocoMediationAdapter
         @Override
         public void onAdShowFailed(@NonNull final MolocoAdError molocoAdError)
         {
-            final MaxAdapterError adapterError = toMaxError( molocoAdError );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      molocoAdError.getErrorType().getErrorCode(),
+                                                                      molocoAdError.getDescription() );
             log( "Interstitial ad failed to display with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -583,7 +589,9 @@ public class MolocoMediationAdapter
         @Override
         public void onAdShowFailed(@NonNull final MolocoAdError molocoAdError)
         {
-            final MaxAdapterError adapterError = toMaxError( molocoAdError );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      molocoAdError.getErrorType().getErrorCode(),
+                                                                      molocoAdError.getDescription() );
             log( "Rewarded ad failed to display error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -664,7 +672,9 @@ public class MolocoMediationAdapter
         @Override
         public void onAdShowFailed(@NonNull final MolocoAdError molocoAdError)
         {
-            final MaxAdapterError adapterError = toMaxError( molocoAdError );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      molocoAdError.getErrorType().getErrorCode(),
+                                                                      molocoAdError.getDescription() );
             log( "AdView ad failed to display with error: " + adapterError );
             listener.onAdViewAdDisplayFailed( adapterError );
         }
