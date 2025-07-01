@@ -282,7 +282,9 @@ public class BigoAdsMediationAdapter
         if ( interstitialAd.isExpired() )
         {
             log( "Unable to show interstitial ad for slot id: " + slotId + " - ad expired" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                         MaxAdapterError.AD_EXPIRED.getMessage() ) );
         }
         else
         {
@@ -335,7 +337,9 @@ public class BigoAdsMediationAdapter
         if ( appOpenAd.isExpired() )
         {
             log( "Unable to show app open ad for slot id: " + slotId + " - ad expired" );
-            listener.onAppOpenAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                    MaxAdapterError.AD_EXPIRED.getMessage() ) );
         }
         else
         {
@@ -383,7 +387,9 @@ public class BigoAdsMediationAdapter
         if ( rewardedAd.isExpired() )
         {
             log( "Unable to show rewarded ad for slot id: " + slotId + " - ad expired" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                     MaxAdapterError.AD_EXPIRED.getMessage() ) );
         }
         else
         {
@@ -620,7 +626,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      error.getCode(),
+                                                                      error.getMessage() );
             log( "Interstitial ad (" + slotId + ") failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -684,7 +692,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError adError)
         {
-            final MaxAdapterError adapterError = toMaxError( adError );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                adError.getCode(),
+                                                                adError.getMessage() );
             log( "App open ad (" + slotId + ") failed to show with error: " + adapterError );
             listener.onAppOpenAdDisplayFailed( adapterError );
         }
@@ -764,7 +774,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                error.getCode(),
+                                                                error.getMessage() );
             log( "Rewarded ad (" + slotId + ") failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -846,7 +858,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError adError)
         {
-            final MaxAdapterError adapterError = toMaxError( adError );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      adError.getCode(),
+                                                                      adError.getMessage() );
             log( adFormat.getLabel() + " ad (" + slotId + ") failed to show with error: " + adapterError );
             listener.onAdViewAdDisplayFailed( adapterError );
         }
@@ -955,7 +969,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      error.getCode(),
+                                                                      error.getMessage() );
             log( "Native " + adFormat.getLabel() + " ad (" + slotId + ") failed to show with error: " + adapterError );
             listener.onAdViewAdDisplayFailed( adapterError );
         }
@@ -1061,7 +1077,9 @@ public class BigoAdsMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError error)
         {
-            final MaxAdapterError adapterError = toMaxError( error );
+            final MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                      error.getCode(),
+                                                                      error.getMessage() );
             log( "Native ad (" + slotId + ") failed to show with error: " + adapterError );
         }
 
