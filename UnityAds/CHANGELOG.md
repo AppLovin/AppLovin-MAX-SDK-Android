@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.15.1.0
+* Certified with UnityAds SDK 4.15.1.
+
 ## 4.15.0.1
 * Updated to use Unity Ads's new `getToken` API that supports Ad Format for signal collection.
 
