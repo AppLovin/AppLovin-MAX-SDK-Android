@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.7.1.0
+* Certified with PubMatic SDK 4.7.1.
+
 ## 4.7.0.0
 * Certified with PubMatic SDK 4.7.0.
 * Updated to use PubMatic's new `loadAd` API that includes MAX as the bidding host.
