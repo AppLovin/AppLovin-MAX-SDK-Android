@@ -431,6 +431,9 @@ public class MolocoMediationAdapter
             case AD_BID_PARSE_ERROR:
                 adapterError = MaxAdapterError.INVALID_LOAD_STATE;
                 break;
+            case AD_LOAD_WEBVIEW_FAILED:
+                adapterError = MaxAdapterError.WEBVIEW_ERROR;
+                break;
             case AD_SIGNAL_COLLECTION_FAILED:
                 adapterError = MaxAdapterError.SIGNAL_COLLECTION_TIMEOUT;
                 break;
