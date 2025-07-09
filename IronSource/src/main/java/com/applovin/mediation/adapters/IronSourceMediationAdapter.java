@@ -29,7 +29,6 @@ import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyBannerListener;
 import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyInterstitialListener;
 import com.ironsource.mediationsdk.demandOnly.ISDemandOnlyRewardedVideoListener;
 import com.ironsource.mediationsdk.logger.IronSourceError;
-import com.ironsource.mediationsdk.utils.IronSourceConstants;
 import com.unity3d.ironsourceads.AdSize;
 import com.unity3d.ironsourceads.InitListener;
 import com.unity3d.ironsourceads.InitRequest;
@@ -591,7 +590,6 @@ public class IronSourceMediationAdapter
             case IronSourceError.ERROR_RV_LOAD_NO_FILL:
             case IronSourceError.ERROR_IS_LOAD_NO_FILL:
             case IronSourceError.ERROR_BN_INSTANCE_LOAD_AUCTION_FAILED:
-            case IronSourceConstants.BN_INSTANCE_LOAD_NO_FILL:
                 adapterError = MaxAdapterError.NO_FILL;
                 break;
             case IronSourceError.ERROR_CODE_GENERIC:
