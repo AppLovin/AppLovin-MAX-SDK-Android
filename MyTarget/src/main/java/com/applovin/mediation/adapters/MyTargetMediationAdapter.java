@@ -180,7 +180,9 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Interstitial ad is null" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad is null" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.INVALID_LOAD_STATE.getCode(),
+                                                                         MaxAdapterError.INVALID_LOAD_STATE.getMessage() ) );
         }
     }
 
@@ -220,7 +222,9 @@ public class MyTargetMediationAdapter
         else
         {
             log( "Rewarded ad is null" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad is null" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.INVALID_LOAD_STATE.getCode(),
+                                                                     MaxAdapterError.INVALID_LOAD_STATE.getMessage() ) );
         }
     }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.27.2.0
+* Certified with MyTarget SDK 5.27.2.
+
 ## 5.27.1.2
 * Fixed `getSdkVersion()` to return the installed SDK version.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
