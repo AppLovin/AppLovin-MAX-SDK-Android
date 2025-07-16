@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.9.81.0
+* Certified with Mintegral SDK 16.9.81.
+* Updated ad display failed error code.
+
 ## 16.9.71.0
 * Certified with Mintegral SDK 16.9.71.
 
