@@ -187,7 +187,9 @@ public class OguryPresageMediationAdapter
         if ( !interstitialAd.isLoaded() )
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -236,7 +238,9 @@ public class OguryPresageMediationAdapter
         if ( !rewardedAd.isLoaded() )
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -380,8 +384,11 @@ public class OguryPresageMediationAdapter
         {
             if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    oguryError.getCode(),
+                                                                    oguryError.getMessage() );
                 log( "Interstitial (" + placementId + ") failed to show with error: " + oguryError );
-                listener.onInterstitialAdDisplayFailed( toMaxError( oguryError ) );
+                listener.onInterstitialAdDisplayFailed( adapterError );
             }
             else
             {
@@ -451,8 +458,11 @@ public class OguryPresageMediationAdapter
         {
             if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    oguryError.getCode(),
+                                                                    oguryError.getMessage() );
                 log( "Rewarded ad (" + placementId + ") failed to show with error: " + oguryError );
-                listener.onRewardedAdDisplayFailed( toMaxError( oguryError ) );
+                listener.onRewardedAdDisplayFailed( adapterError );
             }
             else
             {
@@ -506,8 +516,11 @@ public class OguryPresageMediationAdapter
         {
             if ( oguryError.getType() == OguryAdError.Type.SHOW_ERROR )
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    oguryError.getCode(),
+                                                                    oguryError.getMessage() );
                 log( "AdView ad (" + placementId + ") failed to show with error: " + oguryError );
-                listener.onAdViewAdDisplayFailed( toMaxError( oguryError ) );
+                listener.onAdViewAdDisplayFailed( adapterError );
             }
             else
             {
