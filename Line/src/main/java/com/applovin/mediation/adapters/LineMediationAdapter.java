@@ -187,7 +187,9 @@ public class LineMediationAdapter
         {
             log( "Interstitial ad failed to show for slot id: " + slotId + " - no ad loaded" );
 
-            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" );
+            final MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                               MaxAdapterError.AD_NOT_READY.getCode(),
+                                                               MaxAdapterError.AD_NOT_READY.getMessage() );
             listener.onInterstitialAdDisplayFailed( error );
             return;
         }
@@ -230,7 +232,9 @@ public class LineMediationAdapter
         if ( rewardedAd == null )
         {
             log( "Rewarded ad failed to show for slot id: " + slotId + " - no ad loaded" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -429,7 +433,9 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdInterstitial ad, final FiveAdErrorCode errorCode)
         {
             log( "Interstitial ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         errorCode.value,
+                                                         "Please Contact Us" );
             listener.onInterstitialAdDisplayFailed( error );
         }
 
@@ -510,7 +516,9 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdVideoReward ad, final FiveAdErrorCode errorCode)
         {
             log( "Rewarded ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         errorCode.value,
+                                                         "Please Contact Us" );
             listener.onRewardedAdDisplayFailed( error );
         }
 
@@ -612,7 +620,9 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdCustomLayout ad, final FiveAdErrorCode errorCode)
         {
             log( adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         errorCode.value,
+                                                         "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 
@@ -703,7 +713,9 @@ public class LineMediationAdapter
         public void onViewError(final FiveAdNative ad, final FiveAdErrorCode errorCode)
         {
             log( "Native " + adFormat.getLabel() + " ad failed to show for slot id: " + ad.getSlotId() + " with error: " + errorCode );
-            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, errorCode.value, "Please Contact Us" );
+            MaxAdapterError error = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                         errorCode.value,
+                                                         "Please Contact Us" );
             listener.onAdViewAdDisplayFailed( error );
         }
 

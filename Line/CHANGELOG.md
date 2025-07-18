@@ -1,5 +1,9 @@
 # Changelog
 
+## 2025.7.18.0
+* Certified with Line SDK 2.9.20250718.
+* Updated ad display failed error code.
+
 ## 2025.5.19.0
 * Certified with Line SDK 2.9.20250519.
 * Removed usage of deprecated `FiveAdVideoReward.getState()` API to determine whether a reward should be granted.
