@@ -2,6 +2,9 @@ package com.applovin.mediation.adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.net.Uri;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -9,22 +12,32 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.pubmatic.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.pubmatic.sdk.common.OpenWrapSDK;
 import com.pubmatic.sdk.common.OpenWrapSDKConfig;
 import com.pubmatic.sdk.common.OpenWrapSDKInitializer;
 import com.pubmatic.sdk.common.POBAdFormat;
 import com.pubmatic.sdk.common.POBError;
+import com.pubmatic.sdk.nativead.POBNativeAd;
+import com.pubmatic.sdk.nativead.POBNativeAdListener;
+import com.pubmatic.sdk.nativead.POBNativeAdLoader;
+import com.pubmatic.sdk.nativead.POBNativeAdLoaderListener;
+import com.pubmatic.sdk.nativead.response.POBNativeAdDataResponseAsset;
+import com.pubmatic.sdk.nativead.response.POBNativeAdImageResponseAsset;
+import com.pubmatic.sdk.nativead.response.POBNativeAdTitleResponseAsset;
 import com.pubmatic.sdk.openwrap.banner.POBBannerView;
 import com.pubmatic.sdk.openwrap.core.POBReward;
 import com.pubmatic.sdk.openwrap.core.signal.POBBiddingHost;
@@ -34,21 +47,21 @@ import com.pubmatic.sdk.openwrap.interstitial.POBInterstitial;
 import com.pubmatic.sdk.rewardedad.POBRewardedAd;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class PubMaticMediationAdapter
-        extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
-{
-    private static final AtomicBoolean        initialized = new AtomicBoolean();
-    private static       InitializationStatus status;
+public class PubMaticMediationAdapter extends MediationAdapterBase implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter,
+        MaxAdViewAdapter, MaxNativeAdAdapter {
+    private static final AtomicBoolean initialized = new AtomicBoolean();
+    private static InitializationStatus status;
 
     private POBInterstitial interstitialAd;
     private POBRewardedAd   rewardedAd;
     private POBBannerView   adView;
+    private POBNativeAd     nativeAd;
 
     public PubMaticMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -161,6 +174,12 @@ public class PubMaticMediationAdapter
             adView.destroy();
             adView = null;
         }
+
+        if( nativeAd != null )
+        {
+            nativeAd.destroy();
+            nativeAd = null;
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -185,8 +204,8 @@ public class PubMaticMediationAdapter
         {
             log( "Interstitial ad failed to show - ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -223,8 +242,8 @@ public class PubMaticMediationAdapter
         {
             log( "Rewarded ad failed to show - ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -244,6 +263,19 @@ public class PubMaticMediationAdapter
         adView.setListener( new AdViewListener( listener ) );
         adView.loadAd( bidResponse, POBBiddingHost.ALMAX );
         adView.pauseAutoRefresh();
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+    {
+        final String bidResponse = parameters.getBidResponse();
+
+        log("Loading native ad");
+
+        POBNativeAdLoader nativeAdLoader = new POBNativeAdLoader(getApplicationContext());
+        nativeAdLoader.setAdLoaderListener(new NativeAdLoaderListener(maxNativeAdAdapterListener));
+        nativeAdLoader.loadAd(bidResponse, POBBiddingHost.ALMAX);
     }
 
     //endregion
@@ -275,9 +307,10 @@ public class PubMaticMediationAdapter
         else if ( maxAdFormat == MaxAdFormat.REWARDED )
         {
             return POBAdFormat.REWARDEDAD;
-        }
-        else
+        } else if ( maxAdFormat == MaxAdFormat.NATIVE )
         {
+            return POBAdFormat.NATIVE;
+        } else {
             return null;
         }
     }
@@ -374,8 +407,8 @@ public class PubMaticMediationAdapter
         public void onAdFailedToShow(@NonNull final POBInterstitial ad, @NonNull final POBError error)
         {
             MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                error.getErrorCode(),
-                                                                error.getErrorMessage() );
+                    error.getErrorCode(),
+                    error.getErrorMessage() );
             log( "Interstitial failed to show with error: " + adapterError );
             listener.onInterstitialAdDisplayFailed( adapterError );
         }
@@ -433,8 +466,8 @@ public class PubMaticMediationAdapter
         public void onAdFailedToShow(@NonNull final POBRewardedAd ad, @NonNull final POBError error)
         {
             MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                error.getErrorCode(),
-                                                                error.getErrorMessage() );
+                    error.getErrorCode(),
+                    error.getErrorMessage() );
             log( "Rewarded ad failed to show with error: " + adapterError );
             listener.onRewardedAdDisplayFailed( adapterError );
         }
@@ -509,5 +542,164 @@ public class PubMaticMediationAdapter
         }
     }
 
+    private class NativeAdLoaderListener implements POBNativeAdLoaderListener
+    {
+
+        private final MaxNativeAdAdapterListener maxNativeAdAdapterListener;
+        NativeAdLoaderListener(MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+        {
+            this.maxNativeAdAdapterListener = maxNativeAdAdapterListener;
+        }
+
+        @Override
+        public void onAdReceived(@NonNull POBNativeAdLoader pobNativeAdLoader, @NonNull POBNativeAd pobNativeAd)
+        {
+            log( "Native ad loaded" );
+
+            nativeAd = pobNativeAd;
+            final MaxNativeAd.Builder builder = new MaxNativeAd.Builder();
+            builder.setAdFormat( MaxAdFormat.NATIVE );
+
+            // Map title
+            POBNativeAdTitleResponseAsset title = pobNativeAd.getTitle();
+            if(title != null)
+            {
+                String titleText = title.getTitle();
+                builder.setTitle(titleText);
+            }
+
+            // Map body
+            POBNativeAdDataResponseAsset description = pobNativeAd.getDescription();
+            if(description != null)
+            {
+                String bodyText = description.getValue();
+                builder.setBody(bodyText);
+            }
+
+            // Map advertiser
+            POBNativeAdDataResponseAsset advertiser = pobNativeAd.getAdvertiser();
+            if(advertiser != null)
+            {
+                String advertiserText = advertiser.getValue();
+                builder.setAdvertiser(advertiserText);
+            }
+
+            // Map call to action
+            POBNativeAdDataResponseAsset callToAction = pobNativeAd.getCallToAction();
+            if(callToAction != null)
+            {
+                String callToActionText = callToAction.getValue();
+                builder.setCallToAction(callToActionText);
+            }
+
+            // Map icon
+            POBNativeAdImageResponseAsset iconAsset = pobNativeAd.getIcon();
+            if(iconAsset != null)
+            {
+                final String iconUrl = iconAsset.getImageURL();
+                try {
+                    builder.setIcon(new MaxNativeAd.MaxNativeAdImage(Uri.parse(iconUrl)));
+                } catch (Exception e) {
+                    log( "falied to parse icon url " + e.getMessage());
+                }
+            }
+
+            // Map main image
+            POBNativeAdImageResponseAsset mainImageAsset = pobNativeAd.getMainImage();
+            if(mainImageAsset != null)
+            {
+                final String mainImageUrl = mainImageAsset.getImageURL();
+                try {
+                    builder.setMainImage(new MaxNativeAd.MaxNativeAdImage(Uri.parse(mainImageUrl)));
+                } catch (Exception e) {
+                    log( "falied to parse main image url " + e.getMessage());
+                }
+            }
+
+            // Map options view.
+            builder.setOptionsView(pobNativeAd.getAdInfoIcon());
+
+            // Create NativeAd and delegate onNativeAdLoaded callback.
+            MAXPubMaticNativeAd maxNativeAd = new MAXPubMaticNativeAd(builder, pobNativeAd, maxNativeAdAdapterListener);
+            maxNativeAdAdapterListener.onNativeAdLoaded(maxNativeAd, null);
+        }
+
+        @Override
+        public void onFailedToLoad(@NonNull POBNativeAdLoader pobNativeAdLoader, @NonNull POBError pobError)
+        {
+            MaxAdapterError maxAdapterError = toMaxError(pobError);
+
+            log( "Native ad failed to load with error (" + maxAdapterError + ")" );
+            maxNativeAdAdapterListener.onNativeAdLoadFailed(maxAdapterError);
+        }
+    }
+
+
+
+    private class MAXPubMaticNativeAd extends MaxNativeAd
+    {
+        @NonNull
+        private final POBNativeAd mNativeAd;
+        @NonNull
+        private final MaxNativeAdAdapterListener maxNativeAdAdapterListener;
+
+        public MAXPubMaticNativeAd(@NonNull Builder builder, @NonNull POBNativeAd nativeAd, @NonNull MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+        {
+            super( builder );
+            this.mNativeAd = nativeAd;
+            this.maxNativeAdAdapterListener = maxNativeAdAdapterListener;
+        }
+
+        @Override
+        public boolean prepareForInteraction(List<View> list, ViewGroup viewGroup)
+        {
+            mNativeAd.registerViewForInteraction( viewGroup, list, new POBNativeAdListener()
+            {
+                @Override
+                public void onNativeAdRendered(@NonNull POBNativeAd pobNativeAd) {
+                    // No action required.
+                }
+
+                @Override
+                public void onNativeAdRenderingFailed(@NonNull POBNativeAd pobNativeAd, @NonNull POBError error) {
+                    log( "Native ad failed to show with error (" + error + ")" );
+                }
+
+                @Override
+                public void onNativeAdImpression(@NonNull POBNativeAd pobNativeAd) {
+                    log( "Native ad impression" );
+                    maxNativeAdAdapterListener.onNativeAdDisplayed(null);
+                }
+
+                @Override
+                public void onNativeAdClicked(@NonNull POBNativeAd pobNativeAd) {
+                    log( "Native ad clicked" );
+                    maxNativeAdAdapterListener.onNativeAdClicked();
+                }
+
+                @Override
+                public void onNativeAdClicked(@NonNull POBNativeAd pobNativeAd, @NonNull String s) {
+                    log( "Native ad clicked" );
+                    maxNativeAdAdapterListener.onNativeAdClicked();
+                }
+
+                @Override
+                public void onNativeAdLeavingApplication(@NonNull POBNativeAd pobNativeAd) {
+                    // No action required.
+                }
+
+                @Override
+                public void onNativeAdOpened(@NonNull POBNativeAd pobNativeAd) {
+                    // No action required.
+                }
+
+                @Override
+                public void onNativeAdClosed(@NonNull POBNativeAd pobNativeAd) {
+                    // No action required.
+                }
+            });
+            return true;
+        }
+    }
     //endregion
 }
