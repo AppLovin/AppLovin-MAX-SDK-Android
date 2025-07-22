@@ -40,6 +40,7 @@ import com.chartboost.sdk.events.CacheEvent;
 import com.chartboost.sdk.events.ClickError;
 import com.chartboost.sdk.events.ClickEvent;
 import com.chartboost.sdk.events.DismissEvent;
+import com.chartboost.sdk.events.ExpirationEvent;
 import com.chartboost.sdk.events.ImpressionEvent;
 import com.chartboost.sdk.events.RewardEvent;
 import com.chartboost.sdk.events.ShowError;
@@ -220,7 +221,9 @@ public class ChartboostMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -274,7 +277,9 @@ public class ChartboostMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -339,13 +344,13 @@ public class ChartboostMediationAdapter
 
     private String retrieveLocation(MaxAdapterResponseParameters parameters)
     {
-        if ( !TextUtils.isEmpty( parameters.getThirdPartyAdPlacementId() ) )
+        if ( TextUtils.isEmpty( parameters.getThirdPartyAdPlacementId() ) )
         {
-            return parameters.getThirdPartyAdPlacementId();
+            return "Default";
         }
         else
         {
-            return "Default";
+            return parameters.getThirdPartyAdPlacementId();
         }
     }
 
@@ -401,53 +406,6 @@ public class ChartboostMediationAdapter
         return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
     }
 
-    private static MaxAdapterError toMaxError(ShowError chartboostError)
-    {
-        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-        switch ( chartboostError.getCode() )
-        {
-            case INTERNAL:
-            case PRESENTATION_FAILURE:
-                adapterError = MaxAdapterError.INTERNAL_ERROR;
-                break;
-            case AD_ALREADY_VISIBLE:
-                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
-                break;
-            case SESSION_NOT_STARTED:
-                adapterError = MaxAdapterError.NOT_INITIALIZED;
-                break;
-            case INTERNET_UNAVAILABLE:
-                adapterError = MaxAdapterError.NO_CONNECTION;
-                break;
-            case NO_CACHED_AD:
-                adapterError = MaxAdapterError.AD_NOT_READY;
-                break;
-            case BANNER_DISABLED:
-            case BANNER_VIEW_IS_DETACHED:
-                adapterError = MaxAdapterError.INVALID_CONFIGURATION;
-                break;
-        }
-
-        return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
-    }
-
-    private static MaxAdapterError toMaxError(ClickError chartboostError)
-    {
-        MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
-        switch ( chartboostError.getCode() )
-        {
-            case INTERNAL:
-                adapterError = MaxAdapterError.INTERNAL_ERROR;
-                break;
-            case URI_INVALID:
-            case URI_UNRECOGNIZED:
-                adapterError = MaxAdapterError.BAD_REQUEST;
-                break;
-        }
-
-        return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
-    }
-
     private void showAdViewDelayed(final MaxAdViewAdapterListener listener)
     {
         // Chartboost requires manual show after caching ad views. Delay to allow enough time for attaching to parent.
@@ -463,7 +421,9 @@ public class ChartboostMediationAdapter
                 else
                 {
                     log( "Ad load failed: Chartboost Banner AdView is not ready." );
-                    listener.onAdViewAdDisplayFailed( new MaxAdapterError( -4205, "Ad Display Failed", 0, "AdView ad not ready" ) );
+                    listener.onAdViewAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                           MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                           MaxAdapterError.AD_NOT_READY.getMessage() ) );
                 }
             }
         }, 500 );
@@ -504,6 +464,12 @@ public class ChartboostMediationAdapter
         }
 
         @Override
+        public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
+        {
+            log( "Interstitial ad expired with reason: " + expirationEvent.getReason() );
+        }
+
+        @Override
         public void onAdRequestedToShow(@NonNull final ShowEvent showEvent)
         {
             log( "Interstitial ad requested to show: " + showEvent.getAd().getLocation() );
@@ -516,7 +482,9 @@ public class ChartboostMediationAdapter
             if ( showError != null )
             {
                 log( "Interstitial ad failed \"" + location + "\" to show with error: " + showError );
-                listener.onInterstitialAdDisplayFailed( toMaxError( showError ) );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                             showError.getCode().getErrorCode(),
+                                                                             showError.toString() ) );
 
                 return;
             }
@@ -544,16 +512,16 @@ public class ChartboostMediationAdapter
         {
             log( "Interstitial ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            {
+                listener.onInterstitialAdDisplayed();
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
 
                 listener.onInterstitialAdDisplayed( extraInfo );
-            }
-            else
-            {
-                listener.onInterstitialAdDisplayed();
             }
         }
 
@@ -593,6 +561,12 @@ public class ChartboostMediationAdapter
         }
 
         @Override
+        public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
+        {
+            log( "Rewarded ad expired with reason: " + expirationEvent.getReason() );
+        }
+
+        @Override
         public void onAdRequestedToShow(@NonNull final ShowEvent showEvent)
         {
             log( "Rewarded ad requested to show: " + showEvent.getAd().getLocation() );
@@ -605,7 +579,9 @@ public class ChartboostMediationAdapter
             if ( showError != null )
             {
                 log( "Rewarded ad failed \"" + location + "\" to show with error: " + showError );
-                listener.onRewardedAdDisplayFailed( toMaxError( showError ) );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         showError.getCode().getErrorCode(),
+                                                                         showError.toString() ) );
 
                 return;
             }
@@ -633,16 +609,16 @@ public class ChartboostMediationAdapter
         {
             log( "Rewarded ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            {
+                listener.onRewardedAdDisplayed();
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
 
                 listener.onRewardedAdDisplayed( extraInfo );
-            }
-            else
-            {
-                listener.onRewardedAdDisplayed();
             }
         }
 
@@ -696,19 +672,25 @@ public class ChartboostMediationAdapter
 
             log( adFormat.getLabel() + " ad loaded: " + location );
 
-            if ( !TextUtils.isEmpty( cacheEvent.getAdID() ) )
+            if ( TextUtils.isEmpty( cacheEvent.getAdID() ) )
+            {
+                listener.onAdViewAdLoaded( adView );
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", cacheEvent.getAdID() );
 
                 listener.onAdViewAdLoaded( adView, extraInfo );
             }
-            else
-            {
-                listener.onAdViewAdLoaded( adView );
-            }
 
             showAdViewDelayed( listener );
+        }
+
+        @Override
+        public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
+        {
+            log( "AdView ad expired with reason: " + expirationEvent.getReason() );
         }
 
         @Override
@@ -724,7 +706,9 @@ public class ChartboostMediationAdapter
             if ( showError != null )
             {
                 log( adFormat.getLabel() + " ad failed \"" + location + "\" to show with error: " + showError );
-                listener.onAdViewAdDisplayFailed( toMaxError( showError ) );
+                listener.onAdViewAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                       showError.getCode().getErrorCode(),
+                                                                       showError.toString() ) );
 
                 return;
             }
@@ -752,16 +736,16 @@ public class ChartboostMediationAdapter
         {
             log( adFormat.getLabel() + " ad impression tracked: " + impressionEvent.getAd().getLocation() );
 
-            if ( !TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            if ( TextUtils.isEmpty( impressionEvent.getAdID() ) )
+            {
+                listener.onAdViewAdDisplayed();
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", impressionEvent.getAdID() );
 
                 listener.onAdViewAdDisplayed( extraInfo );
-            }
-            else
-            {
-                listener.onAdViewAdDisplayed();
             }
         }
     }

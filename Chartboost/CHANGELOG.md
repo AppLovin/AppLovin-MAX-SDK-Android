@@ -1,5 +1,12 @@
 # Changelog
 
+## 9.9.1.0
+* Certified with Chartboost SDK 9.9.1.
+* Implemented `onAdExpired` in listeners to satisfy the updated Chartboost SDK callback interface.
+* Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
+* Updated minimum Android API level to 19 to match Chartboost SDK.
+* Updated ad display failed error code.
+
 ## 9.8.3.0
 * Certified with Chartboost SDK 9.8.3.
 
