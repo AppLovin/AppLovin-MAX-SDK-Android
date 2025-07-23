@@ -6,7 +6,7 @@ afterEvaluate {
     apply(plugin = "adapter-publish")
 }
 
-val libraryVersionName by extra("6.1.0.0")
+val libraryVersionName by extra("6.1.0.1")
 val libraryArtifactId by extra("ogury-presage-adapter")
 
 android.defaultConfig.minSdk = 21

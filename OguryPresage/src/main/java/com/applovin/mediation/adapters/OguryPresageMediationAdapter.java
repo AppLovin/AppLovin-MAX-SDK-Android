@@ -51,8 +51,9 @@ public class OguryPresageMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
 {
-    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static final AtomicBoolean        initialized   = new AtomicBoolean();
     private static       InitializationStatus status;
+    private static final OguryMediation       mediationInfo = new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION, BuildConfig.VERSION_NAME );
 
     private OguryInterstitialAd interstitialAd;
     private OguryRewardedAd     rewardedAd;
@@ -155,7 +156,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "interstitial ad: " + placementId + "..." );
 
-        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId, new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
+        interstitialAd = new OguryInterstitialAd( getContext( activity ), placementId, mediationInfo );
 
         InterstitialAdListener adListener = new InterstitialAdListener( placementId, listener );
         interstitialAd.setListener( adListener );
@@ -206,7 +207,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + "rewarded ad: " + placementId + "..." );
 
-        rewardedAd = new OguryRewardedAd( getContext( activity ), placementId, new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
+        rewardedAd = new OguryRewardedAd( getContext( activity ), placementId, mediationInfo );
 
         RewardedAdListener adListener = new RewardedAdListener( placementId, listener );
         rewardedAd.setListener( adListener );
@@ -260,7 +261,7 @@ public class OguryPresageMediationAdapter
         final String bidResponse = parameters.getBidResponse();
         log( "Loading " + ( AppLovinSdkUtils.isValidString( bidResponse ) ? "bidding " : "" ) + adFormat.getLabel() + " ad: " + placementId + "..." );
 
-        adView = new OguryBannerAdView( getContext( activity ), placementId, toAdSize( adFormat ), new OguryMediation( "AppLovin MAX", AppLovinSdk.VERSION ) );
+        adView = new OguryBannerAdView( getContext( activity ), placementId, toAdSize( adFormat ), mediationInfo );
 
         AdViewListener adListener = new AdViewListener( placementId, listener );
         adView.setListener( adListener );
