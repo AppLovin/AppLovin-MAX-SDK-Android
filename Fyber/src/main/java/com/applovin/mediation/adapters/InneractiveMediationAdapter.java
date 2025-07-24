@@ -201,7 +201,9 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    0,
+                                                                    adDisplayError.toString() );
                 log( "Interstitial failed to show: " + adapterError );
 
                 listener.onInterstitialAdDisplayFailed( adapterError );
@@ -259,7 +261,9 @@ public class InneractiveMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -346,7 +350,9 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    0,
+                                                                    adDisplayError.toString() );
                 log( "Rewarded ad failed to show: " + adapterError );
 
                 listener.onRewardedAdDisplayFailed( adapterError );
@@ -417,7 +423,9 @@ public class InneractiveMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -477,7 +485,9 @@ public class InneractiveMediationAdapter
             @Override
             public void onAdEnteredErrorState(final InneractiveAdSpot inneractiveAdSpot, final InneractiveUnitController.AdDisplayError adDisplayError)
             {
-                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, adDisplayError.toString() );
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    0,
+                                                                    adDisplayError.toString() );
                 log( "AdView failed to show: " + adapterError );
 
                 listener.onAdViewAdDisplayFailed( adapterError );
@@ -560,13 +570,7 @@ public class InneractiveMediationAdapter
             InneractiveAdManager.setGdprConsentString( parameters.getConsentString() );
         }
 
-        Bundle serverParameters = parameters.getServerParameters();
-        // Overwritten by `mute_state` setting, unless `mute_state` is disabled
-        if ( serverParameters.containsKey( "is_muted" ) ) // Introduced in 9.10.0
-        {
-            // NOTE: Does not work for rewarded ads
-            InneractiveAdManager.setMuteVideo( serverParameters.getBoolean( "is_muted" ) );
-        }
+        updateMuteState( parameters.getServerParameters() );
 
         Boolean isDoNotSell = parameters.isDoNotSell();
         if ( isDoNotSell != null )
@@ -576,6 +580,14 @@ public class InneractiveMediationAdapter
         else
         {
             InneractiveAdManager.setUSPrivacyString( "1---" );
+        }
+    }
+
+    private static void updateMuteState(final Bundle serverParameters)
+    {
+        if ( serverParameters.containsKey( "is_muted" ) )
+        {
+            InneractiveAdManager.setMuteVideo( serverParameters.getBoolean( "is_muted" ) );
         }
     }
 
