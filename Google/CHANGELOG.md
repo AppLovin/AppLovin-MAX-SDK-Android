@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.5.0.0
+* Certified with Google SDK 24.5.0.
+
 ## 24.4.0.0
 * Certified with Google SDK 24.4.0.
 * Updated ad display failed error code.
