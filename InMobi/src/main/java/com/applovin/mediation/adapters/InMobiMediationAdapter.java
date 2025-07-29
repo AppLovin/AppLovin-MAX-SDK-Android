@@ -317,7 +317,9 @@ public class InMobiMediationAdapter
         if ( !success )
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -354,7 +356,9 @@ public class InMobiMediationAdapter
         if ( !success )
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -794,7 +798,7 @@ public class InMobiMediationAdapter
         public void onAdDisplayFailed(@NonNull final InMobiInterstitial inMobiInterstitial)
         {
             log( "Rewarded ad failed to display" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.UNSPECIFIED );
+            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_DISPLAY_FAILED );
         }
 
         @Override

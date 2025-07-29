@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.8.6.0
+* Certified with InMobi SDK 10.8.6.
+* Updated ad display failed error code.
+
 ## 10.8.3.1
 * Removed requirement of the title asset for native banners and MRECs.
 
