@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.12.1.0
+* Certified with Moloco SDK 3.12.1.
+
 ## 3.12.0.0
 * Certified with Moloco SDK 3.12.0.
 
