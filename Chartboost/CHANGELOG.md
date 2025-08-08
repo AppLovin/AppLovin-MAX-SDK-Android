@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.2.1
+* Improved ad cache status reliability by tracking ad readiness internally
+
 ## 9.9.2.0
 * Certified with Chartboost SDK 9.9.2.
 
