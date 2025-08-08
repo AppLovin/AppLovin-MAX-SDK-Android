@@ -68,6 +68,11 @@ public class ChartboostMediationAdapter
     private Rewarded     rewardedAd;
     private Banner       adView;
 
+    // Internal readiness flags to circumvent inconsistent isCached()
+    private final AtomicBoolean isInterstitialReady = new AtomicBoolean( false );
+    private final AtomicBoolean isRewardedReady     = new AtomicBoolean( false );
+    private final AtomicBoolean isAdViewReady       = new AtomicBoolean( false );
+
     // Explicit default constructor declaration
     public ChartboostMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
@@ -148,12 +153,14 @@ public class ChartboostMediationAdapter
         {
             interstitialAd.clearCache();
             interstitialAd = null;
+            isInterstitialReady.set( false );
         }
 
         if ( rewardedAd != null )
         {
             rewardedAd.clearCache();
             rewardedAd = null;
+            isRewardedReady.set( false );
         }
 
         if ( adView != null )
@@ -161,6 +168,7 @@ public class ChartboostMediationAdapter
             adView.detach();
             adView.clearCache();
             adView = null;
+            isAdViewReady.set( false );
         }
     }
 
@@ -183,14 +191,10 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, getContext( activity ) );
 
+        isInterstitialReady.set( false );
         interstitialAd = new Interstitial( location, new InterstitialAdListener( listener ), MEDIATION_PROVIDER );
 
-        if ( interstitialAd.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onInterstitialAdLoaded();
-        }
-        else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -214,7 +218,7 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing interstitial ad for location \"" + location + "\"..." );
 
-        if ( interstitialAd != null && interstitialAd.isCached() )
+        if ( interstitialAd != null && isInterstitialReady.get() )
         {
             interstitialAd.show();
         }
@@ -237,14 +241,10 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, getContext( activity ) );
 
+        isRewardedReady.set( false );
         rewardedAd = new Rewarded( location, new RewardedAdListener( listener ), MEDIATION_PROVIDER );
 
-        if ( rewardedAd.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onRewardedAdLoaded();
-        }
-        else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -268,7 +268,7 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing rewarded ad for location \"" + location + "\"..." );
 
-        if ( rewardedAd != null && rewardedAd.isCached() )
+        if ( rewardedAd != null && isRewardedReady.get() )
         {
             // Configure userReward from server.
             configureReward( parameters );
@@ -293,15 +293,10 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, getContext( activity ) );
 
+        isAdViewReady.set( false );
         adView = new Banner( getContext( activity ), location, toAdSize( adFormat ), new AdViewAdListener( listener, adFormat ), MEDIATION_PROVIDER );
 
-        if ( adView.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onAdViewAdLoaded( adView );
-            showAdViewDelayed( listener );
-        }
-        else if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
+        if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -414,7 +409,7 @@ public class ChartboostMediationAdapter
             @Override
             public void run()
             {
-                if ( adView != null )
+                if ( adView != null && isAdViewReady.get() )
                 {
                     adView.show();
                 }
@@ -454,12 +449,14 @@ public class ChartboostMediationAdapter
             if ( cacheError != null )
             {
                 log( "Interstitial ad failed \"" + location + "\" to load with error: " + cacheError );
+                isInterstitialReady.set( false );
                 listener.onInterstitialAdLoadFailed( toMaxError( cacheError ) );
 
                 return;
             }
 
             log( "Interstitial ad loaded: " + location );
+            isInterstitialReady.set( true );
             listener.onInterstitialAdLoaded();
         }
 
@@ -529,6 +526,7 @@ public class ChartboostMediationAdapter
         public void onAdDismiss(@NonNull final DismissEvent dismissEvent)
         {
             log( "Interstitial ad hidden: " + dismissEvent.getAd().getLocation() );
+            isInterstitialReady.set( false );
             listener.onInterstitialAdHidden();
         }
     }
@@ -551,12 +549,14 @@ public class ChartboostMediationAdapter
             if ( cacheError != null )
             {
                 log( "Rewarded ad failed \"" + location + "\" to load with error: " + cacheError );
+                isRewardedReady.set( false );
                 listener.onRewardedAdLoadFailed( toMaxError( cacheError ) );
 
                 return;
             }
 
             log( "Rewarded ad loaded: " + location );
+            isRewardedReady.set( true );
             listener.onRewardedAdLoaded();
         }
 
@@ -632,6 +632,7 @@ public class ChartboostMediationAdapter
         @Override
         public void onAdDismiss(@NonNull final DismissEvent dismissEvent)
         {
+            isRewardedReady.set( false );
             String location = dismissEvent.getAd().getLocation();
 
             if ( hasGrantedReward || shouldAlwaysRewardUser() )
@@ -665,12 +666,14 @@ public class ChartboostMediationAdapter
             if ( cacheError != null )
             {
                 log( adFormat.getLabel() + " ad failed \"" + location + "\" to load with error: " + cacheError );
+                isAdViewReady.set( false );
                 listener.onAdViewAdLoadFailed( toMaxError( cacheError ) );
 
                 return;
             }
 
             log( adFormat.getLabel() + " ad loaded: " + location );
+            isAdViewReady.set( true );
 
             if ( TextUtils.isEmpty( cacheEvent.getAdID() ) )
             {
