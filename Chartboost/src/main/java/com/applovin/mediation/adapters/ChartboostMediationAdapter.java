@@ -258,7 +258,7 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing rewarded ad for location \"" + location + "\"..." );
 
-        if ( rewardedAd != null && )
+        if ( rewardedAd != null )
         {
             // Configure userReward from server.
             configureReward( parameters );
@@ -398,7 +398,7 @@ public class ChartboostMediationAdapter
             @Override
             public void run()
             {
-                if ( adView != null && )
+                if ( adView != null )
                 {
                     adView.show();
                 }
