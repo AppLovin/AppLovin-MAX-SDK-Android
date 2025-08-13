@@ -185,12 +185,8 @@ public class ChartboostMediationAdapter
 
         interstitialAd = new Interstitial( location, new InterstitialAdListener( listener ), MEDIATION_PROVIDER );
 
-        if ( interstitialAd.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onInterstitialAdLoaded();
-        }
-        else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
+        // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -214,7 +210,8 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing interstitial ad for location \"" + location + "\"..." );
 
-        if ( interstitialAd != null && interstitialAd.isCached() )
+        // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
+        if ( interstitialAd != null )
         {
             interstitialAd.show();
         }
@@ -239,12 +236,8 @@ public class ChartboostMediationAdapter
 
         rewardedAd = new Rewarded( location, new RewardedAdListener( listener ), MEDIATION_PROVIDER );
 
-        if ( rewardedAd.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onRewardedAdLoaded();
-        }
-        else if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
+        // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -268,7 +261,8 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing rewarded ad for location \"" + location + "\"..." );
 
-        if ( rewardedAd != null && rewardedAd.isCached() )
+        // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
+        if ( rewardedAd != null )
         {
             // Configure userReward from server.
             configureReward( parameters );
@@ -295,13 +289,8 @@ public class ChartboostMediationAdapter
 
         adView = new Banner( getContext( activity ), location, toAdSize( adFormat ), new AdViewAdListener( listener, adFormat ), MEDIATION_PROVIDER );
 
-        if ( adView.isCached() )
-        {
-            log( "Ad is available already" );
-            listener.onAdViewAdLoaded( adView );
-            showAdViewDelayed( listener );
-        }
-        else if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
+        // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
+        if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
