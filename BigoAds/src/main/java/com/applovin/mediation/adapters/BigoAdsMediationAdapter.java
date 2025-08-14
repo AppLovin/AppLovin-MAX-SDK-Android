@@ -931,7 +931,7 @@ public class BigoAdsMediationAdapter
 
             MaxNativeAdView maxNativeAdView;
             final String templateName = BundleUtils.getString( "template", "", serverParameters );
-            if ( templateName.equals( "vertical" ) )
+            if ( "vertical".equals( templateName ) )
             {
                 String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
                 maxNativeAdView = new MaxNativeAdView( maxNativeAd, verticalTemplateName, getApplicationContext() );
@@ -1106,6 +1106,17 @@ public class BigoAdsMediationAdapter
             super( builder );
         }
 
+        private void updateTagsForNativeAdView(final MaxNativeAdView maxNativeAdView)
+        {
+            maxNativeAdView.getTitleTextView().setTag( AdTag.TITLE );
+            maxNativeAdView.getAdvertiserTextView().setTag( AdTag.SPONSORED_LABEL );
+            maxNativeAdView.getBodyTextView().setTag( AdTag.DESCRIPTION );
+            maxNativeAdView.getCallToActionButton().setTag( AdTag.CALL_TO_ACTION );
+            maxNativeAdView.getIconImageView().setTag( AdTag.ICON_VIEW );
+            maxNativeAdView.getOptionsContentViewGroup().setTag( AdTag.OPTION_VIEW );
+            maxNativeAdView.getMediaContentViewGroup().setTag( AdTag.MEDIA_VIEW );
+        }
+
         @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
         {
@@ -1120,6 +1131,9 @@ public class BigoAdsMediationAdapter
             if ( container instanceof MaxNativeAdView )
             {
                 MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
+
+                // Set Bigo tags on individual views to make them clickable
+                updateTagsForNativeAdView( maxNativeAdView );
 
                 MediaView mediaView = null;
                 if ( maxNativeAdView.getMediaContentViewGroup() != null )
@@ -1158,8 +1172,17 @@ public class BigoAdsMediationAdapter
                     {
                         view.setTag( AdTag.TITLE );
                     }
+                    else if ( tag == ADVERTISER_VIEW_TAG )
+                    {
+                        view.setTag( AdTag.SPONSORED_LABEL );
+                    }
+                    else if ( tag == BODY_VIEW_TAG )
+                    {
+                        view.setTag( AdTag.DESCRIPTION );
+                    }
                     else if ( tag == ICON_VIEW_TAG )
                     {
+                        view.setTag( AdTag.ICON_VIEW );
                         if ( view instanceof ImageView )
                         {
                             iconView = (ImageView) view;
@@ -1167,19 +1190,12 @@ public class BigoAdsMediationAdapter
                     }
                     else if ( tag == MEDIA_VIEW_CONTAINER_TAG )
                     {
+                        view.setTag( AdTag.MEDIA_VIEW );
                         mediaView = (MediaView) getMediaView();
-                    }
-                    else if ( tag == BODY_VIEW_TAG )
-                    {
-                        view.setTag( AdTag.DESCRIPTION );
                     }
                     else if ( tag == CALL_TO_ACTION_VIEW_TAG )
                     {
                         view.setTag( AdTag.CALL_TO_ACTION );
-                    }
-                    else if ( tag == ADVERTISER_VIEW_TAG )
-                    {
-                        view.setTag( AdTag.SPONSORED_LABEL );
                     }
                 }
 

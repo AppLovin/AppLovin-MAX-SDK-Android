@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.5.1.1
+* Fixed native ad view clickability issues where only media view and advertiser view were clickable.
+
 ## 5.5.1.0
 * Certified with BigoAds SDK 5.5.1.
 
