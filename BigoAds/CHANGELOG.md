@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.5.1.2
+* Added null checks to prevent `setTag()` calls on null views in BigoAds native.
+
 ## 5.5.1.1
 * Fixed native ad view clickability issues where only media view and advertiser view were clickable.
 

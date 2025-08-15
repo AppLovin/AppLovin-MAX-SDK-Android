@@ -1108,13 +1108,13 @@ public class BigoAdsMediationAdapter
 
         private void updateTagsForNativeAdView(final MaxNativeAdView maxNativeAdView)
         {
-            maxNativeAdView.getTitleTextView().setTag( AdTag.TITLE );
-            maxNativeAdView.getAdvertiserTextView().setTag( AdTag.SPONSORED_LABEL );
-            maxNativeAdView.getBodyTextView().setTag( AdTag.DESCRIPTION );
-            maxNativeAdView.getCallToActionButton().setTag( AdTag.CALL_TO_ACTION );
-            maxNativeAdView.getIconImageView().setTag( AdTag.ICON_VIEW );
-            maxNativeAdView.getOptionsContentViewGroup().setTag( AdTag.OPTION_VIEW );
-            maxNativeAdView.getMediaContentViewGroup().setTag( AdTag.MEDIA_VIEW );
+            if ( maxNativeAdView.getTitleTextView() != null ) maxNativeAdView.getTitleTextView().setTag( AdTag.TITLE );
+            if ( maxNativeAdView.getAdvertiserTextView() != null ) maxNativeAdView.getAdvertiserTextView().setTag( AdTag.SPONSORED_LABEL );
+            if ( maxNativeAdView.getBodyTextView() != null ) maxNativeAdView.getBodyTextView().setTag( AdTag.DESCRIPTION );
+            if ( maxNativeAdView.getCallToActionButton() != null ) maxNativeAdView.getCallToActionButton().setTag( AdTag.CALL_TO_ACTION );
+            if ( maxNativeAdView.getIconImageView() != null ) maxNativeAdView.getIconImageView().setTag( AdTag.ICON_VIEW );
+            if ( maxNativeAdView.getOptionsContentViewGroup() != null ) maxNativeAdView.getOptionsContentViewGroup().setTag( AdTag.OPTION_VIEW );
+            if ( maxNativeAdView.getMediaContentViewGroup() != null ) maxNativeAdView.getMediaContentViewGroup().setTag( AdTag.MEDIA_VIEW );
         }
 
         @Override
