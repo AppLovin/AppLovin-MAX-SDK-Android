@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.0.2.0
+* Certified with AmazonAdMarketplace SDK 11.0.2.
+
 ## 11.0.1.1
 * Update ProGuard rules to preserve `com.amazon.aps.**` classes to fix error from Amazon SDK: `java.lang.ClassNotFoundException: com.amazon.aps.ads.model.ApsAdNetwork`.
 
