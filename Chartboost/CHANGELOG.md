@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.9.3.0
+* Certified with Chartboost SDK 9.9.3.
+
 ## 9.9.2.1
 * Removed `isCached()` checks to prevent valid ads from being blocked.
 
