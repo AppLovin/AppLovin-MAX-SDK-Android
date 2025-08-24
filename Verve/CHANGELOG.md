@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.6.2.0
+* Certified with Verve SDK 3.6.2.
+
 ## 3.6.1.0
 * Certified with Verve SDK 3.6.1.
 
