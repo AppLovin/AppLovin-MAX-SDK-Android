@@ -61,8 +61,9 @@ public class MolocoMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
 {
-    private static final AtomicBoolean        initialized = new AtomicBoolean();
+    private static final AtomicBoolean        initialized   = new AtomicBoolean();
     private static       InitializationStatus initializationStatus;
+    private static final MediationInfo        mediationInfo = new MediationInfo( "MAX" );
 
     private InterstitialAd         interstitialAd;
     private RewardedInterstitialAd rewardedAd;
@@ -84,7 +85,6 @@ public class MolocoMediationAdapter
             final Bundle serverParameters = parameters.getServerParameters();
 
             final String appKey = serverParameters.getString( "app_key" );
-            final MediationInfo mediationInfo = new MediationInfo( "MAX" );
 
             final MolocoInitParams initParams = new MolocoInitParams( getContext( activity ), appKey, mediationInfo );
             Moloco.initialize( initParams, initStatus -> {
@@ -160,7 +160,7 @@ public class MolocoMediationAdapter
 
         updatePrivacyPreferences( parameters );
 
-        Moloco.getBidToken( getContext( activity ), (signal, errorType) -> {
+        Moloco.getBidToken( mediationInfo, getContext( activity ), (signal, errorType) -> {
 
             if ( errorType == null )
             {
@@ -193,7 +193,7 @@ public class MolocoMediationAdapter
             if ( interstitialAd == null )
             {
                 MaxAdapterError adapterError = toMaxError( error );
-                log( "Interstitial ad load failed with error (" + adapterError + ")" );
+                log( "Interstitial ad load failed with error (" + adapterError + ')' );
                 listener.onInterstitialAdLoadFailed( adapterError );
             }
             else
@@ -206,7 +206,7 @@ public class MolocoMediationAdapter
             return Unit.INSTANCE;
         };
 
-        Moloco.createInterstitial( placementId, null, createCallback );
+        Moloco.createInterstitial( mediationInfo, placementId, null, createCallback );
     }
 
     @Override
@@ -245,7 +245,7 @@ public class MolocoMediationAdapter
             if ( rewardedAd == null )
             {
                 MaxAdapterError adapterError = toMaxError( error );
-                log( "Rewarded ad load failed with error (" + adapterError + ")" );
+                log( "Rewarded ad load failed with error (" + adapterError + ')' );
                 listener.onRewardedAdLoadFailed( adapterError );
             }
             else
@@ -258,7 +258,7 @@ public class MolocoMediationAdapter
             return Unit.INSTANCE;
         };
 
-        Moloco.createRewardedInterstitial( placementId, null, createCallback );
+        Moloco.createRewardedInterstitial( mediationInfo, placementId, null, createCallback );
     }
 
     @Override
@@ -302,7 +302,7 @@ public class MolocoMediationAdapter
                 if ( nativeAd == null )
                 {
                     MaxAdapterError adapterError = toMaxError( error );
-                    log( "Native " + adFormat.getLabel() + " ad load failed with error (" + adapterError + ")" );
+                    log( "Native " + adFormat.getLabel() + " ad load failed with error (" + adapterError + ')' );
                     listener.onAdViewAdLoadFailed( adapterError );
                 }
                 else
@@ -316,7 +316,7 @@ public class MolocoMediationAdapter
                 return Unit.INSTANCE;
             };
 
-            Moloco.createNativeAd( placementId, null, createCallback );
+            Moloco.createNativeAd( mediationInfo, placementId, null, createCallback );
         }
         else
         {
@@ -325,7 +325,7 @@ public class MolocoMediationAdapter
                 if ( adView == null )
                 {
                     MaxAdapterError adapterError = toMaxError( error );
-                    log( adFormat.getLabel() + " ad load failed with error (" + adapterError + ")" );
+                    log( adFormat.getLabel() + " ad load failed with error (" + adapterError + ')' );
                     listener.onAdViewAdLoadFailed( adapterError );
                 }
                 else
@@ -341,15 +341,15 @@ public class MolocoMediationAdapter
 
             if ( adFormat == MaxAdFormat.BANNER )
             {
-                Moloco.createBanner( placementId, null, createCallback );
+                Moloco.createBanner( mediationInfo, placementId, null, createCallback );
             }
             else if ( adFormat == MaxAdFormat.LEADER )
             {
-                Moloco.createBannerTablet( placementId, null, createCallback );
+                Moloco.createBannerTablet( mediationInfo, placementId, null, createCallback );
             }
             else if ( adFormat == MaxAdFormat.MREC )
             {
-                Moloco.createMREC( placementId, null, createCallback );
+                Moloco.createMREC( mediationInfo, placementId, null, createCallback );
             }
             else
             {
@@ -376,7 +376,7 @@ public class MolocoMediationAdapter
             if ( nativeAd == null )
             {
                 MaxAdapterError adapterError = toMaxError( error );
-                log( "Native ad load failed with error (" + adapterError + ")" );
+                log( "Native ad load failed with error (" + adapterError + ')' );
                 listener.onNativeAdLoadFailed( adapterError );
             }
             else
@@ -390,7 +390,7 @@ public class MolocoMediationAdapter
             return Unit.INSTANCE;
         };
 
-        Moloco.createNativeAd( placementId, null, createCallback );
+        Moloco.createNativeAd( mediationInfo, placementId, null, createCallback );
     }
 
     //region Helper Methods
