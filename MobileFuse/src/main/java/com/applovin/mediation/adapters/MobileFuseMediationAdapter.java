@@ -194,7 +194,9 @@ public class MobileFuseMediationAdapter
         if ( !interstitialAd.isLoaded() )
         {
             log( "Unable to show interstitial - ad not ready" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -228,7 +230,9 @@ public class MobileFuseMediationAdapter
         if ( !rewardedAd.isLoaded() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
 
             return;
         }
@@ -423,15 +427,17 @@ public class MobileFuseMediationAdapter
         @Override
         public void onAdError(final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
-
             if ( adError == AdError.AD_ALREADY_LOADED || adError == AdError.AD_LOAD_ERROR )
             {
+                MaxAdapterError adapterError = toMaxError( adError );
                 log( "Interstitial ad failed to load with error (" + adapterError + ")" );
                 listener.onInterstitialAdLoadFailed( adapterError );
             }
             else
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    adError.getErrorCode(),
+                                                                    adError.getErrorMessage() );
                 log( "Interstitial ad failed to display with error (" + adapterError + ")" );
                 listener.onInterstitialAdDisplayFailed( adapterError );
             }
@@ -509,15 +515,17 @@ public class MobileFuseMediationAdapter
         @Override
         public void onAdError(final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
-
             if ( adError == AdError.AD_ALREADY_LOADED || adError == AdError.AD_LOAD_ERROR )
             {
+                MaxAdapterError adapterError = toMaxError( adError );
                 log( "Rewarded ad failed to load with error (" + adapterError + ")" );
                 listener.onRewardedAdLoadFailed( adapterError );
             }
             else
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    adError.getErrorCode(),
+                                                                    adError.getErrorMessage() );
                 log( "Rewarded ad failed to display with error (" + adapterError + ")" );
                 listener.onRewardedAdDisplayFailed( adapterError );
             }
@@ -585,15 +593,17 @@ public class MobileFuseMediationAdapter
         @Override
         public void onAdError(final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
-
             if ( adError == AdError.AD_ALREADY_LOADED || adError == AdError.AD_LOAD_ERROR )
             {
+                MaxAdapterError adapterError = toMaxError( adError );
                 log( "AdView ad failed to load with error (" + adapterError + ")" );
                 listener.onAdViewAdLoadFailed( adapterError );
             }
             else
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    adError.getErrorCode(),
+                                                                    adError.getErrorMessage() );
                 log( "AdView ad failed to display with error (" + adapterError + ")" );
                 listener.onAdViewAdDisplayFailed( adapterError );
             }
@@ -684,15 +694,17 @@ public class MobileFuseMediationAdapter
         @Override
         public void onAdError(@NonNull final AdError adError)
         {
-            MaxAdapterError adapterError = toMaxError( adError );
-
             if ( adError == AdError.AD_ALREADY_LOADED || adError == AdError.AD_LOAD_ERROR )
             {
+                MaxAdapterError adapterError = toMaxError( adError );
                 log( "Native " + adFormat.getLabel() + " ad failed to load with error (" + adapterError + ")" );
                 listener.onAdViewAdLoadFailed( adapterError );
             }
             else
             {
+                MaxAdapterError adapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                    adError.getErrorCode(),
+                                                                    adError.getErrorMessage() );
                 log( "Native " + adFormat.getLabel() + " ad failed to display with error (" + adapterError + ")" );
                 listener.onAdViewAdDisplayFailed( adapterError );
             }
