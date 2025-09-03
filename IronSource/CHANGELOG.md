@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.11.1.0.0
+* Certified with IronSource SDK 8.11.1.
+
 ## 8.11.0.0.0
 * Certified with IronSource SDK 8.11.0.
 
