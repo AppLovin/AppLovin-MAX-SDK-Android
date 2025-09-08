@@ -728,8 +728,17 @@ public class GoogleMediationAdapter
                     AdSize adaptiveAdSize = toAdSize( adFormat, true, parameters, context );
                     if ( isInlineAdaptiveBanner( parameters ) )
                     {
+                        // `adaptiveAdSize.getHeight()` does not return the maximum height passed in `toAdSize()`.
+                        // This ensures the AdMob ad request receives the correct maximum height when one is explicitly set.
+                        // Otherwise, if no maximum height is set, it falls back to `adaptiveAdSize.getHeight()`.
+                        int adaptiveAdSizeHeight = getInlineAdaptiveBannerMaxHeight( parameters );
+                        if ( adaptiveAdSizeHeight <= 0 )
+                        {
+                            adaptiveAdSizeHeight = adaptiveAdSize.getHeight();
+                        }
+
                         networkExtras.putInt( "inlined_adaptive_banner_w", adaptiveAdSize.getWidth() );
-                        networkExtras.putInt( "inlined_adaptive_banner_h", adaptiveAdSize.getHeight() );
+                        networkExtras.putInt( "inlined_adaptive_banner_h", adaptiveAdSizeHeight );
                     }
                     else
                     {
