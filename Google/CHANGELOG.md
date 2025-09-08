@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.6.0.0
+* Certified with Google SDK 24.6.0.
+
 ## 24.5.0.1
 * Fixed max height not passed to inline adaptive banner ad request.
 
