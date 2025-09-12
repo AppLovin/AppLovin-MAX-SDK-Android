@@ -31,7 +31,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParamet
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
-import com.applovin.mediation.adapters.yandex.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
@@ -79,7 +78,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Created by Andrew Tian on 9/16/19.
+ * AppLovin themselves support this adapter, it was added here to test integration and help publishers
+ * Taken from: <a href="https://github.com/AppLovin/AppLovin-MAX-SDK-Android/blob/master/Yandex/src/main/java/com/applovin/mediation/adapters/YandexMediationAdapter.java">...</a>
  */
 public class YandexMediationAdapter
         extends MediationAdapterBase
@@ -99,7 +99,7 @@ public class YandexMediationAdapter
     {
         {
             put( "adapter_network_name", "applovin" );
-            put( "adapter_version", BuildConfig.VERSION_NAME );
+            put( "adapter_version", MobileAds.getLibraryVersion() + ".0" );
             put( "adapter_network_sdk_version", AppLovinSdk.VERSION );
         }
     };
@@ -129,7 +129,7 @@ public class YandexMediationAdapter
     @Override
     public String getAdapterVersion()
     {
-        return BuildConfig.VERSION_NAME;
+        return MobileAds.getLibraryVersion() + ".0";
     }
 
     // @Override
@@ -274,8 +274,8 @@ public class YandexMediationAdapter
         {
             log( "Interstitial ad failed to show - ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -326,8 +326,8 @@ public class YandexMediationAdapter
         {
             log( "Rewarded ad failed to show - ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
             return;
         }
 
@@ -580,6 +580,27 @@ public class YandexMediationAdapter
         return BannerAdSize.fixedSize( context, adaptiveAdWidth, anchoredHeight );
     }
 
+    // Stub getAdaptiveAdViewWidth
+    private static Integer getAdaptiveAdViewWidth(final MaxAdapterParameters parameters, final Context context) {
+        return 320;
+    }
+
+    // Stub getInlineAdaptiveAdViewMaximumHeight
+    private static Integer getInlineAdaptiveAdViewMaximumHeight(final MaxAdapterParameters parameters) {
+        return 300;
+    }
+
+    // Stub isInlineAdaptiveAdView
+    private static Boolean isInlineAdaptiveAdView(final MaxAdapterParameters parameters) {
+        return false;
+    }
+
+    // Stub isAdaptiveAdViewFormat
+    private static Boolean isAdaptiveAdViewFormat(final MaxAdFormat adFormat,
+                                                  final MaxAdapterParameters parameters) {
+        return false;
+    }
+
     private static MaxAdapterError toMaxError(final AdRequestError yandexError)
     {
         final int yandexErrorCode = yandexError.getCode();
@@ -666,8 +687,8 @@ public class YandexMediationAdapter
         {
             log( "Interstitial ad failed to show with error description: " + adError.getDescription() );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         0,
-                                                                         adError.getDescription() ) );
+                    0,
+                    adError.getDescription() ) );
         }
 
         @Override
@@ -742,8 +763,8 @@ public class YandexMediationAdapter
         {
             log( "Rewarded ad failed to show with error description: " + adError.getDescription() );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     0,
-                                                                     adError.getDescription() ) );
+                    0,
+                    adError.getDescription() ) );
         }
 
         @Override
@@ -974,6 +995,23 @@ public class YandexMediationAdapter
                 maxNativeAdView.removeView( mainView );
                 nativeAdView.addView( mainView );
                 maxNativeAdView.addView( nativeAdView );
+
+                // Ensure Yandex MediaView is attached to the media container with proper LayoutParams
+                ViewGroup mediaContainer = maxNativeAdView.getMediaContentViewGroup();
+                MediaView yandexMediaView = (MediaView) getMediaView();
+                if ( yandexMediaView == null )
+                {
+                    yandexMediaView = new MediaView( container.getContext() );
+                }
+                if ( yandexMediaView.getParent() instanceof ViewGroup && yandexMediaView.getParent() != mediaContainer )
+                {
+                    ( (ViewGroup) yandexMediaView.getParent() ).removeView( yandexMediaView );
+                }
+                if ( mediaContainer != null )
+                {
+                    mediaContainer.removeAllViews();
+                    mediaContainer.addView( yandexMediaView, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
+                }
 
                 final NativeAdViewBinder binder = new NativeAdViewBinder.Builder( nativeAdView )
                         .setIconView( maxNativeAdView.getIconImageView() )
