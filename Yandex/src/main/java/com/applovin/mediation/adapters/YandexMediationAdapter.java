@@ -975,6 +975,23 @@ public class YandexMediationAdapter
                 nativeAdView.addView( mainView );
                 maxNativeAdView.addView( nativeAdView );
 
+                // Ensure Yandex MediaView is attached to the media container with proper LayoutParams
+                ViewGroup mediaContainer = maxNativeAdView.getMediaContentViewGroup();
+                MediaView yandexMediaView = (MediaView) getMediaView();
+                if ( yandexMediaView == null )
+                {
+                    yandexMediaView = new MediaView( container.getContext() );
+                }
+                if ( yandexMediaView.getParent() instanceof ViewGroup && yandexMediaView.getParent() != mediaContainer )
+                {
+                    ( (ViewGroup) yandexMediaView.getParent() ).removeView( yandexMediaView );
+                }
+                if ( mediaContainer != null )
+                {
+                    mediaContainer.removeAllViews();
+                    mediaContainer.addView( yandexMediaView, new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
+                }
+
                 final NativeAdViewBinder binder = new NativeAdViewBinder.Builder( nativeAdView )
                         .setIconView( maxNativeAdView.getIconImageView() )
                         .setTitleView( maxNativeAdView.getTitleTextView() )
