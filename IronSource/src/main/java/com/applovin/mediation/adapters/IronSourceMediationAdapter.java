@@ -783,12 +783,12 @@ public class IronSourceMediationAdapter
 
         private static String getInterstitialRouterIdentifier(final String instanceId)
         {
-            return instanceId + '-' + IronSource.AD_UNIT.INTERSTITIAL;
+            return instanceId + '-' + IronSourceAds.AdFormat.INTERSTITIAL;
         }
 
         private static String getRewardedVideoRouterIdentifier(final String instanceId)
         {
-            return instanceId + '-' + IronSource.AD_UNIT.REWARDED_VIDEO;
+            return instanceId + '-' + IronSourceAds.AdFormat.REWARDED;
         }
     }
 
