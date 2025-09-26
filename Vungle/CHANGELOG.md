@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.6.0.0
+* Certified with Vungle SDK 7.6.0.
+
 ## 7.5.1.0
 * Certified with Vungle SDK 7.5.1.
 
@@ -19,7 +22,7 @@
 * Updated ad view sizing API method signature to be consistent with codebase.
 
 ## 7.4.3.2
-* Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-mrecs). Requires AppLovin MAX SDK 13.2.0 or higher.
+* Add support for [adaptive banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-mrecs). Requires AppLovin MAX SDK 13.2.0 or higher.
 * Removed deprecated code paths based on the minimum supported AppLovin MAX SDK version 13.0.0.
 
 ## 7.4.3.1
