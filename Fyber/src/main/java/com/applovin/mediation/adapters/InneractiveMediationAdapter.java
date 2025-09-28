@@ -749,12 +749,13 @@ public class InneractiveMediationAdapter
             {
                 String creativeId = impressionData.getCreativeId();
                 Bundle extraInfo = null;
-                if (!TextUtils.isEmpty(creativeId)) {
-                    extraInfo = new Bundle(1);
-                    extraInfo.putString("creative_id", creativeId);
+                if ( !TextUtils.isEmpty(creativeId) )
+                {
+                    extraInfo = new Bundle( 1 );
+                    extraInfo.putString( "creative_id", creativeId );
                 }
 
-                maxNativeAdAdapterListener.onNativeAdDisplayed(extraInfo);
+                maxNativeAdAdapterListener.onNativeAdDisplayed( extraInfo );
             }
 
             @Override
