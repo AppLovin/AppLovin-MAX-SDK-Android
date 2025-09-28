@@ -149,9 +149,16 @@ public class InneractiveMediationAdapter
             adViewSpot = null;
         }
 
-        if (nativeSpot != null) {
+        if ( nativeSpot != null )
+        {
             nativeSpot.destroy();
             nativeSpot = null;
+        }
+
+        if ( nativeAdContent != null)
+        {
+            nativeAdContent.destroy();
+            nativeAdContent = null;
         }
 
         adViewGroup = null;
@@ -283,93 +290,6 @@ public class InneractiveMediationAdapter
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
                                                                          MaxAdapterError.AD_NOT_READY.getCode(),
                                                                          MaxAdapterError.AD_NOT_READY.getMessage() ) );
-        }
-    }
-
-    @Override
-    public void loadNativeAd(MaxAdapterResponseParameters maxAdapterResponseParameters,
-                             Activity activity,
-                             MaxNativeAdAdapterListener maxNativeAdAdapterListener) {
-
-        if (nativeSpot != null) {
-            nativeSpot.destroy();
-            nativeSpot = null;
-        }
-
-        nativeSpot = InneractiveAdSpotManager.get().createSpot();
-
-        InneractiveAdSpot.NativeAdRequestListener spotListener = new InneractiveAdSpot.NativeAdRequestListener() {
-            @Override
-            public void onInneractiveSuccessfulNativeAdRequest(InneractiveAdSpot adSpot, NativeAdContent adContent) {
-                if (nativeAdContent != null) {
-                    nativeAdContent.destroy();
-                }
-                nativeAdContent = adContent;
-
-                adContent.bindMediaView(new MediaView(getContext(activity)));
-
-                MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                        .setAdFormat( MaxAdFormat.NATIVE )
-                        .setTitle( adContent.getAdTitle() )
-                        .setAdvertiser( adContent.getAdvertiserName() )
-                        .setBody( adContent.getAdDescription() )
-                        .setCallToAction( adContent.getAdCallToAction() )
-                        .setIcon( new MaxNativeAd.MaxNativeAdImage(adContent.getAppIcon()) )
-                        .setMediaView( adContent.getMediaView() )
-                        .setMediaContentAspectRatio( adContent.getMediaAspectRatio() )
-                        .setStarRating( (double) adContent.getRating() );
-
-                MaxNativeAd maxNativeAd = new MaxInneractiveNativeAd( builder );
-
-                maxNativeAdAdapterListener.onNativeAdLoaded( maxNativeAd, null );
-            }
-
-            @Override
-            public void onInneractiveFailedAdRequest(InneractiveAdSpot adSpot, InneractiveErrorCode errorCode) {
-                MaxAdapterError adapterError = toMaxError( errorCode );
-
-                maxNativeAdAdapterListener.onNativeAdLoadFailed(adapterError);
-            }
-        };
-
-        nativeSpot.setRequestListener(spotListener);
-
-        NativeAdUnitController adUnitController = new NativeAdUnitController();
-        adUnitController.setEventsListener(new NativeAdEventsListenerWithImpressionData() {
-            @Override
-            public void onAdImpression(InneractiveAdSpot adSpot, ImpressionData impressionData) {
-                String creativeId = impressionData.getCreativeId();
-                Bundle extraInfo = null;
-                if (!TextUtils.isEmpty(creativeId)) {
-                    extraInfo = new Bundle(1);
-                    extraInfo.putString("creative_id", creativeId);
-                }
-
-                maxNativeAdAdapterListener.onNativeAdDisplayed(extraInfo);
-            }
-
-            @Override
-            public void onAdImpression(InneractiveAdSpot adSpot) { }
-
-            @Override
-            public void onAdClicked(InneractiveAdSpot adSpot) {
-                maxNativeAdAdapterListener.onNativeAdClicked();
-            }
-
-            @Override
-            public void onAdWillCloseInternalBrowser(InneractiveAdSpot adSpot) {
-
-            }
-
-            @Override
-            public void onAdWillOpenExternalApp(InneractiveAdSpot adSpot) { }
-
-        });
-        nativeSpot.addUnitController(adUnitController);
-
-        if ( isValidString( maxAdapterResponseParameters.getBidResponse() ) )
-        {
-            nativeSpot.loadAd( maxAdapterResponseParameters.getBidResponse() );
         }
     }
 
@@ -767,58 +687,159 @@ public class InneractiveMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private class MaxInneractiveNativeAd
-            extends MaxNativeAd {
+    @Override
+    public void loadNativeAd(MaxAdapterResponseParameters maxAdapterResponseParameters,
+                             Activity activity,
+                             MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+    {
 
-        public MaxInneractiveNativeAd(Builder builder) {
-            super(builder);
+        if ( nativeSpot != null )
+        {
+            nativeSpot.destroy();
+            nativeSpot = null;
+        }
+
+        nativeSpot = InneractiveAdSpotManager.get().createSpot();
+
+        InneractiveAdSpot.NativeAdRequestListener spotListener = new InneractiveAdSpot.NativeAdRequestListener()
+        {
+            @Override
+            public void onInneractiveSuccessfulNativeAdRequest(InneractiveAdSpot adSpot, NativeAdContent adContent)
+            {
+                if ( nativeAdContent != null )
+                {
+                    nativeAdContent.destroy();
+                }
+                nativeAdContent = adContent;
+
+                adContent.bindMediaView( new MediaView( getContext( activity ) ) );
+
+                MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                        .setAdFormat( MaxAdFormat.NATIVE )
+                        .setTitle( adContent.getAdTitle() )
+                        .setAdvertiser( adContent.getAdvertiserName() )
+                        .setBody( adContent.getAdDescription() )
+                        .setCallToAction( adContent.getAdCallToAction() )
+                        .setIcon( new MaxNativeAd.MaxNativeAdImage(adContent.getAppIcon()) )
+                        .setMediaView( adContent.getMediaView() )
+                        .setMediaContentAspectRatio( adContent.getMediaAspectRatio() )
+                        .setStarRating( (double) adContent.getRating() );
+
+                MaxNativeAd maxNativeAd = new MaxInneractiveNativeAd( builder );
+
+                maxNativeAdAdapterListener.onNativeAdLoaded( maxNativeAd, null );
+            }
+
+            @Override
+            public void onInneractiveFailedAdRequest(InneractiveAdSpot adSpot, InneractiveErrorCode errorCode)
+            {
+                MaxAdapterError adapterError = toMaxError( errorCode );
+
+                maxNativeAdAdapterListener.onNativeAdLoadFailed( adapterError );
+            }
+        };
+
+        nativeSpot.setRequestListener( spotListener );
+
+        NativeAdUnitController adUnitController = new NativeAdUnitController();
+        adUnitController.setEventsListener( new NativeAdEventsListenerWithImpressionData()
+        {
+            @Override
+            public void onAdImpression(InneractiveAdSpot adSpot, ImpressionData impressionData)
+            {
+                String creativeId = impressionData.getCreativeId();
+                Bundle extraInfo = null;
+                if (!TextUtils.isEmpty(creativeId)) {
+                    extraInfo = new Bundle(1);
+                    extraInfo.putString("creative_id", creativeId);
+                }
+
+                maxNativeAdAdapterListener.onNativeAdDisplayed(extraInfo);
+            }
+
+            @Override
+            public void onAdImpression(InneractiveAdSpot adSpot) { }
+
+            @Override
+            public void onAdClicked(InneractiveAdSpot adSpot)
+            {
+                maxNativeAdAdapterListener.onNativeAdClicked();
+            }
+
+            @Override
+            public void onAdWillCloseInternalBrowser(InneractiveAdSpot adSpot) { }
+
+            @Override
+            public void onAdWillOpenExternalApp(InneractiveAdSpot adSpot) { }
+        } );
+
+        nativeSpot.addUnitController( adUnitController );
+
+        if ( isValidString( maxAdapterResponseParameters.getBidResponse() ) )
+        {
+            nativeSpot.loadAd( maxAdapterResponseParameters.getBidResponse() );
+        }
+    }
+
+    private class MaxInneractiveNativeAd
+            extends MaxNativeAd
+    {
+
+        public MaxInneractiveNativeAd(Builder builder)
+        {
+            super( builder );
         }
 
         @Override
-        public boolean prepareForInteraction(List<View> list, ViewGroup viewGroup) {
-            if ( viewGroup instanceof MaxNativeAdView ) {
+        public boolean prepareForInteraction(List<View> list, ViewGroup viewGroup)
+        {
+            if ( viewGroup instanceof MaxNativeAdView )
+            {
                 MaxNativeAdView maxNativeAdView = (MaxNativeAdView) viewGroup;
-                if (list == null) {
+                if ( list == null )
+                {
                     list = new ArrayList<>();
                 }
 
-                maxNativeAdView.setTag(NativeAdContent.ViewTag.ROOT);
-                list.add(maxNativeAdView);
+                maxNativeAdView.setTag( NativeAdContent.ViewTag.ROOT );
+                list.add( maxNativeAdView );
 
-                addTaggedViewToList(maxNativeAdView.getMediaContentViewGroup(),
-                        NativeAdContent.ViewTag.MEDIA_VIEW, list);
+                addTaggedViewToList( maxNativeAdView.getMediaContentViewGroup(),
+                        NativeAdContent.ViewTag.MEDIA_VIEW, list );
 
-                addTaggedViewToList(maxNativeAdView.getIconImageView(),
-                        NativeAdContent.ViewTag.AD_ICON, list);
+                addTaggedViewToList( maxNativeAdView.getIconImageView(),
+                        NativeAdContent.ViewTag.AD_ICON, list );
 
-                addTaggedViewToList(maxNativeAdView.getCallToActionButton(),
-                        NativeAdContent.ViewTag.CTA, list);
+                addTaggedViewToList( maxNativeAdView.getCallToActionButton(),
+                        NativeAdContent.ViewTag.CTA, list );
 
-                addTaggedViewToList(maxNativeAdView.getTitleTextView(),
-                        NativeAdContent.ViewTag.AD_TITLE, list);
+                addTaggedViewToList( maxNativeAdView.getTitleTextView(),
+                        NativeAdContent.ViewTag.AD_TITLE, list );
 
-                addTaggedViewToList(maxNativeAdView.getBodyTextView(),
-                        NativeAdContent.ViewTag.AD_DESCRIPTION, list);
+                addTaggedViewToList( maxNativeAdView.getBodyTextView(),
+                        NativeAdContent.ViewTag.AD_DESCRIPTION, list );
 
-                addTaggedViewToList(maxNativeAdView.getStarRatingContentViewGroup(),
-                        NativeAdContent.ViewTag.RATING, list);
+                addTaggedViewToList( maxNativeAdView.getStarRatingContentViewGroup(),
+                        NativeAdContent.ViewTag.RATING, list );
 
-                nativeAdContent.registerViewsForInteraction(maxNativeAdView,
+                nativeAdContent.registerViewsForInteraction( maxNativeAdView,
                         nativeAdContent.getMediaView(),
                         maxNativeAdView.getIconImageView(),
-                        list);
+                        list );
             }
             return true;
         }
 
-        private void addTaggedViewToList(@Nullable View view, @NonNull String tag, @NonNull List<View> list) {
-            if (view != null) {
-                view.setTag(tag);
-                if (!list.contains(view)) {
-                    list.add(view);
+        private void addTaggedViewToList(@Nullable View view, @NonNull String tag, @NonNull List<View> list)
+        {
+            if ( view != null )
+            {
+                view.setTag( tag );
+                if ( !list.contains( view ) )
+                {
+                    list.add( view );
                 }
             }
         }
-
     }
 }
