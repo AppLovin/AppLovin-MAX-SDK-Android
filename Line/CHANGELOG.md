@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025.9.24.0
+* Certified with Line SDK 2.9.20250924.
+
 ## 2025.7.18.1
 * Removed usage of deprecated `needGdprNonPersonalizedAdsTreatment` property.
 
