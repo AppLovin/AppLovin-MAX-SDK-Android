@@ -155,12 +155,7 @@ public class InneractiveMediationAdapter
             nativeSpot = null;
         }
 
-        if ( nativeAdContent != null)
-        {
-            nativeAdContent.destroy();
-            nativeAdContent = null;
-        }
-
+        nativeAdContent = null;
         adViewGroup = null;
     }
 
