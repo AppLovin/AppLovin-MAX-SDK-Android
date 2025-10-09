@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.7.0.0
+* Certified with Google SDK 24.7.0.
+
 ## 24.6.0.0
 * Certified with Google SDK 24.6.0.
 
@@ -38,7 +41,7 @@
 * Introduced `verification.properties` to facilitate adapter ownership verification with Google SDK console.
 
 ## 23.6.0.2
-* Add support for [inline adaptive banners in MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-banners-in-mrecs).
+* Add support for [inline adaptive banners in MRECs](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-mrecs).
 * Remove support for rewarded interstitial ads.
 
 ## 23.6.0.1
@@ -67,7 +70,7 @@
 * Certified with Google SDK 23.3.0.
 
 ## 23.2.0.1
-* Add support for [inline adaptive banner ads](https://developers.applovin.com/en/android/ad-formats/banner-mrec-ads/#inline-adaptive-banners).
+* Add support for [inline adaptive banner ads](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners).
 
 ## 23.2.0.0
 * Certified with Google SDK 23.2.0.
