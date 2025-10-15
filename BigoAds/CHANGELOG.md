@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.5.2.0
+* Certified with BigoAds SDK 5.5.2.
+
 ## 5.5.1.2
 * Added null checks to prevent `setTag()` calls on null views in BigoAds native.
 

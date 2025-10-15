@@ -1,11 +1,8 @@
 plugins {
     id("adapter-config")
+    id("com.applovin.mobile.publish")
 }
 
-afterEvaluate {
-    apply(plugin = "adapter-publish")
-}
-
-val libraryVersionName by extra("5.5.1.2")
+val libraryVersionName by extra("5.5.2.0")
 
 android.defaultConfig.minSdk = 16
