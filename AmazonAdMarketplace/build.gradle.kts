@@ -1,33 +1,20 @@
-import com.applovin.build.extensions.appendDependency
-
 plugins {
     id("adapter-config")
+    id("com.applovin.mobile.publish")
 }
 
-afterEvaluate {
-    apply(plugin = "adapter-publish")
-}
+val libraryVersionName by extra("11.1.0.0")
 
-val libraryVersionName by extra("11.0.4.0")
-val libraryArtifactId by extra("amazon-tam-adapter")
+applovinMobilePublish {
+    libraryArtifactId.set("amazon-tam-adapter")
+    pomDependencies.set(com.applovin.gradle.PomDependency.fromList(listOf(
+        libs.iabtcf
+    )))
+}
 
 android.defaultConfig.minSdk = 19
 
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.iabtcf)
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("Adapter") {
-            //The publication doesn't know about our dependencies, so we have to manually add them to the pom
-            pom.withXml {
-                asNode().apply {
-                    appendNode("dependencies")
-                        .appendDependency(libs.iabtcf)
-                }
-            }
-        }
-    }
 }
