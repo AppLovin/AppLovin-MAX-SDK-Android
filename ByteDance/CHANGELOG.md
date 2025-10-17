@@ -1,5 +1,11 @@
 # Changelog
 
+## 7.6.0.5.0
+* Certified with ByteDance SDK 7.6.0.5.
+
+## 7.6.0.3.0
+* Certified with ByteDance SDK 7.6.0.3.
+
 ## 7.6.0.2.0
 * Certified with ByteDance SDK 7.6.0.2.
 
@@ -44,7 +50,7 @@
 
 ## 7.1.0.4.0
 * Certified with ByteDance SDK 7.1.0.4.
-* Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-mrecs).
+* Add support for [adaptive banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-mrecs).
 
 ## 6.5.0.8.1
 * Requires minimum AppLovin MAX SDK version be 13.2.0.
