@@ -80,7 +80,6 @@ public class InMobiMediationAdapter
     private static final int BODY_VIEW_TAG            = 4;
     private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
     private static final int ADVERTISER_VIEW_TAG      = 8;
-
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
     private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
 
@@ -235,8 +234,8 @@ public class InMobiMediationAdapter
         if ( isNative )
         {
             nativeAd = new InMobiNative( context,
-                                         placementId,
-                                         new NativeAdViewListener( parameters, adFormat, activity, listener ) );
+                    placementId,
+                    new NativeAdViewListener( parameters, adFormat, activity, listener ) );
             nativeAd.setExtras( getExtras() );
 
             if ( isBiddingAd )
@@ -283,7 +282,7 @@ public class InMobiMediationAdapter
             }
 
             adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * displayMetrics.density ),
-                                                                   Math.round( height * displayMetrics.density ) ) );
+                    Math.round( height * displayMetrics.density ) ) );
 
             if ( isBiddingAd )
             {
@@ -327,8 +326,8 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -366,8 +365,8 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -396,8 +395,8 @@ public class InMobiMediationAdapter
 
         final Context context = getContext( activity );
         nativeAd = new InMobiNative( context,
-                                     placementId,
-                                     new NativeAdListener( parameters, context, listener ) );
+                placementId,
+                new NativeAdListener( parameters, context, listener ) );
 
         nativeAd.setExtras( getExtras() );
 
@@ -913,9 +912,6 @@ public class InMobiMediationAdapter
                     AppLovinSdkUtils.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ImageView imageView = new ImageView(context);
-                            imageView.setImageDrawable(iconDrawable);
-
                             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                                     .setAdFormat(adFormat)
                                     .setTitle(inMobiNative.getAdTitle())
@@ -1048,7 +1044,7 @@ public class InMobiMediationAdapter
                 @Override
                 public void run()
                 {
-                    Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIconUrl(), serverParameters, context );
+                    Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIcon(), serverParameters, context );
 
                     handleNativeAdLoaded( inMobiNative, adMetaInfo, iconDrawable, context );
                 }
@@ -1062,10 +1058,6 @@ public class InMobiMediationAdapter
                 @Override
                 public void run()
                 {
-                    ImageView imageView = new ImageView( context );
-                    imageView.setImageDrawable( iconDrawable );
-
-                    FrameLayout frameLayout = new FrameLayout( context );
                     final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( inMobiNative.getAdTitle() )
@@ -1149,7 +1141,6 @@ public class InMobiMediationAdapter
             this.format = format;
         }
 
-        @Override
         public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container) {
             final InMobiNative nativeAd = InMobiMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
