@@ -72,7 +72,7 @@ public class AmazonAdMarketplaceMediationAdapter
     private static final Map<MaxAdFormat, DTBAdLoader> adLoaders = Collections.synchronizedMap( new HashMap<MaxAdFormat, DTBAdLoader>() );
 
     // NOTE: Will remove for more space-efficient implementation
-    private static final Set<Integer> usedAdLoaders = new HashSet<>();
+    private static final Set<Integer> usedAdLoaders = Collections.synchronizedSet( new HashSet<>() );
 
     // Contains mapping of encoded (bid id)_(ad format) -> mediation hints / bid info
     private static final Map<String, MediationHints> mediationHintsCache     = new HashMap<>();
