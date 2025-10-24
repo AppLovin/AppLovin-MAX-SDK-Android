@@ -3,7 +3,7 @@ plugins {
     id("com.applovin.mobile.publish")
 }
 
-val libraryVersionName by extra("7.6.0.5.0")
+val libraryVersionName by extra("7.7.0.2.0")
 val minAppLovinSdkVersion by extra("13.2.0")
 
 android.defaultConfig.minSdk = 19
