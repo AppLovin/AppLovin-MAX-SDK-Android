@@ -3,7 +3,7 @@ plugins {
     id("com.applovin.mobile.publish")
 }
 
-val libraryVersionName by extra("11.1.0.0")
+val libraryVersionName by extra("11.1.0.1")
 
 applovinMobilePublish {
     libraryArtifactId.set("amazon-tam-adapter")

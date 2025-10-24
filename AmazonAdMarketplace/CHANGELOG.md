@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.1.0.1
+* Fixed crashes caused by concurrent modification to `usedAdLoaders` by making it a synchronized `HashSet`.
+
 ## 11.1.0.0
 * Certified with AmazonAdMarketplace SDK 11.1.0.
 
