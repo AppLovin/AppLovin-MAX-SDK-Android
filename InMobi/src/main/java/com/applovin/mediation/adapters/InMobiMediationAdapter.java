@@ -75,11 +75,11 @@ public class InMobiMediationAdapter
         implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider
 {
 
-    private static final int TITLE_LABEL_TAG          = 1;
-    private static final int ICON_VIEW_TAG            = 3;
-    private static final int BODY_VIEW_TAG            = 4;
-    private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
-    private static final int ADVERTISER_VIEW_TAG      = 8;
+    private static final int    TITLE_LABEL_TAG          = 1;
+    private static final int    ICON_VIEW_TAG            = 3;
+    private static final int    BODY_VIEW_TAG            = 4;
+    private static final int    CALL_TO_ACTION_VIEW_TAG  = 5;
+    private static final int    ADVERTISER_VIEW_TAG      = 8;
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
     private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
 
@@ -234,8 +234,8 @@ public class InMobiMediationAdapter
         if ( isNative )
         {
             nativeAd = new InMobiNative( context,
-                    placementId,
-                    new NativeAdViewListener( parameters, adFormat, activity, listener ) );
+                                         placementId,
+                                         new NativeAdViewListener( parameters, adFormat, activity, listener ) );
             nativeAd.setExtras( getExtras() );
 
             if ( isBiddingAd )
@@ -282,7 +282,7 @@ public class InMobiMediationAdapter
             }
 
             adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * displayMetrics.density ),
-                    Math.round( height * displayMetrics.density ) ) );
+                                                                   Math.round( height * displayMetrics.density ) ) );
 
             if ( isBiddingAd )
             {
@@ -326,8 +326,8 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                    MaxAdapterError.AD_NOT_READY.getCode(),
-                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -365,8 +365,8 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                    MaxAdapterError.AD_NOT_READY.getCode(),
-                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -395,8 +395,8 @@ public class InMobiMediationAdapter
 
         final Context context = getContext( activity );
         nativeAd = new InMobiNative( context,
-                placementId,
-                new NativeAdListener( parameters, context, listener ) );
+                                     placementId,
+                                     new NativeAdListener( parameters, context, listener ) );
 
         nativeAd.setExtras( getExtras() );
 
@@ -506,27 +506,33 @@ public class InMobiMediationAdapter
         return DEFAULT_MEDIA_CONTENT_ASPECT_RATIO;
     }
 
-    private Drawable fetchNativeAdIcon(final InMobiNativeImage image, final Bundle serverParameters, final Context context) {
-        if (image == null) {
-            log("Native ad icon Object is NULL");
+    private Drawable fetchNativeAdIcon(final InMobiNativeImage image, final Bundle serverParameters, final Context context)
+    {
+        if ( image == null )
+        {
+            log( "Native ad icon Object is NULL" );
             return null;
         }
 
         String iconUrl = image.getUrl();
 
-        if (TextUtils.isEmpty(iconUrl)) {
-            log("Native ad icon url " + iconUrl + " is not valid");
+        if ( TextUtils.isEmpty( iconUrl ) )
+        {
+            log( "Native ad icon url " + iconUrl + " is not valid" );
             return null;
         }
 
-        log("Adding native ad icon (" + iconUrl + ") to queue to be fetched");
+        log( "Adding native ad icon (" + iconUrl + ") to queue to be fetched" );
 
-        final Future<Drawable> iconDrawableFuture = createDrawableFuture(iconUrl, context.getResources());
-        try {
+        final Future<Drawable> iconDrawableFuture = createDrawableFuture( iconUrl, context.getResources() );
+        try
+        {
             final int imageTaskTimeoutSeconds = BundleUtils.getInt( "image_task_timeout_seconds", DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS, serverParameters );
-            return iconDrawableFuture.get(imageTaskTimeoutSeconds, TimeUnit.SECONDS);
-        } catch (Throwable th) {
-            e("Failed to fetch icon image from URL: " + iconUrl, th);
+            return iconDrawableFuture.get( imageTaskTimeoutSeconds, TimeUnit.SECONDS );
+        }
+        catch ( Throwable th )
+        {
+            e( "Failed to fetch icon image from URL: " + iconUrl, th );
         }
 
         return null;
@@ -890,67 +896,82 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdLoadSucceeded(final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo) {
+        public void onAdLoadSucceeded(final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo)
+        {
             // `nativeAd` may be null if the adapter is destroyed before the ad loaded (timed out). The `inMobiNative` could be null if the user cannot get fill.
-            if (nativeAd == null || inMobiNative == null || nativeAd != inMobiNative) {
-                log("Native " + adFormat.getLabel() + " ad failed to load: no fill");
-                listener.onAdViewAdLoadFailed(MaxAdapterError.NO_FILL);
+            if ( nativeAd == null || inMobiNative == null || nativeAd != inMobiNative )
+            {
+                log( "Native " + adFormat.getLabel() + " ad failed to load: no fill" );
+                listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
             }
 
-            log("Native " + adFormat.getLabel() + " ad loaded: " + placementId);
+            log( "Native " + adFormat.getLabel() + " ad loaded: " + placementId );
 
             final Activity activity = activityRef.get();
-            final Context context = getContext(activity);
+            final Context context = getContext( activity );
 
-            getCachingExecutorService().execute(new Runnable() {
+            getCachingExecutorService().execute( new Runnable()
+            {
                 @Override
-                public void run() {
-                    final Drawable iconDrawable = fetchNativeAdIcon(inMobiNative.getAdIcon(), serverParameters, context);
+                public void run()
+                {
+                    final Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIcon(), serverParameters, context );
 
-                    AppLovinSdkUtils.runOnUiThread(new Runnable() {
+                    AppLovinSdkUtils.runOnUiThread( new Runnable()
+                    {
                         @Override
-                        public void run() {
+                        public void run()
+                        {
                             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                                    .setAdFormat(adFormat)
-                                    .setTitle(inMobiNative.getAdTitle())
-                                    .setBody(inMobiNative.getAdDescription())
-                                    .setCallToAction(inMobiNative.getCtaText())
-                                    .setIcon(new MaxNativeAd.MaxNativeAdImage(iconDrawable))
-                                    .setMediaView(inMobiNative.getMediaView())
-                                    .setAdvertiser(inMobiNative.getAdvertiserName())
-                                    .setMediaContentAspectRatio(mediaContentAspectRatio);
+                                    .setAdFormat( adFormat )
+                                    .setTitle( inMobiNative.getAdTitle() )
+                                    .setBody( inMobiNative.getAdDescription() )
+                                    .setCallToAction( inMobiNative.getCtaText() )
+                                    .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
+                                    .setMediaView( inMobiNative.getMediaView() )
+                                    .setAdvertiser( inMobiNative.getAdvertiserName() )
+                                    .setMediaContentAspectRatio( mediaContentAspectRatio );
 
-                            final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd(listener, builder, adFormat);
+                            final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, adFormat );
                             MaxNativeAdView maxNativeAdView;
 
-                            final String templateName = BundleUtils.getString("template", "", serverParameters);
-                            if (templateName.contains("vertical")) {
-                                if (templateName.equals("vertical")) {
-                                    String verticalTemplateName = (adFormat == MaxAdFormat.LEADER) ? "vertical_leader_template" : "vertical_media_banner_template";
-                                    maxNativeAdView = createMaxNativeAdView(maxInMobiNativeAd, verticalTemplateName);
-                                } else {
-                                    maxNativeAdView = createMaxNativeAdView(maxInMobiNativeAd, templateName);
+                            final String templateName = BundleUtils.getString( "template", "", serverParameters );
+                            if ( templateName.contains( "vertical" ) )
+                            {
+                                if ( templateName.equals( "vertical" ) )
+                                {
+                                    String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
+                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, verticalTemplateName );
                                 }
-                            } else {
-                                maxNativeAdView = createMaxNativeAdView(maxInMobiNativeAd, AppLovinSdkUtils.isValidString(templateName) ? templateName : "media_banner_template");
+                                else
+                                {
+                                    maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, templateName );
+                                }
+                            }
+                            else
+                            {
+                                maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, AppLovinSdkUtils.isValidString( templateName ) ? templateName : "media_banner_template" );
                             }
 
-                            maxInMobiNativeAd.prepareForInteraction(getClickableViews(maxNativeAdView), maxNativeAdView);
+                            maxInMobiNativeAd.prepareForInteraction( getClickableViews( maxNativeAdView ), maxNativeAdView );
 
-                            if (AppLovinSdkUtils.isValidString(adMetaInfo.getCreativeID())) {
-                                Bundle extraInfo = new Bundle(1);
-                                extraInfo.putString("creative_id", adMetaInfo.getCreativeID());
+                            if ( AppLovinSdkUtils.isValidString( adMetaInfo.getCreativeID() ) )
+                            {
+                                Bundle extraInfo = new Bundle( 1 );
+                                extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
 
-                                listener.onAdViewAdLoaded(maxNativeAdView, extraInfo);
-                            } else {
-                                listener.onAdViewAdLoaded(maxNativeAdView);
+                                listener.onAdViewAdLoaded( maxNativeAdView, extraInfo );
+                            }
+                            else
+                            {
+                                listener.onAdViewAdLoaded( maxNativeAdView );
                             }
                         }
-                    });
+                    } );
                 }
-            });
+            } );
         }
 
         @Override
@@ -1141,7 +1162,8 @@ public class InMobiMediationAdapter
             this.format = format;
         }
 
-        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container) {
+        public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+        {
             final InMobiNative nativeAd = InMobiMediationAdapter.this.nativeAd;
             if ( nativeAd == null )
             {
@@ -1149,29 +1171,35 @@ public class InMobiMediationAdapter
                 return false;
             }
 
-            InMobiNativeViewData.Builder viewDataBuilder = new InMobiNativeViewData.Builder(container);
+            InMobiNativeViewData.Builder viewDataBuilder = new InMobiNativeViewData.Builder( container );
 
             // Native integrations
             if ( container instanceof MaxNativeAdView )
             {
                 MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
 
-                if (maxNativeAdView.getIconImageView() != null) {
+                if ( maxNativeAdView.getIconImageView() != null )
+                {
                     viewDataBuilder.setIconView( maxNativeAdView.getIconImageView() );
                 }
-                if (maxNativeAdView.getAdvertiserTextView() != null) {
+                if ( maxNativeAdView.getAdvertiserTextView() != null )
+                {
                     viewDataBuilder.setAdvertiserView( maxNativeAdView.getAdvertiserTextView() );
                 }
-                if (maxNativeAdView.getTitleTextView() != null) {
+                if ( maxNativeAdView.getTitleTextView() != null )
+                {
                     viewDataBuilder.setTitleView( maxNativeAdView.getTitleTextView() );
                 }
-                if (maxNativeAdView.getBodyTextView() != null) {
+                if ( maxNativeAdView.getBodyTextView() != null )
+                {
                     viewDataBuilder.setDescriptionView( maxNativeAdView.getBodyTextView() );
                 }
-                if (maxNativeAdView.getCallToActionButton() != null) {
+                if ( maxNativeAdView.getCallToActionButton() != null )
+                {
                     viewDataBuilder.setCTAView( maxNativeAdView.getCallToActionButton() );
                 }
-                if (maxNativeAdView.getStarRatingContentViewGroup() != null) {
+                if ( maxNativeAdView.getStarRatingContentViewGroup() != null )
+                {
                     viewDataBuilder.setRatingView( maxNativeAdView.getStarRatingContentViewGroup() );
                 }
             }
@@ -1191,7 +1219,8 @@ public class InMobiMediationAdapter
                     }
                     else if ( tag == ICON_VIEW_TAG )
                     {
-                        if ( view instanceof ImageView ) {
+                        if ( view instanceof ImageView )
+                        {
                             viewDataBuilder.setIconView( (ImageView) view );
                         }
                     }
@@ -1210,7 +1239,7 @@ public class InMobiMediationAdapter
                 }
             }
 
-            nativeAd.registerViewForTracking(viewDataBuilder.build());
+            nativeAd.registerViewForTracking( viewDataBuilder.build() );
 
             return true;
         }
