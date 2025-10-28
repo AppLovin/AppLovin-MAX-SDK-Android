@@ -1,5 +1,8 @@
 # Changelog
 
+## 2025.10.28.0
+* Certified with Line SDK 2.9.20251028.
+
 ## 2025.9.24.0
 * Certified with Line SDK 2.9.20250924.
 
