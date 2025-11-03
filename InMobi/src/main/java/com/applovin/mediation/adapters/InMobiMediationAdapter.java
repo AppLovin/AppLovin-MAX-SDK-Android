@@ -5,13 +5,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -21,6 +16,7 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
@@ -47,6 +43,8 @@ import com.inmobi.ads.listeners.BannerAdEventListener;
 import com.inmobi.ads.listeners.InterstitialAdEventListener;
 import com.inmobi.ads.listeners.NativeAdEventListener;
 import com.inmobi.compliance.InMobiPrivacyCompliance;
+import com.inmobi.media.ads.nativeAd.InMobiNativeImage;
+import com.inmobi.media.ads.nativeAd.InMobiNativeViewData;
 import com.inmobi.sdk.InMobiSdk;
 import com.inmobi.sdk.SdkInitializationListener;
 
@@ -54,7 +52,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +67,16 @@ import androidx.annotation.Nullable;
  */
 public class InMobiMediationAdapter
         extends MediationAdapterBase
-        implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider
+        implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxNativeAdAdapter, MaxSignalProvider
 {
+    private static final int    TITLE_LABEL_TAG          = 1;
+    // MEDIA_VIEW_CONTAINER_TAG (2) not used.
+    private static final int    ICON_VIEW_TAG            = 3;
+    private static final int    BODY_VIEW_TAG            = 4;
+    private static final int    CALL_TO_ACTION_VIEW_TAG  = 5;
+    private static final int    RATING_VIEW_TAG          = 6;
+    private static final int    ADVERTISER_VIEW_TAG      = 8;
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
-    private static final String KEY_PARTNER_GDPR_APPLIES = "partner_gdpr_applies";
 
     // https://support.inmobi.com/monetize/android-guidelines/native-ads-for-android/#set-up-native-ad
     // The default setting is an in-Feed ad layout, an aspect ratio ranging between 256:135 - 1200x627
@@ -247,10 +250,7 @@ public class InMobiMediationAdapter
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
 
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager windowManager = (WindowManager) context.getSystemService( Context.WINDOW_SERVICE );
-            Display display = windowManager.getDefaultDisplay();
-            display.getMetrics( displayMetrics );
+            final float density = context.getResources().getDisplayMetrics().density;
 
             final int width, height;
             if ( adFormat == MaxAdFormat.BANNER )
@@ -273,8 +273,8 @@ public class InMobiMediationAdapter
                 throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
             }
 
-            adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * displayMetrics.density ),
-                                                                   Math.round( height * displayMetrics.density ) ) );
+            adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * density ),
+                                                                   Math.round( height * density ) ) );
 
             if ( isBiddingAd )
             {
@@ -414,13 +414,13 @@ public class InMobiMediationAdapter
         updatePrivacySettings( parameters );
 
         final String bidResponse = parameters.getBidResponse();
-        if ( !TextUtils.isEmpty( bidResponse ) )
+        if ( TextUtils.isEmpty( bidResponse ) )
         {
-            interstitial.load( bidResponse.getBytes() );
+            interstitial.load();
         }
         else
         {
-            interstitial.load();
+            interstitial.load( bidResponse.getBytes() );
         }
 
         return interstitial;
@@ -498,8 +498,15 @@ public class InMobiMediationAdapter
         return DEFAULT_MEDIA_CONTENT_ASPECT_RATIO;
     }
 
-    private Drawable fetchNativeAdIcon(@NonNull final String iconUrl, final Bundle serverParameters, final Context context)
+    private Drawable fetchNativeAdIcon(final InMobiNativeImage image, final Bundle serverParameters, final Context context)
     {
+        if ( image == null )
+        {
+            log( "Native ad icon Object is NULL" );
+            return null;
+        }
+
+        String iconUrl = image.getUrl();
         if ( TextUtils.isEmpty( iconUrl ) )
         {
             log( "Native ad icon url " + iconUrl + " is not valid" );
@@ -601,16 +608,16 @@ public class InMobiMediationAdapter
         {
             log( "AdView loaded" );
 
-            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            {
+                listener.onAdViewAdLoaded( inMobiBanner );
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
 
                 listener.onAdViewAdLoaded( inMobiBanner, extraInfo );
-            }
-            else
-            {
-                listener.onAdViewAdLoaded( inMobiBanner );
             }
         }
 
@@ -680,16 +687,16 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial loaded" );
 
-            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            {
+                listener.onInterstitialAdLoaded();
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
 
                 listener.onInterstitialAdLoaded( extraInfo );
-            }
-            else
-            {
-                listener.onInterstitialAdLoaded();
             }
         }
 
@@ -772,16 +779,16 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad loaded" );
 
-            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            if ( TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            {
+                listener.onRewardedAdLoaded();
+            }
+            else
             {
                 Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
 
                 listener.onRewardedAdLoaded( extraInfo );
-            }
-            else
-            {
-                listener.onRewardedAdLoaded();
             }
         }
 
@@ -901,25 +908,23 @@ public class InMobiMediationAdapter
                 @Override
                 public void run()
                 {
-                    final Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIconUrl(), serverParameters, context );
+                    final Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIcon(), serverParameters, context );
 
                     AppLovinSdkUtils.runOnUiThread( new Runnable()
                     {
                         @Override
                         public void run()
                         {
-                            ImageView imageView = new ImageView( context );
-                            imageView.setImageDrawable( iconDrawable );
-
-                            FrameLayout frameLayout = new FrameLayout( context );
                             final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                                     .setAdFormat( adFormat )
                                     .setTitle( inMobiNative.getAdTitle() )
+                                    .setAdvertiser( inMobiNative.getAdvertiserName() )
                                     .setBody( inMobiNative.getAdDescription() )
-                                    .setCallToAction( inMobiNative.getAdCtaText() )
+                                    .setCallToAction( inMobiNative.getCtaText() )
                                     .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                                    .setMediaView( frameLayout )
-                                    .setMediaContentAspectRatio( mediaContentAspectRatio );
+                                    .setMediaView( inMobiNative.getMediaView() )
+                                    .setMediaContentAspectRatio( mediaContentAspectRatio )
+                                    .setStarRating( (double) inMobiNative.getAdRating() );
 
                             final MaxInMobiNativeAd maxInMobiNativeAd = new MaxInMobiNativeAd( listener, builder, adFormat );
 
@@ -928,7 +933,7 @@ public class InMobiMediationAdapter
                             final String templateName = BundleUtils.getString( "template", "", serverParameters );
                             if ( templateName.contains( "vertical" ) )
                             {
-                                if ( templateName.equals( "vertical" ) )
+                                if ( "vertical".equals( templateName ) )
                                 {
                                     String verticalTemplateName = ( adFormat == MaxAdFormat.LEADER ) ? "vertical_leader_template" : "vertical_media_banner_template";
                                     maxNativeAdView = createMaxNativeAdView( maxInMobiNativeAd, verticalTemplateName );
@@ -991,12 +996,6 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdFullScreenWillDisplay(@NonNull final InMobiNative inMobiNative)
-        {
-            log( "Native " + adFormat.getLabel() + " ad fullscreen will display" );
-        }
-
-        @Override
         public void onAdFullScreenDisplayed(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native " + adFormat.getLabel() + " ad fullscreen displayed" );
@@ -1006,12 +1005,6 @@ public class InMobiMediationAdapter
         public void onAdFullScreenDismissed(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native " + adFormat.getLabel() + " ad fullscreen dismissed" );
-        }
-
-        @Override
-        public void onAdStatusChanged(@NonNull final InMobiNative inMobiNative)
-        {
-            log( "Native " + adFormat.getLabel() + " ad status changed" );
         }
     }
 
@@ -1065,31 +1058,27 @@ public class InMobiMediationAdapter
                 @Override
                 public void run()
                 {
-                    Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIconUrl(), serverParameters, context );
-
-                    handleNativeAdLoaded( inMobiNative, adMetaInfo, iconDrawable, context );
+                    Drawable iconDrawable = fetchNativeAdIcon( inMobiNative.getAdIcon(), serverParameters, context );
+                    handleNativeAdLoaded( inMobiNative, adMetaInfo, iconDrawable );
                 }
             } );
         }
 
-        private void handleNativeAdLoaded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo, final Drawable iconDrawable, final Context context)
+        private void handleNativeAdLoaded(@NonNull final InMobiNative inMobiNative, @NonNull final AdMetaInfo adMetaInfo, final Drawable iconDrawable)
         {
             AppLovinSdkUtils.runOnUiThread( new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    ImageView imageView = new ImageView( context );
-                    imageView.setImageDrawable( iconDrawable );
-
-                    FrameLayout frameLayout = new FrameLayout( context );
                     final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
                             .setAdFormat( MaxAdFormat.NATIVE )
                             .setTitle( inMobiNative.getAdTitle() )
+                            .setAdvertiser( inMobiNative.getAdvertiserName() )
                             .setBody( inMobiNative.getAdDescription() )
-                            .setCallToAction( inMobiNative.getAdCtaText() )
+                            .setCallToAction( inMobiNative.getCtaText() )
                             .setIcon( new MaxNativeAd.MaxNativeAdImage( iconDrawable ) )
-                            .setMediaView( frameLayout )
+                            .setMediaView( inMobiNative.getMediaView() )
                             .setMediaContentAspectRatio( mediaContentAspectRatio )
                             .setStarRating( (double) inMobiNative.getAdRating() );
 
@@ -1137,12 +1126,6 @@ public class InMobiMediationAdapter
         }
 
         @Override
-        public void onAdFullScreenWillDisplay(@NonNull final InMobiNative inMobiNative)
-        {
-            log( "Native ad fullscreen will display" );
-        }
-
-        @Override
         public void onAdFullScreenDisplayed(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native ad fullscreen displayed" );
@@ -1152,12 +1135,6 @@ public class InMobiMediationAdapter
         public void onAdFullScreenDismissed(@NonNull final InMobiNative inMobiNative)
         {
             log( "Native ad fullscreen dismissed" );
-        }
-
-        @Override
-        public void onAdStatusChanged(@NonNull final InMobiNative inMobiNative)
-        {
-            log( "Native ad status changed" );
         }
     }
 
@@ -1187,52 +1164,79 @@ public class InMobiMediationAdapter
                 return false;
             }
 
-            // We don't provide the aspect ratio for InMobi's media view since the media view is rendered after the ad is rendered.
-            final FrameLayout mediaView = (FrameLayout) getMediaView();
-            mediaView.post( new Runnable()
+            InMobiNativeViewData.Builder viewDataBuilder = new InMobiNativeViewData.Builder( container );
+
+            // Native integrations
+            if ( container instanceof MaxNativeAdView )
             {
-                @Override
-                public void run()
+                MaxNativeAdView maxNativeAdView = (MaxNativeAdView) container;
+
+                if ( maxNativeAdView.getTitleTextView() != null )
                 {
-                    int primaryViewWidth = mediaView.getWidth();
-                    int primaryViewHeight = mediaView.getHeight();
+                    viewDataBuilder.setTitleView( maxNativeAdView.getTitleTextView() );
+                }
+                if ( maxNativeAdView.getIconImageView() != null )
+                {
+                    viewDataBuilder.setIconView( maxNativeAdView.getIconImageView() );
+                }
+                if ( maxNativeAdView.getBodyTextView() != null )
+                {
+                    viewDataBuilder.setDescriptionView( maxNativeAdView.getBodyTextView() );
+                }
+                if ( maxNativeAdView.getCallToActionButton() != null )
+                {
+                    viewDataBuilder.setCTAView( maxNativeAdView.getCallToActionButton() );
+                }
+                if ( maxNativeAdView.getStarRatingContentViewGroup() != null )
+                {
+                    viewDataBuilder.setRatingView( maxNativeAdView.getStarRatingContentViewGroup() );
+                }
+                if ( maxNativeAdView.getAdvertiserTextView() != null )
+                {
+                    viewDataBuilder.setAdvertiserView( maxNativeAdView.getAdvertiserTextView() );
+                }
+            }
+            // Plugins
+            else
+            {
+                for ( View view : clickableViews )
+                {
+                    Object viewTag = view.getTag();
+                    if ( viewTag == null ) continue;
 
-                    final boolean isHorizontalBanner = ( format == MaxAdFormat.BANNER ) && ( primaryViewWidth > primaryViewHeight );
+                    int tag = (int) viewTag;
 
-                    ViewGroup.LayoutParams layoutParams = mediaView.getLayoutParams();
-
-                    // Compute primaryViewWidth when it is a dynamic layout value before getting the actual measurement.
-                    if ( primaryViewWidth == 0 && layoutParams != null )
+                    if ( tag == TITLE_LABEL_TAG )
                     {
-                        int layoutWidth = layoutParams.width;
-                        if ( layoutWidth == ViewGroup.LayoutParams.WRAP_CONTENT || layoutWidth == ViewGroup.LayoutParams.MATCH_PARENT )
+                        viewDataBuilder.setTitleView( view );
+                    }
+                    else if ( tag == ICON_VIEW_TAG )
+                    {
+                        if ( view instanceof ImageView )
                         {
-                            primaryViewWidth = (int) ( primaryViewHeight * getMediaContentAspectRatio() );
+                            viewDataBuilder.setIconView( (ImageView) view );
                         }
                     }
-
-                    final View primaryView = nativeAd.getPrimaryViewOfWidth( mediaView.getContext(), null, mediaView, primaryViewWidth );
-                    if ( primaryView == null ) return;
-
-                    mediaView.addView( primaryView );
+                    else if ( tag == BODY_VIEW_TAG )
+                    {
+                        viewDataBuilder.setDescriptionView( view );
+                    }
+                    else if ( tag == CALL_TO_ACTION_VIEW_TAG )
+                    {
+                        viewDataBuilder.setCTAView( view );
+                    }
+                    else if ( tag == RATING_VIEW_TAG )
+                    {
+                        viewDataBuilder.setRatingView( view );
+                    }
+                    else if ( tag == ADVERTISER_VIEW_TAG )
+                    {
+                        viewDataBuilder.setAdvertiserView( view );
+                    }
                 }
-            } );
-
-            final View.OnClickListener clickListener = new View.OnClickListener()
-            {
-                @Override
-                public void onClick(final View view)
-                {
-                    log( "Native ad clicked from click listener" );
-                    nativeAd.reportAdClickAndOpenLandingPage();
-                }
-            };
-
-            // InMobi does not provide a method to bind views with landing url, so we need to do it manually.
-            for ( View clickableView : clickableViews )
-            {
-                if ( clickableView != null ) clickableView.setOnClickListener( clickListener );
             }
+
+            nativeAd.registerViewForTracking( viewDataBuilder.build() );
 
             return true;
         }
