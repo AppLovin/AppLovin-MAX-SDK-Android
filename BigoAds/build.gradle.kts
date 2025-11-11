@@ -3,6 +3,6 @@ plugins {
     id("com.applovin.mobile.publish")
 }
 
-val libraryVersionName by extra("5.5.2.0")
+val libraryVersionName by extra("5.6.1.0")
 
 android.defaultConfig.minSdk = 16
