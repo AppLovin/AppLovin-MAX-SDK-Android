@@ -242,13 +242,17 @@ public class FacebookMediationAdapter
             else
             {
                 log( "Unable to show interstitial - ad expired..." );
-                listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
+                listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                             MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                             MaxAdapterError.AD_EXPIRED.getMessage() ) );
             }
         }
         else
         {
             log( "Unable to show interstitial - no ad loaded..." );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Interstitial ad not ready" ) );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -294,13 +298,17 @@ public class FacebookMediationAdapter
             else
             {
                 log( "Unable to show rewarded ad - ad expired..." );
-                listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_EXPIRED );
+                listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                         MaxAdapterError.AD_EXPIRED.getMessage() ) );
             }
         }
         else
         {
             log( "Unable to show rewarded ad - no ad loaded..." );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED, 0, "Rewarded ad not ready" ) );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
