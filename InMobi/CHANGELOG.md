@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.1.0.0
+* Certified with InMobi SDK 11.1.0.
+
 ## 11.0.0.0
 * Certified with InMobi SDK 11.0.0.
 * Updated to support InMobi new native ad integration API.
