@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.1.0.0.0
+* Certified with IronSource SDK 9.1.0.
+
 ## 9.0.0.0.0
 * Certified with IronSource SDK 9.0.0.
 * Removed dependency on deprecated `IronSource.AD_UNIT` enum.
