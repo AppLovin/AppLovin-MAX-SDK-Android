@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.0.1
+* Downgrade to Moloco SDK 4.2.1 to avoid a build issue.
+
 ## 4.3.0.0
 * Certified with Moloco SDK 4.3.0.
 
