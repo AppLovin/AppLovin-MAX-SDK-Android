@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.8.0.0
+* Certified with Google SDK 24.8.0.
+
 ## 24.7.0.0
 * Certified with Google SDK 24.7.0.
 
