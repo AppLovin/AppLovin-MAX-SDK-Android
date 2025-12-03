@@ -1,35 +1,43 @@
 plugins {
-    id("com.android.library")
+//    id("com.android.library")
+    id("adapter-config")
+    id("com.applovin.mobile.publish")
 }
 
-android {
-    namespace = "com.applovin.mediation.adapters"
-    compileSdk = 35
 
-    defaultConfig {
-        minSdk = 23
+val libraryVersionName by extra("1.1.72.0")
+val minAppLovinSdkVersion by extra("13.3.1")
 
-        consumerProguardFiles("consumer-rules.pro")
-    }
+android.defaultConfig.minSdk = 23
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
+//android {
+//    namespace = "com.applovin.mediation.adapters"
+//    compileSdk = 35
+//
+//    defaultConfig {
+//        minSdk = 23
+//
+//        consumerProguardFiles("consumer-rules.pro")
+//    }
+//
+//    buildTypes {
+//        release {
+//            isMinifyEnabled = false
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
+//    }
+//    compileOptions {
+//        sourceCompatibility = JavaVersion.VERSION_11
+//        targetCompatibility = JavaVersion.VERSION_11
+//    }
+//}
 
 dependencies {
     implementation ("com.applovin:applovin-sdk:13.3.1")
-    implementation  ("com.hs.adx:core:1.1.67")
+    implementation  ("com.hs.adx:core:1.1.72")
 }
 
 

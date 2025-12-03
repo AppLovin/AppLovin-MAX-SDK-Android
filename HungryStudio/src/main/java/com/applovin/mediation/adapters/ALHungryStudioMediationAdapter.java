@@ -159,8 +159,7 @@ public class ALHungryStudioMediationAdapter extends MediationAdapterBase impleme
 
     @Override
     public String getAdapterVersion() {
-//        return BuildConfig.SDK_VERSION_NAME;
-        return AppUtils.getSdkVerName() + ".1";
+        return BuildConfig.VERSION_NAME;
     }
 
     @Override
