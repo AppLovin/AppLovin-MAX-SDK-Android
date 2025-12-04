@@ -5,7 +5,7 @@ plugins {
 }
 
 
-val libraryVersionName by extra("1.1.72.0")
+val libraryVersionName by extra("1.1.73.0")
 val minAppLovinSdkVersion by extra("13.3.1")
 
 android.defaultConfig.minSdk = 23
