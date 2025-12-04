@@ -37,13 +37,13 @@ android.defaultConfig.minSdk = 23
 
 dependencies {
     implementation ("com.applovin:applovin-sdk:13.3.1")
-    implementation  ("com.hs.adx:core:1.1.72")
+    implementation  ("com.hs.adx:core:1.1.73")
 }
 
 
 repositories {
     maven {
-        url = uri("https://repo.pubmatic.com/artifactory/public-repos")
+        url = uri("https://packages.aliyun.com/6639f75d4977ded33af8fb60/maven/repo-hmcxt")
         credentials {
             username = "675fd60425be8f2424e20934"
             password = "y4)2tKp60VCW"

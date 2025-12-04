@@ -30,16 +30,17 @@ import com.hs.adx.ad.core.AdError;
 import com.hs.adx.api.HellaAd;
 import com.hs.adx.api.HellaAdsSdk;
 import com.hs.adx.bid.HSBidTokenProvider;
+import com.hs.adx.constants.ParamExtra;
 import com.hs.adx.utils.AppUtils;
 
-public class ALHungryStudioMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
+public class ALHungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
     private static final String TAG = "ALHungryStudioMediationAdapter";
     private HSAdxBanner mHsBanner;
     private HSAdxInterstitial mInterstitial;
     private HSAdxReward mRewardedVideoAd;
 
-    public ALHungryStudioMediationAdapter(AppLovinSdk appLovinSdk) {
+    public ALHungryExchangeMediationAdapter(AppLovinSdk appLovinSdk) {
         super(appLovinSdk);
     }
 
@@ -297,7 +298,7 @@ public class ALHungryStudioMediationAdapter extends MediationAdapterBase impleme
     @Override
     public void showInterstitialAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxInterstitialAdapterListener maxInterstitialAdapterListener) {
         if (mInterstitial != null && mInterstitial.isAdReady()) {
-            mInterstitial.show();
+            mInterstitial.showWithFrom(ParamExtra.SCENE_WITH_ADAPTER);
         } else {
             maxInterstitialAdapterListener.onInterstitialAdDisplayFailed(MaxAdapterError.AD_NOT_READY);
         }
@@ -321,7 +322,7 @@ public class ALHungryStudioMediationAdapter extends MediationAdapterBase impleme
     @Override
     public void showRewardedAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxRewardedAdapterListener maxRewardedAdapterListener) {
         if (mRewardedVideoAd != null && mRewardedVideoAd.isAdReady()) {
-            mRewardedVideoAd.show();
+            mRewardedVideoAd.showWithFrom(ParamExtra.SCENE_WITH_ADAPTER);
         } else {
             maxRewardedAdapterListener.onRewardedAdDisplayFailed(MaxAdapterError.AD_NOT_READY);
         }
