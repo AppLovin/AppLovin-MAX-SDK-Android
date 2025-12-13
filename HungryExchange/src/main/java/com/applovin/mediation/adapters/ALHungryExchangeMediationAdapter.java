@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.applovin.impl.mediation.MaxRewardImpl;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -30,12 +29,11 @@ import com.hs.adx.ad.core.AdError;
 import com.hs.adx.api.HellaAd;
 import com.hs.adx.api.HellaAdsSdk;
 import com.hs.adx.bid.HSBidTokenProvider;
-import com.hs.adx.constants.ParamExtra;
 import com.hs.adx.utils.AppUtils;
 
 public class ALHungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
-    private static final String TAG = "ALHungryStudioMediationAdapter";
+    private static final String TAG = "ALHungryExchangeMediationAdapter";
     private HSAdxBanner mHsBanner;
     private HSAdxInterstitial mInterstitial;
     private HSAdxReward mRewardedVideoAd;
@@ -47,10 +45,9 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
     @Override
     public void initialize(MaxAdapterInitializationParameters maxAdapterInitializationParameters, Activity activity, OnCompletionListener onCompletionListener) {
         try {
-            onCompletionListener.onCompletion(InitializationStatus.INITIALIZING, "HS Ads try init");
             if (HellaAdsSdk.hasInitialized()) {
                 log("has init hs-sdk return");
-                onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, "HS Ads already initialized");
+                onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, null);
                 return;
             }
 
@@ -61,21 +58,19 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
                 @Override
                 public void onInitSuccess() {
                     log("Initializing HS Ads success");
-                    onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, "HS Ads initialize success");
+                    onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, null);
                 }
 
                 @Override
                 public void onInitFail(String errorMsg) {
                     log("Initializing HS Ads fail =" + errorMsg);
-                    onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, "HS Ads initialize fail");
+                    onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, errorMsg);
                 }
             });
         } catch (Exception e) {
             log("Initializing HS Ads has encountered an exception." + e.getMessage());
-            onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, "Initializing HS Ads has encountered an exception");
-            return;
+            onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, e.getMessage());
         }
-        log("HS Ads initialized");
     }
 
     @Override
@@ -118,8 +113,9 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         mHsBanner.setAdActionListener(new IAdListener.AdActionListener() {
             @Override
             public void onAdImpressionError(AdError error) {
+                final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
                 log("adapter onAdImpressionError");
-                maxAdViewAdapterListener.onAdViewAdDisplayFailed(MaxAdapterError.AD_DISPLAY_FAILED);
+                maxAdViewAdapterListener.onAdViewAdDisplayFailed(adapterError);
             }
 
             @Override
@@ -192,12 +188,14 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         MaxAdapterError error;
         switch (adError.getErrorCode()) {
             case AdError.ErrorCode.NO_FILL:
+            case AdError.ErrorCode.NO_FILL_INTERVAL:
                 error = MaxAdapterError.NO_FILL;
                 break;
             case AdError.ErrorCode.INTERNAL_ERROR:
                 error = MaxAdapterError.INTERNAL_ERROR;
                 break;
             case AdError.ErrorCode.DIS_CONDITION:
+            case AdError.ErrorCode.EMBEDDED_CROSS_AD_ERROR:
                 error = MaxAdapterError.AD_DISPLAY_FAILED;
                 break;
             case AdError.ErrorCode.INITIALIZE_ERROR:
@@ -210,12 +208,27 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
                 error = MaxAdapterError.TIMEOUT;
                 break;
             case AdError.ErrorCode.NETWORK_ERROR:
+                error = MaxAdapterError.NO_CONNECTION;
+                break;
+            case AdError.ErrorCode.AD_EXPIRED:
+                error = MaxAdapterError.AD_EXPIRED;
+                break;
+            case AdError.ErrorCode.UN_SUPPORT_TYPE:
+                error = MaxAdapterError.INVALID_CONFIGURATION;
+                break;
+            case AdError.ErrorCode.PARAMETER_ERROR:
                 error = MaxAdapterError.BAD_REQUEST;
                 break;
-            default:
+            case AdError.ErrorCode.LOAD_TOO_FREQUENTLY:
+            case AdError.ErrorCode.DL_VIDEO_ERROR:
+            case AdError.ErrorCode.DL_IMAGE_ERROR:
+            case AdError.ErrorCode.CANCEL_ERROR:
                 error = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            default:
+                error = MaxAdapterError.UNSPECIFIED;
         }
-        return error;
+        return new MaxAdapterError(error, adError.getErrorCode(), adError.getErrorMessage());
     }
 
     private class InterstitialAdLoadListener implements IAdListener.AdLoadListener {
@@ -248,7 +261,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
 
         @Override
         public void onAdImpressionError(AdError error) {
-            final MaxAdapterError adapterError = getMaxAdapterError(error);
+            final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
             log("Interstitial failed to show with error: " + adapterError);
             listener.onInterstitialAdDisplayFailed(adapterError);
         }
@@ -298,9 +311,9 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
     @Override
     public void showInterstitialAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxInterstitialAdapterListener maxInterstitialAdapterListener) {
         if (mInterstitial != null && mInterstitial.isAdReady()) {
-            mInterstitial.showWithFrom(ParamExtra.SCENE_WITH_ADAPTER);
+            mInterstitial.showWithFrom("adapter");
         } else {
-            maxInterstitialAdapterListener.onInterstitialAdDisplayFailed(MaxAdapterError.AD_NOT_READY);
+            maxInterstitialAdapterListener.onInterstitialAdDisplayFailed(new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, MaxAdapterError.AD_NOT_READY.getCode(), MaxAdapterError.AD_NOT_READY.getMessage()));
         }
     }
 
@@ -322,9 +335,10 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
     @Override
     public void showRewardedAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxRewardedAdapterListener maxRewardedAdapterListener) {
         if (mRewardedVideoAd != null && mRewardedVideoAd.isAdReady()) {
-            mRewardedVideoAd.showWithFrom(ParamExtra.SCENE_WITH_ADAPTER);
+            configureReward(maxAdapterResponseParameters);
+            mRewardedVideoAd.showWithFrom("adapter");
         } else {
-            maxRewardedAdapterListener.onRewardedAdDisplayFailed(MaxAdapterError.AD_NOT_READY);
+            maxRewardedAdapterListener.onRewardedAdDisplayFailed(new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, MaxAdapterError.AD_NOT_READY.getCode(), MaxAdapterError.AD_NOT_READY.getMessage()));
         }
     }
 
@@ -356,7 +370,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
 
         @Override
         public void onAdImpressionError(AdError error) {
-            final MaxAdapterError adapterError = getMaxAdapterError(error);
+            final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
             log("Rewarded ad failed to show with error: " + adapterError);
             listener.onRewardedAdDisplayFailed(adapterError);
         }
@@ -385,10 +399,10 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
 
         @Override
         public void onAdClosed(boolean hasRewarded, HellaAd hellaAd) {
-            if (hasRewarded) {
+            if (hasRewarded || shouldAlwaysRewardUser()) {
                 final MaxReward reward = getReward();
                 log("Rewarded user with reward: " + reward);
-                listener.onUserRewarded(MaxRewardImpl.createDefault(), hellaAd.getExtraBundle());
+                listener.onUserRewarded(reward);
             }
 
             log("Rewarded ad closed");
