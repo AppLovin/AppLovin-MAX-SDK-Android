@@ -4,7 +4,7 @@ plugins {
 }
 
 // NOTE: Mintegral has 2 separate SDK versions, e.g. x.x.51 for Google Play & x.x.52 for Android Market (in China)
-val libraryVersionName by extra("17.0.31.0")
+val libraryVersionName by extra("17.0.41.0")
 val minAppLovinSdkVersion by extra("13.0.0")
 
 android.defaultConfig.minSdk = 16
