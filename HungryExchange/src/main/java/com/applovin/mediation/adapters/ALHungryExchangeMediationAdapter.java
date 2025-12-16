@@ -180,8 +180,11 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
     private AdSize getBannerAdSize(MaxAdFormat maxAdFormat) {
         if (maxAdFormat == MaxAdFormat.MREC) {
             return AdSize.MEDIUM_RECTANGLE;
+        } else if(maxAdFormat == MaxAdFormat.BANNER) {
+            return AdSize.BANNER;
+        } else {
+            throw new IllegalArgumentException("Unsupported ad format: " + maxAdFormat);
         }
-        return AdSize.BANNER;
     }
 
     private MaxAdapterError getMaxAdapterError(AdError adError) {
