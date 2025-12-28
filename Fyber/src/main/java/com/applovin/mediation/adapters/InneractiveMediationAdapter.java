@@ -709,18 +709,7 @@ public class InneractiveMediationAdapter
 
                 adContent.bindMediaView( new MediaView( getContext( activity ) ) );
 
-                MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                        .setAdFormat( MaxAdFormat.NATIVE )
-                        .setTitle( adContent.getAdTitle() )
-                        .setAdvertiser( adContent.getAdvertiserName() )
-                        .setBody( adContent.getAdDescription() )
-                        .setCallToAction( adContent.getAdCallToAction() )
-                        .setIcon( new MaxNativeAd.MaxNativeAdImage(adContent.getAppIcon()) )
-                        .setMediaView( adContent.getMediaView() )
-                        .setMediaContentAspectRatio( adContent.getMediaAspectRatio() )
-                        .setStarRating( (double) adContent.getRating() );
-
-                MaxNativeAd maxNativeAd = new MaxInneractiveNativeAd( builder );
+                MaxNativeAd maxNativeAd = new MaxInneractiveNativeAd( createNativeAdBuilder( adContent ) );
 
                 maxNativeAdAdapterListener.onNativeAdLoaded( maxNativeAd, null );
             }
@@ -775,6 +764,46 @@ public class InneractiveMediationAdapter
         {
             nativeSpot.loadAd( maxAdapterResponseParameters.getBidResponse() );
         }
+    }
+
+    @NonNull
+    private MaxNativeAd.Builder createNativeAdBuilder( @NonNull NativeAdContent adContent ) {
+        MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                .setAdFormat( MaxAdFormat.NATIVE );
+
+        if ( adContent.getAdTitle() != null ) {
+            builder.setTitle( adContent.getAdTitle() );
+        }
+
+        if ( adContent.getAdvertiserName() != null ) {
+            builder.setAdvertiser( adContent.getAdvertiserName() );
+        }
+
+        if ( adContent.getAdDescription() != null ) {
+            builder.setBody( adContent.getAdDescription() );
+        }
+
+        if ( adContent.getAdCallToAction() != null ) {
+            builder.setCallToAction( adContent.getAdCallToAction() );
+        }
+
+        if ( adContent.getAppIcon() != null ) {
+            builder.setIcon( new MaxNativeAd.MaxNativeAdImage( adContent.getAppIcon()) );
+        }
+
+        if ( adContent.getMediaView() != null ) {
+            builder.setMediaView( adContent.getMediaView() );
+        }
+
+        if ( adContent.getMediaAspectRatio() != null ) {
+            builder.setMediaContentAspectRatio( adContent.getMediaAspectRatio() );
+        }
+
+        if ( adContent.getRating() != null ) {
+            builder.setStarRating( ( double ) adContent.getRating() );
+        }
+
+        return builder;
     }
 
     private class MaxInneractiveNativeAd
