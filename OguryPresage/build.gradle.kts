@@ -3,7 +3,7 @@ plugins {
     id("com.applovin.mobile.publish")
 }
 
-val libraryVersionName by extra("6.2.0.0")
+val libraryVersionName by extra("6.2.1.0")
 
 applovinMobilePublish {
     libraryArtifactId.set("ogury-presage-adapter")
