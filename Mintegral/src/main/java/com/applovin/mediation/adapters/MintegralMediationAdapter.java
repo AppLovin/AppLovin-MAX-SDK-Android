@@ -405,12 +405,28 @@ public class MintegralMediationAdapter
         if ( mbBidInterstitialVideoHandler != null && mbBidInterstitialVideoHandler.isBidReady() )
         {
             log( "Showing bidding interstitial..." );
-            mbBidInterstitialVideoHandler.showFromBid();
+
+            if ( activity == null )
+            {
+                mbBidInterstitialVideoHandler.showFromBid();
+            }
+            else
+            {
+                mbBidInterstitialVideoHandler.showFromBid( activity );
+            }
         }
         else if ( mbInterstitialVideoHandler != null && mbInterstitialVideoHandler.isReady() )
         {
             log( "Showing mediated interstitial..." );
-            mbInterstitialVideoHandler.show();
+
+            if ( activity == null )
+            {
+                mbInterstitialVideoHandler.show();
+            }
+            else
+            {
+                mbInterstitialVideoHandler.show( activity );
+            }
         }
         else
         {
@@ -564,12 +580,28 @@ public class MintegralMediationAdapter
         if ( mbBidRewardVideoHandler != null && mbBidRewardVideoHandler.isBidReady() )
         {
             log( "Showing bidding rewarded ad..." );
-            mbBidRewardVideoHandler.showFromBid( rewardId, userId );
+
+            if ( activity == null )
+            {
+                mbBidRewardVideoHandler.showFromBid( rewardId, userId );
+            }
+            else
+            {
+                mbBidRewardVideoHandler.showFromBid( activity, rewardId, userId );
+            }
         }
         else if ( mbRewardVideoHandler != null && mbRewardVideoHandler.isReady() )
         {
             log( "Showing mediated rewarded ad..." );
-            mbRewardVideoHandler.show( rewardId, userId );
+
+            if ( activity == null )
+            {
+                mbRewardVideoHandler.show( rewardId, userId );
+            }
+            else
+            {
+                mbRewardVideoHandler.show( activity, rewardId, userId );
+            }
         }
         else
         {
