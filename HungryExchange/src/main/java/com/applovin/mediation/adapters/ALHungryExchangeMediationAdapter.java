@@ -1,7 +1,9 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -17,6 +19,7 @@ import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
+import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.sdk.AppLovinSdk;
@@ -30,6 +33,7 @@ import com.hs.adx.api.HellaAd;
 import com.hs.adx.api.HellaAdsSdk;
 import com.hs.adx.bid.HSBidTokenProvider;
 import com.hs.adx.utils.AppUtils;
+import com.hs.adx.utils.ScreenUtils;
 
 public class ALHungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
@@ -94,8 +98,9 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         String mPlacementId = maxAdapterResponseParameters.getThirdPartyAdPlacementId();
         String bidResponse = maxAdapterResponseParameters.getBidResponse();
         log("HsBanner Ads load mPlacementId = " + mPlacementId+ ", bidResponse=" + bidResponse);
+        boolean isAdaptiveAdViewEnabled = maxAdapterResponseParameters.getServerParameters().getBoolean( "adaptive_banner", false );
         mHsBanner = new HSAdxBanner(mPlacementId);
-        mHsBanner.setAdSize(getBannerAdSize(maxAdFormat));
+        mHsBanner.setAdSize(getBannerAdSize(maxAdFormat, isAdaptiveAdViewEnabled, maxAdapterResponseParameters));
         mHsBanner.setAdLoadListener(new IAdListener.AdLoadListener() {
             @Override
             public void onAdLoaded(HellaAd hellaAd) {
@@ -146,7 +151,11 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
                 maxAdViewAdapterListener.onAdViewAdHidden(hellaAd.getExtraBundle());
             }
         });
-        mHsBanner.load(bidResponse);
+        if (TextUtils.isEmpty(bidResponse)) {
+            mHsBanner.load();
+        } else {
+            mHsBanner.load(bidResponse);
+        }
     }
 
     @Override
@@ -156,7 +165,8 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
 
     @Override
     public String getAdapterVersion() {
-        return BuildConfig.VERSION_NAME;
+//        return BuildConfig.VERSION_NAME;
+        return AppUtils.getSdkVerName() + ".1";
     }
 
     @Override
@@ -177,14 +187,49 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         }
     }
 
-    private AdSize getBannerAdSize(MaxAdFormat maxAdFormat) {
-        if (maxAdFormat == MaxAdFormat.MREC) {
+    private AdSize getBannerAdSize(MaxAdFormat maxAdFormat, boolean isAdaptiveBannerEnable, MaxAdapterResponseParameters responseParameters) {
+        if (isAdaptiveBannerEnable) {
+            return getAdaptiveAdSize(responseParameters);
+        } else if (maxAdFormat == MaxAdFormat.MREC) {
             return AdSize.MEDIUM_RECTANGLE;
-        } else if(maxAdFormat == MaxAdFormat.BANNER) {
+        } else if (maxAdFormat == MaxAdFormat.BANNER) {
             return AdSize.BANNER;
         } else {
             throw new IllegalArgumentException("Unsupported ad format: " + maxAdFormat);
         }
+    }
+
+    private AdSize getAdaptiveAdSize(MaxAdapterParameters responseParam) {
+        Context context = ContextUtils.getContext();
+        int adaptiveAdWidth = getAdaptiveAdViewWidth(responseParam, context);
+        int anchoredHeight = getAdaptiveHeight(context, adaptiveAdWidth);
+        return new AdSize(adaptiveAdWidth, anchoredHeight);
+    }
+
+    private int getAdaptiveHeight(Context context, int adaptiveAdWidth) {
+        //Which method should we use to get the Adaptive banner height: 1.Max api  2.method from AdMob/Pangle Network
+        int adaptiveHeight;
+        //1. using Max api to fetch height
+        adaptiveHeight = MaxAdFormat.BANNER.getAdaptiveSize(adaptiveAdWidth, context).getHeight();
+        // return adaptiveHeight;
+
+        //2. using a third network method from AdMob/Pangle
+        int maxAdaptiveBannerHeight = Math.min(90, Math.round((float) ScreenUtils.getScreenHeight(context) * 0.15F));
+        int height;
+        if (adaptiveAdWidth > 655) {
+            height = Math.round((float)adaptiveAdWidth / 728.0F * 90.0F);
+        } else if (adaptiveAdWidth > 632) {
+            height = 81;
+        } else if (adaptiveAdWidth > 526) {
+            height = Math.round((float)adaptiveAdWidth / 468.0F * 60.0F);
+        } else if (adaptiveAdWidth > 432) {
+            height = 68;
+        } else {
+            height = Math.round((float)adaptiveAdWidth / 320.0F * 50.0F);
+        }
+
+        adaptiveHeight = Math.max(Math.min(height, maxAdaptiveBannerHeight), 50);
+        return adaptiveHeight;
     }
 
     private MaxAdapterError getMaxAdapterError(AdError adError) {
@@ -308,7 +353,11 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             mInterstitial.setAdLoadListener(new InterstitialAdLoadListener(maxInterstitialAdapterListener));
             mInterstitial.setAdActionListener(new InterstitialAdActionListener(maxInterstitialAdapterListener));
         }
-        mInterstitial.load(bidResponse);
+        if (TextUtils.isEmpty(bidResponse)) {
+            mInterstitial.load();
+        } else {
+            mInterstitial.load(bidResponse);
+        }
     }
 
     @Override
@@ -332,7 +381,11 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             mRewardedVideoAd.setAdActionListener(new RewardAdActionListener(maxRewardedAdapterListener));
         }
 
-        mRewardedVideoAd.load(bidResponse);
+        if (TextUtils.isEmpty(bidResponse)) {
+            mRewardedVideoAd.load();
+        } else {
+            mRewardedVideoAd.load(bidResponse);
+        }
     }
 
     @Override
