@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.0.0
+* Certified with MobileFuse SDK 1.10.0.
+
 ## 1.9.3.0
 * Certified with MobileFuse SDK 1.9.3.
 * Updated ad display failed error code.
