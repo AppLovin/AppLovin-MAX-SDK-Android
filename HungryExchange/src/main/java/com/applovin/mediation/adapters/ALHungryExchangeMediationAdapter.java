@@ -105,7 +105,13 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             @Override
             public void onAdLoaded(HellaAd hellaAd) {
                 log("adapter onAdLoaded");
-                maxAdViewAdapterListener.onAdViewAdLoaded(mHsBanner.getAdView(), hellaAd.getExtraBundle());
+                Bundle extraInfo = hellaAd.getExtraBundle();
+                if (extraInfo == null) {
+                    extraInfo = new Bundle();
+                }
+                extraInfo.putInt("ad_width", mHsBanner.getAdView().getWidth());
+                extraInfo.putInt("ad_height", mHsBanner.getAdView().getHeight());
+                maxAdViewAdapterListener.onAdViewAdLoaded(mHsBanner.getAdView(), extraInfo);
             }
 
             @Override
@@ -151,11 +157,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
                 maxAdViewAdapterListener.onAdViewAdHidden(hellaAd.getExtraBundle());
             }
         });
-        if (TextUtils.isEmpty(bidResponse)) {
-            mHsBanner.load();
-        } else {
-            mHsBanner.load(bidResponse);
-        }
+        mHsBanner.load(bidResponse);
     }
 
     @Override
@@ -207,29 +209,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
     }
 
     private int getAdaptiveHeight(Context context, int adaptiveAdWidth) {
-        //Which method should we use to get the Adaptive banner height: 1.Max api  2.method from AdMob/Pangle Network
-        int adaptiveHeight;
-        //1. using Max api to fetch height
-        adaptiveHeight = MaxAdFormat.BANNER.getAdaptiveSize(adaptiveAdWidth, context).getHeight();
-        // return adaptiveHeight;
-
-        //2. using a third network method from AdMob/Pangle
-        int maxAdaptiveBannerHeight = Math.min(90, Math.round((float) ScreenUtils.getScreenHeight(context) * 0.15F));
-        int height;
-        if (adaptiveAdWidth > 655) {
-            height = Math.round((float)adaptiveAdWidth / 728.0F * 90.0F);
-        } else if (adaptiveAdWidth > 632) {
-            height = 81;
-        } else if (adaptiveAdWidth > 526) {
-            height = Math.round((float)adaptiveAdWidth / 468.0F * 60.0F);
-        } else if (adaptiveAdWidth > 432) {
-            height = 68;
-        } else {
-            height = Math.round((float)adaptiveAdWidth / 320.0F * 50.0F);
-        }
-
-        adaptiveHeight = Math.max(Math.min(height, maxAdaptiveBannerHeight), 50);
-        return adaptiveHeight;
+        return MaxAdFormat.BANNER.getAdaptiveSize(adaptiveAdWidth, context).getHeight();
     }
 
     private MaxAdapterError getMaxAdapterError(AdError adError) {
@@ -353,11 +333,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             mInterstitial.setAdLoadListener(new InterstitialAdLoadListener(maxInterstitialAdapterListener));
             mInterstitial.setAdActionListener(new InterstitialAdActionListener(maxInterstitialAdapterListener));
         }
-        if (TextUtils.isEmpty(bidResponse)) {
-            mInterstitial.load();
-        } else {
-            mInterstitial.load(bidResponse);
-        }
+        mInterstitial.load(bidResponse);
     }
 
     @Override
@@ -380,12 +356,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             mRewardedVideoAd.setAdLoadListener(new RewardAdLoadListener(maxRewardedAdapterListener));
             mRewardedVideoAd.setAdActionListener(new RewardAdActionListener(maxRewardedAdapterListener));
         }
-
-        if (TextUtils.isEmpty(bidResponse)) {
-            mRewardedVideoAd.load();
-        } else {
-            mRewardedVideoAd.load(bidResponse);
-        }
+        mRewardedVideoAd.load(bidResponse);
     }
 
     @Override
