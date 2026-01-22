@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.8.5.9.0
+* Certified with ByteDance SDK 7.8.5.9.
+
 ## 7.8.5.8.0
 * Certified with ByteDance SDK 7.8.5.8.
 
