@@ -3,7 +3,6 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -33,7 +32,6 @@ import com.hs.adx.api.HellaAd;
 import com.hs.adx.api.HellaAdsSdk;
 import com.hs.adx.bid.HSBidTokenProvider;
 import com.hs.adx.utils.AppUtils;
-import com.hs.adx.utils.ScreenUtils;
 
 public class ALHungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
@@ -58,7 +56,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
             final Bundle serverParameters = maxAdapterInitializationParameters.getServerParameters();
             final String appId = serverParameters.getString("app_id");
             log("Initializing appId = " + appId);
-            HellaAdsSdk.init(activity.getApplicationContext(), appId, new HellaAdsSdk.OnInitListener() {
+            HellaAdsSdk.init(getContext(activity), appId, new HellaAdsSdk.OnInitListener() {
                 @Override
                 public void onInitSuccess() {
                     log("Initializing HS Ads success");
@@ -100,7 +98,7 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         log("HsBanner Ads load mPlacementId = " + mPlacementId+ ", bidResponse=" + bidResponse);
         boolean isAdaptiveAdViewEnabled = maxAdapterResponseParameters.getServerParameters().getBoolean( "adaptive_banner", false );
         mHsBanner = new HSAdxBanner(mPlacementId);
-        mHsBanner.setAdSize(getBannerAdSize(maxAdFormat, isAdaptiveAdViewEnabled, maxAdapterResponseParameters));
+        mHsBanner.setAdSize(getBannerAdSize(maxAdFormat, isAdaptiveAdViewEnabled, maxAdapterResponseParameters, getContext(activity)));
         mHsBanner.setAdLoadListener(new IAdListener.AdLoadListener() {
             @Override
             public void onAdLoaded(HellaAd hellaAd) {
@@ -109,8 +107,10 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
                 if (extraInfo == null) {
                     extraInfo = new Bundle();
                 }
-                extraInfo.putInt("ad_width", mHsBanner.getAdView().getWidth());
-                extraInfo.putInt("ad_height", mHsBanner.getAdView().getHeight());
+                if (mHsBanner.getAdView() != null) {
+                    extraInfo.putInt("ad_width", mHsBanner.getAdView().getWidth());
+                    extraInfo.putInt("ad_height", mHsBanner.getAdView().getHeight());
+                }
                 maxAdViewAdapterListener.onAdViewAdLoaded(mHsBanner.getAdView(), extraInfo);
             }
 
@@ -189,9 +189,9 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         }
     }
 
-    private AdSize getBannerAdSize(MaxAdFormat maxAdFormat, boolean isAdaptiveBannerEnable, MaxAdapterResponseParameters responseParameters) {
-        if (isAdaptiveBannerEnable) {
-            return getAdaptiveAdSize(responseParameters);
+    private AdSize getBannerAdSize(MaxAdFormat maxAdFormat, boolean isAdaptiveBannerEnable, MaxAdapterResponseParameters responseParameters, Context context) {
+        if (isAdaptiveBannerEnable && isAdaptiveAdViewFormat(maxAdFormat, responseParameters)) {
+            return getAdaptiveAdSize(responseParameters, context);
         } else if (maxAdFormat == MaxAdFormat.MREC) {
             return AdSize.MEDIUM_RECTANGLE;
         } else if (maxAdFormat == MaxAdFormat.BANNER) {
@@ -201,8 +201,11 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         }
     }
 
-    private AdSize getAdaptiveAdSize(MaxAdapterParameters responseParam) {
-        Context context = ContextUtils.getContext();
+    private Context getContext(Activity activity) {
+        return (activity != null) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    private AdSize getAdaptiveAdSize(MaxAdapterParameters responseParam, Context context) {
         int adaptiveAdWidth = getAdaptiveAdViewWidth(responseParam, context);
         int anchoredHeight = getAdaptiveHeight(context, adaptiveAdWidth);
         return new AdSize(adaptiveAdWidth, anchoredHeight);
@@ -437,3 +440,4 @@ public class ALHungryExchangeMediationAdapter extends MediationAdapterBase imple
         }
     }
 }
+
