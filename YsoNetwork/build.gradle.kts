@@ -1,13 +1,13 @@
 plugins {
     id("adapter-config")
+    id("com.applovin.mobile.publish")
 }
 
-afterEvaluate {
-    apply(plugin = "adapter-publish")
-}
+val libraryVersionName by extra("1.3.3.0")
 
-val libraryVersionName by extra("1.2.7.1")
-val libraryArtifactId by extra("yso-network-adapter")
+applovinMobilePublish {
+    libraryArtifactId.set("yso-network-adapter")
+}
 
 android.defaultConfig.minSdk = 21
 

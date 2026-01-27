@@ -20,7 +20,6 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.ysonetwork.BuildConfig;
 import com.applovin.sdk.AppLovinSdk;
-import com.ysocorp.ysonetwork.YNManager;
 import com.ysocorp.ysonetwork.YsoNetwork;
 import com.ysocorp.ysonetwork.enums.YNEnumActionError;
 
@@ -56,7 +55,7 @@ public class YsoNetworkMediationAdapter
             {
                 Application application = (Application) getApplicationContext();
                 YsoNetwork.initialize( application );
-                if ( YsoNetwork.isInitialize() )
+                if ( YsoNetwork.isInitialized() )
                 {
                     log( "YSO Network successfully initialized" );
                     status = InitializationStatus.INITIALIZED_SUCCESS;
@@ -210,7 +209,7 @@ public class YsoNetworkMediationAdapter
     //region Ad Listeners
 
     private class InterstitialAdListener
-            implements YNManager.ActionLoad, YNManager.ActionDisplay
+            implements YsoNetwork.ActionLoad, YsoNetwork.ActionDisplay
     {
         private final String                         key;
         private final MaxInterstitialAdapterListener listener;
@@ -266,7 +265,7 @@ public class YsoNetworkMediationAdapter
     }
 
     private class RewardedAdListener
-            implements YNManager.ActionLoad, YNManager.ActionDisplay
+            implements YsoNetwork.ActionLoad, YsoNetwork.ActionDisplay
     {
         private final String                     key;
         private final MaxRewardedAdapterListener listener;
@@ -329,7 +328,7 @@ public class YsoNetworkMediationAdapter
     }
 
     private class AdViewLoadListener
-            implements YNManager.ActionLoad
+            implements YsoNetwork.ActionLoad
     {
         private final String                   key;
         private final MaxAdViewAdapterListener listener;
@@ -361,7 +360,7 @@ public class YsoNetworkMediationAdapter
     }
 
     private class AdViewShowListener
-            implements YNManager.ActionDisplay
+            implements YsoNetwork.ActionDisplay
     {
         private final String                   key;
         private final MaxAdViewAdapterListener listener;
