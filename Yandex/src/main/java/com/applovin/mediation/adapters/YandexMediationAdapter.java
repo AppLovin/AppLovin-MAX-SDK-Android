@@ -69,6 +69,10 @@ import com.yandex.mobile.ads.rewarded.RewardedAd;
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
+import com.yandex.mobile.ads.appopenad.AppOpenAd;
+import com.yandex.mobile.ads.appopenad.AppOpenAdEventListener;
+import com.yandex.mobile.ads.appopenad.AppOpenAdLoadListener;
+import com.yandex.mobile.ads.appopenad.AppOpenAdLoader;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +87,7 @@ import androidx.annotation.Nullable;
  */
 public class YandexMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxAppOpenAdapter /* MaxNativeAdAdapter */
 {
     private static final int TITLE_LABEL_TAG          = 1;
     private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
@@ -108,12 +112,14 @@ public class YandexMediationAdapter
 
     private InterstitialAd interstitialAd;
     private RewardedAd     rewardedAd;
+    private AppOpenAd      appOpenAd;
     private BannerAdView   adView;
     private NativeAd       nativeAd;
     private NativeAdView   nativeAdView;
 
     private InterstitialAdListener interstitialAdListener;
     private RewardedAdListener     rewardedAdListener;
+    private AppOpenAdListener      appOpenAdListener;
 
     // Explicit default constructor declaration
     public YandexMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -155,6 +161,13 @@ public class YandexMediationAdapter
             rewardedAd.setAdEventListener( null );
             rewardedAdListener = null;
             rewardedAd = null;
+        }
+
+        if ( appOpenAd != null )
+        {
+            appOpenAd.setAdEventListener( null );
+            appOpenAdListener = null;
+            appOpenAd = null;
         }
 
         if ( adView != null )
@@ -413,6 +426,58 @@ public class YandexMediationAdapter
         };
 
         loadAdOnUiThread( loadNativeAdRunnable );
+    }
+
+    //endregion
+
+    //region MaxAppOpenAdapter
+
+    @Override
+    public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        final String placementId = parameters.getThirdPartyAdPlacementId();
+        log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + "app open ad for placement: " + placementId + "..." );
+
+        updatePrivacySettings( parameters );
+
+        Runnable loadAppOpenAdRunnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                AppOpenAdLoader appOpenAdLoader = new AppOpenAdLoader( getContext( activity ) );
+                appOpenAdListener = new AppOpenAdListener( parameters, listener );
+                appOpenAdLoader.setAdLoadListener( appOpenAdListener );
+                appOpenAdLoader.loadAd( createAdRequestConfiguration( placementId, parameters ) );
+            }
+        };
+
+        loadAdOnUiThread( loadAppOpenAdRunnable );
+    }
+
+    @Override
+    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    {
+        log( "Showing app open ad..." );
+
+        if ( appOpenAd == null )
+        {
+            log( "App open ad failed to show - ad not ready" );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
+            return;
+        }
+
+        if ( activity == null )
+        {
+            log( "App open ad display failed: Activity is null" );
+            listener.onAppOpenAdDisplayFailed( MaxAdapterError.MISSING_ACTIVITY );
+            return;
+        }
+
+        appOpenAd.setAdEventListener( appOpenAdListener );
+        appOpenAd.show( activity );
     }
 
     //endregion
@@ -773,6 +838,80 @@ public class YandexMediationAdapter
             }
 
             listener.onRewardedAdHidden();
+        }
+    }
+
+    private class AppOpenAdListener
+            implements AppOpenAdLoadListener, AppOpenAdEventListener
+    {
+        private final MaxAdapterResponseParameters parameters;
+        private final MaxAppOpenAdapterListener    listener;
+
+        AppOpenAdListener(final MaxAdapterResponseParameters parameters, final MaxAppOpenAdapterListener listener)
+        {
+            this.parameters = parameters;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull final AppOpenAd appOpenAd)
+        {
+            log( "App open ad loaded" );
+            YandexMediationAdapter.this.appOpenAd = appOpenAd;
+            listener.onAppOpenAdLoaded();
+        }
+
+        @Override
+        public void onAdFailedToLoad(@NonNull final AdRequestError adRequestError)
+        {
+            log( "App open ad failed to load with error code " + adRequestError.getCode() + " and description: " + adRequestError.getDescription() );
+
+            MaxAdapterError adapterError = toMaxError( adRequestError );
+            listener.onAppOpenAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdShown()
+        {
+            log( "App open ad shown" );
+
+            // Fire callbacks here for test mode ads since onImpression() doesn't get called for them
+            if ( parameters.isTesting() )
+            {
+                listener.onAppOpenAdDisplayed();
+            }
+        }
+
+        // Note: This method is generally called with a 3 second delay after the ad has been displayed.
+        //       This method is not called for test mode ads.
+        @Override
+        public void onAdImpression(@Nullable final ImpressionData impressionData)
+        {
+            log( "App open ad impression tracked" );
+            listener.onAppOpenAdDisplayed();
+        }
+
+        @Override
+        public void onAdFailedToShow(@NonNull final AdError adError)
+        {
+            log( "App open ad failed to show with error description: " + adError.getDescription() );
+            listener.onAppOpenAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                    0,
+                    adError.getDescription() ) );
+        }
+
+        @Override
+        public void onAdClicked()
+        {
+            log( "App open ad clicked" );
+            listener.onAppOpenAdClicked();
+        }
+
+        @Override
+        public void onAdDismissed()
+        {
+            log( "App open ad dismissed" );
+            listener.onAppOpenAdHidden();
         }
     }
 
