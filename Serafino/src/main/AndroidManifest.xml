@@ -1,7 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.applovin.mediation.adapters.serafino">
-
-    <application />
-
-    <!--Note: We don't need to add the permissions and activities for this adapter if Serafino SDK's AAR declares them.-->
-</manifest>
