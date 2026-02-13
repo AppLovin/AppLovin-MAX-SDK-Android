@@ -49,6 +49,7 @@ import com.vungle.ads.VungleAdSize;
 import com.vungle.ads.VungleAds;
 import com.vungle.ads.VungleBannerView;
 import com.vungle.ads.VungleError;
+import com.vungle.ads.VungleMediationLogger;
 import com.vungle.ads.VunglePrivacySettings;
 import com.vungle.ads.VungleWrapperFramework;
 import com.vungle.ads.internal.protos.Sdk.SDKError.Reason;
@@ -428,7 +429,14 @@ public class VungleMediationAdapter
 
     private boolean isAdaptiveAdViewEnabled(final MaxAdapterResponseParameters parameters)
     {
-        if ( !parameters.getServerParameters().getBoolean( "adaptive_banner", false ) ) return false;
+        boolean isAdaptiveServerParams = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+        boolean isAdaptiveLocalParams = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+
+        if ( !isAdaptiveServerParams && !isAdaptiveLocalParams)
+        {
+            return false;
+        }
 
         if ( VungleAds.isInline( parameters.getThirdPartyAdPlacementId() ) )
         {
@@ -436,6 +444,18 @@ public class VungleMediationAdapter
         }
         else
         {
+            // This is the case in which AdUnit is set to "adaptive", but Placement is not inline.
+            String placementId = parameters.getThirdPartyAdPlacementId();
+            Object adaptiveWidthObj = parameters.getLocalExtraParameters().get( "adaptive_banner_width" );
+            Object adaptiveMaxHeightObj = parameters.getLocalExtraParameters().get( "inline_adaptive_banner_max_height" );
+            String adaptiveWidth = ( adaptiveWidthObj != null ) ? String.valueOf( adaptiveWidthObj ) : "unknown";
+            String adaptiveMaxHeight = ( adaptiveMaxHeightObj != null ) ? String.valueOf( adaptiveMaxHeightObj ) : "unknown";
+            String adaptiveSizeMessage = String.format( "AdaptivePlacementMismatch:pid-%s w-%s maxh-%s",
+                                                        placementId != null ? placementId : "unknown",
+                                                        adaptiveWidth,
+                                                        adaptiveMaxHeight );
+            VungleMediationLogger.logError( null, adaptiveSizeMessage );
+
             userError( "Please use a Vungle inline placement ID in order to use Vungle adaptive ads" );
             return false;
         }
