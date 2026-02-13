@@ -36,7 +36,6 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.five_corp.ad.AdLoader;
 import com.five_corp.ad.AdSlotConfig;
 import com.five_corp.ad.BidData;
-import com.five_corp.ad.FiveAd;
 import com.five_corp.ad.FiveAdConfig;
 import com.five_corp.ad.FiveAdCustomLayout;
 import com.five_corp.ad.FiveAdCustomLayoutEventListener;
@@ -74,7 +73,7 @@ public class LineMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return FiveAd.getSdkSemanticVersion();
+        return AdLoader.getSemanticVersion();
     }
 
     @Override
