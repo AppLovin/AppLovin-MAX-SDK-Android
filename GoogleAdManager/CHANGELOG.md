@@ -1,5 +1,8 @@
 # Changelog
 
+## 24.9.0.1
+* Enable publishers to pass arbitrary values to `AdManagerAdRequest`.
+
 ## 24.9.0.0
 * Certified with GoogleAdManager SDK 24.9.0.
 

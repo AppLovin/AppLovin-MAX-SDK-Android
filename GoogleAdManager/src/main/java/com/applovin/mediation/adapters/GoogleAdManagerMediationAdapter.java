@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
+import com.applovin.impl.sdk.utils.CollectionUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -608,6 +609,24 @@ public class GoogleAdManagerMediationAdapter
 
         Bundle networkExtras = new Bundle();
 
+        Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
+
+        // Enable publishers to pass arbitrary values to `AdManagerAdRequest`
+        Object googleExtraParamsObject = localExtraParameters.get( "google_extra_params" );
+        if ( googleExtraParamsObject instanceof Map )
+        {
+            try
+            {
+                Map<String, ?> googleExtraParamsMap = (Map<String, ?>) googleExtraParamsObject;
+                log( "Adding google_extra_params to extra parameters: " + googleExtraParamsMap );
+                networkExtras.putAll( CollectionUtils.toBundle( googleExtraParamsMap ) );
+            }
+            catch ( Throwable th )
+            {
+                e( "google_extra_params must be Map<String, ?>.", th );
+            }
+        }
+
         // Use event id as AdMob's placement request id
         String eventId = BundleUtils.getString( "event_id", serverParameters );
         if ( AppLovinSdkUtils.isValidString( eventId ) )
@@ -638,8 +657,6 @@ public class GoogleAdManagerMediationAdapter
                     .remove( "gad_rdp" )
                     .apply();
         }
-
-        Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
 
         Object maxContentRating = localExtraParameters.get( "google_max_ad_content_rating" );
         if ( maxContentRating instanceof String )
