@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.2.2.0
+* Certified with OguryPresage SDK 6.2.2.
+
 ## 6.2.1.0
 * Certified with OguryPresage SDK 6.2.1.
 
