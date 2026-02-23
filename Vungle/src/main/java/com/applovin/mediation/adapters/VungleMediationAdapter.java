@@ -385,20 +385,7 @@ public class VungleMediationAdapter
         adViewAd = new VungleBannerView( context, placementId, adSize );
         adViewAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
         adViewAd.setAdapterAdFormat("MaxAdViewAdapter");
-        if (isAdaptiveAdViewForBannerPlacement(parameters)) {
-            Object adaptiveTypeObj = parameters.getLocalExtraParameters().get("adaptive_banner_type");
-            String adaptiveType = (adaptiveTypeObj != null) ? String.valueOf(adaptiveTypeObj) : "adaptive";
-            adViewAd.setAdapterAdFormat("MaxAdViewAdapter-" + adaptiveType);
-            // This is the case in which AdUnit is set to "adaptive", but Placement is not inline.
-            Object adaptiveWidthObj = parameters.getLocalExtraParameters().get("adaptive_banner_width");
-            Object adaptiveHeightObj = parameters.getLocalExtraParameters().get("adaptive_banner_height");
-            String adaptiveWidth = (adaptiveWidthObj != null) ? String.valueOf(adaptiveWidthObj) : "unknown";
-            String adaptiveHeight = (adaptiveHeightObj != null) ? String.valueOf(adaptiveHeightObj) : "unknown";
-            String adaptiveSizeMessage = String.format("AdaptivePlacementMismatch:w-%s|h-%s",
-                    adaptiveWidth,
-                    adaptiveHeight);
-            VungleMediationLogger.logError(adViewAd, adaptiveSizeMessage);
-        }
+        logAdaptiveAdViewForBannerPlacement( parameters, adViewAd );
 
         adViewAd.load( bidResponse );
     }
@@ -447,7 +434,7 @@ public class VungleMediationAdapter
         Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
         boolean isAdaptiveLocalParams = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
 
-        if ( !isAdaptiveServerParams && !isAdaptiveLocalParams)
+        if ( !isAdaptiveServerParams && !isAdaptiveLocalParams )
         {
             return false;
         }
@@ -463,16 +450,26 @@ public class VungleMediationAdapter
         }
     }
 
-    private boolean isAdaptiveAdViewForBannerPlacement(final MaxAdapterResponseParameters parameters) {
-        boolean isAdaptiveServerParams = parameters.getServerParameters().getBoolean("adaptive_banner", false);
-        Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get("adaptive_banner");
-        boolean isAdaptiveLocalParams = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase((String) isAdaptiveBannerObj);
-        boolean isInlinePlacement = VungleAds.isInline(parameters.getThirdPartyAdPlacementId());
+    private void logAdaptiveAdViewForBannerPlacement(final MaxAdapterResponseParameters parameters, final VungleBannerView adViewAd)
+    {
+        boolean isAdaptiveServerParams = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+        boolean isAdaptiveLocalParams = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+        boolean isInlinePlacement = VungleAds.isInline( parameters.getThirdPartyAdPlacementId() );
 
-        if ((isAdaptiveServerParams || isAdaptiveLocalParams) && !isInlinePlacement) {
-            return true;
+        if ( ( isAdaptiveServerParams || isAdaptiveLocalParams ) && !isInlinePlacement )
+        {
+            Object adaptiveTypeObj = parameters.getLocalExtraParameters().get( "adaptive_banner_type" );
+            String adaptiveType = ( adaptiveTypeObj != null ) ? String.valueOf( adaptiveTypeObj ) : "adaptive";
+            adViewAd.setAdapterAdFormat( "MaxAdViewAdapter-" + adaptiveType );
+
+            Object adaptiveWidthObj = parameters.getLocalExtraParameters().get( "adaptive_banner_width" );
+            Object adaptiveMaxHeightObj = parameters.getLocalExtraParameters().get( "inline_adaptive_banner_max_height" );
+            String adaptiveWidth = ( adaptiveWidthObj != null ) ? String.valueOf( adaptiveWidthObj ) : "unknown";
+            String adaptiveMaxHeight = ( adaptiveMaxHeightObj != null ) ? String.valueOf( adaptiveMaxHeightObj ) : "unknown";
+            String adaptiveSizeMessage = String.format( "AdaptiveBannerSizeMismatch:w-%s|maxh-%s", adaptiveWidth, adaptiveMaxHeight );
+            VungleMediationLogger.logError( adViewAd, adaptiveSizeMessage );
         }
-        return false;
     }
 
     private void updateUserPrivacySettings(final MaxAdapterParameters parameters)
