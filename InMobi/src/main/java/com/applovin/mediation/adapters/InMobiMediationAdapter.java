@@ -269,12 +269,12 @@ public class InMobiMediationAdapter
             final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
             int width;
             int height;
-            if ( isAdaptiveBanner && isAdaptiveAdFormat( adFormat, parameters ) )
+            if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
-                width = getAdaptiveBannerWidth( parameters, context );
+                width = getAdaptiveAdViewWidth( parameters, context );
                 height = calculateAdaptiveAdViewHeight( adFormat, parameters, width, context );
 
-                log( "Using adaptive banner size: " + width + "dp x " + height + "dp; inline: " + isInlineAdaptiveBanner( parameters ) );
+                log( "Using adaptive banner size: " + width + "dp x " + height + "dp; inline: " + isInlineAdaptiveAdView( parameters ) );
             }
             else if ( adFormat == MaxAdFormat.BANNER )
             {
@@ -506,10 +506,10 @@ public class InMobiMediationAdapter
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
 
-        final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false ) || isAdaptiveBannerRequested( parameters );
+        final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
         final MaxAdFormat adFormat = parameters.getAdFormat();
         final Context context = getContext( activity );
-        if ( adFormat.isAdViewAd() && isAdaptiveBanner && isAdaptiveAdFormat( adFormat, parameters ))
+        if ( adFormat.isAdViewAd() && isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
@@ -521,81 +521,10 @@ public class InMobiMediationAdapter
                                               final Context context,
                                               final Map<String, String> extras)
     {
-        final int adaptiveWidthDp = getAdaptiveBannerWidth( parameters, context );
+        final int adaptiveWidthDp = getAdaptiveAdViewWidth( parameters, context );
         final int adaptiveHeightDp = calculateAdaptiveAdViewHeight( adFormat, parameters, adaptiveWidthDp, context );
         extras.put( "adWidth", String.valueOf( adaptiveWidthDp ) );
         extras.put( "adHeight", String.valueOf( adaptiveHeightDp ) );
-    }
-
-    private boolean isAdaptiveBannerRequested(final MaxAdapterParameters parameters)
-    {
-        Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
-        if ( isAdaptiveBannerObj instanceof Boolean )
-        {
-            return (Boolean) isAdaptiveBannerObj;
-        }
-        if ( isAdaptiveBannerObj instanceof String )
-        {
-            return "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
-        }
-
-        return false;
-    }
-
-    private boolean isInlineAdaptiveBanner(final MaxAdapterParameters parameters)
-    {
-        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-        final Object adaptiveBannerType = localExtraParameters.get( "adaptive_banner_type" );
-        return ( adaptiveBannerType instanceof String ) && ("inline".equalsIgnoreCase( (String) adaptiveBannerType )) ;
-    }
-
-    private boolean isAdaptiveAdFormat(final MaxAdFormat adFormat, final MaxAdapterParameters parameters)
-    {
-        final boolean isInlineAdaptiveMRec = adFormat == MaxAdFormat.MREC && isInlineAdaptiveBanner( parameters );
-        return isInlineAdaptiveMRec || adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER;
-    }
-
-    private int getInlineAdaptiveBannerMaxHeight(final MaxAdapterParameters parameters)
-    {
-        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-        final Object inlineMaxHeight = localExtraParameters.get( "inline_adaptive_banner_max_height" );
-        return ( inlineMaxHeight instanceof Integer ) ? (int) inlineMaxHeight : 0;
-    }
-
-    private int getAnchoredAdaptiveBannerHeight(final MaxAdFormat adFormat, final int WidthDp, final Context context)
-    {
-        if (adFormat == MaxAdFormat.BANNER)
-        {
-            return MaxAdFormat.BANNER.getAdaptiveSize(WidthDp, context).getHeight();
-        }
-        else if (adFormat == MaxAdFormat.MREC)
-        {
-            return MaxAdFormat.MREC.getAdaptiveSize(WidthDp, context).getHeight();
-        }
-        else if (adFormat == MaxAdFormat.LEADER)
-        {
-            return MaxAdFormat.LEADER.getAdaptiveSize(WidthDp, context).getHeight();
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported ad format for adaptive banner: " + adFormat);
-        }
-    }
-
-    private int getAdaptiveBannerWidth(final MaxAdapterParameters parameters, final Context context)
-    {
-        final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
-        Object widthObj = localExtraParameters.get( "adaptive_banner_width" );
-        if ( widthObj instanceof Integer )
-        {
-            return (int) widthObj;
-        }
-        else if ( widthObj != null )
-        {
-            e( "Expected parameter \"adaptive_banner_width\" to be of type Integer, received: " + widthObj.getClass() );
-        }
-
-        int deviceWidthPx = context.getResources().getDisplayMetrics().widthPixels;
-        return AppLovinSdkUtils.pxToDp( context, deviceWidthPx );
     }
 
     @Nullable
@@ -633,15 +562,15 @@ public class InMobiMediationAdapter
                                               final int adWidthDp,
                                               final Context context)
     {
-        //Inline adaptive banner flow
-        if ( isInlineAdaptiveBanner( parameters ) )
+        //Inline adaptive flow
+        if ( isInlineAdaptiveAdView( parameters ) )
         {
-            final int inlineMaxHeight = getInlineAdaptiveBannerMaxHeight( parameters );
+            final int inlineMaxHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
             if ( inlineMaxHeight > 0 )
             {
                 return inlineMaxHeight;
             }
-            //Error cases
+            //Fallback case
             final DisplayMetrics displayProperties = getDisplayProperties( context );
             //ToDo - handle error appropriately
             if (displayProperties == null) {
@@ -651,14 +580,8 @@ public class InMobiMediationAdapter
 
         }
 
-        // Anchored adaptive banner flow.
-        final int anchoredAdaptiveHeight = getAnchoredAdaptiveBannerHeight(adFormat, adWidthDp, context );
-        if ( anchoredAdaptiveHeight > 0 )
-        {
-            return anchoredAdaptiveHeight;
-        } else {
-            throw new IllegalStateException("Unable to calculate adaptive height");
-        }
+        // Anchored adaptive flow.
+        return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
     }
 
 
