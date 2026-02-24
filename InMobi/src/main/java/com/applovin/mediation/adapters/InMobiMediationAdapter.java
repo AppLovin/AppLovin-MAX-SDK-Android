@@ -254,15 +254,6 @@ public class InMobiMediationAdapter
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
-            final int[] last = {ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT};
-            adView.addOnLayoutChangeListener((v,l,t,r,b,ol,ot,or,ob) -> {
-                ViewGroup.LayoutParams lp = v.getLayoutParams();
-                if (lp != null && (lp.width != last[0] || lp.height != last[1])) {
-                    Log.d("LPWatch", "LayoutParams changed to " + lp.width + "x" + lp.height);
-                    last[0] = lp.width;
-                    last[1] = lp.height;
-                }
-            });
 
             final float density = context.getResources().getDisplayMetrics().density;
 
@@ -271,8 +262,9 @@ public class InMobiMediationAdapter
             int height;
             if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
-                width = getAdaptiveAdViewWidth( parameters, context );
-                height = calculateAdaptiveAdViewHeight( adFormat, parameters, width, context );
+                AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
+                width = adaptiveSize.getWidth();
+                height = adaptiveSize.getHeight();
 
                 log( "Using adaptive banner size: " + width + "dp x " + height + "dp; inline: " + isInlineAdaptiveAdView( parameters ) );
             }
@@ -521,10 +513,9 @@ public class InMobiMediationAdapter
                                               final Context context,
                                               final Map<String, String> extras)
     {
-        final int adaptiveWidthDp = getAdaptiveAdViewWidth( parameters, context );
-        final int adaptiveHeightDp = calculateAdaptiveAdViewHeight( adFormat, parameters, adaptiveWidthDp, context );
-        extras.put( "adWidth", String.valueOf( adaptiveWidthDp ) );
-        extras.put( "adHeight", String.valueOf( adaptiveHeightDp ) );
+        AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
+        extras.put( "adWidth", String.valueOf( adaptiveSize.getWidth() ) );
+        extras.put( "adHeight", String.valueOf( adaptiveSize.getHeight() ) );
     }
 
     @Nullable
@@ -582,6 +573,16 @@ public class InMobiMediationAdapter
 
         // Anchored adaptive flow.
         return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
+    }
+
+    private AppLovinSdkUtils.Size getAdaptiveAdViewSize(final MaxAdFormat adFormat,
+                                                        final MaxAdapterParameters parameters,
+                                                        final Context context)
+    {
+        int adaptiveWidthDp = getAdaptiveAdViewWidth( parameters, context );
+        int adaptiveHeightDp = calculateAdaptiveAdViewHeight( adFormat, parameters, adaptiveWidthDp, context );
+
+        return new AppLovinSdkUtils.Size( adaptiveWidthDp, adaptiveHeightDp );
     }
 
 
