@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.applovin.mediation.adapters.adsurge">
+
+    <application />
+
+    <!--Note: We don't need to add the permissions and activities for this adapter if AdSurge SDK's AAR declares them.-->
+</manifest>
