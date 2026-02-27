@@ -366,7 +366,7 @@ public class VungleMediationAdapter
             final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, context, listener );
             nativeAd = new NativeAd( getContext( activity ), placementId );
             nativeAd.setAdListener( nativeAdViewListener );
-            nativeAd.setAdapterAdFormat("MaxNativeAdAdapter-adView");
+            nativeAd.setAdapterAdFormat("MaxNativeAdAdapter-banner");
 
             nativeAd.load( bidResponse );
 
