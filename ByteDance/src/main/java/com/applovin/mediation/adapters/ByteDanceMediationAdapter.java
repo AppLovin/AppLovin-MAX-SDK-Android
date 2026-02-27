@@ -42,7 +42,8 @@ import com.bytedance.sdk.openadsdk.api.banner.PAGBannerAdLoadListener;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerRequest;
 import com.bytedance.sdk.openadsdk.api.banner.PAGBannerSize;
 import com.bytedance.sdk.openadsdk.api.bidding.PAGBiddingRequest;
-import com.bytedance.sdk.openadsdk.api.init.BiddingTokenCallback;
+import com.bytedance.sdk.openadsdk.api.init.PAGBidCallback;
+import com.bytedance.sdk.openadsdk.api.init.PAGBidError;
 import com.bytedance.sdk.openadsdk.api.init.PAGConfig;
 import com.bytedance.sdk.openadsdk.api.init.PAGSdk;
 import com.bytedance.sdk.openadsdk.api.interstitial.PAGInterstitialAd;
@@ -180,12 +181,6 @@ public class ByteDanceMediationAdapter
             // Set mediation provider
             builder.setUserData( createAdConfigData( serverParameters, true ) );
 
-            Boolean hasUserConsent = parameters.hasUserConsent();
-            if ( hasUserConsent != null )
-            {
-                builder.setGDPRConsent( hasUserConsent ? 1 : 0 );
-            }
-
             Boolean isDoNotSell = parameters.isDoNotSell();
             if ( isDoNotSell != null )
             {
@@ -284,14 +279,20 @@ public class ByteDanceMediationAdapter
 
         Context context = getContext( activity );
         PAGBiddingRequest request = createBiddingRequestWithParameters( parameters, context );
-
-        PAGSdk.getBiddingToken( context, request, new BiddingTokenCallback()
+        PAGSdk.getBiddingToken( context, request, new PAGBidCallback()
         {
             @Override
             public void onBiddingTokenCollected(final String biddingToken)
             {
                 log( "Signal collection successful" );
                 callback.onSignalCollected( biddingToken );
+            }
+
+            @Override
+            public void onBiddingTokenFailed(final PAGBidError pagBidError)
+            {
+                log( "Signal collection failed with error: " + pagBidError );
+                callback.onSignalCollectionFailed( pagBidError.getMessage() );
             }
         } );
     }
@@ -688,7 +689,7 @@ public class ByteDanceMediationAdapter
         {
             if ( ad == null )
             {
-                log( "Interstitial ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( "Interstitial ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onInterstitialAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -747,7 +748,7 @@ public class ByteDanceMediationAdapter
         {
             if ( ad == null )
             {
-                log( "App open ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( "App open ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onAppOpenAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -808,7 +809,7 @@ public class ByteDanceMediationAdapter
         {
             if ( ad == null )
             {
-                log( "Rewarded ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( "Rewarded ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onRewardedAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -846,14 +847,14 @@ public class ByteDanceMediationAdapter
         @Override
         public void onUserEarnedReward(final PAGRewardItem rewardItem)
         {
-            log( "Rewarded user with reward: " + rewardItem.getRewardAmount() + " " + rewardItem.getRewardName() );
+            log( "Rewarded user with reward: " + rewardItem.getRewardAmount() + ' ' + rewardItem.getRewardName() );
             hasGrantedReward = true;
         }
 
         @Override
         public void onUserEarnedRewardFail(final int code, final String message)
         {
-            log( "Failed to reward user with error: " + code + " " + message );
+            log( "Failed to reward user with error: " + code + ' ' + message );
             hasGrantedReward = false;
         }
 
@@ -892,7 +893,7 @@ public class ByteDanceMediationAdapter
         {
             if ( ad == null )
             {
-                log( adFormat.getLabel() + " ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( adFormat.getLabel() + " ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -963,7 +964,7 @@ public class ByteDanceMediationAdapter
         {
             if ( nativeAdViewAd == null )
             {
-                log( "Native " + adFormat.getLabel() + "ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( "Native " + adFormat.getLabel() + "ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
@@ -1145,7 +1146,7 @@ public class ByteDanceMediationAdapter
         {
             if ( ad == null )
             {
-                log( "Native ad" + "(" + codeId + ")" + " NO FILL'd" );
+                log( "Native ad" + '(' + codeId + ')' + " NO FILL'd" );
                 listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
 
                 return;
