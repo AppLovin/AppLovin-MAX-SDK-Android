@@ -467,8 +467,8 @@ public class VungleMediationAdapter
             Object adaptiveMaxHeightObj = parameters.getLocalExtraParameters().get( "inline_adaptive_banner_max_height" );
             String adaptiveWidth = ( adaptiveWidthObj != null ) ? String.valueOf( adaptiveWidthObj ) : "unknown";
             String adaptiveMaxHeight = ( adaptiveMaxHeightObj != null ) ? String.valueOf( adaptiveMaxHeightObj ) : "unknown";
-            String adaptiveSizeMessage = String.format( "AdaptiveBannerSizeMismatch:w-%s|maxh-%s", adaptiveWidth, adaptiveMaxHeight );
-            VungleMediationLogger.logError( adViewAd, adaptiveSizeMessage );
+            String adaptiveSizeMismatchMessage = String.format( "AdaptiveBannerSizeMismatch:w-%s|maxh-%s", adaptiveWidth, adaptiveMaxHeight );
+            VungleMediationLogger.logError( adViewAd, adaptiveSizeMismatchMessage );
         }
     }
 
