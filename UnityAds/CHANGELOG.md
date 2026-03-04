@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.17.0.0
+* Certified with UnityAds SDK 4.17.0.
+
 ## 4.16.6.0
 * Certified with UnityAds SDK 4.16.6.
 
