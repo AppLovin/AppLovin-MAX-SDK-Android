@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.9.1.1.0
+* Certified with ByteDance SDK 7.9.1.1.
+
 ## 7.9.1.0.0
 * Removed manual GDPR consent configuration. Pangle now automatically reads consent settings from the app’s TCF String.
 
