@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -147,14 +148,14 @@ public class AmazonAdMarketplaceMediationAdapter
         {
             ApsAdRequest retrievedAdLoader = ( (ApsAd) adResponseObj ).getAdLoader();
 
-            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
+            if ( usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
-                d( "Using ad loader from ad response object: " + retrievedAdLoader );
-                adLoader = retrievedAdLoader;
+                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_SUCCESS_RESPONSE );
             }
             else
             {
-                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_SUCCESS_RESPONSE );
+                d( "Using ad loader from ad response object: " + retrievedAdLoader );
+                adLoader = retrievedAdLoader;
             }
 
             apsBidId = ( (ApsAd) adResponseObj ).getBidId();
@@ -164,14 +165,14 @@ public class AmazonAdMarketplaceMediationAdapter
             // Backward compatibility with legacy APIs
             DTBAdLoader retrievedAdLoader = ( (DTBAdResponse) adResponseObj ).getAdLoader();
 
-            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
+            if ( usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
-                d( "Using ad loader from ad response object: " + retrievedAdLoader );
-                adLoader = retrievedAdLoader;
+                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_SUCCESS_RESPONSE );
             }
             else
             {
-                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_SUCCESS_RESPONSE );
+                d( "Using ad loader from ad response object: " + retrievedAdLoader );
+                adLoader = retrievedAdLoader;
             }
 
             apsBidId = ( (DTBAdResponse) adResponseObj ).getBidId();
@@ -182,14 +183,14 @@ public class AmazonAdMarketplaceMediationAdapter
             ApsAdRequest retrievedAdLoader = (ApsAdRequest) ( (ApsAdError) adErrorObj ).getAdLoader();
             corrId = retrievedAdLoader.getCorrelationId();
 
-            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
+            if ( usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
-                d( "Using ad loader from ad error object: " + retrievedAdLoader );
-                adLoader = retrievedAdLoader;
+                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_ERROR_RESPONSE );
             }
             else
             {
-                parameters.getLocalExtraParameters().remove( ApsConstants.AMAZON_ERROR_RESPONSE );
+                d( "Using ad loader from ad error object: " + retrievedAdLoader );
+                adLoader = retrievedAdLoader;
             }
         }
         else if ( adErrorObj instanceof AdError )
@@ -198,14 +199,14 @@ public class AmazonAdMarketplaceMediationAdapter
             DTBAdLoader retrievedAdLoader = ( (AdError) adErrorObj ).getAdLoader();
             corrId = ( (DTBAdRequest) retrievedAdLoader ).getCorrelationId();
 
-            if ( !usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
+            if ( usedAdLoaders.contains( retrievedAdLoader.hashCode() ) )
             {
-                d( "Using ad loader from ad error object: " + retrievedAdLoader );
-                adLoader = retrievedAdLoader;
+                parameters.getLocalExtraParameters().remove( "amazon_ad_error" );
             }
             else
             {
-                parameters.getLocalExtraParameters().remove( "amazon_ad_error" );
+                d( "Using ad loader from ad error object: " + retrievedAdLoader );
+                adLoader = retrievedAdLoader;
             }
         }
 
@@ -593,7 +594,7 @@ public class AmazonAdMarketplaceMediationAdapter
         // Treat banners and leaders as the same ad format
         String adFormatLabel = ( adFormat == MaxAdFormat.LEADER ) ? MaxAdFormat.BANNER.getLabel() : adFormat.getLabel();
 
-        return encodedBidId + "_" + adFormatLabel;
+        return encodedBidId + '_' + adFormatLabel;
     }
 
     private void maybeCleanupAdView(final ApsAdController apsAdController)
@@ -845,9 +846,9 @@ public class AmazonAdMarketplaceMediationAdapter
 
             MediationHints mediationHints = (MediationHints) o;
 
-            if ( id != null ? !id.equals( mediationHints.id ) : mediationHints.id != null )
+            if ( !Objects.equals( id, mediationHints.id ) )
                 return false;
-            return dtbAdResponse != null ? dtbAdResponse.equals( mediationHints.dtbAdResponse ) : mediationHints.dtbAdResponse == null;
+            return Objects.equals( dtbAdResponse, mediationHints.dtbAdResponse );
         }
 
         @Override
