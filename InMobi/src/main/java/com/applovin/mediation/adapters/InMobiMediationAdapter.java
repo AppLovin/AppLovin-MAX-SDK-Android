@@ -257,16 +257,14 @@ public class InMobiMediationAdapter
 
             final float density = context.getResources().getDisplayMetrics().density;
 
+            final int width, height;
             final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
-            int width;
-            int height;
             if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
                 AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
                 width = adaptiveSize.getWidth();
                 height = adaptiveSize.getHeight();
-
-                log( "Using adaptive banner size: " + width + "dp x " + height + "dp; inline: " + isInlineAdaptiveAdView( parameters ) );
+                log( "Using banner ad as Adaptive, inline: " + isInlineAdaptiveAdView( parameters ) );
             }
             else if ( adFormat == MaxAdFormat.BANNER )
             {
@@ -288,6 +286,7 @@ public class InMobiMediationAdapter
                 throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
             }
 
+            log( "Using adaptive banner size: " + width + "dp x " + height + "dp" );
             adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * density ),
                                                                    Math.round( height * density ) ) );
 
@@ -508,14 +507,14 @@ public class InMobiMediationAdapter
         return extras;
     }
 
-    private void updateAdaptiveBannerSettings(final MaxAdapterSignalCollectionParameters parameters,
+    private void updateAdaptiveBannerSettings(final MaxAdapterParameters parameters,
                                               final MaxAdFormat adFormat,
                                               final Context context,
                                               final Map<String, String> extras)
     {
         AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
-        extras.put( "adWidth", String.valueOf( adaptiveSize.getWidth() ) );
-        extras.put( "adHeight", String.valueOf( adaptiveSize.getHeight() ) );
+        extras.put( "ab-ad-slot", adaptiveSize.getWidth() + "x" + adaptiveSize.getHeight() );
+        extras.put( "ab-type", isInlineAdaptiveAdView( parameters ) ? "inline" : "anchored" );
     }
 
     @Nullable
@@ -548,10 +547,7 @@ public class InMobiMediationAdapter
         return displayMetrics;
     }
 
-    private int calculateAdaptiveAdViewHeight(final MaxAdFormat adFormat,
-                                              final MaxAdapterParameters parameters,
-                                              final int adWidthDp,
-                                              final Context context)
+    private int getOrComputeAdaptiveAdViewHeight(final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context, final int adWidthDp)
     {
         //Inline adaptive flow
         if ( isInlineAdaptiveAdView( parameters ) )
@@ -563,25 +559,23 @@ public class InMobiMediationAdapter
             }
             //Fallback case
             final DisplayMetrics displayProperties = getDisplayProperties( context );
-            //ToDo - handle error appropriately
-            if (displayProperties == null) {
-                throw new IllegalStateException("Unable to retrieve display properties");
+            if ( displayProperties != null )
+            {
+                return AppLovinSdkUtils.pxToDp( context, displayProperties.heightPixels );
             }
-            return AppLovinSdkUtils.pxToDp(context, displayProperties.heightPixels);
+
+            // If display metrics are unavailable, fall back to anchored adaptive height.
+            return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
 
         }
-
         // Anchored adaptive flow.
         return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
     }
 
-    private AppLovinSdkUtils.Size getAdaptiveAdViewSize(final MaxAdFormat adFormat,
-                                                        final MaxAdapterParameters parameters,
-                                                        final Context context)
+    private AppLovinSdkUtils.Size getAdaptiveAdViewSize(final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context)
     {
         int adaptiveWidthDp = getAdaptiveAdViewWidth( parameters, context );
-        int adaptiveHeightDp = calculateAdaptiveAdViewHeight( adFormat, parameters, adaptiveWidthDp, context );
-
+        int adaptiveHeightDp = getOrComputeAdaptiveAdViewHeight( adFormat, parameters, context, adaptiveWidthDp );
         return new AppLovinSdkUtils.Size( adaptiveWidthDp, adaptiveHeightDp );
     }
 
