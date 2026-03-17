@@ -576,16 +576,16 @@ public class SmaatoMediationAdapter
         {
             log( "AdView loaded" );
 
-            if ( !TextUtils.isEmpty( bannerView.getCreativeId() ) )
+            if ( TextUtils.isEmpty( bannerView.getCreativeId() ) )
+            {
+                listener.onAdViewAdLoaded( adView );
+            }
+            else
             {
                 final Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", bannerView.getCreativeId() );
 
                 listener.onAdViewAdLoaded( adView, extraInfo );
-            }
-            else
-            {
-                listener.onAdViewAdLoaded( adView );
             }
         }
 
@@ -1148,16 +1148,16 @@ public class SmaatoMediationAdapter
 
         private void onAdLoaded(final String placementId, final String creativeId)
         {
-            if ( !TextUtils.isEmpty( creativeId ) )
+            if ( TextUtils.isEmpty( creativeId ) )
+            {
+                onAdLoaded( placementId );
+            }
+            else
             {
                 final Bundle extraInfo = new Bundle( 1 );
                 extraInfo.putString( "creative_id", creativeId );
 
                 onAdLoaded( placementId, extraInfo );
-            }
-            else
-            {
-                onAdLoaded( placementId );
             }
         }
 

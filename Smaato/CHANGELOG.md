@@ -1,6 +1,12 @@
 # Changelog
 
+## 23.0.1.0
+* Certified with Smaato SDK 23.0.1.
+
 ## 22.7.2.3
+* Added back Smaato SDK 22.7.2 dependency due to a publishing issue.
+
+## 22.7.2.2
 * Updated ad display failed error code.
 
 ## 22.7.2.1

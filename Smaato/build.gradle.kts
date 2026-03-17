@@ -1,15 +1,16 @@
-import com.applovin.build.extensions.appendDependency
-
 plugins {
     id("adapter-config")
+    id("com.applovin.mobile.publish")
 }
 
-afterEvaluate {
-    apply(plugin = "adapter-publish")
-}
-
-val libraryVersionName by extra("22.7.2.3")
+val libraryVersionName by extra("23.0.1.0")
 val minAppLovinSdkVersion by extra("13.0.0")
+
+applovinMobilePublish {
+    pomDependencies.set(com.applovin.gradle.PomDependency.fromList(listOf(
+        libs.androidx.lifecycle.extensions
+    )))
+}
 
 android.defaultConfig.minSdk = 21
 
@@ -19,19 +20,4 @@ repositories {
 
 dependencies {
     implementation(libs.androidx.lifecycle.extensions)
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("Adapter") {
-            //The publication doesn't know about our dependencies, so we have to manually add them to the pom
-            pom.withXml {
-                asNode().apply {
-                    // Add Smaato network to list of dependencies.
-                    appendNode("dependencies")
-                        .appendDependency(libs.androidx.lifecycle.extensions)
-                }
-            }
-        }
-    }
 }
