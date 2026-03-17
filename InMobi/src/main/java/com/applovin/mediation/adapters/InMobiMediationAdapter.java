@@ -123,7 +123,7 @@ public class InMobiMediationAdapter
         }
 
         updatePrivacySettings( parameters );
-        String signal = InMobiSdk.getToken( getExtras( parameters ), null );
+        String signal = InMobiSdk.getToken( getExtras( parameters, getContext( activity ) ), null );
         callback.onSignalCollected( signal );
     }
 
@@ -236,7 +236,7 @@ public class InMobiMediationAdapter
             nativeAd = new InMobiNative( context,
                                          placementId,
                                          new NativeAdViewListener( parameters, adFormat, activity, listener ) );
-            nativeAd.setExtras( getExtras( parameters ) );
+            nativeAd.setExtras( getExtras( parameters, context ) );
 
             if ( isBiddingAd )
             {
@@ -250,7 +250,7 @@ public class InMobiMediationAdapter
         else
         {
             adView = new InMobiBanner( context, placementId );
-            adView.setExtras( getExtras( parameters ) );
+            adView.setExtras( getExtras( parameters, context ) );
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
@@ -404,7 +404,7 @@ public class InMobiMediationAdapter
                                      placementId,
                                      new NativeAdListener( parameters, context, listener ) );
 
-        nativeAd.setExtras( getExtras( parameters ) );
+        nativeAd.setExtras( getExtras( parameters, context ) );
 
         if ( isBiddingAd )
         {
@@ -423,7 +423,7 @@ public class InMobiMediationAdapter
     private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, @Nullable final Activity activity)
     {
         InMobiInterstitial interstitial = new InMobiInterstitial( getContext( activity ), placementId, listener );
-        interstitial.setExtras( getExtras( parameters ) );
+        interstitial.setExtras( getExtras( parameters, getContext( activity ) ) );
 
         updatePrivacySettings( parameters );
 
@@ -491,7 +491,7 @@ public class InMobiMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private Map<String, String> getExtras(MaxAdapterParameters parameters)
+    private Map<String, String> getExtras(final MaxAdapterParameters parameters, final Context context)
     {
         Map<String, String> extras = new HashMap<>( 5 );
         extras.put( "tp", "c_applovin" );
@@ -499,7 +499,6 @@ public class InMobiMediationAdapter
 
         final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
         final MaxAdFormat adFormat = parameters.getAdFormat();
-        final Context context = getContext( activity );
         if ( adFormat.isAdViewAd() && isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
@@ -537,14 +536,25 @@ public class InMobiMediationAdapter
     private DisplayMetrics getDisplayProperties(final Context context)
     {
         final Display display = getDefaultDisplay( context );
-        if ( display == null )
+        if ( display != null )
         {
-            return null;
+            final DisplayMetrics displayMetrics = new DisplayMetrics();
+            display.getMetrics( displayMetrics );
+            if ( displayMetrics.widthPixels > 0 && displayMetrics.heightPixels > 0 )
+            {
+                return displayMetrics;
+            }
         }
 
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        display.getMetrics( displayMetrics );
-        return displayMetrics;
+        final DisplayMetrics resourceMetrics = context.getResources().getDisplayMetrics();
+        if ( resourceMetrics != null && resourceMetrics.widthPixels > 0 && resourceMetrics.heightPixels > 0 )
+        {
+            final DisplayMetrics fallbackMetrics = new DisplayMetrics();
+            fallbackMetrics.setTo( resourceMetrics );
+            return fallbackMetrics;
+        }
+
+        return null;
     }
 
     private int getOrComputeAdaptiveAdViewHeight(final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context, final int adWidthDp)
@@ -565,11 +575,16 @@ public class InMobiMediationAdapter
             }
 
             // If display metrics are unavailable, fall back to anchored adaptive height.
-            return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
+            return getAnchoredAdaptiveFormat( adFormat ).getAdaptiveSize( adWidthDp, context ).getHeight();
 
         }
         // Anchored adaptive flow.
-        return adFormat.getAdaptiveSize( adWidthDp, context ).getHeight();
+        return MaxAdFormat.BANNER.getAdaptiveSize( adWidthDp, context ).getHeight();
+    }
+
+    private MaxAdFormat getAnchoredAdaptiveFormat(final MaxAdFormat adFormat)
+    {
+        return adFormat == MaxAdFormat.LEADER ? MaxAdFormat.BANNER : adFormat;
     }
 
     private AppLovinSdkUtils.Size getAdaptiveAdViewSize(final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context)
@@ -578,27 +593,6 @@ public class InMobiMediationAdapter
         int adaptiveHeightDp = getOrComputeAdaptiveAdViewHeight( adFormat, parameters, context, adaptiveWidthDp );
         return new AppLovinSdkUtils.Size( adaptiveWidthDp, adaptiveHeightDp );
     }
-
-
-    private static final class DisplayProperties
-    {
-        private final int   width;
-        private final int   height;
-        private final float density;
-
-        private DisplayProperties(final int width, final int height, final float density)
-        {
-            this.width = width;
-            this.height = height;
-            this.density = density;
-        }
-
-        public int getHeight()
-        {
-            return height;
-        }
-    }
-
     private float getNativeAdMediaContentAspectRatio(final MaxAdapterParameters parameters)
     {
         final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
