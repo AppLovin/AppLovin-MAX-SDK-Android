@@ -60,6 +60,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -83,6 +84,11 @@ public class InMobiMediationAdapter
     private static final int    RATING_VIEW_TAG          = 6;
     private static final int    ADVERTISER_VIEW_TAG      = 8;
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
+    private static final String KEY_ADAPTIVE_BANNER      = "adaptive_banner";
+    private static final String KEY_ADAPTIVE_AD_SLOT     = "ab-ad-slot";
+    private static final String KEY_ADAPTIVE_TYPE        = "ab-type";
+    private static final String ADAPTIVE_TYPE_INLINE     = "inline";
+    private static final String ADAPTIVE_TYPE_ANCHORED   = "anchored";
 
     // https://support.inmobi.com/monetize/android-guidelines/native-ads-for-android/#set-up-native-ad
     // The default setting is an in-Feed ad layout, an aspect ratio ranging between 256:135 - 1200x627
@@ -258,7 +264,7 @@ public class InMobiMediationAdapter
             final float density = context.getResources().getDisplayMetrics().density;
 
             final int width, height;
-            final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+            final boolean isAdaptiveBanner = isAdaptiveBannerEnabled( parameters );
             if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
                 AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
@@ -497,9 +503,8 @@ public class InMobiMediationAdapter
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
 
-        final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
         final MaxAdFormat adFormat = parameters.getAdFormat();
-        if ( adFormat.isAdViewAd() && isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        if ( adFormat.isAdViewAd() && isAdaptiveBannerEnabled( parameters ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
@@ -512,8 +517,8 @@ public class InMobiMediationAdapter
                                               final Map<String, String> extras)
     {
         AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
-        extras.put( "ab-ad-slot", adaptiveSize.getWidth() + "x" + adaptiveSize.getHeight() );
-        extras.put( "ab-type", isInlineAdaptiveAdView( parameters ) ? "inline" : "anchored" );
+        extras.put( KEY_ADAPTIVE_AD_SLOT, formatAdaptiveAdSlot( adaptiveSize ) );
+        extras.put( KEY_ADAPTIVE_TYPE, isInlineAdaptiveAdView( parameters ) ? ADAPTIVE_TYPE_INLINE : ADAPTIVE_TYPE_ANCHORED );
     }
 
     @Nullable
@@ -575,16 +580,28 @@ public class InMobiMediationAdapter
             }
 
             // If display metrics are unavailable, fall back to anchored adaptive height.
-            return getAnchoredAdaptiveFormat( adFormat ).getAdaptiveSize( adWidthDp, context ).getHeight();
+            return getFallbackHeightFormat( adFormat ).getAdaptiveSize( adWidthDp, context ).getHeight();
 
         }
         // Anchored adaptive flow.
         return MaxAdFormat.BANNER.getAdaptiveSize( adWidthDp, context ).getHeight();
     }
 
-    private MaxAdFormat getAnchoredAdaptiveFormat(final MaxAdFormat adFormat)
+    // Returns the format whose height should be used for fallback sizing:
+    // leader falls back to banner-height adaptive sizing, while MREC keeps its fixed size.
+    private MaxAdFormat getFallbackHeightFormat(final MaxAdFormat adFormat)
     {
         return adFormat == MaxAdFormat.LEADER ? MaxAdFormat.BANNER : adFormat;
+    }
+
+    private boolean isAdaptiveBannerEnabled(final MaxAdapterParameters parameters)
+    {
+        return parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
+    }
+
+    private String formatAdaptiveAdSlot(final AppLovinSdkUtils.Size adaptiveSize)
+    {
+        return String.format( Locale.US, "%dx%d", adaptiveSize.getWidth(), adaptiveSize.getHeight() );
     }
 
     private AppLovinSdkUtils.Size getAdaptiveAdViewSize(final MaxAdFormat adFormat, final MaxAdapterParameters parameters, final Context context)
@@ -593,6 +610,7 @@ public class InMobiMediationAdapter
         int adaptiveHeightDp = getOrComputeAdaptiveAdViewHeight( adFormat, parameters, context, adaptiveWidthDp );
         return new AppLovinSdkUtils.Size( adaptiveWidthDp, adaptiveHeightDp );
     }
+
     private float getNativeAdMediaContentAspectRatio(final MaxAdapterParameters parameters)
     {
         final Map<String, Object> localExtraParameters = parameters.getLocalExtraParameters();
