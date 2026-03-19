@@ -129,7 +129,7 @@ public class InMobiMediationAdapter
         }
 
         updatePrivacySettings( parameters );
-        String signal = InMobiSdk.getToken( getExtras( parameters, parameters.getAdFormat(), getContext( activity ) ), null );
+        String signal = InMobiSdk.getToken( getSignalExtras( parameters, parameters.getAdFormat(), getContext( activity ) ), null );
         callback.onSignalCollected( signal );
     }
 
@@ -256,7 +256,7 @@ public class InMobiMediationAdapter
         else
         {
             adView = new InMobiBanner( context, placementId );
-            adView.setExtras( getExtras( parameters, adFormat, context ) );
+            adView.setExtras( getBannerExtras( parameters, adFormat, context ) );
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
@@ -264,7 +264,7 @@ public class InMobiMediationAdapter
             final float density = context.getResources().getDisplayMetrics().density;
 
             final int width, height;
-            final boolean isAdaptiveBanner = isAdaptiveBannerEnabled( parameters );
+            final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
             if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
                 AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
@@ -505,10 +505,22 @@ public class InMobiMediationAdapter
         return extras;
     }
 
-    private Map<String, String> getExtras(final MaxAdapterParameters parameters, final MaxAdFormat adFormat, final Context context)
+    private Map<String, String> getBannerExtras(final MaxAdapterParameters parameters, final MaxAdFormat adFormat, final Context context)
     {
         final Map<String, String> extras = createBaseExtras();
-        if ( isAdaptiveBannerEnabled( parameters ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        if ( parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
+        }
+        return extras;
+    }
+
+    private Map<String, String> getSignalExtras(final MaxAdapterSignalCollectionParameters parameters, final MaxAdFormat adFormat, final Context context)
+    {
+        final Map<String, String> extras = createBaseExtras();
+        final Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( KEY_ADAPTIVE_BANNER );
+        final boolean isAdaptiveBanner = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
@@ -596,11 +608,6 @@ public class InMobiMediationAdapter
     private MaxAdFormat getFallbackHeightFormat(final MaxAdFormat adFormat)
     {
         return adFormat == MaxAdFormat.LEADER ? MaxAdFormat.BANNER : adFormat;
-    }
-
-    private boolean isAdaptiveBannerEnabled(final MaxAdapterParameters parameters)
-    {
-        return parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
     }
 
     private String formatAdaptiveAdSlot(final AppLovinSdkUtils.Size adaptiveSize)
