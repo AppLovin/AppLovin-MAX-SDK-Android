@@ -129,7 +129,7 @@ public class InMobiMediationAdapter
         }
 
         updatePrivacySettings( parameters );
-        String signal = InMobiSdk.getToken( getExtras( parameters, getContext( activity ) ), null );
+        String signal = InMobiSdk.getToken( getExtras( parameters, parameters.getAdFormat(), getContext( activity ) ), null );
         callback.onSignalCollected( signal );
     }
 
@@ -240,9 +240,9 @@ public class InMobiMediationAdapter
         if ( isNative )
         {
             nativeAd = new InMobiNative( context,
-                                         placementId,
-                                         new NativeAdViewListener( parameters, adFormat, activity, listener ) );
-            nativeAd.setExtras( getExtras( parameters, context ) );
+                    placementId,
+                    new NativeAdViewListener( parameters, adFormat, activity, listener ) );
+            nativeAd.setExtras( createBaseExtras() );
 
             if ( isBiddingAd )
             {
@@ -256,7 +256,7 @@ public class InMobiMediationAdapter
         else
         {
             adView = new InMobiBanner( context, placementId );
-            adView.setExtras( getExtras( parameters, context ) );
+            adView.setExtras( getExtras( parameters, adFormat, context ) );
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
             adView.setListener( new AdViewListener( listener ) );
@@ -338,8 +338,8 @@ public class InMobiMediationAdapter
         {
             log( "Interstitial ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -377,8 +377,8 @@ public class InMobiMediationAdapter
         {
             log( "Rewarded ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
+                    MaxAdapterError.AD_NOT_READY.getCode(),
+                    MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -407,10 +407,10 @@ public class InMobiMediationAdapter
 
         final Context context = getContext( activity );
         nativeAd = new InMobiNative( context,
-                                     placementId,
-                                     new NativeAdListener( parameters, context, listener ) );
+                placementId,
+                new NativeAdListener( parameters, context, listener ) );
 
-        nativeAd.setExtras( getExtras( parameters, context ) );
+        nativeAd.setExtras( createBaseExtras() );
 
         if ( isBiddingAd )
         {
@@ -429,7 +429,7 @@ public class InMobiMediationAdapter
     private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, @Nullable final Activity activity)
     {
         InMobiInterstitial interstitial = new InMobiInterstitial( getContext( activity ), placementId, listener );
-        interstitial.setExtras( getExtras( parameters, getContext( activity ) ) );
+        interstitial.setExtras( createBaseExtras() );
 
         updatePrivacySettings( parameters );
 
@@ -497,14 +497,18 @@ public class InMobiMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private Map<String, String> getExtras(final MaxAdapterParameters parameters, final Context context)
+    private Map<String, String> createBaseExtras()
     {
         Map<String, String> extras = new HashMap<>( 5 );
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
+        return extras;
+    }
 
-        final MaxAdFormat adFormat = parameters.getAdFormat();
-        if ( adFormat.isAdViewAd() && isAdaptiveBannerEnabled( parameters ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
+    private Map<String, String> getExtras(final MaxAdapterParameters parameters, final MaxAdFormat adFormat, final Context context)
+    {
+        final Map<String, String> extras = createBaseExtras();
+        if ( isAdaptiveBannerEnabled( parameters ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
