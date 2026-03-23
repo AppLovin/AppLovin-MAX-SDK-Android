@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.18.4.0
+* Certified with Yandex SDK 7.18.4.
+
 ## 7.18.3.0
 * Certified with Yandex SDK 7.18.3.
 
