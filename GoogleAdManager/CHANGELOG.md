@@ -1,7 +1,10 @@
 # Changelog
 
+## 25.1.0.0
+* Certified with GoogleAdManager SDK 25.1.0.
+
 ## 25.0.0.0
-* Certified with Google SDK 25.0.0.
+* Certified with GoogleAdManager SDK 25.0.0.
 
 ## 24.9.0.1
 * Enable publishers to pass arbitrary values to `AdManagerAdRequest`.
