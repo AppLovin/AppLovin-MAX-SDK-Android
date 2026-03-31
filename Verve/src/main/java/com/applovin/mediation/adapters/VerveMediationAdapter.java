@@ -334,11 +334,11 @@ public class VerveMediationAdapter
                     adapterError = MaxAdapterError.NOT_INITIALIZED;
                     break;
                 case AUCTION_NO_AD:
+                    adapterError = MaxAdapterError.NO_FILL;
+                    break;
                 case ERROR_RENDERING_BANNER:
                 case ERROR_RENDERING_INTERSTITIAL:
                 case ERROR_RENDERING_REWARDED:
-                    adapterError = MaxAdapterError.AD_NOT_READY;
-                    break;
                 case INTERNAL_ERROR:
                     adapterError = MaxAdapterError.INTERNAL_ERROR;
                     break;
