@@ -158,7 +158,7 @@ public class VerveMediationAdapter
     {
         log( "Showing interstitial ad..." );
 
-        if ( interstitialAd.isReady() )
+        if ( interstitialAd != null && interstitialAd.isReady() )
         {
             interstitialAd.show();
         }
@@ -194,7 +194,7 @@ public class VerveMediationAdapter
     {
         log( "Showing rewarded ad..." );
 
-        if ( rewardedAd.isReady() )
+        if ( rewardedAd != null && rewardedAd.isReady() )
         {
             configureReward( parameters );
             rewardedAd.show();
