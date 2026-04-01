@@ -165,7 +165,9 @@ public class VerveMediationAdapter
         else
         {
             log( "Interstitial ad not ready" );
-            listener.onInterstitialAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                         MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
@@ -202,7 +204,9 @@ public class VerveMediationAdapter
         else
         {
             log( "Rewarded ad not ready" );
-            listener.onRewardedAdDisplayFailed( MaxAdapterError.AD_NOT_READY );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_NOT_READY.getCode(),
+                                                                     MaxAdapterError.AD_NOT_READY.getMessage() ) );
         }
     }
 
