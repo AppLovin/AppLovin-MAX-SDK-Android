@@ -265,7 +265,7 @@ public class InMobiMediationAdapter
 
             final int width, height;
             final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
-            if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
+            if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
             {
                 AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
                 width = adaptiveSize.getWidth();
@@ -508,7 +508,9 @@ public class InMobiMediationAdapter
     private Map<String, String> getBannerExtras(final MaxAdapterParameters parameters, final MaxAdFormat adFormat, final Context context)
     {
         final Map<String, String> extras = createBaseExtras();
-        if ( parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false ) && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        if ( parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false )
+                && isAdaptiveAdViewFormat( adFormat, parameters )
+                && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
@@ -520,7 +522,7 @@ public class InMobiMediationAdapter
         final Map<String, String> extras = createBaseExtras();
         final Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( KEY_ADAPTIVE_BANNER );
         final boolean isAdaptiveBanner = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
-        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
