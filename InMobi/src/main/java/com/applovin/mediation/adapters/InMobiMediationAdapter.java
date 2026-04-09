@@ -262,39 +262,10 @@ public class InMobiMediationAdapter
             adView.setListener( new AdViewListener( listener ) );
 
             final float density = context.getResources().getDisplayMetrics().density;
-
-            final int width, height;
-            final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
-            if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
-            {
-                AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdViewSize( adFormat, parameters, context );
-                width = adaptiveSize.getWidth();
-                height = adaptiveSize.getHeight();
-                log( "Using banner ad as Adaptive, inline: " + isInlineAdaptiveAdView( parameters ) );
-            }
-            else if ( adFormat == MaxAdFormat.BANNER )
-            {
-                width = 320;
-                height = 50;
-            }
-            else if ( adFormat == MaxAdFormat.LEADER )
-            {
-                width = 728;
-                height = 90;
-            }
-            else if ( adFormat == MaxAdFormat.MREC )
-            {
-                width = 300;
-                height = 250;
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
-            }
-
-            log( "Using adaptive banner size: " + width + "dp x " + height + "dp" );
-            adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * density ),
-                                                                   Math.round( height * density ) ) );
+            final AppLovinSdkUtils.Size standardSize = getStandardAdViewSize( adFormat );
+            log( "Using standard banner size: " + standardSize.getWidth() + "dp x " + standardSize.getHeight() + "dp" );
+            adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( standardSize.getWidth() * density ),
+                                                                   Math.round( standardSize.getHeight() * density ) ) );
 
             if ( isBiddingAd )
             {
@@ -509,8 +480,7 @@ public class InMobiMediationAdapter
     {
         final Map<String, String> extras = createBaseExtras();
         if ( parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false )
-                && isAdaptiveAdViewFormat( adFormat, parameters )
-                && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
+                && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
@@ -522,11 +492,29 @@ public class InMobiMediationAdapter
         final Map<String, String> extras = createBaseExtras();
         final Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( KEY_ADAPTIVE_BANNER );
         final boolean isAdaptiveBanner = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
-        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) && InMobiSdk.getBannerConfig().isAdaptiveAllowed( InMobiSdk.MediationProvider.APPLOVIN ) )
+        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
         {
             updateAdaptiveBannerSettings( parameters, adFormat, context, extras );
         }
         return extras;
+    }
+
+    private AppLovinSdkUtils.Size getStandardAdViewSize(final MaxAdFormat adFormat)
+    {
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return MaxAdFormat.BANNER.getSize();
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return MaxAdFormat.LEADER.getSize();
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return MaxAdFormat.MREC.getSize();
+        }
+
+        throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
     }
 
     private void updateAdaptiveBannerSettings(final MaxAdapterParameters parameters,
