@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.45.3.0
+* Certified with MyTarget SDK 5.45.3.
+* Replaced deprecated interstitial `setListener(InterstitialAdListener)` with `setListener2`, `setBannerListener`, and `setVideoListener`
+* Updated native ad listener to support `onClick(View, NativeAd)` while maintaining backward compatibility
+* Migrated native ad registration to `registerView(NativeAdViewBinder, List<View>)` and implemented `NativeAdViewBinder`
+* Added support for `NativeAdVideoListener` to replace deprecated native video callbacks
+
 ## 5.27.4.0
 * Certified with MyTarget SDK 5.27.4.
 
