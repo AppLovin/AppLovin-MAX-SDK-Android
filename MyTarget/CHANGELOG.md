@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.47.1.0
+* Certified with MyTarget SDK 5.47.1.
+
 ## 5.45.3.0
 * Certified with MyTarget SDK 5.45.3.
 * Replaced deprecated interstitial `setListener(InterstitialAdListener)` with `setListener2`, `setBannerListener`, and `setVideoListener`
