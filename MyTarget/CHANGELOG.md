@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.45.3.0
+* Certified with MyTarget SDK 5.45.3.
+* Migrate native ad to `registerView(NativeAdViewBinder, List<View>)` and implement `NativeAdViewBinder` for view mapping.
+* Replace deprecated interstitial `setListener(InterstitialAdListener)` with `setListener2`, `setBannerListener`, and `setVideoListener`.
+
 ## 5.27.4.0
 * Certified with MyTarget SDK 5.27.4.
 

@@ -28,6 +28,7 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.mytarget.BuildConfig;
 import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.my.target.ads.InterstitialAd;
@@ -43,10 +44,13 @@ import com.my.target.common.models.IAdLoadingError.LoadErrorType;
 import com.my.target.common.models.ImageData;
 import com.my.target.nativeads.AdChoicesPlacement;
 import com.my.target.nativeads.NativeAd;
+import com.my.target.nativeads.NativeAdViewBinder;
 import com.my.target.nativeads.banners.NativePromoBanner;
 import com.my.target.nativeads.factories.NativeViewsFactory;
+import com.my.target.nativeads.views.IconAdView;
 import com.my.target.nativeads.views.MediaAdView;
 import com.my.target.nativeads.views.NativeAdView;
+import com.my.target.nativeads.views.PromoCardRecyclerView;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,6 +65,14 @@ public class MyTargetMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter /* MaxNativeAdAdapter */
 {
+    private static final int TITLE_LABEL_TAG          = 1;
+    private static final int MEDIA_VIEW_CONTAINER_TAG = 2;
+    private static final int ICON_VIEW_TAG            = 3;
+    private static final int BODY_VIEW_TAG            = 4;
+    private static final int CALL_TO_ACTION_VIEW_TAG  = 5;
+    private static final int RATING_VIEW_TAG          = 6;
+    private static final int ADVERTISER_VIEW_TAG      = 8;
+
     private static final AtomicBoolean initialized = new AtomicBoolean();
 
     private InterstitialAd interstitialAd;
@@ -108,6 +120,7 @@ public class MyTargetMediationAdapter
         if ( nativeAd != null )
         {
             nativeAd.setListener( null );
+            nativeAd.setNativeAdVideoListener( null );
             nativeAd.unregisterView();
             nativeAd = null;
             nativeAdView = null;
@@ -153,18 +166,35 @@ public class MyTargetMediationAdapter
         log( "Loading " + ( AppLovinSdkUtils.isValidString( parameters.getBidResponse() ) ? "bidding " : "" ) + " interstitial ad for slot id: " + slotId + "..." );
 
         interstitialAd = new InterstitialAd( slotId, getContext( activity ) );
-        interstitialAd.setListener( new InterstitialListener( listener ) );
+        interstitialAd.setListener2( new InterstitialListener( listener ) );
+        interstitialAd.setBannerListener( new InterstitialAd.InterstitialAdBannerListener()
+        {
+            @Override
+            public void onClick(@NonNull final InterstitialAd interstitialAd, @Nullable final InterstitialAd.BannerInfo banner)
+            {
+                log( "Interstitial clicked" );
+                listener.onInterstitialAdClicked();
+            }
+        } );
+        interstitialAd.setVideoListener( new InterstitialAd.InterstitialVideoListener()
+        {
+            @Override
+            public void onVideoCompleted(@NonNull final InterstitialAd interstitialAd, @Nullable final InterstitialAd.BannerInfo banner)
+            {
+                log( "Interstitial video completed" );
+            }
+        } );
         interstitialAd.getCustomParams().setCustomParam( "mediation", "7" ); // MAX specific
         updatePrivacyStates( parameters );
 
         String bidResponse = parameters.getBidResponse();
-        if ( !TextUtils.isEmpty( bidResponse ) )
+        if ( TextUtils.isEmpty( bidResponse ) )
         {
-            interstitialAd.loadFromBid( bidResponse );
+            interstitialAd.load();
         }
         else
         {
-            interstitialAd.load();
+            interstitialAd.loadFromBid( bidResponse );
         }
     }
 
@@ -199,13 +229,13 @@ public class MyTargetMediationAdapter
 
         String bidResponse = parameters.getBidResponse();
 
-        if ( !TextUtils.isEmpty( bidResponse ) )
+        if ( TextUtils.isEmpty( bidResponse ) )
         {
-            rewardedAd.loadFromBid( bidResponse );
+            rewardedAd.load();
         }
         else
         {
-            rewardedAd.load();
+            rewardedAd.loadFromBid( bidResponse );
         }
     }
 
@@ -244,13 +274,13 @@ public class MyTargetMediationAdapter
 
         String bidResponse = parameters.getBidResponse();
 
-        if ( !TextUtils.isEmpty( bidResponse ) )
+        if ( TextUtils.isEmpty( bidResponse ) )
         {
-            adView.loadFromBid( bidResponse );
+            adView.load();
         }
         else
         {
-            adView.load();
+            adView.loadFromBid( bidResponse );
         }
     }
 
@@ -265,6 +295,7 @@ public class MyTargetMediationAdapter
         nativeAd = new NativeAd( slotId, getContext( activity ) );
         nativeAd.setListener( adListener );
         nativeAd.setMediaListener( adListener );
+        nativeAd.setNativeAdVideoListener( new NativeAdVideoListener( parameters.getThirdPartyAdPlacementId() ) );
         nativeAd.getCustomParams().setCustomParam( "mediation", "7" ); // MAX specific
         nativeAd.setAdChoicesPlacement( parameters.getServerParameters().getInt( "ad_choices_placement", AdChoicesPlacement.TOP_RIGHT ) );
         nativeAd.setCachePolicy( parameters.getServerParameters().getInt( "cache_policy", CachePolicy.ALL ) );
@@ -273,13 +304,13 @@ public class MyTargetMediationAdapter
 
         // Note: only bidding is officially supported by MAX, but placements support is needed for test mode
         String bidResponse = parameters.getBidResponse();
-        if ( !TextUtils.isEmpty( bidResponse ) )
+        if ( TextUtils.isEmpty( bidResponse ) )
         {
-            nativeAd.loadFromBid( bidResponse );
+            nativeAd.load();
         }
         else
         {
-            nativeAd.load();
+            nativeAd.loadFromBid( bidResponse );
         }
     }
 
@@ -372,7 +403,7 @@ public class MyTargetMediationAdapter
     //region Ad Listeners
 
     private class InterstitialListener
-            implements InterstitialAd.InterstitialAdListener
+            extends InterstitialAd.InterstitialAdListener2
     {
         private final MaxInterstitialAdapterListener listener;
 
@@ -411,20 +442,7 @@ public class MyTargetMediationAdapter
         }
 
         @Override
-        public void onClick(@NonNull final InterstitialAd interstitialAd)
-        {
-            log( "Interstitial clicked" );
-            listener.onInterstitialAdClicked();
-        }
-
-        @Override
-        public void onVideoCompleted(@NonNull final InterstitialAd interstitialAd)
-        {
-            log( "Interstitial video completed" );
-        }
-
-        @Override
-        public void onDismiss(@NonNull final InterstitialAd interstitialAd)
+        public void onClose(@NonNull final InterstitialAd interstitialAd)
         {
             log( "Interstitial dismissed" );
             listener.onInterstitialAdHidden();
@@ -435,7 +453,7 @@ public class MyTargetMediationAdapter
             implements RewardedAd.RewardedAdListener
     {
         private final MaxRewardedAdapterListener listener;
-        private       boolean                    hasGrantedReward = false;
+        private       boolean                    hasGrantedReward;
 
         RewardedAdListener(MaxRewardedAdapterListener listener)
         {
@@ -647,26 +665,35 @@ public class MyTargetMediationAdapter
         @Override
         public void onClick(@NonNull final NativeAd nativeAd)
         {
+            // This callback has been deprecated for MyTarget SDK 5.45.3+.
             log( "Native ad clicked: " + slotId );
             listener.onNativeAdClicked();
         }
 
         @Override
+        public void onClick(@Nullable View view, @NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad clicked: " + slotId );
+            listener.onNativeAdClicked();
+        }
+
+        // Deprecated on NativeAd.NativeAdListener; still abstract in Java. Video logging uses NativeAd.NativeAdVideoListener.
+        @Override
+        @Deprecated
         public void onVideoPlay(@NonNull final NativeAd nativeAd)
         {
-            log( "Native ad video started: " + slotId );
         }
 
         @Override
+        @Deprecated
         public void onVideoPause(@NonNull final NativeAd nativeAd)
         {
-            log( "Native ad video paused: " + slotId );
         }
 
         @Override
+        @Deprecated
         public void onVideoComplete(@NonNull final NativeAd nativeAd)
         {
-            log( "Native ad video completed: " + slotId );
         }
 
         @Override
@@ -679,6 +706,61 @@ public class MyTargetMediationAdapter
         public void onImageLoad(@NonNull final NativeAd nativeAd)
         {
             log( "Native ad image loaded: " + slotId );
+        }
+    }
+
+    private class NativeAdVideoListener
+            implements NativeAd.NativeAdVideoListener
+    {
+        private final String slotId;
+
+        NativeAdVideoListener(final String slotId)
+        {
+            this.slotId = slotId;
+        }
+
+        @Override
+        public void onVideoStart(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad video started: " + slotId );
+        }
+
+        @Override
+        public void onVideoPause(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad video paused: " + slotId );
+        }
+
+        @Override
+        public void onVideoResume(@NonNull final NativeAd nativeAd)
+        {
+        }
+
+        @Override
+        public void onVideoComplete(@NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad video completed: " + slotId );
+        }
+
+        @Override
+        public void onVideoReplay(@NonNull final NativeAd nativeAd)
+        {
+        }
+
+        @Override
+        public void onVideoError(@NonNull final String message, @NonNull final NativeAd nativeAd)
+        {
+            log( "Native ad video error (" + slotId + "): " + message );
+        }
+
+        @Override
+        public void onVideoProgress(final float position, final float actualDuration, @NonNull final NativeAd nativeAd)
+        {
+        }
+
+        @Override
+        public void onVideoVolumeChanged(final float volume, @NonNull final NativeAd nativeAd)
+        {
         }
     }
 
@@ -699,8 +781,192 @@ public class MyTargetMediationAdapter
 
             d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-            nativeAd.registerView( container, clickableViews );
+            final boolean isMaxNativeAdView = container instanceof MaxNativeAdView;
+            final MaxNativeAdView maxNativeAdView = isMaxNativeAdView ? (MaxNativeAdView) container : null;
 
+            final NativeAdViewBinder binder = new NativeAdViewBinder()
+            {
+                @Nullable private View        pluginTitleView;
+                @Nullable private View        pluginDescriptionView;
+                @Nullable private View        pluginCtaView;
+                @Nullable private View        pluginAdvertisingView;
+                @Nullable private MediaAdView pluginMediaAdView;
+                @Nullable private IconAdView  pluginIconAdView;
+                @Nullable private View        pluginStarsRatingView;
+
+                {
+                    if ( !isMaxNativeAdView )
+                    {
+                        mapClickableViewsForPlugins( clickableViews );
+                    }
+                }
+
+                private void mapClickableViewsForPlugins(final List<View> views)
+                {
+                    if ( views == null )
+                    {
+                        return;
+                    }
+
+                    for ( final View view : views )
+                    {
+                        final Object viewTag = view.getTag();
+                        if ( viewTag == null )
+                        {
+                            continue;
+                        }
+
+                        final int tag = (int) viewTag;
+
+                        if ( tag == TITLE_LABEL_TAG )
+                        {
+                            pluginTitleView = view;
+                        }
+                        else if ( tag == ICON_VIEW_TAG )
+                        {
+                            if ( view instanceof IconAdView )
+                            {
+                                pluginIconAdView = (IconAdView) view;
+                            }
+                        }
+                        else if ( tag == BODY_VIEW_TAG )
+                        {
+                            pluginDescriptionView = view;
+                        }
+                        else if ( tag == CALL_TO_ACTION_VIEW_TAG )
+                        {
+                            pluginCtaView = view;
+                        }
+                        else if ( tag == MEDIA_VIEW_CONTAINER_TAG )
+                        {
+                            final View mediaView = getMediaView();
+                            if ( mediaView instanceof MediaAdView )
+                            {
+                                pluginMediaAdView = (MediaAdView) mediaView;
+                            }
+                        }
+                        else if ( tag == RATING_VIEW_TAG )
+                        {
+                            pluginStarsRatingView = view;
+                        }
+                        else if ( tag == ADVERTISER_VIEW_TAG )
+                        {
+                            pluginAdvertisingView = view;
+                        }
+                    }
+                }
+
+                @NonNull
+                @Override
+                public ViewGroup getRootAdView()
+                {
+                    return container;
+                }
+
+                @Nullable
+                @Override
+                public MediaAdView getMediaAdView()
+                {
+                    if ( isMaxNativeAdView )
+                    {
+                        final View mediaView = getMediaView();
+                        return ( mediaView instanceof MediaAdView ) ? (MediaAdView) mediaView : null;
+                    }
+
+                    return pluginMediaAdView;
+                }
+
+                @Nullable
+                @Override
+                public IconAdView getIconView()
+                {
+                    return isMaxNativeAdView ? null : pluginIconAdView;
+                }
+
+                @Nullable
+                @Override
+                public View getTitleView()
+                {
+                    return isMaxNativeAdView && maxNativeAdView != null ? maxNativeAdView.getTitleTextView() : pluginTitleView;
+                }
+
+                @Nullable
+                @Override
+                public View getDescriptionView()
+                {
+                    return isMaxNativeAdView && maxNativeAdView != null ? maxNativeAdView.getBodyTextView() : pluginDescriptionView;
+                }
+
+                @Nullable
+                @Override
+                public View getCtaView()
+                {
+                    return isMaxNativeAdView && maxNativeAdView != null ? maxNativeAdView.getCallToActionButton() : pluginCtaView;
+                }
+
+                @Nullable
+                @Override
+                public View getAdvertisingView()
+                {
+                    return isMaxNativeAdView && maxNativeAdView != null ? maxNativeAdView.getAdvertiserTextView() : pluginAdvertisingView;
+                }
+
+                @Nullable
+                @Override
+                public View getAdChoicesView()
+                {
+                    return getOptionsView();
+                }
+
+                @Nullable
+                @Override
+                public View getAgeRestrictionView()
+                {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public View getDisclaimerView()
+                {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public View getDomainOrCategoryView()
+                {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public PromoCardRecyclerView getPromoCardRecyclerView()
+                {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public View getStarsRatingView()
+                {
+                    if ( isMaxNativeAdView && maxNativeAdView != null )
+                    {
+                        return maxNativeAdView.getStarRatingContentViewGroup();
+                    }
+
+                    return pluginStarsRatingView;
+                }
+
+                @Nullable
+                @Override
+                public View getVotesView()
+                {
+                    return null;
+                }
+            };
+
+            nativeAd.registerView( binder, clickableViews );
             return true;
         }
     }
