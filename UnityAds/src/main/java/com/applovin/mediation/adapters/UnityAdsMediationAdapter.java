@@ -310,7 +310,7 @@ public class UnityAdsMediationAdapter
         // Every ad needs a random ID associated with each load and show
         biddingAdId = UUID.randomUUID().toString();
 
-        bannerView = new BannerView( activity, placementId, toUnityBannerSize( adFormat ) );
+        bannerView = new BannerView( activity, placementId, toUnityBannerSize( parameters, adFormat, activity ) );
         bannerView.setListener( new BannerView.IListener()
         {
             @Override
@@ -401,6 +401,32 @@ public class UnityAdsMediationAdapter
         }
     }
 
+    private UnityBannerSize toUnityBannerSize(final MaxAdapterResponseParameters parameters,
+                                               final MaxAdFormat adFormat,
+                                               final Context context)
+    {
+        final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+
+        if ( isAdaptiveBanner && AppLovinSdk.VERSION_CODE >= 13_02_00_99 && adFormat != MaxAdFormat.MREC )
+        {
+            int width = getAdaptiveAdViewWidth( parameters, context );
+            if ( width <= 0 ) width = adFormat.getSize().getWidth();
+
+            if ( isInlineAdaptiveAdView( parameters ) )
+            {
+                final int maxHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+                if ( maxHeight > 0 ) return new UnityBannerSize( width, maxHeight );
+
+                return new UnityBannerSize( width, getAdaptiveMaxHeight( context ) );
+            }
+
+            final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( width, context ).getHeight();
+            return new UnityBannerSize( width, anchoredHeight );
+        }
+
+        return toUnityBannerSize( adFormat );
+    }
+
     private UnityBannerSize toUnityBannerSize(final MaxAdFormat adFormat)
     {
         if ( adFormat == MaxAdFormat.BANNER )
@@ -419,6 +445,13 @@ public class UnityAdsMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private int getAdaptiveMaxHeight(final Context context)
+    {
+        final float screenHeightDp = context.getResources().getDisplayMetrics().heightPixels
+                / context.getResources().getDisplayMetrics().density;
+        return (int) Math.min( 90, Math.max( 50, Math.round( screenHeightDp * 0.15f ) ) );
     }
 
     private static MaxAdapterError toMaxError(final BannerErrorInfo unityAdsBannerError)
