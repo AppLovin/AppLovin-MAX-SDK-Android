@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.7.3.1
+* Add `adapterAdFormat` tracking and adaptive banner size mismatch logging for Vungle SDK.
+
 ## 7.7.3.0
 * Certified with Vungle SDK 7.7.3.
 
