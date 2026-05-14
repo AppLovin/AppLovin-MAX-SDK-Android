@@ -1,5 +1,8 @@
 # Changelog
 
+## 3000.1.1.0
+* Certified with Line SDK 3.1.1.
+
 ## 3000.0.1.0
 * Certified with Line SDK 3.0.1.
 
