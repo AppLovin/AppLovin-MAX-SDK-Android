@@ -40,10 +40,12 @@ import com.yandex.mobile.ads.banner.BannerAdEventListener;
 import com.yandex.mobile.ads.banner.BannerAdSize;
 import com.yandex.mobile.ads.banner.BannerAdView;
 import com.yandex.mobile.ads.common.AdError;
+import com.yandex.mobile.ads.common.AdInfo;
 import com.yandex.mobile.ads.common.AdRequest;
 import com.yandex.mobile.ads.common.AdRequestConfiguration;
 import com.yandex.mobile.ads.common.AdRequestError;
 import com.yandex.mobile.ads.common.AdType;
+import com.yandex.mobile.ads.common.Creative;
 import com.yandex.mobile.ads.common.BidderTokenLoadListener;
 import com.yandex.mobile.ads.common.BidderTokenLoader;
 import com.yandex.mobile.ads.common.BidderTokenRequestConfiguration;
@@ -70,6 +72,8 @@ import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -607,6 +611,36 @@ public class YandexMediationAdapter
         return new MaxAdapterError( adapterError, yandexError.getCode(), yandexError.getDescription() );
     }
 
+    private Bundle createCreativeExtraInfo(@Nullable final AdInfo adInfo)
+    {
+        if ( adInfo == null ) return null;
+
+        List<Creative> creatives = adInfo.getCreatives();
+        if ( creatives == null || creatives.isEmpty() ) return null;
+
+        List<String> creativeIds = new ArrayList<>();
+        for ( Creative creative : creatives )
+        {
+            String id = creative.getCreativeId();
+            if ( AppLovinSdkUtils.isValidString( id ) )
+            {
+                creativeIds.add( id );
+            }
+        }
+
+        return createCreativeExtraInfo( creativeIds );
+    }
+
+    private Bundle createCreativeExtraInfo(@Nullable final List<String> creativeIds)
+    {
+        if ( creativeIds == null || creativeIds.isEmpty() ) return null;
+
+        Bundle extraInfo = new Bundle( 2 );
+        extraInfo.putString( "creative_id", TextUtils.join( ",", creativeIds ) );
+        extraInfo.putStringArray( "creative_ids", creativeIds.toArray( new String[0] ) );
+        return extraInfo;
+    }
+
     //endregion
 
     //region Ad Listeners
@@ -628,7 +662,9 @@ public class YandexMediationAdapter
         {
             log( "Interstitial ad loaded" );
             YandexMediationAdapter.this.interstitialAd = interstitialAd;
-            listener.onInterstitialAdLoaded();
+
+            Bundle extraInfo = createCreativeExtraInfo( interstitialAd.getInfo() );
+            listener.onInterstitialAdLoaded( extraInfo );
         }
 
         @Override
@@ -704,7 +740,9 @@ public class YandexMediationAdapter
         {
             log( "Rewarded ad loaded" );
             YandexMediationAdapter.this.rewardedAd = rewardedAd;
-            listener.onRewardedAdLoaded();
+
+            Bundle extraInfo = createCreativeExtraInfo( rewardedAd.getInfo() );
+            listener.onRewardedAdLoaded( extraInfo );
         }
 
         @Override
@@ -793,12 +831,18 @@ public class YandexMediationAdapter
         {
             log( adFormatLabel + " ad loaded" );
 
-            Bundle extraInfo = new Bundle( 2 );
+            Bundle extraInfo = new Bundle( 4 );
             if ( adView != null )
             {
                 BannerAdSize adSize = adView.getAdSize();
                 extraInfo.putInt( "ad_width", adSize.getWidth() );
                 extraInfo.putInt( "ad_height", adSize.getHeight() );
+
+                Bundle creativeInfo = createCreativeExtraInfo( adView.getAdInfo() );
+                if ( creativeInfo != null )
+                {
+                    extraInfo.putAll( creativeInfo );
+                }
             }
 
             listener.onAdViewAdLoaded( adView, extraInfo );
@@ -906,7 +950,11 @@ public class YandexMediationAdapter
                     }
                     MaxNativeAd maxNativeAd = new MaxYandexNativeAd( builder );
 
-                    listener.onNativeAdLoaded( maxNativeAd, null );
+                    String creativeId = nativeAd.getCreativeId();
+                    Bundle extraInfo = AppLovinSdkUtils.isValidString( creativeId )
+                            ? createCreativeExtraInfo( Collections.singletonList( creativeId ) )
+                            : null;
+                    listener.onNativeAdLoaded( maxNativeAd, extraInfo );
                 }
             } );
         }
