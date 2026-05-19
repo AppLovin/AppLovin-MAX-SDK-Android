@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.1.0.0
+* Certified with Smaato SDK 23.1.0.
+
 ## 23.0.1.1
 * Added R8/ProGuard keeps for `com.verve.**` so in-app bidding works when minification is enabled (Smaato SDK 23.0.1+ / Verve NG).
 
