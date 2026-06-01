@@ -380,6 +380,15 @@ public class VerveMediationAdapter
             listener.onInterstitialAdLoadFailed( adapterError );
         }
 
+        // Note: This callback is available starting in HyBid SDK 3.9.0
+        // @Override
+        public void onInterstitialShowFailed(final Throwable error)
+        {
+            log( "Interstitial ad failed to display with error: " + error );
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onInterstitialAdDisplayFailed( adapterError );
+        }
+
         @Override
         public void onInterstitialImpression()
         {
@@ -426,6 +435,15 @@ public class VerveMediationAdapter
             log( "Rewarded ad failed to load with error: " + error );
             MaxAdapterError adapterError = toMaxError( error );
             listener.onRewardedAdLoadFailed( adapterError );
+        }
+
+        // Note: This callback is available starting in HyBid SDK 3.9.0
+        // @Override
+        public void onRewardedShowFailed(final Throwable error)
+        {
+            log( "Rewarded ad failed to display with error: " + error );
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onRewardedAdDisplayFailed( adapterError );
         }
 
         @Override
