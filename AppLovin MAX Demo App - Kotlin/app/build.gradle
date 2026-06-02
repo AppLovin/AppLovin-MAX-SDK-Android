@@ -8,12 +8,17 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "com.applovin.enterprise.apps.demoapp"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdk 34
         versionCode 10000
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Set maxAdUnitId in gradle.properties to use your MAX ad unit (with Bidscube mediation) for testing
+        buildConfigField "String", "MAX_AD_UNIT_ID", "\"${project.findProperty('maxAdUnitId') ?: 'YOUR_AD_UNIT_ID'}\""
+        resValue "string", "max_ad_unit_id", (project.findProperty('maxAdUnitId') ?: 'YOUR_AD_UNIT_ID').toString()
+        // Set adjustAppToken in gradle.properties to enable Adjust; leave unset to avoid "Malformed App Token" errors
+        buildConfigField "String", "ADJUST_APP_TOKEN", "\"${project.findProperty('adjustAppToken') ?: ''}\""
     }
     buildTypes {
         release {
@@ -27,6 +32,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.1"
@@ -59,6 +65,7 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
+    implementation 'androidx.browser:browser:1.6.0'
 
     implementation 'androidx.compose.runtime:runtime:1.1.0'
     implementation 'androidx.activity:activity-compose:1.3.0'

@@ -20,4 +20,9 @@
     <string name="activity_manual_native_late_binding_ad">Manual Late Bidding API</string>
 
     <string name="applovin"><b>App</b>Lovin</string>
+
+    <!-- Test placeholder when ad unit is not set (maxAdUnitId in gradle.properties) -->
+    <string name="test_placeholder_message">Тестовий перегляд: додайте maxAdUnitId у gradle.properties та створіть ad units у MAX Dashboard (dash.applovin.com), щоб завантажувати рекламу. Або запустіть Mediation Debugger з меню.</string>
+    <string name="test_placeholder_toast">Для тестової реклами вкажіть maxAdUnitId у gradle.properties та створіть ad units у MAX Dashboard.</string>
+    <string name="mediation_debugger_hint">Якщо Mediation Debugger не відкрився: додайте застосунок у MAX Dashboard (dash.applovin.com) з цим SDK Key та package name com.applovin.enterprise.apps.demoapp.</string>
 </resources>

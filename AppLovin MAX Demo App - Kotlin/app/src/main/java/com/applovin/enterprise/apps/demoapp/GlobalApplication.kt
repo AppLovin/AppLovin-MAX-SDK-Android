@@ -15,6 +15,10 @@ import java.util.concurrent.Executors
 
 class GlobalApplication : Application() {
 
+    @Volatile
+    var isSdkInitialized: Boolean = false
+        private set
+
     override fun onCreate() {
         super.onCreate()
 
@@ -36,13 +40,14 @@ class GlobalApplication : Application() {
             // Initialize the AppLovin SDK
             val sdk = AppLovinSdk.getInstance(this)
             sdk.initialize(initConfigBuilder.build()) {
-                // AppLovin SDK is initialized, start loading ads now or later if ad gate is reached
-
-                // Initialize Adjust SDK
-                val config = AdjustConfig(this, "{YourAppToken}", AdjustConfig.ENVIRONMENT_SANDBOX)
-                Adjust.onCreate(config)
-
-                registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
+                (this as? GlobalApplication)?.isSdkInitialized = true
+                // Initialize Adjust SDK only when a valid token is set (set in gradle.properties or BuildConfig)
+                val adjustToken = com.applovin.enterprise.apps.demoapp.BuildConfig.ADJUST_APP_TOKEN
+                if (adjustToken != null && adjustToken.isNotBlank() && !adjustToken.startsWith("{")) {
+                    val config = AdjustConfig(this, adjustToken, AdjustConfig.ENVIRONMENT_SANDBOX)
+                    Adjust.onCreate(config)
+                    registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
+                }
             }
 
             executor.shutdown()

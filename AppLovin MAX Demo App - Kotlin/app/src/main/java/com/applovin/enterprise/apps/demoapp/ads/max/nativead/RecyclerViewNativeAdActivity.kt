@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.nativeAds.adPlacer.MaxAdPlacer
@@ -27,7 +28,7 @@ class RecyclerViewNativeAdActivity : AppCompatActivity() {
         val originalAdapter = CustomRecyclerAdapter(this, sampleData)
 
         // Configure ad adapter
-        val settings = MaxAdPlacerSettings("YOUR_AD_UNIT_ID")
+        val settings = MaxAdPlacerSettings(BuildConfig.MAX_AD_UNIT_ID)
         settings.addFixedPosition(2)
         settings.addFixedPosition(8)
         settings.repeatingInterval = 6

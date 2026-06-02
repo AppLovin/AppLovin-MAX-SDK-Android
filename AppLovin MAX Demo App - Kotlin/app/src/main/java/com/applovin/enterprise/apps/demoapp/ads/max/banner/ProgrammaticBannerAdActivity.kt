@@ -2,13 +2,16 @@ package com.applovin.enterprise.apps.demoapp.ads.max.banner
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.TextView
+import android.widget.Toast
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
-
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdRevenueListener
@@ -25,6 +28,7 @@ import com.applovin.sdk.AppLovinSdkUtils
 class ProgrammaticBannerAdActivity : BaseAdActivity(),
         MaxAdViewAdListener, MaxAdRevenueListener {
     private lateinit var adView: MaxAdView
+    private var testPlaceholderView: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +37,7 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        adView = MaxAdView("YOUR_AD_UNIT_ID", this)
+        adView = MaxAdView(BuildConfig.MAX_AD_UNIT_ID, this)
 
         adView.setListener(this)
         adView.setRevenueListener(this)
@@ -42,7 +46,8 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
         val heightPx = AppLovinSdkUtils.dpToPx(this, if (isTablet) 90 else 50)
 
         adView.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx)
-        adView.setBackgroundColor(Color.BLACK)
+        // Opaque background required; use dark gray when ad may not load
+        adView.setBackgroundColor(0xFF2D2D2D.toInt())
 
         val rootView = findViewById<ViewGroup>(android.R.id.content)
         rootView.addView(adView)
@@ -64,6 +69,32 @@ class ProgrammaticBannerAdActivity : BaseAdActivity(),
 
     override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
+        if (isTestPlaceholderMode()) {
+            showTestPlaceholderBanner()
+        }
+    }
+
+    private fun showTestPlaceholderBanner() {
+        if (testPlaceholderView != null) return
+        val rootView = findViewById<ViewGroup>(android.R.id.content)
+        val placeholder = TextView(this).apply {
+            tag = "test_placeholder"
+            text = getString(R.string.test_placeholder_message)
+            setTextColor(Color.WHITE)
+            setBackgroundColor(0xFF2D2D2D.toInt())
+            setPadding(
+                AppLovinSdkUtils.dpToPx(this@ProgrammaticBannerAdActivity, 16),
+                AppLovinSdkUtils.dpToPx(this@ProgrammaticBannerAdActivity, 8),
+                AppLovinSdkUtils.dpToPx(this@ProgrammaticBannerAdActivity, 16),
+                AppLovinSdkUtils.dpToPx(this@ProgrammaticBannerAdActivity, 8)
+            )
+            textSize = 12f
+            gravity = Gravity.CENTER
+        }
+        val heightPx = AppLovinSdkUtils.dpToPx(this, 70)
+        placeholder.layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx)
+        rootView.addView(placeholder, 0)
+        testPlaceholderView = placeholder
     }
 
     override fun onAdHidden(ad: MaxAd) {

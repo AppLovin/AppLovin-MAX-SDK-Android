@@ -1,6 +1,7 @@
 package com.applovin.enterprise.apps.demoapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,6 +46,9 @@ abstract class BaseAdActivity : AppCompatActivity()
 
         callbacksAdapter.notifyItemInserted(callbacks.lastIndex)
     }
+
+    /** True when ad unit is not set (YOUR_AD_UNIT_ID) — show test placeholder / hints. */
+    protected fun isTestPlaceholderMode(): Boolean = BuildConfig.MAX_AD_UNIT_ID == "YOUR_AD_UNIT_ID"
 
     protected fun logAnonymousCallback()
     {

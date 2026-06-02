@@ -5,6 +5,7 @@ import android.view.View
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
@@ -29,7 +30,7 @@ class AppOpenAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        appOpenAd = MaxAppOpenAd("YOUR_AD_UNIT_ID", this)
+        appOpenAd = MaxAppOpenAd(BuildConfig.MAX_AD_UNIT_ID, this)
 
         appOpenAd.setListener(this)
         appOpenAd.setRevenueListener(this)

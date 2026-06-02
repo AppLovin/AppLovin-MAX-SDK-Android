@@ -1,0 +1,10 @@
+# Copy to gradle.properties and set your values to view test ads.
+# Create ad units in AppLovin MAX Dashboard (dash.applovin.com) for package:
+#   com.applovin.enterprise.apps.demoapp
+# Then add the Ad Unit ID below. Test Mode is already enabled for your device.
+
+# MAX Ad Unit ID (Banner / Interstitial / Rewarded use this single ID if you have one ad unit)
+maxAdUnitId=YOUR_AD_UNIT_ID
+
+# Optional: Adjust SDK (leave empty to avoid "Malformed App Token" in logs)
+# adjustAppToken=your_adjust_app_token
