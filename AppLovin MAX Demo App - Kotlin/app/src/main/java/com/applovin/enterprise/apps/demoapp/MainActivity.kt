@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -19,6 +20,7 @@ import com.applovin.enterprise.apps.demoapp.ads.max.InterstitialAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.RewardedAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.banner.BannerAdActivity
 import com.applovin.enterprise.apps.demoapp.ads.max.mrecs.MrecAdActivity
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.ads.max.nativead.NativeAdActivity
 import com.applovin.enterprise.apps.demoapp.data.main.DemoMenuItem
 import com.applovin.enterprise.apps.demoapp.data.main.Footer
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity(),
         items.add(DemoMenuItem("Banners", Intent(this, BannerAdActivity::class.java)))
         items.add(DemoMenuItem("MRECs", Intent(this, MrecAdActivity::class.java)))
         items.add(DemoMenuItem("Native Ads", Intent(this, NativeAdActivity::class.java)))
-        items.add(DemoMenuItem("Launch Mediation Debugger", Runnable({ AppLovinSdk.getInstance(applicationContext).showMediationDebugger() })))
+        items.add(DemoMenuItem("Launch Mediation Debugger", Runnable { launchMediationDebugger() }))
         items.add(SectionHeader("SUPPORT"))
         items.add(DemoMenuItem("Visit our Support Site", Intent(Intent.ACTION_VIEW, Uri.parse("https://support.applovin.com/hc/en-us"))))
         items.add(Footer())
@@ -71,6 +73,12 @@ class MainActivity : AppCompatActivity(),
 
         // Check that SDK key is present in Android Manifest
         checkSdkKey()
+        // Hint for test ad viewing when ad unit is not set
+        if (BuildConfig.MAX_AD_UNIT_ID == "YOUR_AD_UNIT_ID") {
+            recyclerView.postDelayed({
+                Toast.makeText(this, R.string.test_placeholder_toast, Toast.LENGTH_LONG).show()
+            }, 1500)
+        }
     }
 
     override fun onItemClicked(item: ListItem) {
@@ -81,6 +89,14 @@ class MainActivity : AppCompatActivity(),
                 item.runnable.run();
             }
         }
+    }
+
+    private fun launchMediationDebugger() {
+        AppLovinSdk.getInstance(applicationContext).showMediationDebugger()
+        // Mediation Debugger may fail if app is not in MAX Dashboard; show hint after a short delay
+        window.decorView.postDelayed({
+            Toast.makeText(this, R.string.mediation_debugger_hint, Toast.LENGTH_LONG).show()
+        }, 2500)
     }
 
     private fun checkSdkKey() {

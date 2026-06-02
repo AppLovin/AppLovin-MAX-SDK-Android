@@ -1,6 +1,5 @@
 package com.applovin.enterprise.apps.demoapp.ads.max.mrecs
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -8,6 +7,7 @@ import androidx.core.view.ViewCompat
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.*
@@ -29,7 +29,7 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
 
         setupCallbacksRecyclerView()
 
-        adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
+        adView = MaxAdView(BuildConfig.MAX_AD_UNIT_ID, MaxAdFormat.MREC, this)
 
         adView.setListener(this)
         adView.setRevenueListener(this)
@@ -39,8 +39,8 @@ class ProgrammaticMrecAdActivity : BaseAdActivity(), MaxAdViewAdListener, MaxAdR
         val heightPx = AppLovinSdkUtils.dpToPx(this, 250)
         adView.layoutParams = ConstraintLayout.LayoutParams(widthPx, heightPx)
 
-        // Need to set the background or background color for MRECs to be fully functional.
-        adView.setBackgroundColor(Color.BLACK)
+        // Opaque background required; dark gray when ad may not load
+        adView.setBackgroundColor(0xFF2D2D2D.toInt())
 
         // Set up constraints
         val constraintLayout = findViewById<ConstraintLayout>(R.id.main_constraint_layout)

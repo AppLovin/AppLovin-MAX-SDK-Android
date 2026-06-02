@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.MaxAd
@@ -43,7 +44,7 @@ class ManualNativeAdActivity : BaseAdActivity() {
                 .build()
         nativeAdView = MaxNativeAdView(binder, this)
 
-        nativeAdLoader = MaxNativeAdLoader("YOUR_AD_UNIT_ID", this)
+        nativeAdLoader = MaxNativeAdLoader(BuildConfig.MAX_AD_UNIT_ID, this)
         nativeAdLoader.setRevenueListener(object : MaxAdRevenueListener {
             override fun onAdRevenuePaid(ad: MaxAd) {
                 logCallback()

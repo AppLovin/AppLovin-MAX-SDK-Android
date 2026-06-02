@@ -102,26 +102,27 @@ fun AppLovinAdViewComposable(
     val shouldLoadAd = viewModel.shouldLoadAd.collectAsState().value
     val context = LocalContext.current
 
+    // Opaque background required for ads. Dark gray for demo when ad may not load.
+    val adPlaceholderColor = Color(0xFF2D2D2D)
     val adViewModifier = when (adFormat) {
-        // Set background or background color for ads to be fully functional.
         AppLovinAdSize.BANNER -> Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         AppLovinAdSize.LEADER -> Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         AppLovinAdSize.MREC -> Modifier
             .width(300.dp)
             .height(250.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         else -> Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(adPlaceholderColor)
     }
 
     val adView = remember {

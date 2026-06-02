@@ -11,12 +11,12 @@
         android:id="@+id/mrec_ad_view"
         android:layout_width="@dimen/mrec_width"
         android:layout_height="@dimen/mrec_height"
-        android:background="@android:color/black"
+        android:background="#FF2D2D2D"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         maxads:adFormat="MREC"
-        maxads:adUnitId="YOUR_AD_UNIT_ID" />
+        maxads:adUnitId="@string/max_ad_unit_id" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/callbacksRecyclerView"

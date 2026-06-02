@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.enterprise.apps.demoapp.ui.BaseJetpackComposeAdActivity
 import com.applovin.enterprise.apps.demoapp.ui.composables.MaxAdViewComposable
@@ -32,7 +33,7 @@ class JetpackComposeMrecAdActivity : BaseJetpackComposeAdActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                MaxAdViewComposable("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, mrecViewModel)
+                MaxAdViewComposable(BuildConfig.MAX_AD_UNIT_ID, MaxAdFormat.MREC, mrecViewModel)
                 ListCallbacks()
             }
         }

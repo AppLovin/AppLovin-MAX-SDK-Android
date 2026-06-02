@@ -89,26 +89,27 @@ fun MaxAdViewComposable(
 ) {
     val context = LocalContext.current
 
+    // Opaque background required for ads to work. Use dark gray in demo when ad may not load (YOUR_AD_UNIT_ID).
+    val adPlaceholderColor = Color(0xFF2D2D2D)
     val adViewModifier = when (adFormat) {
-        // Set background or background color for ads to be fully functional.
         MaxAdFormat.BANNER -> Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         MaxAdFormat.LEADER -> Modifier
             .fillMaxWidth()
             .height(90.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         MaxAdFormat.MREC -> Modifier
             .width(300.dp)
             .height(250.dp)
-            .background(Color.Black)
+            .background(adPlaceholderColor)
 
         else -> Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(adPlaceholderColor)
     }
 
     val adView = remember {

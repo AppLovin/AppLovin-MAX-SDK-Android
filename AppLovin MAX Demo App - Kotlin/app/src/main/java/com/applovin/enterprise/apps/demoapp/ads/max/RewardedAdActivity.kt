@@ -3,11 +3,12 @@ package com.applovin.enterprise.apps.demoapp.ads.max
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.widget.Toast
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustAdRevenue
 import com.adjust.sdk.AdjustConfig
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
-
 import com.applovin.enterprise.apps.demoapp.ui.BaseAdActivity
 import com.applovin.mediation.*
 import com.applovin.mediation.ads.MaxRewardedAd
@@ -32,7 +33,7 @@ class RewardedAdActivity : BaseAdActivity(),
 
         setupCallbacksRecyclerView()
 
-        rewardedAd = MaxRewardedAd.getInstance("YOUR_AD_UNIT_ID", this)
+        rewardedAd = MaxRewardedAd.getInstance(BuildConfig.MAX_AD_UNIT_ID, this)
 
         rewardedAd.setListener(this)
         rewardedAd.setRevenueListener(this)
@@ -50,6 +51,8 @@ class RewardedAdActivity : BaseAdActivity(),
     fun showAd(view: View) {
         if (rewardedAd.isReady) {
             rewardedAd.showAd()
+        } else if (isTestPlaceholderMode()) {
+            Toast.makeText(this, R.string.test_placeholder_toast, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -65,12 +68,12 @@ class RewardedAdActivity : BaseAdActivity(),
 
     override fun onAdLoadFailed(adUnitId: String, error: MaxError) {
         logCallback()
-
+        if (isTestPlaceholderMode() && retryAttempt == 1) {
+            Toast.makeText(this, R.string.test_placeholder_toast, Toast.LENGTH_LONG).show()
+        }
         // Rewarded ad failed to load. We recommend retrying with exponentially higher delays up to a maximum delay (in this case 64 seconds).
-
         retryAttempt++
         val delayMillis = TimeUnit.SECONDS.toMillis(2.0.pow(min(6, retryAttempt)).toLong())
-
         Handler().postDelayed({ rewardedAd.loadAd() }, delayMillis)
     }
 

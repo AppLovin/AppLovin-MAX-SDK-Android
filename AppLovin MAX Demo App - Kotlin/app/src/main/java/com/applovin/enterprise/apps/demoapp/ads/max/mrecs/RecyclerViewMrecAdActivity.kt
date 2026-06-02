@@ -1,7 +1,6 @@
 package com.applovin.enterprise.apps.demoapp.ads.max.mrecs
 
 import android.app.Activity
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -11,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.applovin.enterprise.apps.demoapp.BuildConfig
 import com.applovin.enterprise.apps.demoapp.R
 import com.applovin.mediation.MaxAd
 import com.applovin.mediation.MaxAdFormat
@@ -49,7 +49,7 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
         }
 
         for (i in 0 until AD_VIEW_COUNT) {
-            val adView = MaxAdView("YOUR_AD_UNIT_ID", MaxAdFormat.MREC, this)
+            val adView = MaxAdView(BuildConfig.MAX_AD_UNIT_ID, MaxAdFormat.MREC, this)
             adView.setListener(this)
 
             // Set this extra parameter to work around SDK bug that ignores calls to stopAutoRefresh()
@@ -127,8 +127,8 @@ class RecyclerViewMrecAdActivity : AppCompatActivity(), MaxAdViewAdListener {
                 val widthPx = AppLovinSdkUtils.dpToPx(this@RecyclerViewMrecAdActivity, 300)
                 val heightPx = AppLovinSdkUtils.dpToPx(this@RecyclerViewMrecAdActivity, 250)
 
-                // Set background or background color for MRECs to be fully functional
-                this.adView!!.setBackgroundColor(Color.BLACK)
+                // Opaque background required; dark gray when ad may not load
+                this.adView!!.setBackgroundColor(0xFF2D2D2D.toInt())
                 this.adView!!.layoutParams = FrameLayout.LayoutParams(widthPx, heightPx, Gravity.CENTER)
                 (itemView as ViewGroup).addView(this.adView)
             }

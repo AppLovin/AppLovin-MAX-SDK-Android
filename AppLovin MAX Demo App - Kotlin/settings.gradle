@@ -1,2 +1,5 @@
 include ':app'
+// Optional: Bidscube SDK + adapter for testing. Uncomment and set path if bidscube-sdk-android is a sibling of AppLovin-MAX-SDK-Android.
+// def bidscubeRoot = new File(settingsDir, '../../bidscube-sdk-android')
+// if (bidscubeRoot.exists()) { include ':sdk'; project(':sdk').projectDir = new File(bidscubeRoot, 'sdk'); include ':applovin-adapter'; project(':applovin-adapter').projectDir = new File(bidscubeRoot, 'applovin-adapter') }
 rootProject.name='AppLovin MAX Demo App - Kotlin'
