@@ -33,14 +33,14 @@ import com.hs.adx.api.HellaAdsSdk;
 import com.hs.adx.bid.HSBidTokenProvider;
 import com.hs.adx.utils.AppUtils;
 
-public class ALHungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
+public class HungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
-    private static final String TAG = "ALHungryExchangeMediationAdapter";
+    private static final String TAG = "HungryExchangeMediationAdapter";
     private HSAdxBanner mHsBanner;
     private HSAdxInterstitial mInterstitial;
     private HSAdxReward mRewardedVideoAd;
 
-    public ALHungryExchangeMediationAdapter(AppLovinSdk appLovinSdk) {
+    public HungryExchangeMediationAdapter(AppLovinSdk appLovinSdk) {
         super(appLovinSdk);
     }
 
