@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
@@ -12,17 +13,20 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
-import com.applovin.mediation.adapters.inneractive.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
+import com.applovin.mediation.nativeAds.MaxNativeAdView;
 import com.applovin.sdk.AppLovinSdk;
 import com.fyber.inneractive.sdk.external.BidTokenProvider;
 import com.fyber.inneractive.sdk.external.ImpressionData;
@@ -38,18 +42,26 @@ import com.fyber.inneractive.sdk.external.InneractiveFullscreenAdEventsListenerW
 import com.fyber.inneractive.sdk.external.InneractiveFullscreenUnitController;
 import com.fyber.inneractive.sdk.external.InneractiveFullscreenVideoContentController;
 import com.fyber.inneractive.sdk.external.InneractiveUnitController;
+import com.fyber.inneractive.sdk.external.MediaView;
+import com.fyber.inneractive.sdk.external.NativeAdContent;
+import com.fyber.inneractive.sdk.external.NativeAdEventsListenerWithImpressionData;
+import com.fyber.inneractive.sdk.external.NativeAdUnitController;
 import com.fyber.inneractive.sdk.external.OnFyberMarketplaceInitializedListener;
 import com.fyber.inneractive.sdk.external.VideoContentListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import static com.applovin.sdk.AppLovinSdkUtils.isValidString;
 
 public class InneractiveMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter
+        implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter,
+        MaxNativeAdAdapter
 {
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
@@ -57,9 +69,11 @@ public class InneractiveMediationAdapter
     private InneractiveAdSpot interstitialSpot;
     private InneractiveAdSpot rewardedSpot;
     private InneractiveAdSpot adViewSpot;
+    private InneractiveAdSpot nativeSpot;
     private ViewGroup         adViewGroup;
 
     private boolean hasGrantedReward;
+    private NativeAdContent nativeAdContent;
 
     // Explicit default constructor declaration
     public InneractiveMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -135,6 +149,13 @@ public class InneractiveMediationAdapter
             adViewSpot = null;
         }
 
+        if ( nativeSpot != null )
+        {
+            nativeSpot.destroy();
+            nativeSpot = null;
+        }
+
+        nativeAdContent = null;
         adViewGroup = null;
     }
 
@@ -659,5 +680,191 @@ public class InneractiveMediationAdapter
     {
         // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    @Override
+    public void loadNativeAd(MaxAdapterResponseParameters maxAdapterResponseParameters,
+                             Activity activity,
+                             MaxNativeAdAdapterListener maxNativeAdAdapterListener)
+    {
+
+        if ( nativeSpot != null )
+        {
+            nativeSpot.destroy();
+            nativeSpot = null;
+        }
+
+        nativeSpot = InneractiveAdSpotManager.get().createSpot();
+
+        InneractiveAdSpot.NativeAdRequestListener spotListener = new InneractiveAdSpot.NativeAdRequestListener()
+        {
+            @Override
+            public void onInneractiveSuccessfulNativeAdRequest(InneractiveAdSpot adSpot, NativeAdContent adContent)
+            {
+                if ( nativeAdContent != null )
+                {
+                    nativeAdContent.destroy();
+                }
+                nativeAdContent = adContent;
+
+                adContent.bindMediaView( new MediaView( getContext( activity ) ) );
+
+                MaxNativeAd maxNativeAd = new MaxInneractiveNativeAd( createNativeAdBuilder( adContent ) );
+
+                maxNativeAdAdapterListener.onNativeAdLoaded( maxNativeAd, null );
+            }
+
+            @Override
+            public void onInneractiveFailedAdRequest(InneractiveAdSpot adSpot, InneractiveErrorCode errorCode)
+            {
+                MaxAdapterError adapterError = toMaxError( errorCode );
+
+                maxNativeAdAdapterListener.onNativeAdLoadFailed( adapterError );
+            }
+        };
+
+        nativeSpot.setRequestListener( spotListener );
+
+        NativeAdUnitController adUnitController = new NativeAdUnitController();
+        adUnitController.setEventsListener( new NativeAdEventsListenerWithImpressionData()
+        {
+            @Override
+            public void onAdImpression(InneractiveAdSpot adSpot, ImpressionData impressionData)
+            {
+                String creativeId = impressionData.getCreativeId();
+                Bundle extraInfo = null;
+                if ( !TextUtils.isEmpty( creativeId ) )
+                {
+                    extraInfo = new Bundle( 1 );
+                    extraInfo.putString( "creative_id", creativeId );
+                }
+
+                maxNativeAdAdapterListener.onNativeAdDisplayed( extraInfo );
+            }
+
+            @Override
+            public void onAdImpression(InneractiveAdSpot adSpot) { }
+
+            @Override
+            public void onAdClicked(InneractiveAdSpot adSpot)
+            {
+                maxNativeAdAdapterListener.onNativeAdClicked();
+            }
+
+            @Override
+            public void onAdWillCloseInternalBrowser(InneractiveAdSpot adSpot) { }
+
+            @Override
+            public void onAdWillOpenExternalApp(InneractiveAdSpot adSpot) { }
+        } );
+
+        nativeSpot.addUnitController( adUnitController );
+
+        if ( isValidString( maxAdapterResponseParameters.getBidResponse() ) )
+        {
+            nativeSpot.loadAd( maxAdapterResponseParameters.getBidResponse() );
+        }
+    }
+
+    @NonNull
+    private MaxNativeAd.Builder createNativeAdBuilder( @NonNull NativeAdContent adContent ) {
+        MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                .setAdFormat( MaxAdFormat.NATIVE );
+
+        if ( adContent.getAdTitle() != null ) {
+            builder.setTitle( adContent.getAdTitle() );
+        }
+
+        if ( adContent.getAdvertiserName() != null ) {
+            builder.setAdvertiser( adContent.getAdvertiserName() );
+        }
+
+        if ( adContent.getAdDescription() != null ) {
+            builder.setBody( adContent.getAdDescription() );
+        }
+
+        if ( adContent.getAdCallToAction() != null ) {
+            builder.setCallToAction( adContent.getAdCallToAction() );
+        }
+
+        if ( adContent.getAppIcon() != null ) {
+            builder.setIcon( new MaxNativeAd.MaxNativeAdImage( adContent.getAppIcon()) );
+        }
+
+        if ( adContent.getMediaView() != null ) {
+            builder.setMediaView( adContent.getMediaView() );
+        }
+
+        if ( adContent.getMediaAspectRatio() != null ) {
+            builder.setMediaContentAspectRatio( adContent.getMediaAspectRatio() );
+        }
+
+        if ( adContent.getRating() != null ) {
+            builder.setStarRating( ( double ) adContent.getRating() );
+        }
+
+        return builder;
+    }
+
+    private class MaxInneractiveNativeAd
+            extends MaxNativeAd
+    {
+
+        public MaxInneractiveNativeAd(Builder builder)
+        {
+            super( builder );
+        }
+
+        @Override
+        public boolean prepareForInteraction(List<View> list, ViewGroup viewGroup)
+        {
+            if ( viewGroup instanceof MaxNativeAdView )
+            {
+                MaxNativeAdView maxNativeAdView = (MaxNativeAdView) viewGroup;
+                if ( list == null )
+                {
+                    list = new ArrayList<>();
+                }
+
+                maxNativeAdView.setTag( NativeAdContent.ViewTag.ROOT );
+                list.add( maxNativeAdView );
+
+                addTaggedViewToList( maxNativeAdView.getMediaContentViewGroup(),
+                        NativeAdContent.ViewTag.MEDIA_VIEW, list );
+
+                addTaggedViewToList( maxNativeAdView.getIconImageView(),
+                        NativeAdContent.ViewTag.AD_ICON, list );
+
+                addTaggedViewToList( maxNativeAdView.getCallToActionButton(),
+                        NativeAdContent.ViewTag.CTA, list );
+
+                addTaggedViewToList( maxNativeAdView.getTitleTextView(),
+                        NativeAdContent.ViewTag.AD_TITLE, list );
+
+                addTaggedViewToList( maxNativeAdView.getBodyTextView(),
+                        NativeAdContent.ViewTag.AD_DESCRIPTION, list );
+
+                addTaggedViewToList( maxNativeAdView.getStarRatingContentViewGroup(),
+                        NativeAdContent.ViewTag.RATING, list );
+
+                nativeAdContent.registerViewsForInteraction( maxNativeAdView,
+                        nativeAdContent.getMediaView(),
+                        maxNativeAdView.getIconImageView(),
+                        list );
+            }
+            return true;
+        }
+
+        private void addTaggedViewToList(@Nullable View view, @NonNull String tag, @NonNull List<View> list)
+        {
+            if ( view != null )
+            {
+                view.setTag( tag );
+                if ( !list.contains( view ) )
+                {
+                    list.add( view );
+                }
+            }
+        }
     }
 }
