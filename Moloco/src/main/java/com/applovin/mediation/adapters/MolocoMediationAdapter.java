@@ -35,6 +35,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.moloco.sdk.publisher.AdLoad;
 import com.moloco.sdk.publisher.Banner;
 import com.moloco.sdk.publisher.BannerAdShowListener;
+import com.moloco.sdk.publisher.BannerAdSize;
 import com.moloco.sdk.publisher.Initialization;
 import com.moloco.sdk.publisher.InterstitialAd;
 import com.moloco.sdk.publisher.InterstitialAdShowListener;
@@ -339,22 +340,8 @@ public class MolocoMediationAdapter
                 return Unit.INSTANCE;
             };
 
-            if ( adFormat == MaxAdFormat.BANNER )
-            {
-                Moloco.createBanner( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.LEADER )
-            {
-                Moloco.createBannerTablet( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.MREC )
-            {
-                Moloco.createMREC( mediationInfo, placementId, null, createCallback );
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
-            }
+            final BannerAdSize bannerAdSize = resolveAdViewAdSize( adFormat, parameters );
+            Moloco.createMolocoBanner( mediationInfo, placementId, bannerAdSize, null, createCallback );
         }
     }
 
@@ -926,5 +913,108 @@ public class MolocoMediationAdapter
 
             return true;
         }
+    }
+
+    // -----------------------------------------------------------------------------------------//
+    // Publisher sets MaxAdViewConfiguration.AdaptiveType (INLINE / ANCHORED) in their app.
+    // AppLovin MAX translates that into localExtraParameters for the adapter:
+    //   "adaptive_banner_type"            → "inline" | "anchored" (or absent = anchored default)
+    //   "adaptive_banner_width"           → Integer dp width (optional, falls back to display width)
+    //
+    // Format rules :
+    //   BANNER  + any adaptive type  → InlineAdaptive / AnchoredAdaptive
+    //   LEADER  + any adaptive type  → InlineAdaptive / AnchoredAdaptive
+    //   MREC    + INLINE only        → InlineAdaptive  (anchored MREC is fixed 300×250)
+    //   MREC    + ANCHORED / absent  → fixed MREC (BannerAdSize.MREC)
+    // -----------------------------------------------------------------------------------------
+
+    private static final String ADAPTIVE_BANNER_KEY         = "adaptive_banner";
+    private static final String ADAPTIVE_BANNER_TYPE_KEY    = "adaptive_banner_type";
+    private static final String ADAPTIVE_BANNER_WIDTH_KEY   = "adaptive_banner_width";
+    private static final String ADAPTIVE_BANNER_TYPE_INLINE = "inline";
+
+    /**
+     * Returns {@code true} when the ad unit has adaptive banner enabled via the AppLovin dashboard
+     * server parameter {@code "adaptive_banner"}. This is the on/off gate — without it, neither
+     * inline nor anchored adaptive sizing is applied regardless of {@code adaptive_banner_type}.
+     */
+    static boolean isAdaptiveBannerEnabled(@NonNull final MaxAdapterParameters parameters) {
+        return parameters.getServerParameters().getBoolean(ADAPTIVE_BANNER_KEY, false);
+    }
+
+    /**
+     * Returns {@code true} when the publisher configured
+     * {@link com.applovin.mediation.MaxAdViewConfiguration.AdaptiveType#INLINE}.
+     * AppLovin automatically propagates that into {@code localExtraParameters["adaptive_banner_type"] = "inline"}.
+     * Only meaningful when {@link #isAdaptiveBannerEnabled} is {@code true}.
+     */
+    static boolean isInlineAdaptiveBanner(@NonNull final MaxAdapterParameters parameters) {
+        final Object type = parameters.getLocalExtraParameters().get(ADAPTIVE_BANNER_TYPE_KEY);
+        return (type instanceof String) && ADAPTIVE_BANNER_TYPE_INLINE.equalsIgnoreCase((String) type);
+    }
+
+    /**
+     * Returns {@code true} when this format supports adaptive sizing for the given parameters.
+     * BANNER and LEADER support both INLINE and ANCHORED; MREC supports INLINE only
+     * (there is no anchored adaptive MREC — it stays fixed 300×250).
+     */
+    static boolean isAdaptiveAdFormat(@NonNull final MaxAdFormat adFormat,
+                                      @NonNull final MaxAdapterParameters parameters) {
+        // Adaptive banners must be inline for MRECs.
+        final boolean isInlineAdaptiveMRec = (adFormat == MaxAdFormat.MREC) && isInlineAdaptiveBanner(parameters);
+        return isInlineAdaptiveMRec || adFormat == MaxAdFormat.BANNER || adFormat == MaxAdFormat.LEADER;
+    }
+
+    /**
+     * Returns the publisher-supplied adaptive banner width in dp, or {@code null} when the
+     * publisher did not specify one. {@code null} tells the Moloco SDK to fill the container
+     * ({@code MATCH_PARENT}), which is the correct default when no explicit width hint is given.
+     */
+    @Nullable
+    static Integer getAdaptiveBannerWidthDp(@NonNull final MaxAdapterParameters parameters) {
+        final Object widthObj = parameters.getLocalExtraParameters().get(ADAPTIVE_BANNER_WIDTH_KEY);
+        return (widthObj instanceof Integer) ? (int) widthObj : null;
+    }
+
+    /**
+     * Maps a {@link MaxAdFormat} + {@link MaxAdapterParameters} to the appropriate
+     * {@link BannerAdSize} for the Moloco SDK.
+     *
+     * <ol>
+     *   <li><b>Gate 1 — {@code serverParameters["adaptive_banner"]}</b>: set on the AppLovin
+     *       dashboard for the ad unit. When false/absent the placement is fixed-size.</li>
+     *   <li><b>Gate 2 — {@code localExtraParameters["adaptive_banner_type"]}</b>: set
+     *       automatically by AppLovin from the publisher's {@link com.applovin.mediation.MaxAdViewConfiguration}.
+     *       {@code "inline"} → {@link BannerAdSize.InlineAdaptive};
+     *       absent/other → {@link BannerAdSize.AnchoredAdaptive} (anchored is the default).</li>
+     * </ol>
+     *
+     * <p>MREC is adaptive only with INLINE type; anchored adaptive MREC does not exist.
+     *
+     * @throws IllegalArgumentException if {@code adFormat} is none of BANNER, LEADER, MREC or ADAPTIVE
+     *         (i.e. not a supported AdView format).
+     */
+    static BannerAdSize resolveAdViewAdSize(@NonNull final MaxAdFormat adFormat,
+                                            @NonNull final MaxAdapterParameters parameters) {
+        // Gate 1: adaptive_banner serverParameter must be enabled.
+        if (isAdaptiveBannerEnabled(parameters) && isAdaptiveAdFormat(adFormat, parameters)) {
+            // Gate 2: adaptive_banner_type distinguishes inline from anchored.
+            // Width is null when the publisher did not call setAdaptiveWidth() — the SDK
+            // uses MATCH_PARENT in that case, which is the correct default.
+            final Integer widthDp = getAdaptiveBannerWidthDp(parameters);
+            if (isInlineAdaptiveBanner(parameters)) {
+                return new BannerAdSize.InlineAdaptive(widthDp);
+            } else {
+                // Anchored is the default when type is absent or explicitly "anchored".
+                return new BannerAdSize.AnchoredAdaptive(widthDp);
+            }
+        }
+
+        // Fixed sizes — adaptive not enabled, or MREC without inline type.
+        if (adFormat == MaxAdFormat.BANNER) return BannerAdSize.Standard.INSTANCE;
+        if (adFormat == MaxAdFormat.LEADER) return BannerAdSize.Tablet.INSTANCE;
+        if (adFormat == MaxAdFormat.MREC) return BannerAdSize.MREC.INSTANCE;
+
+        throw new IllegalArgumentException("Unsupported ad format: " + adFormat);
     }
 }
