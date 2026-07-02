@@ -158,7 +158,7 @@ public class VerveMediationAdapter
     {
         log( "Showing interstitial ad..." );
 
-        if ( interstitialAd.isReady() )
+        if ( interstitialAd != null && interstitialAd.isReady() )
         {
             interstitialAd.show();
         }
@@ -196,7 +196,7 @@ public class VerveMediationAdapter
     {
         log( "Showing rewarded ad..." );
 
-        if ( rewardedAd.isReady() )
+        if ( rewardedAd != null && rewardedAd.isReady() )
         {
             configureReward( parameters );
             rewardedAd.show();
@@ -334,11 +334,11 @@ public class VerveMediationAdapter
                     adapterError = MaxAdapterError.NOT_INITIALIZED;
                     break;
                 case AUCTION_NO_AD:
+                    adapterError = MaxAdapterError.NO_FILL;
+                    break;
                 case ERROR_RENDERING_BANNER:
                 case ERROR_RENDERING_INTERSTITIAL:
                 case ERROR_RENDERING_REWARDED:
-                    adapterError = MaxAdapterError.AD_NOT_READY;
-                    break;
                 case INTERNAL_ERROR:
                     adapterError = MaxAdapterError.INTERNAL_ERROR;
                     break;
@@ -378,6 +378,15 @@ public class VerveMediationAdapter
             log( "Interstitial ad failed to load with error: " + error );
             MaxAdapterError adapterError = toMaxError( error );
             listener.onInterstitialAdLoadFailed( adapterError );
+        }
+
+        // Note: This callback is available starting in HyBid SDK 3.9.0
+        // @Override
+        public void onInterstitialShowFailed(final Throwable error)
+        {
+            log( "Interstitial ad failed to display with error: " + error );
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onInterstitialAdDisplayFailed( adapterError );
         }
 
         @Override
@@ -426,6 +435,15 @@ public class VerveMediationAdapter
             log( "Rewarded ad failed to load with error: " + error );
             MaxAdapterError adapterError = toMaxError( error );
             listener.onRewardedAdLoadFailed( adapterError );
+        }
+
+        // Note: This callback is available starting in HyBid SDK 3.9.0
+        // @Override
+        public void onRewardedShowFailed(final Throwable error)
+        {
+            log( "Rewarded ad failed to display with error: " + error );
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onRewardedAdDisplayFailed( adapterError );
         }
 
         @Override
