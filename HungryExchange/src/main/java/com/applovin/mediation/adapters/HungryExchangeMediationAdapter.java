@@ -3,6 +3,8 @@ package com.applovin.mediation.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -30,8 +32,11 @@ import com.hs.adx.ad.base.IAdListener;
 import com.hs.adx.ad.core.AdError;
 import com.hs.adx.api.HellaAd;
 import com.hs.adx.api.HellaAdsSdk;
+import com.hs.adx.api.HsAdSetting;
 import com.hs.adx.bid.HSBidTokenProvider;
 import com.hs.adx.utils.AppUtils;
+import com.hs.adx.utils.log.Logger;
+import com.hs.adx.vast.utils.Constants;
 
 public class HungryExchangeMediationAdapter extends MediationAdapterBase implements MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxSignalProvider {
 
@@ -48,36 +53,49 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
     public void initialize(MaxAdapterInitializationParameters maxAdapterInitializationParameters, Activity activity, OnCompletionListener onCompletionListener) {
         try {
             if (HellaAdsSdk.hasInitialized()) {
-                log("has init hs-sdk return");
+                Logger.d(TAG, "has init hs-sdk return");
                 onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, null);
                 return;
             }
 
             final Bundle serverParameters = maxAdapterInitializationParameters.getServerParameters();
             final String appId = serverParameters.getString("app_id");
-            log("Initializing appId = " + appId);
-            HellaAdsSdk.init(getContext(activity), appId, new HellaAdsSdk.OnInitListener() {
+            Logger.d(TAG, "Initializing appId = " + appId);
+            String distinctId = null;
+            try {
+                distinctId = AppLovinSdk.getInstance(activity).getSettings().getUserIdentifier();
+                Logger.d(TAG, "Initializing from max getUserIdentifier=" + distinctId);
+            } catch (Exception e) {
+            }
+
+            HsAdSetting adSetting = null;
+            if (!TextUtils.isEmpty(distinctId)) {
+                adSetting = new HsAdSetting.Builder().setSSId(distinctId)
+                        .build();
+            }
+
+            HellaAdsSdk.init(getContext(activity), appId, adSetting, new HellaAdsSdk.OnInitListener() {
                 @Override
                 public void onInitSuccess() {
-                    log("Initializing HS Ads success");
+                    Logger.d(TAG, "Initializing HS Ads success");
                     onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_SUCCESS, null);
                 }
 
                 @Override
                 public void onInitFail(String errorMsg) {
-                    log("Initializing HS Ads fail =" + errorMsg);
+                    Logger.d(TAG, "Initializing HS Ads fail =" + errorMsg);
                     onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, errorMsg);
                 }
             });
         } catch (Exception e) {
-            log("Initializing HS Ads has encountered an exception." + e.getMessage());
+            Logger.d(TAG, "Initializing HS Ads has encountered an exception." + e.getMessage());
             onCompletionListener.onCompletion(InitializationStatus.INITIALIZED_FAILURE, e.getMessage());
         }
     }
 
     @Override
     public void collectSignal(final MaxAdapterSignalCollectionParameters parameters, @Nullable final Activity activity, final MaxSignalCollectionListener callback) {
-        log("Collecting signal...");
+        Logger.d(TAG, "Collecting signal...");
         HSBidTokenProvider.getBidderToken(new HSBidTokenProvider.IBiddingTokenCallbackListener() {
             @Override
             public void onBiddingTokenCollected(String bidToken) {
@@ -93,30 +111,38 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
 
     @Override
     public void loadAdViewAd(MaxAdapterResponseParameters maxAdapterResponseParameters, MaxAdFormat maxAdFormat, Activity activity, MaxAdViewAdapterListener maxAdViewAdapterListener) {
+        String adUnitId = maxAdapterResponseParameters.getAdUnitId();
         String mPlacementId = maxAdapterResponseParameters.getThirdPartyAdPlacementId();
         String bidResponse = maxAdapterResponseParameters.getBidResponse();
-        log("HsBanner Ads load mPlacementId = " + mPlacementId+ ", bidResponse=" + bidResponse);
-        boolean isAdaptiveAdViewEnabled = maxAdapterResponseParameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        Logger.d(TAG, "HsBanner Ads load mPlacementId = " + mPlacementId + ", adUnitId=" + adUnitId);
+
+        boolean isAdaptiveAdViewEnabled = maxAdapterResponseParameters.getServerParameters().getBoolean("adaptive_banner", false);
         mHsBanner = new HSAdxBanner(mPlacementId);
         mHsBanner.setAdSize(getBannerAdSize(maxAdFormat, isAdaptiveAdViewEnabled, maxAdapterResponseParameters, getContext(activity)));
         mHsBanner.setAdLoadListener(new IAdListener.AdLoadListener() {
             @Override
             public void onAdLoaded(HellaAd hellaAd) {
-                log("adapter onAdLoaded");
-                Bundle extraInfo = hellaAd.getExtraBundle();
-                if (extraInfo == null) {
-                    extraInfo = new Bundle();
-                }
-                if (mHsBanner.getAdView() != null) {
-                    extraInfo.putInt("ad_width", mHsBanner.getAdView().getWidth());
-                    extraInfo.putInt("ad_height", mHsBanner.getAdView().getHeight());
-                }
-                maxAdViewAdapterListener.onAdViewAdLoaded(mHsBanner.getAdView(), extraInfo);
+                Logger.d(TAG, "banner bidding adapter onAdLoaded hellaAd=" + hellaAd);
+//                Bundle extraInfo = null;
+//                if (hellaAd != null) {
+//                    extraInfo = hellaAd.getExtraBundle();
+//                    if (extraInfo == null) {
+//                        extraInfo = new Bundle();
+//                    }
+//                }
+                View adView = mHsBanner.getAdView();
+//                if (adView != null && extraInfo != null) {
+//                    extraInfo.putInt("ad_width", adView.getWidth());
+//                    extraInfo.putInt("ad_height", adView.getHeight());
+//                    Logger.d(TAG,"banner bidding adapter extraInfo=" + extraInfo.toString());
+//                }
+
+                maxAdViewAdapterListener.onAdViewAdLoaded(adView);
             }
 
             @Override
             public void onAdLoadError(AdError adError) {
-                log("adapter onAdLoadError");
+                Logger.d(TAG, "adapter onAdLoadError");
                 MaxAdapterError error = getMaxAdapterError(adError);
                 maxAdViewAdapterListener.onAdViewAdLoadFailed(error);
             }
@@ -125,25 +151,25 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
             @Override
             public void onAdImpressionError(AdError error) {
                 final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
-                log("adapter onAdImpressionError");
+                Logger.d(TAG, "adapter onAdImpressionError");
                 maxAdViewAdapterListener.onAdViewAdDisplayFailed(adapterError);
             }
 
             @Override
             public void onAdImpression(HellaAd hellaAd) {
-                log("adapter onAdImpression");
+                Logger.d(TAG, "adapter onAdImpression");
                 maxAdViewAdapterListener.onAdViewAdDisplayed(hellaAd.getExtraBundle());
             }
 
             @Override
             public void onAdClicked(HellaAd hellaAd) {
-                log("adapter onAdClicked");
+                Logger.d(TAG, "adapter onAdClicked");
                 maxAdViewAdapterListener.onAdViewAdClicked(hellaAd.getExtraBundle());
             }
 
             @Override
             public void onAdRevenue(HellaAd hellaAd) {
-                log("adapter onAdRevenue=" + hellaAd.getRevenue());
+                Logger.d(TAG, "adapter onAdRevenue=" + hellaAd.getRevenue());
             }
 
             @Override
@@ -153,10 +179,11 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
 
             @Override
             public void onAdClosed(boolean hasRewarded, HellaAd hellaAd) {
-                log("adapter onAdClosed");
+                Logger.d(TAG, "adapter onAdClosed");
                 maxAdViewAdapterListener.onAdViewAdHidden(hellaAd.getExtraBundle());
             }
         });
+        mHsBanner.setMediationPlatform(Constants.MAX_MEDIATION_BIDDING);
         mHsBanner.load(bidResponse);
     }
 
@@ -271,14 +298,14 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
 
         @Override
         public void onAdLoaded(HellaAd hellaAd) {
-            log("Interstitial received");
+            Logger.d(TAG, "Interstitial received");
             listener.onInterstitialAdLoaded(hellaAd.getExtraBundle());
         }
 
         @Override
         public void onAdLoadError(AdError adError) {
             MaxAdapterError adapterError = getMaxAdapterError(adError);
-            log("Interstitial failed to load with error: " + adapterError);
+            Logger.d(TAG, "Interstitial failed to load with error: " + adapterError);
             listener.onInterstitialAdLoadFailed(adapterError);
         }
     }
@@ -293,19 +320,19 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
         @Override
         public void onAdImpressionError(AdError error) {
             final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
-            log("Interstitial failed to show with error: " + adapterError);
+            Logger.d(TAG, "Interstitial failed to show with error: " + adapterError);
             listener.onInterstitialAdDisplayFailed(adapterError);
         }
 
         @Override
         public void onAdImpression(HellaAd hellaAd) {
-            log("Interstitial impression");
+            Logger.d(TAG, "Interstitial impression");
             listener.onInterstitialAdDisplayed(hellaAd.getExtraBundle());
         }
 
         @Override
         public void onAdClicked(HellaAd hellaAd) {
-            log("Interstitial clicked");
+            Logger.d(TAG, "Interstitial clicked");
             listener.onInterstitialAdClicked(hellaAd.getExtraBundle());
         }
 
@@ -321,7 +348,7 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
 
         @Override
         public void onAdClosed(boolean hasRewarded, HellaAd hellaAd) {
-            log("Interstitial closed");
+            Logger.d(TAG, "Interstitial closed");
             listener.onInterstitialAdHidden(hellaAd.getExtraBundle());
         }
     }
@@ -330,12 +357,13 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
     public void loadInterstitialAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxInterstitialAdapterListener maxInterstitialAdapterListener) {
         String mPlacementId = maxAdapterResponseParameters.getThirdPartyAdPlacementId();
         String bidResponse = maxAdapterResponseParameters.getBidResponse();
-        log("HSInterstitial Ads load mPlacementId = " + mPlacementId + ", bidResponse=" + bidResponse);
+        Logger.d(TAG, "HSInterstitial Ads load mPlacementId = " + mPlacementId + ", bidResponse=" + bidResponse);
         mInterstitial = new HSAdxInterstitial(mPlacementId);
         if (maxInterstitialAdapterListener != null) {
             mInterstitial.setAdLoadListener(new InterstitialAdLoadListener(maxInterstitialAdapterListener));
             mInterstitial.setAdActionListener(new InterstitialAdActionListener(maxInterstitialAdapterListener));
         }
+        mInterstitial.setMediationPlatform(Constants.MAX_MEDIATION_BIDDING);
         mInterstitial.load(bidResponse);
     }
 
@@ -352,13 +380,14 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
     public void loadRewardedAd(MaxAdapterResponseParameters maxAdapterResponseParameters, Activity activity, MaxRewardedAdapterListener maxRewardedAdapterListener) {
         String mPlacementId = maxAdapterResponseParameters.getThirdPartyAdPlacementId();
         String bidResponse = maxAdapterResponseParameters.getBidResponse();
-        log("HSRewardedVideo Ads load mPlacementId = " + mPlacementId + ", bidResponse=" + bidResponse);
+        Logger.d(TAG, "HSRewardedVideo Ads load mPlacementId = " + mPlacementId + ", bidResponse=" + bidResponse);
 
         mRewardedVideoAd = new HSAdxReward(mPlacementId);
         if (maxRewardedAdapterListener != null) {
             mRewardedVideoAd.setAdLoadListener(new RewardAdLoadListener(maxRewardedAdapterListener));
             mRewardedVideoAd.setAdActionListener(new RewardAdActionListener(maxRewardedAdapterListener));
         }
+        mRewardedVideoAd.setMediationPlatform(Constants.MAX_MEDIATION_BIDDING);
         mRewardedVideoAd.load(bidResponse);
     }
 
@@ -401,19 +430,19 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
         @Override
         public void onAdImpressionError(AdError error) {
             final MaxAdapterError adapterError = new MaxAdapterError(MaxAdapterError.AD_DISPLAY_FAILED, error.getErrorCode(), error.getMessage());
-            log("Rewarded ad failed to show with error: " + adapterError);
+            Logger.d(TAG, "Rewarded ad failed to show with error: " + adapterError);
             listener.onRewardedAdDisplayFailed(adapterError);
         }
 
         @Override
         public void onAdImpression(HellaAd hellaAd) {
-            log("Rewarded ad impression");
+            Logger.d(TAG, "Rewarded ad impression");
             listener.onRewardedAdDisplayed(hellaAd.getExtraBundle());
         }
 
         @Override
         public void onAdClicked(HellaAd hellaAd) {
-            log("Rewarded ad clicked");
+            Logger.d(TAG, "Rewarded ad clicked");
             listener.onRewardedAdClicked(hellaAd.getExtraBundle());
         }
 
@@ -424,18 +453,18 @@ public class HungryExchangeMediationAdapter extends MediationAdapterBase impleme
 
         @Override
         public void onAdRewarded(HellaAd hellaAd) {
-            log("Rewarded ad reward granted");
+            Logger.d(TAG, "Rewarded ad reward granted");
         }
 
         @Override
         public void onAdClosed(boolean hasRewarded, HellaAd hellaAd) {
             if (hasRewarded || shouldAlwaysRewardUser()) {
                 final MaxReward reward = getReward();
-                log("Rewarded user with reward: " + reward);
+                Logger.d(TAG, "Rewarded user with reward: " + reward);
                 listener.onUserRewarded(reward);
             }
 
-            log("Rewarded ad closed");
+            Logger.d(TAG, "Rewarded ad closed");
             listener.onRewardedAdHidden(hellaAd.getExtraBundle());
         }
     }
