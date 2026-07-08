@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -54,6 +55,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +79,11 @@ public class InMobiMediationAdapter
     private static final int    RATING_VIEW_TAG          = 6;
     private static final int    ADVERTISER_VIEW_TAG      = 8;
     private static final String KEY_PARTNER_GDPR_CONSENT = "partner_gdpr_consent_available";
+    private static final String KEY_ADAPTIVE_BANNER      = "adaptive_banner";
+    private static final String KEY_ADAPTIVE_AD_SLOT     = "ab-ad-slot";
+    private static final String KEY_ADAPTIVE_TYPE        = "ab-type";
+    private static final String ADAPTIVE_TYPE_INLINE     = "inline";
+    private static final String ADAPTIVE_TYPE_ANCHORED   = "anchored";
 
     // https://support.inmobi.com/monetize/android-guidelines/native-ads-for-android/#set-up-native-ad
     // The default setting is an in-Feed ad layout, an aspect ratio ranging between 256:135 - 1200x627
@@ -118,7 +125,7 @@ public class InMobiMediationAdapter
 
         updatePrivacySettings( parameters );
 
-        String signal = InMobiSdk.getToken( getExtras(), null );
+        String signal = InMobiSdk.getToken( getExtras( parameters, parameters.getAdFormat(), getContext( activity ), true ), null );
         callback.onSignalCollected( signal );
     }
 
@@ -231,7 +238,7 @@ public class InMobiMediationAdapter
             nativeAd = new InMobiNative( context,
                                          placementId,
                                          new NativeAdViewListener( parameters, adFormat, activity, listener ) );
-            nativeAd.setExtras( getExtras() );
+            nativeAd.setExtras( getBaseExtras() );
 
             if ( isBiddingAd )
             {
@@ -245,34 +252,37 @@ public class InMobiMediationAdapter
         else
         {
             adView = new InMobiBanner( context, placementId );
-            adView.setExtras( getExtras() );
+            adView.setExtras( getExtras( parameters, adFormat, context, false ) );
             adView.setAnimationType( InMobiBanner.AnimationType.ANIMATION_OFF );
             adView.setEnableAutoRefresh( false ); // By default, refreshes every 60 seconds
-            adView.setListener( new AdViewListener( listener ) );
 
             final float density = context.getResources().getDisplayMetrics().density;
 
             final int width, height;
-            if ( adFormat == MaxAdFormat.BANNER )
+            boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
+            if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
             {
-                width = 320;
-                height = 50;
+                isAdaptiveAdViewEnabled = false;
+                userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use InMobi adaptive ads" );
             }
-            else if ( adFormat == MaxAdFormat.LEADER )
+
+            if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
             {
-                width = 728;
-                height = 90;
+                AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdSize( parameters, context );
+                width = adaptiveSize.getWidth();
+                height = adaptiveSize.getHeight();
             }
-            else if ( adFormat == MaxAdFormat.MREC )
+            else if ( adFormat.isAdViewAd() )
             {
-                width = 300;
-                height = 250;
+                width = adFormat.getSize().getWidth();
+                height = adFormat.getSize().getHeight();
             }
             else
             {
                 throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
             }
 
+            adView.setListener( new AdViewListener( listener, width, height ) );
             adView.setLayoutParams( new LinearLayout.LayoutParams( Math.round( width * density ),
                                                                    Math.round( height * density ) ) );
 
@@ -390,7 +400,7 @@ public class InMobiMediationAdapter
                                      placementId,
                                      new NativeAdListener( parameters, context, listener ) );
 
-        nativeAd.setExtras( getExtras() );
+        nativeAd.setExtras( getBaseExtras() );
 
         if ( isBiddingAd )
         {
@@ -409,7 +419,7 @@ public class InMobiMediationAdapter
     private InMobiInterstitial loadFullscreenAd(long placementId, MaxAdapterResponseParameters parameters, InterstitialAdEventListener listener, @Nullable final Activity activity)
     {
         InMobiInterstitial interstitial = new InMobiInterstitial( getContext( activity ), placementId, listener );
-        interstitial.setExtras( getExtras() );
+        interstitial.setExtras( getBaseExtras() );
 
         updatePrivacySettings( parameters );
 
@@ -477,13 +487,62 @@ public class InMobiMediationAdapter
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
-    private Map<String, String> getExtras()
+    private Map<String, String> getBaseExtras()
     {
-        Map<String, String> extras = new HashMap<>( 2 );
+        Map<String, String> extras = new HashMap<>( 4 );
         extras.put( "tp", "c_applovin" );
         extras.put( "tp-ver", AppLovinSdk.VERSION );
 
         return extras;
+    }
+
+    private Map<String, String> getExtras(final MaxAdapterParameters parameters, final MaxAdFormat adFormat, final Context context, final boolean isSignalCollection)
+    {
+        Map<String, String> extras = getBaseExtras();
+
+        boolean isAdaptiveAdViewEnabled;
+        if ( isSignalCollection )
+        {
+            Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( KEY_ADAPTIVE_BANNER );
+            isAdaptiveAdViewEnabled = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+        }
+        else
+        {
+            isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( KEY_ADAPTIVE_BANNER, false );
+        }
+
+        if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            AppLovinSdkUtils.Size adaptiveSize = getAdaptiveAdSize( parameters, context );
+            String formattedAdaptiveAdSlot = String.format( Locale.US, "%dx%d", adaptiveSize.getWidth(), adaptiveSize.getHeight() );
+
+            extras.put( KEY_ADAPTIVE_AD_SLOT, formattedAdaptiveAdSlot );
+            extras.put( KEY_ADAPTIVE_TYPE, isInlineAdaptiveAdView( parameters ) ? ADAPTIVE_TYPE_INLINE : ADAPTIVE_TYPE_ANCHORED );
+        }
+
+        return extras;
+    }
+
+    private AppLovinSdkUtils.Size getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        final int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        if ( isInlineAdaptiveAdView( parameters ) )
+        {
+            final int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                return new AppLovinSdkUtils.Size( adaptiveAdWidth, inlineMaximumHeight );
+            }
+
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            int deviceHeight = AppLovinSdkUtils.pxToDp( context, displayMetrics.heightPixels );
+            return new AppLovinSdkUtils.Size( adaptiveAdWidth, deviceHeight );
+        }
+
+        // Anchored banners use the default adaptive height
+        final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( adaptiveAdWidth, context ).getHeight();
+        return new AppLovinSdkUtils.Size( adaptiveAdWidth, anchoredHeight );
     }
 
     private float getNativeAdMediaContentAspectRatio(final MaxAdapterParameters parameters)
@@ -596,11 +655,15 @@ public class InMobiMediationAdapter
     private class AdViewListener
             extends BannerAdEventListener
     {
-        final MaxAdViewAdapterListener listener;
+        private final MaxAdViewAdapterListener listener;
+        private final int                      width;
+        private final int                      height;
 
-        AdViewListener(MaxAdViewAdapterListener listener)
+        AdViewListener(final MaxAdViewAdapterListener listener, final int width, final int height)
         {
             this.listener = listener;
+            this.width = width;
+            this.height = height;
         }
 
         @Override
@@ -608,17 +671,16 @@ public class InMobiMediationAdapter
         {
             log( "AdView loaded" );
 
-            if ( TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
-            {
-                listener.onAdViewAdLoaded( inMobiBanner );
-            }
-            else
-            {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
+            Bundle extraInfo = new Bundle( 3 );
 
-                listener.onAdViewAdLoaded( inMobiBanner, extraInfo );
+            extraInfo.putInt( "ad_width", width );
+            extraInfo.putInt( "ad_height", height );
+            if ( !TextUtils.isEmpty( adMetaInfo.getCreativeID() ) )
+            {
+                extraInfo.putString( "creative_id", adMetaInfo.getCreativeID() );
             }
+
+            listener.onAdViewAdLoaded( inMobiBanner, extraInfo );
         }
 
         @Override
