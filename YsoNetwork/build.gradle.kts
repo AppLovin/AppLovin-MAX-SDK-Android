@@ -3,7 +3,7 @@ plugins {
     id("com.applovin.mobile.publish")
 }
 
-val libraryVersionName by extra("1.3.8.0")
+val libraryVersionName by extra("1.3.9.0")
 
 applovinMobilePublish {
     libraryArtifactId.set("yso-network-adapter")
