@@ -1,5 +1,8 @@
 # Changelog
 
+## 25.4.0.0
+* Certified with GoogleAdManager SDK 25.4.0.
+
 ## 25.3.0.0
 * Certified with GoogleAdManager SDK 25.3.0.
 

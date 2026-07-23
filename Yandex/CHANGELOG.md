@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.2.0.1
+* Removed the explicit `io.appmetrica.analytics:analytics` dependency.
+
+## 8.2.0.0
+* Certified with Yandex SDK 8.2.0.
+
 ## 8.1.0.0
 * Certified with Yandex SDK 8.1.0.
 

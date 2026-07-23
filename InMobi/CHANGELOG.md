@@ -1,5 +1,11 @@
 # Changelog
 
+## 11.4.0.0
+* Certified with InMobi SDK 11.4.0.
+
+## 11.3.0.1
+* Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-mrecs). Requires AppLovin MAX SDK 13.2.0 or higher.
+
 ## 11.3.0.0
 * Certified with InMobi SDK 11.3.0.
 

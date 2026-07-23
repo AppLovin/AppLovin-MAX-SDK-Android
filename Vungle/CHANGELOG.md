@@ -1,7 +1,13 @@
 # Changelog
 
-## 7.7.4.1
+## 7.7.6.1
 * Adapter logging phase 2: removed `canPlayAd()` and SDK-initialization checks to let the Vungle SDK handle and log these cases, and added `VungleMediationLogger` logging for null ad instances, native ad object mismatch, and unspecified errors.
+
+## 7.7.6.0
+* Certified with Vungle SDK 7.7.6.
+
+## 7.7.5.0
+* Certified with Vungle SDK 7.7.5.
 
 ## 7.7.4.0
 * Certified with Vungle SDK 7.7.4.
