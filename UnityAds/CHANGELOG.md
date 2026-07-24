@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.19.0.1
+* Updated to use new APIs introduced in UnityAds SDK 4.19.0.
+
 ## 4.19.0.0
 * Certified with UnityAds SDK 4.19.0.
 
