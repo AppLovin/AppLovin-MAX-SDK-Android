@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.19.0.1
+* Migrated to Unity Ads SDK 4.19.0 new API (`InitializationConfiguration`, `InterstitialAd`, `RewardedAd`, `BannerAd`, `LoadConfiguration`, `ShowConfiguration`).
+* Added adaptive banner support (anchored and inline).
+* Replaced `MetaData`-based privacy APIs with `UnityAds.setUserConsent()` and `UnityAds.setUserOptOut()`.
+
 ## 4.19.0.0
 * Certified with UnityAds SDK 4.19.0.
 
