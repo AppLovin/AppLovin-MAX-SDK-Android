@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.1.0
+* Certified with Verve SDK 3.9.1.
+
 ## 3.9.0.1
 * Updated interstitial and rewarded ad display failure error mapping and callback handling.
 
