@@ -221,7 +221,6 @@ public class InMobiMediationAdapter
         }
 
         updatePrivacySettings( parameters );
-        updateMuteState( parameters.getServerParameters() );
 
         final String bidResponse = parameters.getBidResponse();
         final boolean isBiddingAd = AppLovinSdkUtils.isValidString( bidResponse );
@@ -383,7 +382,6 @@ public class InMobiMediationAdapter
         }
 
         updatePrivacySettings( parameters );
-        updateMuteState( parameters.getServerParameters() );
 
         final long placementId = Long.parseLong( parameters.getThirdPartyAdPlacementId() );
 
