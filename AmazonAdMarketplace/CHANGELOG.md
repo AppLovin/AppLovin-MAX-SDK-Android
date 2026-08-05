@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.1.0
+* Certified with AmazonAdMarketplace SDK 12.0.1.
+* Add ProGuard `-dontwarn` for `com.google.android.libraries.ads.mobile.sdk.**` to fix R8 missing-class errors from optional Google Mobile Ads Next Gen references in APS 12.x.
+
 ## 11.3.1.0
 * Certified with AmazonAdMarketplace SDK 11.3.1.
 
