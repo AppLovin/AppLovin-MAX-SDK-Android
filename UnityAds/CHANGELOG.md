@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.19.0.2
+* Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & [inline adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners). Inline adaptive MRECs are not supported by Unity Ads. Requires AppLovin MAX SDK 13.2.0 or higher.
+
 ## 4.19.0.1
 * Updated to use new APIs introduced in UnityAds SDK 4.19.0.
 
