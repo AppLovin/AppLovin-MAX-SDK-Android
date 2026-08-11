@@ -1,6 +1,7 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import com.applovin.mediation.MaxAdFormat;
@@ -136,10 +137,21 @@ public class UnityAdsMediationAdapter
 
         updatePrivacyConsent( parameters );
 
+        MaxAdFormat adFormat = parameters.getAdFormat();
         AdFormat unityFormat = toUnityAdFormat( parameters );
-        TokenConfiguration tokenConfiguration = new TokenConfiguration.Builder( unityFormat )
-                .withMediationInfo( createMediationInfo() )
-                .build();
+        TokenConfiguration.Builder tokenConfigurationBuilder = new TokenConfiguration.Builder( unityFormat )
+                .withMediationInfo( createMediationInfo() );
+
+        if ( adFormat.isAdViewAd() )
+        {
+            // NOTE: Placement-level settings are not available in the server parameters during signal collection, so the adaptive banner flag is read from the local extra parameters
+            Object isAdaptiveBannerObj = parameters.getLocalExtraParameters().get( "adaptive_banner" );
+            boolean isAdaptiveAdViewEnabled = isAdaptiveBannerObj instanceof String && "true".equalsIgnoreCase( (String) isAdaptiveBannerObj );
+
+            tokenConfigurationBuilder.withBannerSize( toUnityBannerSize( adFormat, isAdaptiveAdViewEnabled, parameters, getContext( activity ) ) );
+        }
+
+        TokenConfiguration tokenConfiguration = tokenConfigurationBuilder.build();
         UnityAds.getToken( tokenConfiguration, token -> {
             log( "Collected signal" );
             callback.onSignalCollected( token );
@@ -353,7 +365,11 @@ public class UnityAdsMediationAdapter
             }
         };
 
-        BannerConfiguration.Builder builder = new BannerConfiguration.Builder( placementId, toUnityBannerSize( adFormat ), showListener )
+        // Check if adaptive ad view sizes should be used
+        boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        final BannerSize bannerSize = toUnityBannerSize( adFormat, isAdaptiveAdViewEnabled, parameters, getContext( activity ) );
+
+        BannerConfiguration.Builder builder = new BannerConfiguration.Builder( placementId, bannerSize, showListener )
                 .withMediationInfo( createMediationInfo() );
 
         String bidResponse = parameters.getBidResponse();
@@ -371,7 +387,12 @@ public class UnityAdsMediationAdapter
                 {
                     log( adFormat.getLabel() + " ad placement \"" + placementId + "\" loaded" );
                     bannerAd = ad;
-                    listener.onAdViewAdLoaded( ad != null ? ad.getView() : null );
+
+                    Bundle extraInfo = new Bundle( 2 );
+                    extraInfo.putInt( "ad_width", bannerSize.getWidth() );
+                    extraInfo.putInt( "ad_height", bannerSize.getHeight() );
+
+                    listener.onAdViewAdLoaded( ad != null ? ad.getView() : null, extraInfo );
                 }
                 else
                 {
@@ -422,6 +443,45 @@ public class UnityAdsMediationAdapter
         return new MediationInfo( "MAX", AppLovinSdk.VERSION, getAdapterVersion() );
     }
 
+    private BannerSize toUnityBannerSize(final MaxAdFormat adFormat,
+                                         boolean isAdaptiveAdViewEnabled,
+                                         final MaxAdapterParameters parameters,
+                                         final Context context)
+    {
+        if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
+        {
+            userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Unity Ads adaptive ads" );
+            isAdaptiveAdViewEnabled = false;
+        }
+
+        // NOTE: Unity Ads does not support adaptive MRECs
+        if ( isAdaptiveAdViewEnabled && adFormat != MaxAdFormat.MREC && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            return getAdaptiveAdSize( parameters, context );
+        }
+
+        return toUnityBannerSize( adFormat );
+    }
+
+    private BannerSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        final int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        // NOTE: Unity Ads banner sizes are fixed - `BannerSize` has no notion of a maximum height, so the requested height is the height that gets rendered. An unspecified inline maximum height therefore falls back to the anchored size below instead of the device height, which would ask Unity Ads for a screen-height banner.
+        if ( isInlineAdaptiveAdView( parameters ) )
+        {
+            final int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                return new BannerSize( adaptiveAdWidth, inlineMaximumHeight );
+            }
+        }
+
+        // Return anchored size by default
+        final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( adaptiveAdWidth, context ).getHeight();
+        return new BannerSize( adaptiveAdWidth, anchoredHeight );
+    }
+
     private BannerSize toUnityBannerSize(final MaxAdFormat adFormat)
     {
         if ( adFormat == MaxAdFormat.BANNER )
@@ -440,6 +500,12 @@ public class UnityAdsMediationAdapter
         {
             throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
         }
+    }
+
+    private Context getContext(@Nullable final Activity activity)
+    {
+        // NOTE: `activity` can only be null in 11.1.0+, and `getApplicationContext()` is introduced in 11.1.0
+        return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
     }
 
     private static MaxAdapterError toMaxError(final UnityAdsError unityAdsError)
