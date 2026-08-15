@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.4.1.1
+* Fix adaptive banner layout to use the standard banner size while continuing to pass adaptive dimensions through extras.
+
 ## 11.4.1.0
 * Certified with InMobi SDK 11.4.1.
 
