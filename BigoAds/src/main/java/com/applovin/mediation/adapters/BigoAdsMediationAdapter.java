@@ -294,7 +294,7 @@ public class BigoAdsMediationAdapter
     }
 
     @Override
-    public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    public void loadAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, @NonNull final MaxAppOpenAdapterListener listener)
     {
         final String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Loading app open ad for slot id: " + slotId + "..." );
@@ -329,7 +329,7 @@ public class BigoAdsMediationAdapter
     }
 
     @Override
-    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxAppOpenAdapterListener listener)
+    public void showAppOpenAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, @NonNull final MaxAppOpenAdapterListener listener)
     {
         final String slotId = parameters.getThirdPartyAdPlacementId();
         log( "Showing app open ad for slot id: " + slotId + "..." );
@@ -900,14 +900,6 @@ public class BigoAdsMediationAdapter
         {
             log( "Native " + adFormat.getLabel() + " ad loaded for slot id: " + slotId );
 
-            if ( ad == null )
-            {
-                log( "Native " + adFormat.getLabel() + " ad + (" + ad + ") can 't be null." );
-
-                listener.onAdViewAdLoadFailed( MaxAdapterError.NO_FILL );
-                return;
-            }
-
             ad.setAdInteractionListener( nativeAdViewListener );
             BigoAdsMediationAdapter.this.nativeAd = ad;
 
@@ -1008,14 +1000,6 @@ public class BigoAdsMediationAdapter
         public void onAdLoaded(@NonNull NativeAd ad)
         {
             log( "Native ad loaded for slot id: " + slotId );
-
-            if ( ad == null )
-            {
-                log( "Native ad (" + ad + ")  can't be null." );
-
-                listener.onNativeAdLoadFailed( MaxAdapterError.NO_FILL );
-                return;
-            }
 
             ad.setAdInteractionListener( nativeAdListener );
             BigoAdsMediationAdapter.this.nativeAd = ad;
