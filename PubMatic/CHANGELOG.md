@@ -1,5 +1,8 @@
 # Changelog
 
+## 5.3.0.0
+* Certified with PubMatic SDK 5.3.0.
+
 ## 5.2.0.0
 * Certified with PubMatic SDK 5.2.0.
 
