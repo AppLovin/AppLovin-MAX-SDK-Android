@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.4.1.2
+* Add setMute support for interstitial and rewarded ads.
+
 ## 11.4.1.1
 * Fix adaptive banner layout to use the standard banner size while continuing to pass adaptive dimensions through extras.
 

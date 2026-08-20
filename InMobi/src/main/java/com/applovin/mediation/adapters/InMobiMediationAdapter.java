@@ -319,6 +319,8 @@ public class InMobiMediationAdapter
             return;
         }
 
+        updateMuteState( parameters.getServerParameters() );
+
         interstitialAd = loadFullscreenAd( placementId, parameters, new InterstitialListener( listener ), activity );
     }
 
@@ -354,6 +356,8 @@ public class InMobiMediationAdapter
 
             return;
         }
+
+        updateMuteState( parameters.getServerParameters() );
 
         rewardedAd = loadFullscreenAd( placementId, parameters, new RewardedAdListener( listener ), activity );
     }
@@ -482,6 +486,14 @@ public class InMobiMediationAdapter
         if ( isDoNotSell != null )
         {
             InMobiPrivacyCompliance.setDoNotSell( isDoNotSell );
+        }
+    }
+
+    private static void updateMuteState(final Bundle serverParameters)
+    {
+        if ( serverParameters.containsKey( "is_muted" ) )
+        {
+            InMobiSdk.setApplicationMuted( serverParameters.getBoolean( "is_muted" ) );
         }
     }
 
