@@ -60,7 +60,7 @@ import androidx.annotation.Nullable;
 import static com.applovin.sdk.AppLovinSdkUtils.runOnUiThread;
 
 
-public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedAdapter,
+public class AdSurgeMediationAdapter extends MediationAdapterBase implements MaxRewardedAdapter,
         MaxInterstitialAdapter, MaxAdViewAdapter, MaxNativeAdAdapter {
 
     private static final int TITLE_LABEL_TAG          = 1;
@@ -74,6 +74,8 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
     private static final int ADVERTISER_VIEW_TAG      = 8;
     private static final String TAG = "AdSurgeAdapter";
     private static final String ADAPTER_VERSION = AdSurgeAdSdk.getSdkVersion();
+    private static final String MEDIATION_SOURCE_MAX = "MAX";
+    private static final String KEY_MEDIATION_UNIQUE_ID = "mediation_unique_id";
     private static final AtomicBoolean mInitialized= new AtomicBoolean();
     private static InitializationStatus sInitializationStatus;
     private static final boolean DEFAULT_AGE_RESTRICTED = false;
@@ -95,7 +97,7 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
     private static final String KEY_CREATIVE_ID = "creative_id";
 
     // Explicit default constructor declaration
-    public AdSurgeAdapter(AppLovinSdk appLovinSdk) {
+    public AdSurgeMediationAdapter(AppLovinSdk appLovinSdk) {
         super(appLovinSdk);
     }
 
@@ -229,8 +231,8 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
         }
         mAdSurgeRewardedAd = new RewardedAd(context, adUnitId);
 
-        // 4. Construct AdConfig
-        AdConfig adConfig = new AdConfig.Builder().mute(muteState).build();
+        // 4. Construct AdConfig with mediation info
+        AdConfig adConfig = buildAdConfigWithMediation(parameters);
 
         // 5. Load ads and bind a custom listener
         mAdSurgeRewardedAdListener = new AdSurgeRewardedAdListener(adUnitId, listener);
@@ -294,8 +296,8 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
         }
         mAdSurgeInterstitialAd = new InterstitialAd(context, adUnitId);
 
-        // 4. Construct AdConfig
-        AdConfig adConfig = new AdConfig.Builder().mute(muteState).build();
+        // 4. Construct AdConfig with mediation info
+        AdConfig adConfig = buildAdConfigWithMediation(parameters);
 
         // 5. Load ads and bind a custom listener
         mAdSurgeInterstitialAdListener = new AdSurgeInterstitialAdListener(adUnitId, listener);
@@ -344,8 +346,8 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
         }
         mAdSurgeBannerAd = new AdView(context, adUnitId);
 
-        // 4. Construct AdConfig
-        AdConfig adConfig = new AdConfig.Builder().build();
+        // 4. Construct AdConfig with mediation info
+        AdConfig adConfig = buildAdConfigWithMediation(parameters);
 
         // 5. Load ads and bind a custom listener
         mAdSurgeBannerAdListener = new AdSurgeBannerAdListener(adUnitId, listener);
@@ -381,8 +383,8 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
         }
 
         mAdSurgeNativeAd = new NativeAd(context, adUnitId);
-        // 4. Construct AdConfig
-        AdConfig adConfig = new AdConfig.Builder().build();
+        // 4. Construct AdConfig with mediation info
+        AdConfig adConfig = buildAdConfigWithMediation(maxAdapterResponseParameters);
 
         // 5. Load ads and bind a custom listener
         mAdSurgeNativeAdListener = new AdSurgeNativeAdListener(maxAdapterResponseParameters.getServerParameters(), adUnitId, maxNativeAdAdapterListener);
@@ -435,6 +437,30 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
         }
         return AdConfig.SoundState.DEFAULT;
     }
+
+    private AdConfig buildAdConfigWithMediation(MaxAdapterResponseParameters parameters) {
+        Bundle serverParameters = parameters.getServerParameters();
+        AdConfig.SoundState muteState = getMuteStateFromParams(serverParameters);
+
+        // Retrieve mediation_unique_id from localExtraParameters
+        String mediationTraceId = null;
+        Map<String, Object> localExt = parameters.getLocalExtraParameters();
+        if (localExt != null && localExt.containsKey(KEY_MEDIATION_UNIQUE_ID))
+        {
+            Object traceIdObj = localExt.get(KEY_MEDIATION_UNIQUE_ID);
+            if (traceIdObj instanceof String)
+            {
+                mediationTraceId = (String) traceIdObj;
+            }
+        }
+
+        return new AdConfig.Builder()
+                .mute(muteState)
+                .mediationSource(MEDIATION_SOURCE_MAX)
+                .mediationAdUnitId(parameters.getAdUnitId())
+                .mediationTraceId(mediationTraceId)
+                .build();
+    }
     //endregion
 
     private class AdSurgeRewardedAdListener implements RewardedAdListener {
@@ -472,12 +498,14 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
             // Convert AdSurge error to AppLovin error code
             MaxAdapterError adapterError = toMaxError(adSurgeAdError.getErrorCode(), adSurgeAdError.getErrorMsg());
             Log.e(TAG, "onAdFailed: AdSurge Rewarded load error：" + adapterError);
-            // Distribute callbacks based on error type (load failure/displays failure)
-            if (adSurgeAdError.getErrorCode() == AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR) {
-                mListener.onRewardedAdDisplayFailed(adapterError);
-            } else {
-                mListener.onRewardedAdLoadFailed(adapterError);
-            }
+            mListener.onRewardedAdLoadFailed(adapterError);
+        }
+
+        @Override
+        public void onAdShowFailed(AdSurgeAd rewardedAd, AdSurgeAdError adSurgeAdError) {
+            MaxAdapterError adapterError = toMaxError(AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR, adSurgeAdError.toString());
+            Log.e(TAG, "onAdShowFailed: AdSurge Rewarded display error：" + adapterError);
+            mListener.onRewardedAdDisplayFailed(adapterError);
         }
 
         @Override
@@ -548,12 +576,14 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
             // Convert AdSurge error to AppLovin error code
             MaxAdapterError adapterError = toMaxError(adSurgeAdError.getErrorCode(), adSurgeAdError.getErrorMsg());
             Log.e(TAG, "onAdFailed: AdSurge Interstitial load error：" + adapterError);
-            // Distribute callbacks based on error type (load failure/displays failure)
-            if (adSurgeAdError.getErrorCode() == AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR) {
-                mListener.onInterstitialAdDisplayFailed(adapterError);
-            } else {
-                mListener.onInterstitialAdLoadFailed(adapterError);
-            }
+            mListener.onInterstitialAdLoadFailed(adapterError);
+        }
+
+        @Override
+        public void onAdShowFailed(AdSurgeAd interstitialAd, AdSurgeAdError adSurgeAdError) {
+            MaxAdapterError adapterError = toMaxError(AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR, adSurgeAdError.toString());
+            Log.e(TAG, "onAdShowFailed: AdSurge Interstitial display error：" + adapterError);
+            mListener.onInterstitialAdDisplayFailed(adapterError);
         }
 
         @Override
@@ -611,12 +641,14 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
             MaxAdapterError adapterError = toMaxError(adSurgeAdError.getErrorCode(),
                                                       adSurgeAdError.getErrorMsg());
             Log.e(TAG, "onAdFailed: AdSurge Banner load error：" + adapterError);
-            // Distribute callbacks based on error type (load failure/displays failure)
-            if (adSurgeAdError.getErrorCode() == AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR) {
-                mListener.onAdViewAdDisplayFailed(adapterError);
-            } else {
-                mListener.onAdViewAdLoadFailed(adapterError);
-            }
+            mListener.onAdViewAdLoadFailed(adapterError);
+        }
+
+        @Override
+        public void onAdShowFailed(AdSurgeAd bannerAd, AdSurgeAdError adSurgeAdError) {
+            MaxAdapterError adapterError = toMaxError(AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR, adSurgeAdError.toString());
+            Log.e(TAG, "onAdShowFailed: AdSurge Banner display error：" + adapterError);
+            mListener.onAdViewAdDisplayFailed(adapterError);
         }
 
         @Override
@@ -717,6 +749,13 @@ public class AdSurgeAdapter extends MediationAdapterBase implements MaxRewardedA
             MaxAdapterError adapterError = toMaxError(adSurgeAdError.getErrorCode(),
                                                       adSurgeAdError.getErrorMsg());
             Log.e(TAG, "onAdFailed: AdSurge Native load error：" + adapterError);
+            mListener.onNativeAdLoadFailed(adapterError);
+        }
+
+        @Override
+        public void onAdShowFailed(AdSurgeAd nativeAd, AdSurgeAdError adSurgeAdError) {
+            MaxAdapterError adapterError = toMaxError(AdSurgeAdError.ERROR_CODE_DISPLAY_ERROR, adSurgeAdError.toString());
+            Log.e(TAG, "onAdShowFailed: AdSurge Native display error：" + adapterError);
             mListener.onNativeAdLoadFailed(adapterError);
         }
 
