@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.0.4.1
+* Remove ProGuard rules since they are included in ByteDance's libraries.
+
 ## 8.3.0.4.0
 * Certified with ByteDance SDK 8.3.0.4.
 
