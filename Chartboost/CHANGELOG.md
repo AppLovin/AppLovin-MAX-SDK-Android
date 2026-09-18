@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.14.1.1
+* Remove ProGuard rules since they are included in Chartboost's libraries.
+
 ## 9.14.1.0
 * Certified with Chartboost SDK 9.14.1.
 
