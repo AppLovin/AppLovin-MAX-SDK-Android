@@ -5,7 +5,7 @@ on:
     
 jobs:
   close-issues:
-    runs-on: default-runner
+    runs-on: mobile-sdk-runner
     permissions:
       issues: write
     steps:
