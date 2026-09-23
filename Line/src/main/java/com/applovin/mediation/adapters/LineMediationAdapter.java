@@ -169,7 +169,7 @@ public class LineMediationAdapter
         }
         else
         {
-            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdSlotConfig slotConfig = createSlotConfig( slotId );
             final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
             adLoader.loadInterstitialAd( slotConfig, interstitialListener );
         }
@@ -215,7 +215,7 @@ public class LineMediationAdapter
         }
         else
         {
-            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdSlotConfig slotConfig = createSlotConfig( slotId );
             final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
             adLoader.loadRewardAd( slotConfig, rewardedListener );
         }
@@ -265,7 +265,7 @@ public class LineMediationAdapter
             }
             else
             {
-                final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+                final AdSlotConfig slotConfig = createSlotConfig( slotId );
                 final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
                 adLoader.loadNativeAd( slotConfig, new DisplayMetrics().widthPixels, nativeAdViewListener );
             }
@@ -282,7 +282,7 @@ public class LineMediationAdapter
             }
             else
             {
-                final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+                final AdSlotConfig slotConfig = createSlotConfig( slotId );
                 final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
                 adLoader.loadBannerAd( slotConfig, new DisplayMetrics().widthPixels, adViewListener );
             }
@@ -308,7 +308,7 @@ public class LineMediationAdapter
         }
         else
         {
-            final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+            final AdSlotConfig slotConfig = createSlotConfig( slotId );
             final AdLoader adLoader = retrieveAdLoader( parameters, getContext( activity ) );
             adLoader.loadNativeAd( slotConfig, new DisplayMetrics().widthPixels, nativeAdListener );
         }
@@ -317,6 +317,14 @@ public class LineMediationAdapter
     private Context getContext(@Nullable final Activity activity)
     {
         return ( activity != null ) ? activity.getApplicationContext() : getApplicationContext();
+    }
+
+    private AdSlotConfig createSlotConfig(final String slotId)
+    {
+        final AdSlotConfig slotConfig = new AdSlotConfig( slotId );
+        slotConfig.setMediationInfo( "max", AppLovinSdk.VERSION );
+
+        return slotConfig;
     }
 
     private AdLoader retrieveAdLoader(final MaxAdapterParameters parameters, final Context context)

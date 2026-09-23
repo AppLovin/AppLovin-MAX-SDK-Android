@@ -1,5 +1,23 @@
 # Changelog
 
+## 11.4.1.3
+* Remove ProGuard rules since they are included in InMobi's libraries.
+
+## 11.4.1.2
+* Add setMute support for interstitial and rewarded ads.
+
+## 11.4.1.1
+* Fix adaptive banner layout to use the standard banner size while continuing to pass adaptive dimensions through extras.
+
+## 11.4.1.0
+* Certified with InMobi SDK 11.4.1.
+
+## 11.4.0.0
+* Certified with InMobi SDK 11.4.0.
+
+## 11.3.0.1
+* Add support for [adaptive banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & inline adaptive ads in both [banners](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners) and [MRECs](https://developers.applovin.com/en/max/android/ad-formats/banner-and-mrec-ads/#inline-adaptive-mrecs). Requires AppLovin MAX SDK 13.2.0 or higher.
+
 ## 11.3.0.0
 * Certified with InMobi SDK 11.3.0.
 
