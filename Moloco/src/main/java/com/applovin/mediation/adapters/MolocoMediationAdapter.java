@@ -321,6 +321,11 @@ public class MolocoMediationAdapter
         }
         else
         {
+            final BannerAdSize bannerAdSize = resolveAdViewAdSize( adFormat, parameters );
+            // Resolved once here so the values reported later match this specific load's request.
+            final int reportedAdWidthDp = resolveReportableAdWidthDp( bannerAdSize, activity );
+            final int fixedAdHeightDp = resolveFixedAdHeightDp( bannerAdSize );
+
             final Function2<Banner, MolocoAdError.AdCreateError, Unit> createCallback = (adView, error) -> {
 
                 if ( adView == null )
@@ -332,7 +337,7 @@ public class MolocoMediationAdapter
                 else
                 {
                     this.adView = adView;
-                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener );
+                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener, adView, reportedAdWidthDp, fixedAdHeightDp );
                     adView.setAdShowListener( adViewAdListener );
                     adView.load( parameters.getBidResponse(), adViewAdListener );
                 }
@@ -340,7 +345,6 @@ public class MolocoMediationAdapter
                 return Unit.INSTANCE;
             };
 
-            final BannerAdSize bannerAdSize = resolveAdViewAdSize( adFormat, parameters );
             Moloco.createMolocoBanner( mediationInfo, placementId, bannerAdSize, null, createCallback );
         }
     }
@@ -631,17 +635,50 @@ public class MolocoMediationAdapter
             implements AdLoad.Listener, BannerAdShowListener
     {
         private final MaxAdViewAdapterListener listener;
+        private final Banner                   adView;
+        private final int                      adWidthDp;
+        private final int                      fixedAdHeightDp;
 
-        public AdViewAdListener(final MaxAdViewAdapterListener listener)
+        /**
+         * @param adView          the {@link Banner} created for this specific load — captured here
+         *                        (not read from the outer {@code adView} field) so a stale callback
+         *                        from a superseded load can't report the wrong View or size.
+         * @param adWidthDp       width (dp) to report via {@link #buildAdViewExtraInfo()}, resolved once
+         *                        at load time by {@link #resolveReportableAdWidthDp}.
+         * @param fixedAdHeightDp height (dp) for fixed sizes, or 0 for adaptive sizes — resolved once
+         *                        at load time by {@link #resolveFixedAdHeightDp}.
+         */
+        public AdViewAdListener(final MaxAdViewAdapterListener listener, final Banner adView, final int adWidthDp, final int fixedAdHeightDp)
         {
             this.listener = listener;
+            this.adView = adView;
+            this.adWidthDp = adWidthDp;
+            this.fixedAdHeightDp = fixedAdHeightDp;
         }
 
         @Override
         public void onAdLoadSuccess(@NonNull final MolocoAd molocoAd)
         {
             log( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( adView );
+            listener.onAdViewAdLoaded( adView, buildAdViewExtraInfo() );
+        }
+
+        /**
+         * Builds the {@code ad_width}/{@code ad_height} extraInfo Bundle for {@code onAdViewAdLoaded},
+         * mirroring Google/GoogleAdManager/ByteDance/Vungle/Yandex's convention. Values are dp, not px —
+         * matching {@code MaxAd.getSize()} (AppLovin's docs: "you can retrieve the width and height of
+         * the loaded ad, in dp"). Each key is omitted independently when its value can't be resolved.
+         */
+        private Bundle buildAdViewExtraInfo()
+        {
+            final Bundle extraInfo = new Bundle( 2 );
+
+            if ( adWidthDp > 0 ) extraInfo.putInt( "ad_width", adWidthDp );
+
+            final int heightDp = ( fixedAdHeightDp > 0 ) ? fixedAdHeightDp : resolveAdaptiveAdHeightDp( adView );
+            if ( heightDp > 0 ) extraInfo.putInt( "ad_height", heightDp );
+
+            return extraInfo;
         }
 
         @Override
@@ -1016,5 +1053,93 @@ public class MolocoMediationAdapter
         if (adFormat == MaxAdFormat.MREC) return BannerAdSize.MREC.INSTANCE;
 
         throw new IllegalArgumentException("Unsupported ad format: " + adFormat);
+    }
+
+    /**
+     * Fixed dp width/height for the three non-adaptive banner sizes, shared by
+     * {@link #resolveReportableAdWidthDp} and {@link #resolveFixedAdHeightDp} so the three sizes
+     * are only listed once.
+     * <p>
+     * TODO: consider exposing these directly on {@link BannerAdSize} itself (e.g.
+     * {@code Standard.widthDp}/{@code heightDp}) so adapters (AppLovin, AdMob, Pangle, ...) don't
+     * each need their own copy of these constants.
+     */
+    private static final class FixedSizeDp {
+        final int widthDp;
+        final int heightDp;
+
+        FixedSizeDp(final int widthDp, final int heightDp) {
+            this.widthDp = widthDp;
+            this.heightDp = heightDp;
+        }
+    }
+
+    /** Returns the fixed dp size for a non-adaptive {@link BannerAdSize}, or null for adaptive sizes. */
+    @Nullable
+    private static FixedSizeDp resolveFixedSizeDp(@NonNull final BannerAdSize bannerAdSize) {
+        if (bannerAdSize == BannerAdSize.Standard.INSTANCE) return new FixedSizeDp(320, 50);
+        if (bannerAdSize == BannerAdSize.Tablet.INSTANCE) return new FixedSizeDp(728, 90);
+        if (bannerAdSize == BannerAdSize.MREC.INSTANCE) return new FixedSizeDp(300, 250);
+        return null;
+    }
+
+    /**
+     * Returns the width (dp) to report to MAX for this {@link BannerAdSize}: a fixed constant for
+     * fixed sizes, or the publisher's {@code availableWidth} for adaptive sizes (falling back to
+     * the display width when unset). Does not affect the size passed to
+     * {@link Moloco#createMolocoBanner}.
+     */
+    private static int resolveReportableAdWidthDp(@NonNull final BannerAdSize bannerAdSize, @Nullable final Activity activity) {
+        final FixedSizeDp fixedSizeDp = resolveFixedSizeDp(bannerAdSize);
+        if (fixedSizeDp != null) return fixedSizeDp.widthDp;
+
+        if (bannerAdSize instanceof BannerAdSize.InlineAdaptive) {
+            return reportableAdaptiveWidthDp(((BannerAdSize.InlineAdaptive) bannerAdSize).getAvailableWidth(), activity);
+        }
+        if (bannerAdSize instanceof BannerAdSize.AnchoredAdaptive) {
+            return reportableAdaptiveWidthDp(((BannerAdSize.AnchoredAdaptive) bannerAdSize).getAvailableWidth(), activity);
+        }
+        return 0;
+    }
+
+    /**
+     * Returns {@code widthDp} when the publisher supplied one, else the display width, else 0
+     * when neither is available.
+     */
+    private static int reportableAdaptiveWidthDp(@Nullable final Integer widthDp, @Nullable final Activity activity) {
+        if (widthDp != null) return widthDp;
+        if (activity != null) return getDisplayWidthDp(activity);
+        return 0; // unresolvable — no publisher width hint and no Activity to measure the display
+    }
+
+    /**
+     * Returns the fixed height (dp) for non-adaptive {@link BannerAdSize}s, or 0 for
+     * InlineAdaptive/AnchoredAdaptive — signalling that height must be read dynamically instead,
+     * via {@link #resolveAdaptiveAdHeightDp}.
+     */
+    private static int resolveFixedAdHeightDp(@NonNull final BannerAdSize bannerAdSize) {
+        final FixedSizeDp fixedSizeDp = resolveFixedSizeDp(bannerAdSize);
+        return (fixedSizeDp != null) ? fixedSizeDp.heightDp : 0;
+    }
+
+    /**
+     * Reads the creative height (dp) for an adaptive banner from {@code adView}'s own
+     * LayoutParams, which the Moloco SDK sets from the bid response's creative height before
+     * {@link AdLoad.Listener#onAdLoadSuccess} can fire. Returns 0 when unresolved (null params, or
+     * a MATCH_PARENT/WRAP_CONTENT sentinel).
+     */
+    private static int resolveAdaptiveAdHeightDp(@NonNull final Banner adView) {
+        final ViewGroup.LayoutParams params = adView.getLayoutParams();
+        final int heightPx = (params != null) ? params.height : 0;
+        if (heightPx <= 0) return 0;
+
+        final float density = adView.getResources().getDisplayMetrics().density;
+        return Math.round(heightPx / density);
+    }
+
+    /** Returns the current display width in dp, used as the adaptive-width fallback. */
+    private static int getDisplayWidthDp(@NonNull final Activity activity) {
+        final android.util.DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+        return (int) (dm.widthPixels / dm.density);
     }
 }
