@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.5.0.0
+* Certified with InMobi SDK 11.5.0.
+
 ## 11.4.1.3
 * Remove ProGuard rules since they are included in InMobi's libraries.
 
