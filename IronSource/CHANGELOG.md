@@ -1,5 +1,8 @@
 # Changelog
 
+## 9.6.1.0.0
+* Certified with IronSource SDK 9.6.1.
+
 ## 9.6.0.0.1
 * Remove ProGuard rules since they are included in IronSource's libraries.
 
