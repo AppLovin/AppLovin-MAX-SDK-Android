@@ -35,6 +35,7 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.moloco.sdk.publisher.AdLoad;
 import com.moloco.sdk.publisher.Banner;
 import com.moloco.sdk.publisher.BannerAdShowListener;
+import com.moloco.sdk.publisher.BannerAdSize;
 import com.moloco.sdk.publisher.Initialization;
 import com.moloco.sdk.publisher.InterstitialAd;
 import com.moloco.sdk.publisher.InterstitialAdShowListener;
@@ -320,6 +321,11 @@ public class MolocoMediationAdapter
         }
         else
         {
+            final BannerAdSize bannerAdSize = resolveAdViewAdSize( adFormat, parameters, activity );
+            // Resolved once here so the values reported later match this specific load's request.
+            final int reportedAdWidthDp = resolveReportableAdWidthDp( bannerAdSize, parameters, activity );
+            final int fixedAdHeightDp = resolveFixedAdHeightDp( bannerAdSize );
+
             final Function2<Banner, MolocoAdError.AdCreateError, Unit> createCallback = (adView, error) -> {
 
                 if ( adView == null )
@@ -331,7 +337,7 @@ public class MolocoMediationAdapter
                 else
                 {
                     this.adView = adView;
-                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener );
+                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener, adView, reportedAdWidthDp, fixedAdHeightDp );
                     adView.setAdShowListener( adViewAdListener );
                     adView.load( parameters.getBidResponse(), adViewAdListener );
                 }
@@ -339,22 +345,7 @@ public class MolocoMediationAdapter
                 return Unit.INSTANCE;
             };
 
-            if ( adFormat == MaxAdFormat.BANNER )
-            {
-                Moloco.createBanner( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.LEADER )
-            {
-                Moloco.createBannerTablet( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.MREC )
-            {
-                Moloco.createMREC( mediationInfo, placementId, null, createCallback );
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
-            }
+            Moloco.createMolocoBanner( mediationInfo, placementId, bannerAdSize, null, createCallback );
         }
     }
 
@@ -644,17 +635,50 @@ public class MolocoMediationAdapter
             implements AdLoad.Listener, BannerAdShowListener
     {
         private final MaxAdViewAdapterListener listener;
+        private final Banner                   adView;
+        private final int                      adWidthDp;
+        private final int                      fixedAdHeightDp;
 
-        public AdViewAdListener(final MaxAdViewAdapterListener listener)
+        /**
+         * @param adView          the {@link Banner} created for this specific load — captured here
+         *                        (not read from the outer {@code adView} field) so a stale callback
+         *                        from a superseded load can't report the wrong View or size.
+         * @param adWidthDp       width (dp) to report via {@link #buildAdViewExtraInfo()}, resolved once
+         *                        at load time by {@link #resolveReportableAdWidthDp}.
+         * @param fixedAdHeightDp height (dp) for fixed sizes, or 0 for adaptive sizes — resolved once
+         *                        at load time by {@link #resolveFixedAdHeightDp}.
+         */
+        public AdViewAdListener(final MaxAdViewAdapterListener listener, final Banner adView, final int adWidthDp, final int fixedAdHeightDp)
         {
             this.listener = listener;
+            this.adView = adView;
+            this.adWidthDp = adWidthDp;
+            this.fixedAdHeightDp = fixedAdHeightDp;
         }
 
         @Override
         public void onAdLoadSuccess(@NonNull final MolocoAd molocoAd)
         {
             log( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( adView );
+            listener.onAdViewAdLoaded( adView, buildAdViewExtraInfo() );
+        }
+
+        /**
+         * Builds the {@code ad_width}/{@code ad_height} extraInfo Bundle for {@code onAdViewAdLoaded},
+         * mirroring Google/GoogleAdManager/ByteDance/Vungle/Yandex's convention. Values are dp, not px —
+         * matching {@code MaxAd.getSize()} (AppLovin's docs: "you can retrieve the width and height of
+         * the loaded ad, in dp"). Each key is omitted independently when its value can't be resolved.
+         */
+        private Bundle buildAdViewExtraInfo()
+        {
+            final Bundle extraInfo = new Bundle( 2 );
+
+            if ( adWidthDp > 0 ) extraInfo.putInt( "ad_width", adWidthDp );
+
+            final int heightDp = ( fixedAdHeightDp > 0 ) ? fixedAdHeightDp : resolveAdaptiveAdHeightDp( adView );
+            if ( heightDp > 0 ) extraInfo.putInt( "ad_height", heightDp );
+
+            return extraInfo;
         }
 
         @Override
@@ -926,5 +950,167 @@ public class MolocoMediationAdapter
 
             return true;
         }
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Adaptive banner utilities. Gate 2 (inline-vs-anchored, MREC-inline-only) and the width/
+    // display-width fallback are delegated to MediationAdapterBase's own isAdaptiveAdViewFormat()/
+    // isInlineAdaptiveAdView()/getAdaptiveAdViewWidth() — AppLovin's own recommended way to read
+    // MaxAdViewConfiguration values in an adapter. Gate 1 ("adaptive_banner" serverParameter) has
+    // no base-class equivalent and stays custom.
+    // -----------------------------------------------------------------------------------------
+
+    private static final String ADAPTIVE_BANNER_KEY       = "adaptive_banner";
+    private static final String ADAPTIVE_BANNER_WIDTH_KEY = "adaptive_banner_width";
+
+    /**
+     * Returns {@code true} when the ad unit has adaptive banner enabled via the AppLovin dashboard
+     * server parameter {@code "adaptive_banner"}. This is the on/off gate — without it, neither
+     * inline nor anchored adaptive sizing is applied regardless of {@code adaptive_banner_type}.
+     */
+    static boolean isAdaptiveBannerEnabled(@NonNull final MaxAdapterParameters parameters) {
+        return parameters.getServerParameters().getBoolean(ADAPTIVE_BANNER_KEY, false);
+    }
+
+    /**
+     * Maps a {@link MaxAdFormat} + {@link MaxAdapterParameters} to the appropriate
+     * {@link BannerAdSize} for the Moloco SDK.
+     *
+     * <ol>
+     *   <li><b>Gate 1 — {@code serverParameters["adaptive_banner"]}</b>: set on the AppLovin
+     *       dashboard for the ad unit. When false/absent the placement is fixed-size.</li>
+     *   <li><b>Gate 2 — {@link #isInlineAdaptiveAdView}</b>: set automatically by AppLovin from
+     *       the publisher's {@link com.applovin.mediation.MaxAdViewConfiguration}.
+     *       {@code true} → {@link BannerAdSize.InlineAdaptive};
+     *       {@code false} → {@link BannerAdSize.AnchoredAdaptive} (anchored is the default).</li>
+     * </ol>
+     *
+     * <p>MREC is adaptive only with INLINE type; anchored adaptive MREC does not exist
+     * ({@link #isAdaptiveAdViewFormat} already encodes this rule).
+     *
+     * @throws IllegalArgumentException if {@code adFormat} is none of BANNER, LEADER, MREC or ADAPTIVE
+     *         (i.e. not a supported AdView format).
+     */
+    BannerAdSize resolveAdViewAdSize(@NonNull final MaxAdFormat adFormat,
+                                     @NonNull final MaxAdapterParameters parameters,
+                                     @Nullable final Activity activity) {
+        // Gate 1: adaptive_banner serverParameter must be enabled.
+        if (isAdaptiveBannerEnabled(parameters) && isAdaptiveAdViewFormat(adFormat, parameters)) {
+            // Gate 2: isInlineAdaptiveAdView distinguishes inline from anchored.
+            final Integer widthDp = resolveAdaptiveWidthDp(parameters, activity);
+            if (isInlineAdaptiveAdView(parameters)) {
+                return new BannerAdSize.InlineAdaptive(widthDp);
+            } else {
+                // Anchored is the default when type is absent or explicitly "anchored".
+                return new BannerAdSize.AnchoredAdaptive(widthDp);
+            }
+        }
+
+        // Fixed sizes — adaptive not enabled, or MREC without inline type.
+        if (adFormat == MaxAdFormat.BANNER) return BannerAdSize.Standard.INSTANCE;
+        if (adFormat == MaxAdFormat.LEADER) return BannerAdSize.Tablet.INSTANCE;
+        if (adFormat == MaxAdFormat.MREC) return BannerAdSize.MREC.INSTANCE;
+
+        throw new IllegalArgumentException("Unsupported ad format: " + adFormat);
+    }
+
+    /**
+     * Resolves the adaptive banner width (dp), or {@code null} when truly unresolvable
+     * ({@code MATCH_PARENT}). Prefers {@link #getAdaptiveAdViewWidth} — it already handles both the
+     * publisher's explicit {@code setAdaptiveWidth()} value and the display-width fallback using
+     * AppLovin's own key/logic, so we never risk drifting from it. Only safe to call with a
+     * non-null {@link Activity} (its fallback path dereferences the Context); without one, falls
+     * back to a direct, Context-free read so an explicitly configured width still isn't lost.
+     */
+    @Nullable
+    private Integer resolveAdaptiveWidthDp(@NonNull final MaxAdapterParameters parameters, @Nullable final Activity activity) {
+        if (activity != null) {
+            return getAdaptiveAdViewWidth(parameters, activity);
+        }
+
+        final Object widthObj = parameters.getLocalExtraParameters().get(ADAPTIVE_BANNER_WIDTH_KEY);
+        return (widthObj instanceof Integer) ? (Integer) widthObj : null;
+    }
+
+    /**
+     * Fixed dp width/height for the three non-adaptive banner sizes, shared by
+     * {@link #resolveReportableAdWidthDp} and {@link #resolveFixedAdHeightDp} so the three sizes
+     * are only listed once.
+     * <p>
+     * TODO: consider exposing these directly on {@link BannerAdSize} itself (e.g.
+     * {@code Standard.widthDp}/{@code heightDp}) so adapters (AppLovin, AdMob, Pangle, ...) don't
+     * each need their own copy of these constants.
+     */
+    private static final class FixedSizeDp {
+        final int widthDp;
+        final int heightDp;
+
+        FixedSizeDp(final int widthDp, final int heightDp) {
+            this.widthDp = widthDp;
+            this.heightDp = heightDp;
+        }
+    }
+
+    /** Returns the fixed dp size for a non-adaptive {@link BannerAdSize}, or null for adaptive sizes. */
+    @Nullable
+    private static FixedSizeDp resolveFixedSizeDp(@NonNull final BannerAdSize bannerAdSize) {
+        if (bannerAdSize == BannerAdSize.Standard.INSTANCE) return new FixedSizeDp(320, 50);
+        if (bannerAdSize == BannerAdSize.Tablet.INSTANCE) return new FixedSizeDp(728, 90);
+        if (bannerAdSize == BannerAdSize.MREC.INSTANCE) return new FixedSizeDp(300, 250);
+        return null;
+    }
+
+    /**
+     * Returns the width (dp) to report to MAX for this {@link BannerAdSize}: a fixed constant for
+     * fixed sizes, or the publisher's {@code availableWidth} for adaptive sizes (falling back to
+     * the display width when unset). Does not affect the size passed to
+     * {@link Moloco#createMolocoBanner}.
+     */
+    private int resolveReportableAdWidthDp(@NonNull final BannerAdSize bannerAdSize, @NonNull final MaxAdapterParameters parameters, @Nullable final Activity activity) {
+        final FixedSizeDp fixedSizeDp = resolveFixedSizeDp(bannerAdSize);
+        if (fixedSizeDp != null) return fixedSizeDp.widthDp;
+
+        if (bannerAdSize instanceof BannerAdSize.InlineAdaptive) {
+            return reportableAdaptiveWidthDp(parameters, ((BannerAdSize.InlineAdaptive) bannerAdSize).getAvailableWidth(), activity);
+        }
+        if (bannerAdSize instanceof BannerAdSize.AnchoredAdaptive) {
+            return reportableAdaptiveWidthDp(parameters, ((BannerAdSize.AnchoredAdaptive) bannerAdSize).getAvailableWidth(), activity);
+        }
+        return 0;
+    }
+
+    /**
+     * Returns {@code widthDp} when the publisher supplied one, else {@link #resolveAdaptiveWidthDp}'s
+     * result, else 0 when neither is available.
+     */
+    private int reportableAdaptiveWidthDp(@NonNull final MaxAdapterParameters parameters, @Nullable final Integer widthDp, @Nullable final Activity activity) {
+        if (widthDp != null) return widthDp;
+        final Integer resolvedWidthDp = resolveAdaptiveWidthDp(parameters, activity);
+        return (resolvedWidthDp != null) ? resolvedWidthDp : 0;
+    }
+
+    /**
+     * Returns the fixed height (dp) for non-adaptive {@link BannerAdSize}s, or 0 for
+     * InlineAdaptive/AnchoredAdaptive — signalling that height must be read dynamically instead,
+     * via {@link #resolveAdaptiveAdHeightDp}.
+     */
+    private static int resolveFixedAdHeightDp(@NonNull final BannerAdSize bannerAdSize) {
+        final FixedSizeDp fixedSizeDp = resolveFixedSizeDp(bannerAdSize);
+        return (fixedSizeDp != null) ? fixedSizeDp.heightDp : 0;
+    }
+
+    /**
+     * Reads the creative height (dp) for an adaptive banner from {@code adView}'s own
+     * LayoutParams, which the Moloco SDK sets from the bid response's creative height before
+     * {@link AdLoad.Listener#onAdLoadSuccess} can fire. Returns 0 when unresolved (null params, or
+     * a MATCH_PARENT/WRAP_CONTENT sentinel).
+     */
+    private static int resolveAdaptiveAdHeightDp(@NonNull final Banner adView) {
+        final ViewGroup.LayoutParams params = adView.getLayoutParams();
+        final int heightPx = (params != null) ? params.height : 0;
+        if (heightPx <= 0) return 0;
+
+        final float density = adView.getResources().getDisplayMetrics().density;
+        return Math.round(heightPx / density);
     }
 }
