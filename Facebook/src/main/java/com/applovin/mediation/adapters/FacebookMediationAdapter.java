@@ -461,8 +461,10 @@ public class FacebookMediationAdapter
                 break;
             case AdError.MISSING_DEPENDENCIES_ERROR:
             case AdError.API_NOT_SUPPORTED:
-            case AdError.AD_PRESENTATION_ERROR_CODE:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
+                break;
+            case AdError.AD_PRESENTATION_ERROR_CODE:
+                adapterError = MaxAdapterError.AD_DISPLAY_FAILED;
                 break;
         }
 
@@ -508,8 +510,18 @@ public class FacebookMediationAdapter
         public void onError(final Ad ad, final AdError adError)
         {
             MaxAdapterError adapterError = toMaxError( adError );
-            log( "Interstitial ad (" + ad.getPlacementId() + ") failed to load with error: " + adapterError );
-            listener.onInterstitialAdLoadFailed( adapterError );
+
+            // Both display and load failures are surfaced through this callback
+            if ( adError.getErrorCode() == AdError.AD_PRESENTATION_ERROR_CODE )
+            {
+                log( "Interstitial ad (" + ad.getPlacementId() + ") failed to display with error: " + adapterError );
+                listener.onInterstitialAdDisplayFailed( adapterError );
+            }
+            else
+            {
+                log( "Interstitial ad (" + ad.getPlacementId() + ") failed to load with error: " + adapterError );
+                listener.onInterstitialAdLoadFailed( adapterError );
+            }
         }
 
         @Override
@@ -591,8 +603,18 @@ public class FacebookMediationAdapter
         public void onError(final Ad ad, final AdError adError)
         {
             MaxAdapterError adapterError = toMaxError( adError );
-            log( "Rewarded ad (" + ad.getPlacementId() + ") failed to load with error (" + adapterError );
-            listener.onRewardedAdLoadFailed( adapterError );
+
+            // Both display and load failures are surfaced through this callback
+            if ( adError.getErrorCode() == AdError.AD_PRESENTATION_ERROR_CODE )
+            {
+                log( "Rewarded ad (" + ad.getPlacementId() + ") failed to display with error: " + adapterError );
+                listener.onRewardedAdDisplayFailed( adapterError );
+            }
+            else
+            {
+                log( "Rewarded ad (" + ad.getPlacementId() + ") failed to load with error: " + adapterError );
+                listener.onRewardedAdLoadFailed( adapterError );
+            }
         }
 
         @Override
