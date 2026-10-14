@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -72,6 +73,8 @@ public class VungleMediationAdapter
     private static final String ADAPTER_AD_FORMAT_AD_VIEW_ADAPTIVE = "MaxAdViewAdapter-adaptive";
     private static final String ADAPTER_AD_FORMAT_NATIVE           = "MaxNativeAdAdapter";
     private static final String ADAPTER_AD_FORMAT_NATIVE_BANNER    = "MaxNativeAdAdapter-banner";
+
+    private static final String MEDIATION_PARTNER_NAME             = "max";
 
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus initializationStatus;
@@ -219,6 +222,7 @@ public class VungleMediationAdapter
 
         interstitialAd = new InterstitialAd( getContext( activity ), placementId, new AdConfig() );
         interstitialAd.setAdListener( new InterstitialListener( listener ) );
+        interstitialAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
         interstitialAd.setAdapterAdFormat( ADAPTER_AD_FORMAT_INTERSTITIAL );
 
         interstitialAd.load( bidResponse );
@@ -256,6 +260,7 @@ public class VungleMediationAdapter
 
         appOpenAd = new InterstitialAd( getContext( activity ), placementId, new AdConfig() );
         appOpenAd.setAdListener( new AppOpenAdListener( listener ) );
+        appOpenAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
         appOpenAd.setAdapterAdFormat( ADAPTER_AD_FORMAT_APP_OPEN );
 
         appOpenAd.load( bidResponse );
@@ -293,6 +298,7 @@ public class VungleMediationAdapter
 
         rewardedAd = new RewardedAd( getContext( activity ), placementId, new AdConfig() );
         rewardedAd.setAdListener( new RewardedListener( listener ) );
+        rewardedAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
         rewardedAd.setAdapterAdFormat( ADAPTER_AD_FORMAT_REWARDED );
 
         rewardedAd.load( bidResponse );
@@ -341,6 +347,7 @@ public class VungleMediationAdapter
             final NativeAdViewListener nativeAdViewListener = new NativeAdViewListener( parameters, adFormat, context, listener );
             nativeAd = new NativeAd( getContext( activity ), placementId );
             nativeAd.setAdListener( nativeAdViewListener );
+            nativeAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
             nativeAd.setAdapterAdFormat( ADAPTER_AD_FORMAT_NATIVE_BANNER );
 
             nativeAd.load( bidResponse );
@@ -366,6 +373,7 @@ public class VungleMediationAdapter
         VungleAdSize adSize = toVungleAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, context );
         adViewAd = new VungleBannerView( context, placementId, adSize );
         adViewAd.setAdListener( new AdViewAdListener( adFormatLabel, listener ) );
+        adViewAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
         adViewAd.setAdapterAdFormat( isAdaptiveAdViewEnabled ? ADAPTER_AD_FORMAT_AD_VIEW_ADAPTIVE : ADAPTER_AD_FORMAT_AD_VIEW );
 
         if ( shouldLogSizeMismatch )
@@ -393,6 +401,7 @@ public class VungleMediationAdapter
 
         nativeAd = new NativeAd( getContext( activity ), placementId );
         nativeAd.setAdListener( new NativeListener( parameters, getContext( activity ), listener ) );
+        nativeAd.setMediationPartnerName( MEDIATION_PARTNER_NAME );
         nativeAd.setAdapterAdFormat( ADAPTER_AD_FORMAT_NATIVE );
 
         nativeAd.load( bidResponse );
@@ -1226,6 +1235,21 @@ public class VungleMediationAdapter
                 }
 
                 nativeAd.registerViewForInteraction( frameLayout, (MediaView) mediaView, iconImageView, clickableViews );
+
+                // NOTE: Will be false for React Native (will extend `ReactViewGroup`), but true for Flutter
+                boolean hasPluginLayout = ( container instanceof RelativeLayout || container instanceof FrameLayout );
+                if ( !hasPluginLayout )
+                {
+                    // React Native only lays out the views it owns, so the FrameLayout above would stay 0x0 and the
+                    // Vungle SDK would never register an impression, and the privacy icon it adds to that FrameLayout
+                    // would never be shown. Size it to the container ourselves, same as GoogleMediationAdapter does
+                    // for its NativeAdView. Done after registerViewForInteraction so the SDK's overlay children are
+                    // laid out in the same pass.
+                    frameLayout.measure(
+                            View.MeasureSpec.makeMeasureSpec( container.getWidth(), View.MeasureSpec.EXACTLY ),
+                            View.MeasureSpec.makeMeasureSpec( container.getHeight(), View.MeasureSpec.EXACTLY ) );
+                    frameLayout.layout( 0, 0, container.getWidth(), container.getHeight() );
+                }
             }
 
             return true;
