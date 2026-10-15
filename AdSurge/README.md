@@ -1,0 +1,1 @@
+# AdSurge Adapter
