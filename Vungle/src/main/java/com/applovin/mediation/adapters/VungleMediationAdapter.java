@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
@@ -1226,6 +1227,21 @@ public class VungleMediationAdapter
                 }
 
                 nativeAd.registerViewForInteraction( frameLayout, (MediaView) mediaView, iconImageView, clickableViews );
+
+                // NOTE: Will be false for React Native (will extend `ReactViewGroup`), but true for Flutter
+                boolean hasPluginLayout = ( container instanceof RelativeLayout || container instanceof FrameLayout );
+                if ( !hasPluginLayout )
+                {
+                    // React Native only lays out the views it owns, so the FrameLayout above would stay 0x0 and the
+                    // Vungle SDK would never register an impression, and the privacy icon it adds to that FrameLayout
+                    // would never be shown. Size it to the container ourselves, same as GoogleMediationAdapter does
+                    // for its NativeAdView. Done after registerViewForInteraction so the SDK's overlay children are
+                    // laid out in the same pass.
+                    frameLayout.measure(
+                            View.MeasureSpec.makeMeasureSpec( container.getWidth(), View.MeasureSpec.EXACTLY ),
+                            View.MeasureSpec.makeMeasureSpec( container.getHeight(), View.MeasureSpec.EXACTLY ) );
+                    frameLayout.layout( 0, 0, container.getWidth(), container.getHeight() );
+                }
             }
 
             return true;
