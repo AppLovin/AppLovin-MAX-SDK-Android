@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.7.9.0
+* Certified with Vungle SDK 7.7.9.
+
+## 7.7.8.1
+* Remove ProGuard rules since they are included in Vungle's libraries.
+
+## 7.7.8.0
+* Certified with Vungle SDK 7.7.8.
+
 ## 7.7.7.1
 * Removed `canPlayAd()` and SDK-initialization checks to follow Vungle SDK. Added `VungleMediationLogger` for null ad instances, native ad mismatch, and unspecified errors.
 

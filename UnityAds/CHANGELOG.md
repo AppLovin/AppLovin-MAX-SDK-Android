@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.21.0.0
+* Certified with UnityAds SDK 4.21.0.
+
+## 4.20.1.1
+* Remove ProGuard rules since they are included in UnityAds' libraries.
+
+## 4.20.1.0
+* Certified with UnityAds SDK 4.20.1.
+
 ## 4.20.0.0
 * Certified with UnityAds SDK 4.20.0.
 

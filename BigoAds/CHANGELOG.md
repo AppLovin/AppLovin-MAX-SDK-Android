@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.1.0.0
+* Certified with BigoAds SDK 6.1.0.
+
+## 6.0.1.0
+* Certified with BigoAds SDK 6.0.1.
+
 ## 6.0.0.0
 * Certified with BigoAds SDK 6.0.0.
 

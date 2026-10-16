@@ -1,6 +1,6 @@
 # Changelog
 
-## 9.14.0.1
+## 9.14.1.2
 * Fixed a memory leak by tearing down interstitial and rewarded ads in `onDestroy()` instead of only clearing their cache.
 * Reported a signal collection failure when the Chartboost SDK has not started, instead of reporting an absent bidder token as a successful collection.
 * Fixed ad views not loading on Android API 21, and reported unsupported-API-level failures as a load failure rather than a display failure.
@@ -9,6 +9,12 @@
 * Reported expired interstitial and rewarded ads as a display failure instead of attempting to show them.
 * Expanded cache error reporting from 9 to 23 Chartboost error codes, so load failures surface as specific MAX errors rather than `UNSPECIFIED`.
 * Added the Chartboost auction ID as `chartboost_auction_id` inside `ad_values`, readable via `getAdValue()`, since `creative_id` carries an auction ID rather than a creative ID.
+
+## 9.14.1.1
+* Remove ProGuard rules since they are included in Chartboost's libraries.
+
+## 9.14.1.0
+* Certified with Chartboost SDK 9.14.1.
 
 ## 9.14.0.0
 * Certified with Chartboost SDK 9.14.0.
