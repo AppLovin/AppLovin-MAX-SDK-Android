@@ -1,5 +1,8 @@
 # Changelog
 
+## 7.7.9.1
+* Fixed an issue where native ad impressions were not being confirmed in React Native.
+
 ## 7.7.9.0
 * Certified with Vungle SDK 7.7.9.
 
