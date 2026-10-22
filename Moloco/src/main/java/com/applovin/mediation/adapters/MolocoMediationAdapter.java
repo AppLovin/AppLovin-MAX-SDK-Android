@@ -34,6 +34,7 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.moloco.sdk.publisher.AdLoad;
 import com.moloco.sdk.publisher.Banner;
+import com.moloco.sdk.publisher.BannerAdSize;
 import com.moloco.sdk.publisher.BannerAdShowListener;
 import com.moloco.sdk.publisher.Initialization;
 import com.moloco.sdk.publisher.InterstitialAd;
@@ -320,6 +321,17 @@ public class MolocoMediationAdapter
         }
         else
         {
+            boolean isAdaptiveAdViewEnabled = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+            if ( isAdaptiveAdViewEnabled && AppLovinSdk.VERSION_CODE < 13_02_00_99 )
+            {
+                isAdaptiveAdViewEnabled = false;
+                userError( "Please update AppLovin MAX SDK to version 13.2.0 or higher in order to use Moloco adaptive ads" );
+            }
+
+            final BannerAdSize adSize = toMolocoBannerAdSize( adFormat, isAdaptiveAdViewEnabled, parameters, getContext( activity ) );
+            final int adWidthDp = getReportableAdWidthDp( adSize, adFormat );
+            final int fixedAdHeightDp = isAdaptiveBannerAdSize( adSize ) ? 0 : adFormat.getSize().getHeight();
+
             final Function2<Banner, MolocoAdError.AdCreateError, Unit> createCallback = (adView, error) -> {
 
                 if ( adView == null )
@@ -331,7 +343,7 @@ public class MolocoMediationAdapter
                 else
                 {
                     this.adView = adView;
-                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener );
+                    final AdViewAdListener adViewAdListener = new AdViewAdListener( listener, adView, adWidthDp, fixedAdHeightDp );
                     adView.setAdShowListener( adViewAdListener );
                     adView.load( parameters.getBidResponse(), adViewAdListener );
                 }
@@ -339,22 +351,7 @@ public class MolocoMediationAdapter
                 return Unit.INSTANCE;
             };
 
-            if ( adFormat == MaxAdFormat.BANNER )
-            {
-                Moloco.createBanner( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.LEADER )
-            {
-                Moloco.createBannerTablet( mediationInfo, placementId, null, createCallback );
-            }
-            else if ( adFormat == MaxAdFormat.MREC )
-            {
-                Moloco.createMREC( mediationInfo, placementId, null, createCallback );
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
-            }
+            Moloco.createMolocoBanner( mediationInfo, placementId, adSize, null, createCallback );
         }
     }
 
@@ -394,6 +391,78 @@ public class MolocoMediationAdapter
     }
 
     //region Helper Methods
+
+    private boolean isAdaptiveBannerAdSize(final BannerAdSize adSize)
+    {
+        return adSize instanceof BannerAdSize.InlineAdaptive || adSize instanceof BannerAdSize.AnchoredAdaptive;
+    }
+
+    private int getReportableAdWidthDp(final BannerAdSize adSize, final MaxAdFormat adFormat)
+    {
+        Integer adaptiveWidthDp = null;
+        if ( adSize instanceof BannerAdSize.InlineAdaptive )
+        {
+            adaptiveWidthDp = ( (BannerAdSize.InlineAdaptive) adSize ).getAvailableWidth();
+        }
+        else if ( adSize instanceof BannerAdSize.AnchoredAdaptive )
+        {
+            adaptiveWidthDp = ( (BannerAdSize.AnchoredAdaptive) adSize ).getAvailableWidth();
+        }
+
+        return isAdaptiveBannerAdSize( adSize ) ? ( adaptiveWidthDp != null ? adaptiveWidthDp : 0 ) : adFormat.getSize().getWidth();
+    }
+
+    private int getAdaptiveAdHeightDp(final Banner adView)
+    {
+        final ViewGroup.LayoutParams layoutParams = adView.getLayoutParams();
+        final int heightPx = layoutParams != null ? layoutParams.height : 0;
+        if ( heightPx <= 0 ) return 0;
+
+        final float density = adView.getResources().getDisplayMetrics().density;
+        return density > 0 ? Math.round( heightPx / density ) : 0;
+    }
+
+    private BannerAdSize toMolocoBannerAdSize(final MaxAdFormat adFormat,
+                                             final boolean isAdaptiveAdViewEnabled,
+                                             final MaxAdapterParameters parameters,
+                                             final Context context)
+    {
+        if ( isAdaptiveAdViewEnabled && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            final int width = getAdaptiveAdViewWidth( parameters, context );
+            if ( width > 0 )
+            {
+                if ( isInlineAdaptiveAdView( parameters ) )
+                {
+                    if ( getInlineAdaptiveAdViewMaximumHeight( parameters ) > 0 )
+                    {
+                        userError( "Moloco adaptive ads do not support the inline maximum height parameter. The creative determines the height" );
+                    }
+
+                    return new BannerAdSize.InlineAdaptive( width );
+                }
+
+                return new BannerAdSize.AnchoredAdaptive( width );
+            }
+
+            userError( "Invalid Moloco adaptive ad width: " + width + ". Falling back to a fixed-size ad" );
+        }
+
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return BannerAdSize.Standard.INSTANCE;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return BannerAdSize.Tablet.INSTANCE;
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return BannerAdSize.MREC.INSTANCE;
+        }
+
+        throw new IllegalArgumentException( "Unsupported ad format: " + adFormat );
+    }
 
     private MaxAdapterError toMaxError(final MolocoAdError molocoAdError)
     {
@@ -644,17 +713,35 @@ public class MolocoMediationAdapter
             implements AdLoad.Listener, BannerAdShowListener
     {
         private final MaxAdViewAdapterListener listener;
+        private final Banner                   adView;
+        private final int                      adWidthDp;
+        private final int                      fixedAdHeightDp;
 
-        public AdViewAdListener(final MaxAdViewAdapterListener listener)
+        public AdViewAdListener(final MaxAdViewAdapterListener listener, final Banner adView, final int adWidthDp, final int fixedAdHeightDp)
         {
             this.listener = listener;
+            this.adView = adView;
+            this.adWidthDp = adWidthDp;
+            this.fixedAdHeightDp = fixedAdHeightDp;
         }
 
         @Override
         public void onAdLoadSuccess(@NonNull final MolocoAd molocoAd)
         {
             log( "AdView ad loaded" );
-            listener.onAdViewAdLoaded( adView );
+            final int adHeightDp = fixedAdHeightDp > 0 ? fixedAdHeightDp : getAdaptiveAdHeightDp( adView );
+            if ( adWidthDp > 0 && adHeightDp > 0 )
+            {
+                final Bundle extraInfo = new Bundle( 2 );
+                extraInfo.putInt( "ad_width", adWidthDp );
+                extraInfo.putInt( "ad_height", adHeightDp );
+                listener.onAdViewAdLoaded( adView, extraInfo );
+            }
+            else
+            {
+                log( "Unable to determine Moloco ad size; loading ad view without size extra info" );
+                listener.onAdViewAdLoaded( adView );
+            }
         }
 
         @Override
