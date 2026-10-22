@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.21.0.1
+* Add support for [adaptive banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#adaptive-banners) & [inline adaptive banners](https://support.axon.ai/en/max/android/ad-formats/banner-and-mrec-ads#inline-adaptive-banners). MRECs are not supported. Requires AppLovin MAX SDK 13.2.0 or higher.
+
 ## 4.21.0.0
 * Certified with UnityAds SDK 4.21.0.
 
