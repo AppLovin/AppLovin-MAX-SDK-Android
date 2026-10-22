@@ -1,4 +1,6 @@
 # Changelog
+## 11.5.0.1
+* Restore ProGuard rules to fix dependency detection issues in the Mediation Debugger.
 
 ## 11.5.0.0
 * Certified with InMobi SDK 11.5.0.

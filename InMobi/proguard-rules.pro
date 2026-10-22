@@ -15,3 +15,5 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class androidx.browser.customtabs.CustomTabsService { *; }
+-keep class androidx.recyclerview.widget.RecyclerView { *; }
