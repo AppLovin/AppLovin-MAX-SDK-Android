@@ -1,5 +1,8 @@
 # Changelog
 
+## 3000.2.0.0
+* Certified with Line SDK 3.2.0.
+
 ## 3000.1.1.1
 * Pass mediation name and version to the Line SDK via `AdSlotConfig.setMediationInfo()`.
 
