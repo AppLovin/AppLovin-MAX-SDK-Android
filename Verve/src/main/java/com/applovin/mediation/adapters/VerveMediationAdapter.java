@@ -129,7 +129,7 @@ public class VerveMediationAdapter
         updateLocationCollectionEnabled( parameters );
         updateUserConsent( parameters );
 
-        String signal = HyBid.getCustomRequestSignalData();
+        String signal = HyBid.getCustomRequestSignalData( getContext( activity ), null, parameters.getAdUnitId() );
         callback.onSignalCollected( signal );
     }
 
