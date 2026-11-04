@@ -2,8 +2,13 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
@@ -37,6 +42,8 @@ import net.pubnative.lite.sdk.request.HyBidNativeAdRequest;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -545,6 +552,149 @@ public class VerveMediationAdapter
         {
             log( "AdView clicked" );
             listener.onAdViewAdClicked();
+        }
+    }
+
+    private class NativeAdListener
+            implements HyBidNativeAdRequest.RequestListener, NativeAd.Listener
+    {
+        private final Bundle                         serverParameters;
+        private final WeakReference<Activity>        activityRef;
+        private final MaxNativeAdAdapterListener     listener;
+
+        private NativeAdListener(@Nullable final Activity activity, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
+        {
+            this.serverParameters = parameters.getServerParameters();
+            this.activityRef = new WeakReference<>( activity );
+            this.listener = listener;
+        }
+
+        @Override
+        public void onRequestSuccess(final NativeAd ad)
+        {
+            log( "Native ad loaded" );
+
+            nativeAd = ad;
+
+            String templateName = BundleUtils.getString( "template", "", serverParameters );
+            boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+
+            if ( !hasRequiredAssets( isTemplateAd, ad ) )
+            {
+                e( "Native ad (" + ad + ") does not have required assets." );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
+
+                return;
+            }
+
+            final Activity activity = activityRef.get();
+            if ( activity == null )
+            {
+                log( "Native ad failed to load: activity reference is null when ad is loaded" );
+                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
+
+                return;
+            }
+
+            AppLovinSdkUtils.runOnUiThread( () -> {
+                MaxNativeAd.Builder builder = new MaxNativeAd.Builder().setAdFormat( MaxAdFormat.NATIVE );
+
+                if ( ad.getBannerBitmap() != null )
+                {
+                    ImageView mediaView = new ImageView( activity );
+                    mediaView.setImageBitmap( ad.getBannerBitmap() );
+                    builder.setMediaView( mediaView );
+                }
+
+                if ( ad.getIconBitmap() != null )
+                {
+                    ImageView iconView = new ImageView( activity );
+                    iconView.setImageBitmap( ad.getIconBitmap() );
+                    builder.setIconView( iconView );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getTitle() ) )
+                {
+                    builder.setTitle( ad.getTitle() );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getDescription() ) )
+                {
+                    builder.setBody( ad.getDescription() );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getCallToActionText() ) )
+                {
+                    builder.setCallToAction( ad.getCallToActionText() );
+                }
+
+                View contentInfoView = ad.getContentInfo( activity );
+                if ( contentInfoView != null )
+                {
+                    builder.setOptionsView( contentInfoView );
+                }
+
+                listener.onNativeAdLoaded( new MaxVerveNativeAd( builder ), null );
+            } );
+        }
+
+        @Override
+        public void onRequestFail(final Throwable error)
+        {
+            log( "Native ad failed to load with error: " + error );
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onNativeAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpression(final NativeAd ad, final View view)
+        {
+            log( "Native ad did track impression" );
+            listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdClick(final NativeAd ad, final View view)
+        {
+            log( "Native ad clicked" );
+            listener.onNativeAdClicked();
+        }
+
+        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd ad)
+        {
+            if ( isTemplateAd )
+            {
+                return AppLovinSdkUtils.isValidString( ad.getTitle() );
+            }
+            else
+            {
+                return AppLovinSdkUtils.isValidString( ad.getTitle() )
+                        && AppLovinSdkUtils.isValidString( ad.getCallToActionText() )
+                        && AppLovinSdkUtils.isValidString( ad.getBannerUrl() );
+            }
+        }
+
+        private class MaxVerveNativeAd
+                extends MaxNativeAd
+        {
+            private MaxVerveNativeAd(final Builder builder) { super( builder ); }
+
+            @Override
+            public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+            {
+                final NativeAd ad = nativeAd;
+                if ( ad == null )
+                {
+                    e( "Failed to register native ad views: Verve native ad is null." );
+                    return false;
+                }
+
+                d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+
+                ad.startTracking( container, NativeAdListener.this );
+
+                return true;
+            }
         }
     }
 }
