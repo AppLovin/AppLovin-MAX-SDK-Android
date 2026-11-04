@@ -9,10 +9,12 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -20,7 +22,9 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.verve.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkUtils;
 
 import net.pubnative.lite.sdk.HyBid;
 import net.pubnative.lite.sdk.HyBidError;
@@ -28,6 +32,8 @@ import net.pubnative.lite.sdk.UserDataManager;
 import net.pubnative.lite.sdk.interstitial.HyBidInterstitialAd;
 import net.pubnative.lite.sdk.models.AdSize;
 import net.pubnative.lite.sdk.models.ImpressionTrackingMethod;
+import net.pubnative.lite.sdk.models.NativeAd;
+import net.pubnative.lite.sdk.request.HyBidNativeAdRequest;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 
@@ -38,7 +44,7 @@ import androidx.annotation.Nullable;
 
 public class VerveMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider
+        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter, MaxSignalProvider
 {
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
@@ -46,6 +52,9 @@ public class VerveMediationAdapter
     private HyBidInterstitialAd interstitialAd;
     private HyBidRewardedAd     rewardedAd;
     private HyBidAdView         adViewAd;
+
+    private HyBidNativeAdRequest nativeAdRequest;
+    private NativeAd             nativeAd;
 
     // Explicit default constructor declaration
     public VerveMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -117,6 +126,18 @@ public class VerveMediationAdapter
         {
             adViewAd.destroy();
             adViewAd = null;
+        }
+
+        if ( nativeAdRequest != null )
+        {
+            nativeAdRequest.destroy();
+            nativeAdRequest = null;
+        }
+
+        if ( nativeAd != null )
+        {
+            nativeAd.stopTracking();
+            nativeAd = null;
         }
     }
 
@@ -229,6 +250,27 @@ public class VerveMediationAdapter
         adViewAd = new HyBidAdView( getApplicationContext(), getSize( adFormat ) );
         adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
+    }
+
+    @Override
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
+    {
+        log( "Loading native ad..." );
+
+        if ( !HyBid.isInitialized() )
+        {
+            log( "Verve SDK is not initialized: failing native ad load..." );
+            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
+        updateLocationCollectionEnabled( parameters );
+        updateUserConsent( parameters );
+
+        nativeAdRequest = new HyBidNativeAdRequest();
+        nativeAdRequest.setPreLoadMediaAssets( true );
+        //nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( activity, parameters, listener ) );
     }
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
