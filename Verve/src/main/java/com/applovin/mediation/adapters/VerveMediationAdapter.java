@@ -2,6 +2,8 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -42,7 +44,7 @@ import net.pubnative.lite.sdk.request.HyBidNativeAdRequest;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 
-import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -137,8 +139,9 @@ public class VerveMediationAdapter
 
         if ( nativeAd != null )
         {
-            nativeAd.stopTracking();
+            final NativeAd adToStop = nativeAd;
             nativeAd = null;
+            AppLovinSdkUtils.runOnUiThread( adToStop::stopTracking );
         }
     }
 
@@ -271,7 +274,7 @@ public class VerveMediationAdapter
 
         nativeAdRequest = new HyBidNativeAdRequest();
         nativeAdRequest.setPreLoadMediaAssets( true );
-        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( activity, parameters, listener ) );
+        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( getApplicationContext(), parameters, listener ) );
     }
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
@@ -552,14 +555,14 @@ public class VerveMediationAdapter
     private class NativeAdListener
             implements HyBidNativeAdRequest.RequestListener, NativeAd.Listener
     {
-        private final Bundle                         serverParameters;
-        private final WeakReference<Activity>        activityRef;
-        private final MaxNativeAdAdapterListener     listener;
+        private final Bundle                     serverParameters;
+        private final Context                    context;
+        private final MaxNativeAdAdapterListener listener;
 
-        private NativeAdListener(@Nullable final Activity activity, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
+        private NativeAdListener(final Context context, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
         {
             this.serverParameters = parameters.getServerParameters();
-            this.activityRef = new WeakReference<>( activity );
+            this.context = context;
             this.listener = listener;
         }
 
@@ -568,43 +571,45 @@ public class VerveMediationAdapter
         {
             log( "Native ad loaded" );
 
-            nativeAd = ad;
-
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
 
             if ( !hasRequiredAssets( isTemplateAd, ad ) )
             {
-                e( "Native ad (" + ad + ") does not have required assets." );
+                log( "Native ad (" + ad + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
 
                 return;
             }
 
-            final Activity activity = activityRef.get();
-            if ( activity == null )
+            // HyBid pre-loads the images but still returns the ad when a download fails, so check it here.
+            if ( !TextUtils.isEmpty( ad.getBannerUrl() ) && ad.getBannerBitmap() == null )
             {
-                log( "Native ad failed to load: activity reference is null when ad is loaded" );
-                listener.onNativeAdLoadFailed( MaxAdapterError.INVALID_LOAD_STATE );
-
-                return;
+                log( "Native ad main image failed to download, loading the ad without it." );
             }
+
+            if ( !TextUtils.isEmpty( ad.getIconUrl() ) && ad.getIconBitmap() == null )
+            {
+                log( "Native ad icon failed to download, loading the ad without it." );
+            }
+
+            nativeAd = ad;
 
             AppLovinSdkUtils.runOnUiThread( () -> {
                 MaxNativeAd.Builder builder = new MaxNativeAd.Builder().setAdFormat( MaxAdFormat.NATIVE );
 
                 if ( ad.getBannerBitmap() != null )
                 {
-                    ImageView mediaView = new ImageView( activity );
+                    ImageView mediaView = new ImageView( context );
+                    mediaView.setScaleType( ImageView.ScaleType.FIT_CENTER );
                     mediaView.setImageBitmap( ad.getBannerBitmap() );
                     builder.setMediaView( mediaView );
+                    builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( context.getResources(), ad.getBannerBitmap() ) ) );
                 }
 
                 if ( ad.getIconBitmap() != null )
                 {
-                    ImageView iconView = new ImageView( activity );
-                    iconView.setImageBitmap( ad.getIconBitmap() );
-                    builder.setIconView( iconView );
+                    builder.setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( context.getResources(), ad.getIconBitmap() ) ) );
                 }
 
                 if ( !TextUtils.isEmpty( ad.getTitle() ) )
@@ -622,7 +627,12 @@ public class VerveMediationAdapter
                     builder.setCallToAction( ad.getCallToActionText() );
                 }
 
-                View contentInfoView = ad.getContentInfo( activity );
+                if ( ad.getRating() > 0 )
+                {
+                    builder.setStarRating( (double) ad.getRating() );
+                }
+
+                View contentInfoView = ad.getContentInfo( context );
                 if ( contentInfoView != null )
                 {
                     builder.setOptionsView( contentInfoView );
@@ -656,16 +666,7 @@ public class VerveMediationAdapter
 
         private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd ad)
         {
-            if ( isTemplateAd )
-            {
-                return AppLovinSdkUtils.isValidString( ad.getTitle() );
-            }
-            else
-            {
-                return AppLovinSdkUtils.isValidString( ad.getTitle() )
-                        && AppLovinSdkUtils.isValidString( ad.getCallToActionText() )
-                        && AppLovinSdkUtils.isValidString( ad.getBannerUrl() );
-            }
+            return !isTemplateAd || AppLovinSdkUtils.isValidString( ad.getTitle() );
         }
 
         private class MaxVerveNativeAd
@@ -679,13 +680,20 @@ public class VerveMediationAdapter
                 final NativeAd ad = nativeAd;
                 if ( ad == null )
                 {
-                    e( "Failed to register native ad views: Verve native ad is null." );
+                    log( "Failed to register native ad views: Verve native ad is null." );
                     return false;
                 }
 
-                d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+                log( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-                ad.startTracking( container, NativeAdListener.this );
+                // Use the views MAX provides, and fall back to the whole container when there are none
+                final List<View> views = ( clickableViews == null || clickableViews.isEmpty() ) ? Collections.singletonList( container ) : clickableViews;
+
+                ad.startTracking( container, views.get( 0 ), NativeAdListener.this );
+                for ( int i = 1; i < views.size(); i++ )
+                {
+                    ad.startTrackingClicks( views.get( i ) );
+                }
 
                 return true;
             }
