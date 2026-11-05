@@ -277,7 +277,7 @@ public class VerveMediationAdapter
 
         nativeAdRequest = new HyBidNativeAdRequest();
         nativeAdRequest.setPreLoadMediaAssets( true );
-        //nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( activity, parameters, listener ) );
+        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( activity, parameters, listener ) );
     }
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
