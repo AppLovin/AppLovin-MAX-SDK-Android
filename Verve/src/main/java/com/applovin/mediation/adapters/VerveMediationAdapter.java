@@ -135,12 +135,6 @@ public class VerveMediationAdapter
             adViewAd = null;
         }
 
-        if ( nativeAdRequest != null )
-        {
-            nativeAdRequest.destroy();
-            nativeAdRequest = null;
-        }
-
         if ( nativeAd != null )
         {
             nativeAd.stopTracking();
