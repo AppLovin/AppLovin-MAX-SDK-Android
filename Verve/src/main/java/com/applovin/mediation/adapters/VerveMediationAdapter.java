@@ -44,6 +44,8 @@ import net.pubnative.lite.sdk.request.HyBidNativeAdRequest;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +66,8 @@ public class VerveMediationAdapter
 
     private HyBidNativeAdRequest nativeAdRequest;
     private NativeAd             nativeAd;
+    // Views that got the HyBid click listener, so it can be removed again on destroy
+    private final List<View> clickableViewsWithListener = new ArrayList<>();
 
     // Explicit default constructor declaration
     public VerveMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -141,7 +145,16 @@ public class VerveMediationAdapter
         {
             final NativeAd adToStop = nativeAd;
             nativeAd = null;
-            AppLovinSdkUtils.runOnUiThread( adToStop::stopTracking );
+            AppLovinSdkUtils.runOnUiThread( () -> {
+                adToStop.stopTracking();
+
+                // stopTracking() only clears the last clickable view, so clear the others here as well
+                for ( View view : clickableViewsWithListener )
+                {
+                    view.setOnClickListener( null );
+                }
+                clickableViewsWithListener.clear();
+            } );
         }
     }
 
@@ -274,7 +287,7 @@ public class VerveMediationAdapter
 
         nativeAdRequest = new HyBidNativeAdRequest();
         nativeAdRequest.setPreLoadMediaAssets( true );
-        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( getApplicationContext(), parameters, listener ) );
+        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( new WeakReference<>(activity), getApplicationContext(), parameters, listener ) );
     }
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
@@ -556,13 +569,15 @@ public class VerveMediationAdapter
             implements HyBidNativeAdRequest.RequestListener, NativeAd.Listener
     {
         private final Bundle                     serverParameters;
-        private final Context                    context;
+        private final WeakReference<Activity>    activityRef;
+        private final Context                    applicationContext;
         private final MaxNativeAdAdapterListener listener;
 
-        private NativeAdListener(final Context context, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
+        private NativeAdListener(@Nullable final WeakReference<Activity> weakActivityRef, final Context applicationContext, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
         {
             this.serverParameters = parameters.getServerParameters();
-            this.context = context;
+            this.activityRef = weakActivityRef;
+            this.applicationContext = applicationContext;
             this.listener = listener;
         }
 
@@ -596,6 +611,9 @@ public class VerveMediationAdapter
             nativeAd = ad;
 
             AppLovinSdkUtils.runOnUiThread( () -> {
+                final Activity activity = activityRef.get();
+                final Context context = activity != null ? activity : applicationContext;
+
                 MaxNativeAd.Builder builder = new MaxNativeAd.Builder().setAdFormat( MaxAdFormat.NATIVE );
 
                 if ( ad.getBannerBitmap() != null )
@@ -688,6 +706,14 @@ public class VerveMediationAdapter
 
                 // Use the views MAX provides, and fall back to the whole container when there are none
                 final List<View> views = ( clickableViews == null || clickableViews.isEmpty() ) ? Collections.singletonList( container ) : clickableViews;
+
+                // If MAX registers again, release the views from the previous registration first
+                for ( View previousView : clickableViewsWithListener )
+                {
+                    previousView.setOnClickListener( null );
+                }
+                clickableViewsWithListener.clear();
+                clickableViewsWithListener.addAll( views );
 
                 ad.startTracking( container, views.get( 0 ), NativeAdListener.this );
                 for ( int i = 1; i < views.size(); i++ )
