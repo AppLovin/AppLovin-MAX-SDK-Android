@@ -66,6 +66,7 @@ public class VerveMediationAdapter
 
     private HyBidNativeAdRequest nativeAdRequest;
     private volatile NativeAd nativeAd;
+    private volatile boolean isDestroyed;
     // Views that got the HyBid click listener, so it can be removed again on destroy
     private final List<View> clickableViewsWithListener = new ArrayList<>();
 
@@ -123,6 +124,8 @@ public class VerveMediationAdapter
     @Override
     public void onDestroy()
     {
+        isDestroyed = true;
+
         if ( interstitialAd != null )
         {
             interstitialAd.destroy();
@@ -586,6 +589,12 @@ public class VerveMediationAdapter
         {
             log( "Native ad loaded" );
 
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad loaded, dropping it." );
+                return;
+            }
+
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
 
@@ -611,7 +620,7 @@ public class VerveMediationAdapter
             nativeAd = ad;
 
             AppLovinSdkUtils.runOnUiThread( () -> {
-                if ( nativeAd != ad )
+                if ( isDestroyed || nativeAd != ad )
                 {
                     log( "Native ad was destroyed before it could be delivered, dropping it." );
                     return;
