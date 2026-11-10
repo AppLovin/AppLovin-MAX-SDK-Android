@@ -65,7 +65,7 @@ public class VerveMediationAdapter
     private HyBidAdView         adViewAd;
 
     private HyBidNativeAdRequest nativeAdRequest;
-    private NativeAd             nativeAd;
+    private volatile NativeAd nativeAd;
     // Views that got the HyBid click listener, so it can be removed again on destroy
     private final List<View> clickableViewsWithListener = new ArrayList<>();
 
@@ -611,6 +611,12 @@ public class VerveMediationAdapter
             nativeAd = ad;
 
             AppLovinSdkUtils.runOnUiThread( () -> {
+                if ( nativeAd != ad )
+                {
+                    log( "Native ad was destroyed before it could be delivered, dropping it." );
+                    return;
+                }
+
                 final Activity activity = activityRef.get();
                 final Context context = activity != null ? activity : applicationContext;
 
