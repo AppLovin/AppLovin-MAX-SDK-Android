@@ -679,6 +679,13 @@ public class VerveMediationAdapter
         public void onRequestFail(final Throwable error)
         {
             log( "Native ad failed to load with error: " + error );
+
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad failed to load, ignoring the failure." );
+                return;
+            }
+
             MaxAdapterError adapterError = toMaxError( error );
             listener.onNativeAdLoadFailed( adapterError );
         }
