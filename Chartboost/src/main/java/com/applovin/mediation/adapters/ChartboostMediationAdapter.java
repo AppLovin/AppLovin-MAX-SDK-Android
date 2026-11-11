@@ -62,11 +62,18 @@ public class ChartboostMediationAdapter
     private static final AtomicBoolean initialized        = new AtomicBoolean();
     private static final Mediation     MEDIATION_PROVIDER = new Mediation( "MAX", AppLovinSdk.VERSION, BuildConfig.VERSION_NAME );
 
-    private static InitializationStatus status;
+    private static volatile InitializationStatus status = InitializationStatus.INITIALIZING;
 
     private Interstitial interstitialAd;
     private Rewarded     rewardedAd;
     private Banner       adView;
+
+    // NOTE: Expiry is tracked on the listener rather than here. Each load builds a new ad and a new
+    // listener, but a superseded ad's listener stays registered with the Chartboost SDK and can still
+    // deliver `onAdExpired`. An adapter-level flag would let that late callback mark a newer, valid ad
+    // as expired. This mirrors how `hasGrantedReward` is already scoped in `RewardedAdListener`.
+    private InterstitialAdListener interstitialAdListener;
+    private RewardedAdListener     rewardedAdListener;
 
     // Explicit default constructor declaration
     public ChartboostMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -76,8 +83,6 @@ public class ChartboostMediationAdapter
     {
         if ( initialized.compareAndSet( false, true ) )
         {
-            status = InitializationStatus.INITIALIZING;
-
             final Bundle serverParameters = parameters.getServerParameters();
             final String appId = serverParameters.getString( "app_id" );
             log( "Initializing Chartboost SDK with app id: " + appId + "..." );
@@ -146,13 +151,13 @@ public class ChartboostMediationAdapter
 
         if ( interstitialAd != null )
         {
-            interstitialAd.clearCache();
+            interstitialAd.destroy();
             interstitialAd = null;
         }
 
         if ( rewardedAd != null )
         {
-            rewardedAd.clearCache();
+            rewardedAd.destroy();
             rewardedAd = null;
         }
 
@@ -169,6 +174,16 @@ public class ChartboostMediationAdapter
     {
         log( "Collecting signal..." );
 
+        // NOTE: `getBidderToken()` returns null until the Chartboost SDK has started, and MAX would
+        // otherwise record that as a successful collection carrying no token.
+        if ( !Chartboost.isSdkStarted() )
+        {
+            log( "Signal collection failed: Chartboost SDK is not started" );
+            callback.onSignalCollectionFailed( "Chartboost SDK is not started" );
+
+            return;
+        }
+
         String signal = Chartboost.getBidderToken();
         callback.onSignalCollected( signal );
     }
@@ -183,7 +198,8 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, getContext( activity ) );
 
-        interstitialAd = new Interstitial( location, new InterstitialAdListener( listener ), MEDIATION_PROVIDER );
+        interstitialAdListener = new InterstitialAdListener( listener );
+        interstitialAd = new Interstitial( location, interstitialAdListener, MEDIATION_PROVIDER );
 
         // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
@@ -210,6 +226,16 @@ public class ChartboostMediationAdapter
         final String location = retrieveLocation( parameters );
         log( "Showing interstitial ad for location \"" + location + "\"..." );
 
+        if ( interstitialAdListener != null && interstitialAdListener.adExpired )
+        {
+            log( "Interstitial ad expired" );
+            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                         MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                         MaxAdapterError.AD_EXPIRED.getMessage() ) );
+
+            return;
+        }
+
         // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
         if ( interstitialAd != null )
         {
@@ -234,7 +260,8 @@ public class ChartboostMediationAdapter
 
         updateConsentStatus( parameters, getContext( activity ) );
 
-        rewardedAd = new Rewarded( location, new RewardedAdListener( listener ), MEDIATION_PROVIDER );
+        rewardedAdListener = new RewardedAdListener( listener );
+        rewardedAd = new Rewarded( location, rewardedAdListener, MEDIATION_PROVIDER );
 
         // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
@@ -260,6 +287,16 @@ public class ChartboostMediationAdapter
     {
         final String location = retrieveLocation( parameters );
         log( "Showing rewarded ad for location \"" + location + "\"..." );
+
+        if ( rewardedAdListener != null && rewardedAdListener.adExpired )
+        {
+            log( "Rewarded ad expired" );
+            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                                                     MaxAdapterError.AD_EXPIRED.getCode(),
+                                                                     MaxAdapterError.AD_EXPIRED.getMessage() ) );
+
+            return;
+        }
 
         // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
         if ( rewardedAd != null )
@@ -290,7 +327,7 @@ public class ChartboostMediationAdapter
         adView = new Banner( getContext( activity ), location, toAdSize( adFormat ), new AdViewAdListener( listener, adFormat ), MEDIATION_PROVIDER );
 
         // NOTE: Do not use `isCached()` since it does not reliably indicate ad readiness.
-        if ( Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP )
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP )
         {
             if ( isBidding )
             {
@@ -304,7 +341,7 @@ public class ChartboostMediationAdapter
         else  // Chartboost does not support showing ad view ads for devices with Android versions lower than 21
         {
             log( "Ad load failed: Chartboost does not support showing " + adFormat.getLabel() + " ads for devices with Android versions lower than 21" );
-            listener.onAdViewAdDisplayFailed( MaxAdapterError.INVALID_CONFIGURATION );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.INVALID_CONFIGURATION );
         }
     }
 
@@ -363,12 +400,16 @@ public class ChartboostMediationAdapter
         }
     }
 
+    // NOTE: `INVALID_RESPONSE`, `INVALID_ADM` and `UNSUPPORTED_CODEC` are deliberately unmapped. The Chartboost
+    // SDK routes their sources to `SERVER_ERROR` and `ASSET_DOWNLOAD_FAILURE`, so it cannot produce those codes.
     private static MaxAdapterError toMaxError(CacheError chartboostError)
     {
         MaxAdapterError adapterError = MaxAdapterError.UNSPECIFIED;
         switch ( chartboostError.getCode() )
         {
             case INTERNAL:
+            case NO_STORAGE:
+            case NO_MRAID_JS:
                 adapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
             case INTERNET_UNAVAILABLE:
@@ -382,40 +423,51 @@ public class ChartboostMediationAdapter
                 adapterError = MaxAdapterError.NOT_INITIALIZED;
                 break;
             case ASSET_DOWNLOAD_FAILURE:
+            case INVALID_REQUEST:
                 adapterError = MaxAdapterError.BAD_REQUEST;
                 break;
             case BANNER_DISABLED:
             case BANNER_VIEW_IS_DETACHED:
+            case DISABLED:
+            case INVALID_PLACEMENT:
                 adapterError = MaxAdapterError.INVALID_CONFIGURATION;
                 break;
             case SERVER_ERROR:
+            case RATE_LIMITED:
+            case INVALID_HTML:
+            case INVALID_ASSET_URL:
+            case VAST_ERROR:
                 adapterError = MaxAdapterError.SERVER_ERROR;
+                break;
+            case TIMEOUT:
+                adapterError = MaxAdapterError.TIMEOUT;
+                break;
+            case LOAD_IN_PROGRESS:
+            case ALREADY_LOADED:
+                adapterError = MaxAdapterError.INVALID_LOAD_STATE;
+                break;
+            case WEBVIEW_FAILED:
+            case WEBVIEW_CRASHED:
+                adapterError = MaxAdapterError.WEBVIEW_ERROR;
+                break;
         }
 
         return new MaxAdapterError( adapterError, chartboostError.getCode().getErrorCode(), chartboostError.toString() );
     }
 
-    private void showAdViewDelayed(final MaxAdViewAdapterListener listener)
+    // NOTE: `creative_id` carries Chartboost's auction ID, not a creative ID, and the Chartboost SDK exposes no
+    // creative ID that could correct it. It is left in place because existing reporting already joins on it, and
+    // the same value is repeated under a truthful name so publishers have one key that means what it says.
+    private static Bundle createExtraInfo(final String auctionId)
     {
-        // Chartboost requires manual show after caching ad views. Delay to allow enough time for attaching to parent.
-        AppLovinSdkUtils.runOnUiThreadDelayed( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if ( adView != null )
-                {
-                    adView.show();
-                }
-                else
-                {
-                    log( "Ad load failed: Chartboost Banner AdView is not ready." );
-                    listener.onAdViewAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                           MaxAdapterError.AD_NOT_READY.getCode(),
-                                                                           MaxAdapterError.AD_NOT_READY.getMessage() ) );
-                }
-            }
-        }, 500 );
+        Bundle adValues = new Bundle( 1 );
+        adValues.putString( "chartboost_auction_id", auctionId );
+
+        Bundle extraInfo = new Bundle( 2 );
+        extraInfo.putString( "creative_id", auctionId );
+        extraInfo.putBundle( "ad_values", adValues );
+
+        return extraInfo;
     }
 
     private Context getContext(@Nullable final Activity activity)
@@ -429,7 +481,8 @@ public class ChartboostMediationAdapter
     private class InterstitialAdListener
             implements InterstitialCallback
     {
-        private final MaxInterstitialAdapterListener listener;
+        private final    MaxInterstitialAdapterListener listener;
+        private volatile boolean                        adExpired;
 
         private InterstitialAdListener(final MaxInterstitialAdapterListener listener)
         {
@@ -456,6 +509,7 @@ public class ChartboostMediationAdapter
         public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
         {
             log( "Interstitial ad expired with reason: " + expirationEvent.getReason() );
+            adExpired = true;
         }
 
         @Override
@@ -470,6 +524,9 @@ public class ChartboostMediationAdapter
             String location = showEvent.getAd().getLocation();
             if ( showError != null )
             {
+                // NOTE: There is deliberately no `ShowError` counterpart to `toMaxError( CacheError )`. Show
+                // failures report `AD_DISPLAY_FAILED` and pass the Chartboost code and message through in the
+                // mediated-network slot, which is what the other adapters in this repo do.
                 log( "Interstitial ad failed \"" + location + "\" to show with error: " + showError );
                 listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
                                                                              showError.getCode().getErrorCode(),
@@ -507,10 +564,7 @@ public class ChartboostMediationAdapter
             }
             else
             {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", impressionEvent.getAdID() );
-
-                listener.onInterstitialAdDisplayed( extraInfo );
+                listener.onInterstitialAdDisplayed( createExtraInfo( impressionEvent.getAdID() ) );
             }
         }
 
@@ -525,8 +579,9 @@ public class ChartboostMediationAdapter
     private class RewardedAdListener
             implements RewardedCallback
     {
-        private final MaxRewardedAdapterListener listener;
-        private       boolean                    hasGrantedReward;
+        private final    MaxRewardedAdapterListener listener;
+        private          boolean                    hasGrantedReward;
+        private volatile boolean                    adExpired;
 
         private RewardedAdListener(final MaxRewardedAdapterListener listener)
         {
@@ -553,6 +608,7 @@ public class ChartboostMediationAdapter
         public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
         {
             log( "Rewarded ad expired with reason: " + expirationEvent.getReason() );
+            adExpired = true;
         }
 
         @Override
@@ -604,10 +660,7 @@ public class ChartboostMediationAdapter
             }
             else
             {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", impressionEvent.getAdID() );
-
-                listener.onRewardedAdDisplayed( extraInfo );
+                listener.onRewardedAdDisplayed( createExtraInfo( impressionEvent.getAdID() ) );
             }
         }
 
@@ -661,24 +714,32 @@ public class ChartboostMediationAdapter
 
             log( adFormat.getLabel() + " ad loaded: " + location );
 
+            final Banner loadedAdView = (Banner) cacheEvent.getAd();
+
             if ( TextUtils.isEmpty( cacheEvent.getAdID() ) )
             {
-                listener.onAdViewAdLoaded( adView );
+                listener.onAdViewAdLoaded( loadedAdView );
             }
             else
             {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", cacheEvent.getAdID() );
-
-                listener.onAdViewAdLoaded( adView, extraInfo );
+                listener.onAdViewAdLoaded( loadedAdView, createExtraInfo( cacheEvent.getAdID() ) );
             }
 
-            showAdViewDelayed( listener );
+            // Chartboost requires a manual show after caching ad views. Since Chartboost SDK 9.14.0 its
+            // visibility tracker attaches to the window before it starts, and registers an
+            // OnAttachStateChangeListener when the view is not attached yet, so showing here is safe even
+            // though MAX has not added this Banner to the publisher's layout. Earlier SDK versions bound the
+            // visibility check to a view tree that was then replaced and the impression never fired, which is
+            // why the 9.13.0.0 adapter deferred this call behind a fixed 500ms delay.
+            loadedAdView.show();
         }
 
         @Override
         public void onAdExpired(@NonNull final ExpirationEvent expirationEvent)
         {
+            // NOTE: Deliberately log-only. MAX has no ad view callback for an ad that expires after it is
+            // displayed, and it drives its own banner refresh. The show in `onAdLoaded` is synchronous with
+            // the load, so there is no window between the two in which an expiry could be acted on either.
             log( "AdView ad expired with reason: " + expirationEvent.getReason() );
         }
 
@@ -731,10 +792,7 @@ public class ChartboostMediationAdapter
             }
             else
             {
-                Bundle extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", impressionEvent.getAdID() );
-
-                listener.onAdViewAdDisplayed( extraInfo );
+                listener.onAdViewAdDisplayed( createExtraInfo( impressionEvent.getAdID() ) );
             }
         }
     }
