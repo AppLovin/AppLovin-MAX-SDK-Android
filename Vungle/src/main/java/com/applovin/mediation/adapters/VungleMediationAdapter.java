@@ -135,7 +135,7 @@ public class VungleMediationAdapter
     @Override
     public String getSdkVersion()
     {
-        return getVersionString( com.vungle.ads.BuildConfig.class, "VERSION_NAME" );
+        return VungleAds.getSdkVersion();
     }
 
     @Override
