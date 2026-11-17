@@ -600,7 +600,7 @@ public class LineMediationAdapter
         {
             log( adFormat.getLabel() + " ad loaded for slot id: " + ad.getSlotId() + "..." );
             adView = ad;
-            adView.setEventListener( adViewListener );
+            adView.setEventListener( this );
 
             // We always want to mute banners and MRECs
             adView.enableSound( false );
@@ -693,7 +693,7 @@ public class LineMediationAdapter
             }
 
             nativeAd = ad;
-            nativeAd.setEventListener( nativeAdViewListener );
+            nativeAd.setEventListener( this );
 
             // We always want to mute banners and MRECs
             nativeAd.enableSound( false );
@@ -889,7 +889,7 @@ public class LineMediationAdapter
             } );
 
             nativeAd = ad;
-            nativeAd.setEventListener( nativeAdListener );
+            nativeAd.setEventListener( this );
 
             // We always want to mute banners and MRECs
             nativeAd.enableSound( false );

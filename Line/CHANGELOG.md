@@ -1,5 +1,8 @@
 # Changelog
 
+## 3000.2.0.1
+* Fix a NullPointerException when setting the ad event listener via `setEventListener`.
+
 ## 3000.2.0.0
 * Certified with Line SDK 3.2.0.
 
