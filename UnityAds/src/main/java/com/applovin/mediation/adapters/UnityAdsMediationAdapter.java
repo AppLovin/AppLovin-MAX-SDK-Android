@@ -76,6 +76,7 @@ public class UnityAdsMediationAdapter
             initializationStatus = InitializationStatus.INITIALIZING;
 
             InitializationConfiguration config = new InitializationConfiguration.Builder( gameId )
+                    .withContext( getContext( activity ) )
                     .withTestMode( parameters.isTesting() )
                     .withMediationInfo( createMediationInfo() )
                     .build();
