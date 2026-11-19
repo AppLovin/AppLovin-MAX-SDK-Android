@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.10.0
+* Certified with YsoNetwork SDK 1.3.10.
+
 ## 1.3.9.0
 * Certified with YsoNetwork SDK 1.3.9.
 
