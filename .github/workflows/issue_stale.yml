@@ -5,7 +5,7 @@ on:
     
 jobs:
   close-issues:
-    runs-on: ubuntu-latest
+    runs-on: mobile-sdk-runner
     permissions:
       issues: write
     steps:
