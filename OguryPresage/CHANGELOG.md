@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.4.0.0
+* Certified with OguryPresage SDK 6.4.0.
+
 ## 6.3.1.1
 * Fixed an issue where the UPM adapter included an SPM reference.
 
