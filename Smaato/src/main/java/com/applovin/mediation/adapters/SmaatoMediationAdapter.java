@@ -15,6 +15,7 @@ import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
@@ -70,7 +71,7 @@ import androidx.annotation.Nullable;
  */
 public class SmaatoMediationAdapter
         extends MediationAdapterBase
-        implements MaxSignalProvider, MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter /* MaxNativeAdAdapter */
+        implements MaxSignalProvider, MaxAdViewAdapter, MaxInterstitialAdapter, MaxRewardedAdapter, MaxNativeAdAdapter
 {
     private static final SmaatoMediationAdapterRouter ROUTER;
     private static final AtomicBoolean                INITIALIZED = new AtomicBoolean();
@@ -82,7 +83,10 @@ public class SmaatoMediationAdapter
     private BannerView             adView;
     private InterstitialAd         interstitialAd;
     private RewardedInterstitialAd rewardedAd;
-    private NativeAdRenderer       nativeAdRenderer;
+    private volatile NativeAdRenderer nativeAdRenderer;
+
+    // Smaato's native request can't be cancelled, so it may still finish after onDestroy()
+    private volatile boolean isDestroyed;
 
     static
     {
@@ -143,6 +147,8 @@ public class SmaatoMediationAdapter
     @Override
     public void onDestroy()
     {
+        isDestroyed = true;
+
         if ( adView != null )
         {
             adView.setEventListener( null );
@@ -152,7 +158,14 @@ public class SmaatoMediationAdapter
 
         interstitialAd = null;
         rewardedAd = null;
+
+        final NativeAdRenderer rendererToRelease = nativeAdRenderer;
         nativeAdRenderer = null;
+        if ( rendererToRelease != null )
+        {
+            // Releases the views that were registered for impressions and clicks
+            AppLovinSdkUtils.runOnUiThread( rendererToRelease::onDestroyView );
+        }
 
         ROUTER.removeAdapter( this, placementId );
     }
@@ -365,7 +378,7 @@ public class SmaatoMediationAdapter
 
     //region MaxNativeAdAdapter
 
-    // @Override
+    @Override
     public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         final String bidResponse = parameters.getBidResponse();
@@ -768,6 +781,12 @@ public class SmaatoMediationAdapter
         {
             log( "Native ad loaded: " + placementId );
 
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad loaded, dropping it." );
+                return;
+            }
+
             // Save the renderer in order to register the native ad view later.
             nativeAdRenderer = renderer;
 
@@ -776,6 +795,13 @@ public class SmaatoMediationAdapter
                 @Override
                 public void run()
                 {
+                    // onDestroy() may have run while this was queued, so don't hand an ad to a destroyed adapter
+                    if ( isDestroyed || nativeAdRenderer != renderer )
+                    {
+                        log( "Native ad was destroyed before it could be delivered, dropping it." );
+                        return;
+                    }
+
                     final NativeAdAssets assets = renderer.getAssets();
                     final String templateName = BundleUtils.getString( "template", "", serverParameters );
                     final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
@@ -795,9 +821,10 @@ public class SmaatoMediationAdapter
 
                     ImageView maxNativeAdMediaView = null;
                     MaxNativeAd.MaxNativeAdImage maxNativeMainImage = null;
-                    if ( assets.images().size() > 0 )
+                    final List<NativeAdAssets.Image> images = assets.images();
+                    if ( images != null && !images.isEmpty() && images.get( 0 ) != null )
                     {
-                        NativeAdAssets.Image image = assets.images().get( 0 );
+                        final NativeAdAssets.Image image = images.get( 0 );
                         if ( image.drawable() != null )
                         {
                             maxNativeAdMediaView = new ImageView( context );
@@ -816,6 +843,12 @@ public class SmaatoMediationAdapter
                             .setMediaView( maxNativeAdMediaView )
                             .setMainImage( maxNativeMainImage );
 
+                    final Double rating = assets.rating();
+                    if ( rating != null && rating > 0 )
+                    {
+                        builder.setStarRating( rating );
+                    }
+
                     final MaxNativeAd maxNativeAd = new MaxSmaatoNativeAd( builder );
 
                     log( "Native ad fully loaded: " + placementId );
@@ -829,6 +862,13 @@ public class SmaatoMediationAdapter
         {
             final MaxAdapterError adapterError = toMaxError( error );
             log( "Native ad (" + placementId + ") failed to load with error: " + adapterError );
+
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad failed to load, ignoring the failure." );
+                return;
+            }
+
             listener.onNativeAdLoadFailed( adapterError );
         }
 
