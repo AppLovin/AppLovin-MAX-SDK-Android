@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.22.0.1
+* Pass the application Context to `InitializationConfiguration`.
+
 ## 4.22.0.0
 * Certified with UnityAds SDK 4.22.0.
 
