@@ -1,5 +1,8 @@
 # Changelog
 
+## 6.22.1.0
+* Certified with Facebook SDK 6.22.1.
+
 ## 6.22.0.1
 * Fixed interstitial and rewarded ads not firing display failed callbacks when Facebook reports error 9001 ("Ad could not be presented") during ad show.
 
