@@ -1,5 +1,8 @@
 # Changelog
 
+## 23.3.0.0
+* Certified with Smaato SDK 23.3.0.
+
 ## 23.2.3.0
 * Certified with Smaato SDK 23.2.3.
 
