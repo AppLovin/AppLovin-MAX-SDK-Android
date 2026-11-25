@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0.0
+* Certified with BidMachine SDK 4.0.0.
+* Migrated to the new BidMachine SDK 4.0 API.
+
 ## 3.8.0.1
 * Fixed an issue where the UPM adapter included an SPM reference.
 

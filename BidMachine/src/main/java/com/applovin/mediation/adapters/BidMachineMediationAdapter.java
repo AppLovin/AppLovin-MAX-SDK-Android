@@ -1,13 +1,13 @@
 package com.applovin.mediation.adapters;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
@@ -32,62 +32,71 @@ import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkUtils;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import io.bidmachine.AdPlacementConfig;
-import io.bidmachine.AdsFormat;
+import io.bidmachine.Ad;
+import io.bidmachine.AdLoadCallback;
+import io.bidmachine.BMError;
 import io.bidmachine.BidMachine;
+import io.bidmachine.BidMachineInstance;
 import io.bidmachine.BidTokenCallback;
-import io.bidmachine.ImageData;
-import io.bidmachine.InitializationCallback;
-import io.bidmachine.MediaAssetType;
-import io.bidmachine.banner.BannerListener;
-import io.bidmachine.banner.BannerRequest;
-import io.bidmachine.banner.BannerSize;
-import io.bidmachine.banner.BannerView;
-import io.bidmachine.interstitial.InterstitialAd;
-import io.bidmachine.interstitial.InterstitialListener;
-import io.bidmachine.interstitial.InterstitialRequest;
-import io.bidmachine.models.AuctionResult;
-import io.bidmachine.nativead.NativeAd;
-import io.bidmachine.nativead.NativeListener;
-import io.bidmachine.nativead.NativeRequest;
-import io.bidmachine.nativead.view.NativeMediaView;
-import io.bidmachine.rewarded.RewardedAd;
-import io.bidmachine.rewarded.RewardedListener;
-import io.bidmachine.rewarded.RewardedRequest;
-import io.bidmachine.utils.BMError;
+import io.bidmachine.format.bannerad.BannerListener;
+import io.bidmachine.format.bannerad.BannerView;
+import io.bidmachine.format.interstitialad.InterstitialAd;
+import io.bidmachine.format.interstitialad.InterstitialListener;
+import io.bidmachine.format.nativead.NativeAd;
+import io.bidmachine.format.nativead.NativeClickableView;
+import io.bidmachine.format.nativead.NativeListener;
+import io.bidmachine.format.rewardedad.RewardedAd;
+import io.bidmachine.format.rewardedad.RewardedListener;
+import io.bidmachine.model.BannerAdSize;
+import io.bidmachine.model.BidMachineConfiguration;
+import io.bidmachine.model.ConsentData;
+import io.bidmachine.model.ImageData;
+import io.bidmachine.model.MediationInfo;
+import io.bidmachine.model.Placement;
 
 public class BidMachineMediationAdapter
         extends MediationAdapterBase
         implements MaxSignalProvider, MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter
 {
-    private static final int                  DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
-    private static final AtomicBoolean        initialized                        = new AtomicBoolean();
-    private static       InitializationStatus status;
+    private static final    int                DEFAULT_IMAGE_TASK_TIMEOUT_SECONDS = 10;
+    private static final    AtomicBoolean      initialized                        = new AtomicBoolean();
+    private static volatile BidMachineInstance bidMachineInstance;
 
-    private InterstitialAd interstitialAd;
-    private RewardedAd     rewardedAd;
-    private BannerView     adView;
-    private NativeAd       nativeAd;
+    private final Object adLock = new Object();
 
-    public BidMachineMediationAdapter(AppLovinSdk sdk) { super( sdk ); }
+    private volatile InterstitialAd interstitialAd;
+    private volatile RewardedAd     rewardedAd;
+    private volatile BannerView     adView;
+    private volatile NativeAd       nativeAd;
+    private          boolean        isDestroyed;
+
+    public BidMachineMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
 
     @Override
-    public void initialize(MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
+    public void initialize(final MaxAdapterInitializationParameters parameters, @Nullable final Activity activity, final OnCompletionListener onCompletionListener)
     {
         if ( initialized.compareAndSet( false, true ) )
         {
-            status = InitializationStatus.INITIALIZING;
-
             final String sourceId = parameters.getServerParameters().getString( "source_id" );
+            if ( !AppLovinSdkUtils.isValidString( sourceId ) )
+            {
+                String errorMessage = "source id is missing";
+                log( "BidMachine SDK failed to initialize: " + errorMessage );
+
+                initialized.set( false );
+                onCompletionListener.onCompletion( InitializationStatus.INITIALIZED_FAILURE, errorMessage );
+
+                return;
+            }
+
             log( "Initializing BidMachine SDK with source id: " + sourceId );
 
             BidMachine.setLoggingEnabled( parameters.isTesting() );
@@ -95,22 +104,11 @@ public class BidMachineMediationAdapter
 
             updateSettings( parameters );
 
-            BidMachine.initialize( getApplicationContext(), sourceId, new InitializationCallback()
-            {
-                @Override
-                public void onInitialized()
-                {
-                    log( "BidMachine SDK successfully finished initialization with source id: " + sourceId );
+            final BidMachineConfiguration configuration = new BidMachineConfiguration( new MediationInfo( "applovin_max", AppLovinSdk.VERSION, getAdapterVersion() ) );
+            bidMachineInstance = BidMachine.initialize( getApplicationContext(), sourceId, configuration );
+        }
 
-                    status = InitializationStatus.INITIALIZED_SUCCESS;
-                    onCompletionListener.onCompletion( status, null );
-                }
-            } );
-        }
-        else
-        {
-            onCompletionListener.onCompletion( status, null );
-        }
+        onCompletionListener.onCompletion( InitializationStatus.DOES_NOT_APPLY, null );
     }
 
     @Override
@@ -128,33 +126,47 @@ public class BidMachineMediationAdapter
     @Override
     public void onDestroy()
     {
+        final InterstitialAd interstitialAd;
+        final RewardedAd rewardedAd;
+        final BannerView adView;
+        final NativeAd nativeAd;
+        synchronized ( adLock )
+        {
+            isDestroyed = true;
+
+            interstitialAd = this.interstitialAd;
+            rewardedAd = this.rewardedAd;
+            adView = this.adView;
+            nativeAd = this.nativeAd;
+
+            this.interstitialAd = null;
+            this.rewardedAd = null;
+            this.adView = null;
+            this.nativeAd = null;
+        }
+
         if ( interstitialAd != null )
         {
             interstitialAd.setListener( null );
             interstitialAd.destroy();
-            interstitialAd = null;
         }
 
         if ( rewardedAd != null )
         {
             rewardedAd.setListener( null );
             rewardedAd.destroy();
-            rewardedAd = null;
         }
 
         if ( adView != null )
         {
             adView.setListener( null );
             adView.destroy();
-            adView = null;
         }
 
         if ( nativeAd != null )
         {
-            nativeAd.unregisterView();
             nativeAd.setListener( null );
             nativeAd.destroy();
-            nativeAd = null;
         }
     }
 
@@ -163,20 +175,19 @@ public class BidMachineMediationAdapter
     {
         log( "Collecting signal for " + parameters.getAdFormat().getLabel() + " ad..." );
 
-        updateSettings( parameters );
-
-        AdsFormat adsFormat = toAdsFormat( parameters );
-        if ( adsFormat == null )
+        if ( bidMachineInstance == null )
         {
-            String errorMessage = "invalid ad format - ad format is null";
+            String errorMessage = "BidMachine SDK is not initialized";
             log( "Signal collection failed with error: " + errorMessage );
             callback.onSignalCollectionFailed( errorMessage );
 
             return;
         }
 
+        updateSettings( parameters );
+
+        List<Placement> placements = new ArrayList<>( 1 );
         String adUnitId = parameters.getAdUnitId();
-        AdPlacementConfig.Builder adPlacementConfigBuilder = new AdPlacementConfig.Builder( adsFormat );
         Bundle credentials = BundleUtils.getBundle( "placement_ids", Bundle.EMPTY, parameters.getServerParameters() );
 
         if ( AppLovinSdkUtils.isValidString( adUnitId ) )
@@ -184,7 +195,7 @@ public class BidMachineMediationAdapter
             String slotId = credentials.getString( adUnitId );
             if ( AppLovinSdkUtils.isValidString( slotId ) )
             {
-                adPlacementConfigBuilder.withPlacementId( slotId );
+                placements.add( new Placement( slotId ) );
             }
             else
             {
@@ -192,8 +203,7 @@ public class BidMachineMediationAdapter
             }
         }
 
-        // NOTE: Must be ran on bg thread
-        BidMachine.getBidToken( getApplicationContext(), adPlacementConfigBuilder.build(), new BidTokenCallback()
+        bidMachineInstance.collectToken( placements, new BidTokenCallback()
         {
             @Override
             public void onCollected(@NonNull final String bidToken)
@@ -201,39 +211,51 @@ public class BidMachineMediationAdapter
                 log( "Signal collection successful" );
                 callback.onSignalCollected( bidToken );
             }
+
+            @Override
+            public void onCollectionFailed(@NonNull final BMError bmError)
+            {
+                log( "Signal collection failed with error: " + bmError );
+                callback.onSignalCollectionFailed( bmError.getMessage() );
+            }
         } );
     }
 
     @Override
-    public void loadInterstitialAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxInterstitialAdapterListener listener)
+    public void loadInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
     {
         log( "Loading interstitial ad..." );
 
-        updateSettings( parameters );
-
-        interstitialAd = new InterstitialAd( getApplicationContext() );
-        interstitialAd.setListener( new InterstitialAdListener( listener ) );
-        interstitialAd.load( new InterstitialRequest.Builder()
-                                     .setBidPayload( parameters.getBidResponse() )
-                                     .build() );
-    }
-
-    @Override
-    public void showInterstitialAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxInterstitialAdapterListener listener)
-    {
-        log( "Showing interstitial ad..." );
-
-        if ( interstitialAd.isExpired() )
+        if ( bidMachineInstance == null )
         {
-            log( "Unable to show interstitial - ad expired" );
-            listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                         MaxAdapterError.AD_EXPIRED.getCode(),
-                                                                         MaxAdapterError.AD_EXPIRED.getMessage() ) );
+            log( "Interstitial ad failed to load: BidMachine SDK is not initialized" );
+            listener.onInterstitialAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
 
             return;
         }
 
-        if ( !interstitialAd.canShow() )
+        updateSettings( parameters );
+
+        final InterstitialAdLoadCallback loadCallback = new InterstitialAdLoadCallback( listener );
+        final String bidResponse = parameters.getBidResponse();
+        if ( bidResponse != null )
+        {
+            bidMachineInstance.loadInterstitial( bidResponse, loadCallback );
+        }
+        else
+        {
+            Placement placement = createPlacementOrNull( parameters );
+            bidMachineInstance.loadInterstitial( placement, loadCallback );
+        }
+    }
+
+    @Override
+    public void showInterstitialAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxInterstitialAdapterListener listener)
+    {
+        log( "Showing interstitial ad..." );
+
+        final InterstitialAd interstitialAd = this.interstitialAd;
+        if ( interstitialAd == null || !interstitialAd.canShow() )
         {
             log( "Unable to show interstitial - ad not ready" );
             listener.onInterstitialAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
@@ -247,35 +269,40 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadRewardedAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxRewardedAdapterListener listener)
+    public void loadRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
     {
         log( "Loading rewarded ad..." );
 
-        updateSettings( parameters );
-
-        rewardedAd = new RewardedAd( getApplicationContext() );
-        rewardedAd.setListener( new RewardedAdListener( listener ) );
-        rewardedAd.load( new RewardedRequest.Builder()
-                                 .setBidPayload( parameters.getBidResponse() )
-                                 .build() );
-    }
-
-    @Override
-    public void showRewardedAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxRewardedAdapterListener listener)
-    {
-        log( "Showing rewarded ad..." );
-
-        if ( rewardedAd.isExpired() )
+        if ( bidMachineInstance == null )
         {
-            log( "Unable to show rewarded ad - ad expired" );
-            listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                     MaxAdapterError.AD_EXPIRED.getCode(),
-                                                                     MaxAdapterError.AD_EXPIRED.getMessage() ) );
+            log( "Rewarded ad failed to load: BidMachine SDK is not initialized" );
+            listener.onRewardedAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
 
             return;
         }
 
-        if ( !rewardedAd.canShow() )
+        updateSettings( parameters );
+
+        final RewardedAdLoadCallback loadCallback = new RewardedAdLoadCallback( listener );
+        final String bidResponse = parameters.getBidResponse();
+        if ( bidResponse != null )
+        {
+            bidMachineInstance.loadRewarded( bidResponse, loadCallback );
+        }
+        else
+        {
+            Placement placement = createPlacementOrNull( parameters );
+            bidMachineInstance.loadRewarded( placement, loadCallback );
+        }
+    }
+
+    @Override
+    public void showRewardedAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxRewardedAdapterListener listener)
+    {
+        log( "Showing rewarded ad..." );
+
+        final RewardedAd rewardedAd = this.rewardedAd;
+        if ( rewardedAd == null || !rewardedAd.canShow() )
         {
             log( "Unable to show rewarded ad - ad not ready" );
             listener.onRewardedAdDisplayFailed( new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
@@ -291,33 +318,62 @@ public class BidMachineMediationAdapter
     }
 
     @Override
-    public void loadAdViewAd(MaxAdapterResponseParameters parameters, MaxAdFormat adFormat, @Nullable final Activity activity, MaxAdViewAdapterListener listener)
+    public void loadAdViewAd(final MaxAdapterResponseParameters parameters, final MaxAdFormat adFormat, @Nullable final Activity activity, final MaxAdViewAdapterListener listener)
     {
         log( "Loading " + adFormat.getLabel() + " ad..." );
 
+        if ( bidMachineInstance == null )
+        {
+            log( "AdView ad failed to load: BidMachine SDK is not initialized" );
+            listener.onAdViewAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
         updateSettings( parameters );
 
-        adView = new BannerView( getApplicationContext() );
-        adView.setListener( new AdViewListener( listener ) );
-        adView.load( new BannerRequest.Builder()
-                             .setSize( toAdSize( adFormat ) )
-                             .setBidPayload( parameters.getBidResponse() )
-                             .build() );
+        // Check if adaptive banner sizes should be used
+        final boolean isAdaptiveBanner = parameters.getServerParameters().getBoolean( "adaptive_banner", false );
+        final BannerAdSize adSize = toAdSize( adFormat, isAdaptiveBanner, parameters, getApplicationContext() );
+        final AdViewLoadCallback loadCallback = new AdViewLoadCallback( listener );
+        final String bidResponse = parameters.getBidResponse();
+        if ( bidResponse != null )
+        {
+            bidMachineInstance.loadBanner( bidResponse, adSize, loadCallback );
+        }
+        else
+        {
+            Placement placement = createPlacementOrNull( parameters );
+            bidMachineInstance.loadBanner( placement, adSize, loadCallback );
+        }
     }
 
     @Override
-    public void loadNativeAd(MaxAdapterResponseParameters parameters, @Nullable final Activity activity, MaxNativeAdAdapterListener listener)
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
     {
         log( "Loading native ad..." );
 
+        if ( bidMachineInstance == null )
+        {
+            log( "Native ad failed to load: BidMachine SDK is not initialized" );
+            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
         updateSettings( parameters );
 
-        nativeAd = new NativeAd( getApplicationContext() );
-        nativeAd.setListener( new NativeAdListener( parameters.getServerParameters(), listener ) );
-        nativeAd.load( new NativeRequest.Builder()
-                               .setMediaAssetTypes( MediaAssetType.All )
-                               .setBidPayload( parameters.getBidResponse() )
-                               .build() );
+        final NativeAdLoadCallback loadCallback = new NativeAdLoadCallback( parameters.getServerParameters(), listener );
+        final String bidResponse = parameters.getBidResponse();
+        if ( bidResponse != null )
+        {
+            bidMachineInstance.loadNative( bidResponse, loadCallback );
+        }
+        else
+        {
+            Placement placement = createPlacementOrNull( parameters );
+            bidMachineInstance.loadNative( placement, loadCallback );
+        }
     }
 
     private MaxAdapterError toMaxError(BMError bidMachineError)
@@ -336,19 +392,26 @@ public class BidMachineMediationAdapter
             case BMError.HTTP_BAD_REQUEST:
                 maxAdapterError = MaxAdapterError.BAD_REQUEST;
                 break;
-            case BMError.SERVER:
-            case BMError.HB_NETWORK:
+            case BMError.HTTP_SERVER_ERROR:
+            case BMError.ADAPTER:
                 maxAdapterError = MaxAdapterError.SERVER_ERROR;
                 break;
             case BMError.NO_CONTENT:
                 maxAdapterError = MaxAdapterError.NO_FILL;
                 break;
-            case BMError.EXPIRED:
+            case BMError.WAS_EXPIRED:
                 maxAdapterError = MaxAdapterError.AD_EXPIRED;
+                break;
+            case BMError.NOT_INITIALIZED:
+                maxAdapterError = MaxAdapterError.NOT_INITIALIZED;
+                break;
+            case BMError.WAS_USED_ALREADY:
+                maxAdapterError = MaxAdapterError.INVALID_LOAD_STATE;
                 break;
             case BMError.BAD_CONTENT:
             case BMError.INTERNAL:
-            case BMError.DESTROYED:
+            case BMError.WAS_DESTROYED:
+            case BMError.ENCRYPTION:
                 maxAdapterError = MaxAdapterError.INTERNAL_ERROR;
                 break;
         }
@@ -359,53 +422,20 @@ public class BidMachineMediationAdapter
                                     bidMachineError.getMessage() );
     }
 
-    private BannerSize toAdSize(final MaxAdFormat adFormat)
+    private MaxAdapterError toMaxDisplayError(BMError bidMachineError)
     {
-        if ( adFormat == MaxAdFormat.BANNER )
-        {
-            return BannerSize.Size_320x50;
-        }
-        else if ( adFormat == MaxAdFormat.LEADER )
-        {
-            return BannerSize.Size_728x90;
-        }
-        else if ( adFormat == MaxAdFormat.MREC )
-        {
-            return BannerSize.Size_300x250;
-        }
-        else
-        {
-            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
-        }
+        return new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
+                                    bidMachineError.getCode(),
+                                    bidMachineError.getMessage() );
     }
 
     @Nullable
-    private AdsFormat toAdsFormat(final MaxAdapterSignalCollectionParameters parameters)
+    private Placement createPlacementOrNull(MaxAdapterResponseParameters parameters)
     {
-        MaxAdFormat adFormat = parameters.getAdFormat();
-        if ( adFormat == MaxAdFormat.BANNER )
+        String placementId = parameters.getThirdPartyAdPlacementId();
+        if ( AppLovinSdkUtils.isValidString( placementId ) )
         {
-            return AdsFormat.Banner_320x50;
-        }
-        else if ( adFormat == MaxAdFormat.MREC )
-        {
-            return AdsFormat.Banner_300x250;
-        }
-        else if ( adFormat == MaxAdFormat.LEADER )
-        {
-            return AdsFormat.Banner_728x90;
-        }
-        else if ( adFormat == MaxAdFormat.NATIVE )
-        {
-            return AdsFormat.Native;
-        }
-        else if ( adFormat == MaxAdFormat.INTERSTITIAL )
-        {
-            return AdsFormat.Interstitial;
-        }
-        else if ( adFormat == MaxAdFormat.REWARDED )
-        {
-            return AdsFormat.Rewarded;
+            return new Placement( placementId );
         }
         else
         {
@@ -413,29 +443,119 @@ public class BidMachineMediationAdapter
         }
     }
 
+    private BannerAdSize toAdSize(final MaxAdFormat adFormat, final boolean isAdaptiveBanner, final MaxAdapterParameters parameters, final Context context)
+    {
+        if ( isAdaptiveBanner && isAdaptiveAdViewFormat( adFormat, parameters ) )
+        {
+            return getAdaptiveAdSize( parameters, context );
+        }
+
+        if ( adFormat == MaxAdFormat.BANNER )
+        {
+            return BannerAdSize.Banner;
+        }
+        else if ( adFormat == MaxAdFormat.LEADER )
+        {
+            return BannerAdSize.Leaderboard;
+        }
+        else if ( adFormat == MaxAdFormat.MREC )
+        {
+            return BannerAdSize.MediumRectangle;
+        }
+        else
+        {
+            throw new IllegalArgumentException( "Invalid ad format: " + adFormat );
+        }
+    }
+
+    private BannerAdSize getAdaptiveAdSize(final MaxAdapterParameters parameters, final Context context)
+    {
+        int adaptiveAdWidth = getAdaptiveAdViewWidth( parameters, context );
+
+        if ( isInlineAdaptiveAdView( parameters ) )
+        {
+            int inlineMaximumHeight = getInlineAdaptiveAdViewMaximumHeight( parameters );
+            if ( inlineMaximumHeight > 0 )
+            {
+                return BannerAdSize.adaptive( adaptiveAdWidth, inlineMaximumHeight );
+            }
+        }
+
+        // Return anchored size by default
+        final int anchoredHeight = MaxAdFormat.BANNER.getAdaptiveSize( adaptiveAdWidth, context ).getHeight();
+        return BannerAdSize.adaptive( adaptiveAdWidth, anchoredHeight );
+    }
+
     private void updateSettings(MaxAdapterParameters parameters)
     {
         Boolean hasUserConsent = parameters.hasUserConsent();
         if ( hasUserConsent != null )
         {
-            BidMachine.setConsentConfig( hasUserConsent, null );
-        }
-
-        Boolean isDoNotSell = parameters.isDoNotSell();
-        if ( isDoNotSell != null )
-        {
-            BidMachine.setUSPrivacyString( isDoNotSell ? "1YY-" : "1YN-" );
-        }
-        else
-        {
-            BidMachine.setUSPrivacyString( "1---" );
+            BidMachine.setConsentData( new ConsentData.Builder()
+                                               .setGdprConsent( hasUserConsent )
+                                               .build() );
         }
     }
 
     @Nullable
-    private String getCreativeId(@Nullable final AuctionResult result)
+    private Bundle createExtraInfo(final Ad ad)
     {
-        return result != null ? result.getCreativeId() : null;
+        final String creativeId = ad.getAuctionInfo().getCreativeId();
+        if ( TextUtils.isEmpty( creativeId ) )
+        {
+            return null;
+        }
+
+        Bundle extraInfo = new Bundle( 1 );
+        extraInfo.putString( "creative_id", creativeId );
+
+        return extraInfo;
+    }
+
+    private class InterstitialAdLoadCallback
+            implements AdLoadCallback<InterstitialAd>
+    {
+        private final MaxInterstitialAdapterListener listener;
+
+        public InterstitialAdLoadCallback(final MaxInterstitialAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull InterstitialAd ad)
+        {
+            final boolean isAdapterDestroyed;
+            synchronized ( adLock )
+            {
+                isAdapterDestroyed = isDestroyed;
+                if ( !isAdapterDestroyed )
+                {
+                    ad.setListener( new InterstitialAdListener( listener ) );
+                    interstitialAd = ad;
+                }
+            }
+
+            if ( isAdapterDestroyed )
+            {
+                log( "Interstitial ad loaded after the adapter was destroyed" );
+                ad.destroy();
+
+                return;
+            }
+
+            log( "Interstitial ad loaded" );
+
+            listener.onInterstitialAdLoaded( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onAdLoadFailed(@NonNull BMError bmError)
+        {
+            MaxAdapterError maxAdapterError = toMaxError( bmError );
+            log( "Interstitial ad failed to load with error (" + maxAdapterError + ")" );
+            listener.onInterstitialAdLoadFailed( maxAdapterError );
+        }
     }
 
     private class InterstitialAdListener
@@ -449,36 +569,15 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdLoaded(@NonNull InterstitialAd interstitialAd)
+        public void onAdPresented(@NonNull InterstitialAd interstitialAd)
         {
-            log( "Interstitial ad loaded" );
-
-            final String creativeID = getCreativeId( interstitialAd.getAuctionResult() );
-            Bundle extraInfo = null;
-
-            if ( !TextUtils.isEmpty( creativeID ) )
-            {
-                extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", creativeID );
-            }
-
-            listener.onInterstitialAdLoaded( extraInfo );
-        }
-
-        @Override
-        public void onAdLoadFailed(@NonNull InterstitialAd interstitialAd, @NonNull BMError bmError)
-        {
-            MaxAdapterError maxAdapterError = toMaxError( bmError );
-            log( "Interstitial ad failed to load with error (" + maxAdapterError + ")" );
-            listener.onInterstitialAdLoadFailed( maxAdapterError );
+            log( "Interstitial ad presented" );
         }
 
         @Override
         public void onAdShowFailed(@NonNull InterstitialAd interstitialAd, @NonNull BMError bmError)
         {
-            MaxAdapterError maxAdapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                   bmError.getCode(),
-                                                                   bmError.getMessage() );
+            MaxAdapterError maxAdapterError = toMaxDisplayError( bmError );
             log( "Interstitial ad failed to show with error (" + maxAdapterError + ")" );
             listener.onInterstitialAdDisplayFailed( maxAdapterError );
         }
@@ -498,7 +597,7 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdClosed(@NonNull InterstitialAd interstitialAd, boolean finished)
+        public void onAdClosed(@NonNull InterstitialAd interstitialAd)
         {
             log( "Interstitial ad closed" );
             listener.onInterstitialAdHidden();
@@ -508,6 +607,52 @@ public class BidMachineMediationAdapter
         public void onAdExpired(@NonNull InterstitialAd interstitialAd)
         {
             log( "Interstitial ad expired" );
+        }
+    }
+
+    private class RewardedAdLoadCallback
+            implements AdLoadCallback<RewardedAd>
+    {
+        private final MaxRewardedAdapterListener listener;
+
+        public RewardedAdLoadCallback(final MaxRewardedAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull RewardedAd ad)
+        {
+            final boolean isAdapterDestroyed;
+            synchronized ( adLock )
+            {
+                isAdapterDestroyed = isDestroyed;
+                if ( !isAdapterDestroyed )
+                {
+                    ad.setListener( new RewardedAdListener( listener ) );
+                    rewardedAd = ad;
+                }
+            }
+
+            if ( isAdapterDestroyed )
+            {
+                log( "Rewarded ad loaded after the adapter was destroyed" );
+                ad.destroy();
+
+                return;
+            }
+
+            log( "Rewarded ad loaded" );
+
+            listener.onRewardedAdLoaded( createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onAdLoadFailed(@NonNull BMError bmError)
+        {
+            MaxAdapterError maxAdapterError = toMaxError( bmError );
+            log( "Rewarded ad failed to load with error (" + maxAdapterError + ")" );
+            listener.onRewardedAdLoadFailed( maxAdapterError );
         }
     }
 
@@ -524,36 +669,15 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdLoaded(@NonNull RewardedAd rewardedAd)
+        public void onAdPresented(@NonNull RewardedAd rewardedAd)
         {
-            log( "Rewarded ad loaded" );
-
-            final String creativeID = getCreativeId( rewardedAd.getAuctionResult() );
-            Bundle extraInfo = null;
-
-            if ( !TextUtils.isEmpty( creativeID ) )
-            {
-                extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", creativeID );
-            }
-
-            listener.onRewardedAdLoaded( extraInfo );
-        }
-
-        @Override
-        public void onAdLoadFailed(@NonNull RewardedAd rewardedAd, @NonNull BMError bmError)
-        {
-            MaxAdapterError maxAdapterError = toMaxError( bmError );
-            log( "Rewarded ad failed to load with error (" + maxAdapterError + ")" );
-            listener.onRewardedAdLoadFailed( maxAdapterError );
+            log( "Rewarded ad presented" );
         }
 
         @Override
         public void onAdShowFailed(@NonNull RewardedAd rewardedAd, @NonNull BMError bmError)
         {
-            MaxAdapterError maxAdapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                   bmError.getCode(),
-                                                                   bmError.getMessage() );
+            MaxAdapterError maxAdapterError = toMaxDisplayError( bmError );
             log( "Rewarded ad failed to show with error (" + maxAdapterError + ")" );
             listener.onRewardedAdDisplayFailed( maxAdapterError );
         }
@@ -580,7 +704,7 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdClosed(@NonNull RewardedAd rewardedAd, boolean finished)
+        public void onAdClosed(@NonNull RewardedAd rewardedAd)
         {
             log( "Rewarded ad closed" );
 
@@ -601,6 +725,52 @@ public class BidMachineMediationAdapter
         }
     }
 
+    private class AdViewLoadCallback
+            implements AdLoadCallback<BannerView>
+    {
+        private final MaxAdViewAdapterListener listener;
+
+        public AdViewLoadCallback(final MaxAdViewAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdLoaded(@NonNull BannerView ad)
+        {
+            final boolean isAdapterDestroyed;
+            synchronized ( adLock )
+            {
+                isAdapterDestroyed = isDestroyed;
+                if ( !isAdapterDestroyed )
+                {
+                    ad.setListener( new AdViewListener( listener ) );
+                    adView = ad;
+                }
+            }
+
+            if ( isAdapterDestroyed )
+            {
+                log( "AdView ad loaded after the adapter was destroyed" );
+                ad.destroy();
+
+                return;
+            }
+
+            log( "AdView ad loaded" );
+
+            listener.onAdViewAdLoaded( ad, createExtraInfo( ad ) );
+        }
+
+        @Override
+        public void onAdLoadFailed(@NonNull BMError bmError)
+        {
+            MaxAdapterError maxAdapterError = toMaxError( bmError );
+            log( "AdView ad failed to load with error (" + maxAdapterError + ")" );
+            listener.onAdViewAdLoadFailed( maxAdapterError );
+        }
+    }
+
     private class AdViewListener
             implements BannerListener
     {
@@ -612,28 +782,9 @@ public class BidMachineMediationAdapter
         }
 
         @Override
-        public void onAdLoaded(@NonNull BannerView bannerView)
+        public void onAdPresented(@NonNull BannerView bannerView)
         {
-            log( "AdView ad loaded" );
-
-            final String creativeID = getCreativeId( bannerView.getAuctionResult() );
-            Bundle extraInfo = null;
-
-            if ( !TextUtils.isEmpty( creativeID ) )
-            {
-                extraInfo = new Bundle( 1 );
-                extraInfo.putString( "creative_id", creativeID );
-            }
-
-            listener.onAdViewAdLoaded( bannerView, extraInfo );
-        }
-
-        @Override
-        public void onAdLoadFailed(@NonNull BannerView bannerView, @NonNull BMError bmError)
-        {
-            MaxAdapterError maxAdapterError = toMaxError( bmError );
-            log( "AdView ad failed to load with error (" + maxAdapterError + ")" );
-            listener.onAdViewAdLoadFailed( maxAdapterError );
+            log( "AdView ad presented" );
         }
 
         @Override
@@ -646,9 +797,7 @@ public class BidMachineMediationAdapter
         @Override
         public void onAdShowFailed(@NonNull BannerView bannerView, @NonNull BMError bmError)
         {
-            MaxAdapterError maxAdapterError = new MaxAdapterError( MaxAdapterError.AD_DISPLAY_FAILED,
-                                                                   bmError.getCode(),
-                                                                   bmError.getMessage() );
+            MaxAdapterError maxAdapterError = toMaxDisplayError( bmError );
             log( "AdView ad failed to show with error (" + maxAdapterError + ")" );
             listener.onAdViewAdDisplayFailed( maxAdapterError );
         }
@@ -667,36 +816,55 @@ public class BidMachineMediationAdapter
         }
     }
 
-    private class NativeAdListener
-            implements NativeListener
+    private class NativeAdLoadCallback
+            implements AdLoadCallback<NativeAd>
     {
         private final Bundle                     serverParameters;
         private final MaxNativeAdAdapterListener listener;
 
-        public NativeAdListener(final Bundle serverParameters, final MaxNativeAdAdapterListener listener)
+        public NativeAdLoadCallback(final Bundle serverParameters, final MaxNativeAdAdapterListener listener)
         {
             this.serverParameters = serverParameters;
             this.listener = listener;
         }
 
         @Override
-        public void onAdLoaded(@NonNull final NativeAd nativeAd)
+        public void onAdLoaded(@NonNull final NativeAd ad)
         {
+            final boolean isAdapterDestroyed;
+            synchronized ( adLock )
+            {
+                isAdapterDestroyed = isDestroyed;
+                if ( !isAdapterDestroyed )
+                {
+                    ad.setListener( new NativeAdListener( listener ) );
+                    nativeAd = ad;
+                }
+            }
+
+            if ( isAdapterDestroyed )
+            {
+                log( "Native ad loaded after the adapter was destroyed" );
+                ad.destroy();
+
+                return;
+            }
+
             log( "Native ad loaded" );
 
             String templateName = BundleUtils.getString( "template", "", serverParameters );
             final boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
-            if ( isTemplateAd && TextUtils.isEmpty( nativeAd.getTitle() ) )
+            if ( isTemplateAd && TextUtils.isEmpty( ad.getTitle() ) )
             {
-                e( "Native ad (" + nativeAd + ") does not have required assets." );
+                e( "Native ad (" + ad + ") does not have required assets." );
                 listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
                 return;
             }
 
-            ImageData iconImageData = nativeAd.getIcon();
+            ImageData iconImageData = ad.getIcon();
             if ( iconImageData == null )
             {
-                handleNativeAdLoaded( nativeAd, null );
+                handleNativeAdLoaded( ad, null );
                 return;
             }
 
@@ -737,22 +905,68 @@ public class BidMachineMediationAdapter
                         }
 
                         MaxNativeAd.MaxNativeAdImage maxNativeAdImage = new MaxNativeAd.MaxNativeAdImage( image );
-                        handleNativeAdLoaded( nativeAd, maxNativeAdImage );
+                        handleNativeAdLoaded( ad, maxNativeAdImage );
                     }
                 } );
 
                 return;
             }
 
-            handleNativeAdLoaded( nativeAd, maxNativeAdImage );
+            handleNativeAdLoaded( ad, maxNativeAdImage );
         }
 
         @Override
-        public void onAdLoadFailed(@NonNull NativeAd nativeAd, @NonNull BMError bmError)
+        public void onAdLoadFailed(@NonNull BMError bmError)
         {
             MaxAdapterError maxAdapterError = toMaxError( bmError );
             log( "Native ad failed to load with error (" + maxAdapterError + ")" );
             listener.onNativeAdLoadFailed( maxAdapterError );
+        }
+
+        private void handleNativeAdLoaded(@NonNull final NativeAd nativeAd, final MaxNativeAd.MaxNativeAdImage iconMaxNativeAdImage)
+        {
+            AppLovinSdkUtils.runOnUiThread( new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
+                            .setAdFormat( MaxAdFormat.NATIVE )
+                            .setTitle( nativeAd.getTitle() )
+                            .setAdvertiser( nativeAd.getAdvertiser() )
+                            .setBody( nativeAd.getBody() )
+                            .setCallToAction( nativeAd.getCallToAction() )
+                            .setStarRating( nativeAd.getStarRating() )
+                            .setIcon( iconMaxNativeAdImage )
+                            .setOptionsView( nativeAd.getAdChoiceView() )
+                            .setMediaView( nativeAd.getMediaView() );
+                    if ( nativeAd.getMainImage() != null )
+                    {
+                        MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( nativeAd.getMainImage().getImage() );
+                        builder.setMainImage( mainImage );
+                    }
+                    final MaxBidMachineNativeAd maxBidMachineNativeAd = new MaxBidMachineNativeAd( builder );
+
+                    listener.onNativeAdLoaded( maxBidMachineNativeAd, createExtraInfo( nativeAd ) );
+                }
+            } );
+        }
+    }
+
+    private class NativeAdListener
+            implements NativeListener
+    {
+        private final MaxNativeAdAdapterListener listener;
+
+        public NativeAdListener(final MaxNativeAdAdapterListener listener)
+        {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onAdPresented(@NonNull NativeAd nativeAd)
+        {
+            log( "Native ad presented" );
         }
 
         @Override
@@ -780,44 +994,6 @@ public class BidMachineMediationAdapter
         {
             log( "Native ad expired" );
         }
-
-        private void handleNativeAdLoaded(@NonNull final NativeAd nativeAd, final MaxNativeAd.MaxNativeAdImage iconMaxNativeAdImage)
-        {
-            AppLovinSdkUtils.runOnUiThread( new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    final NativeMediaView mediaView = new NativeMediaView( getApplicationContext() );
-
-                    final MaxNativeAd.Builder builder = new MaxNativeAd.Builder()
-                            .setAdFormat( MaxAdFormat.NATIVE )
-                            .setTitle( nativeAd.getTitle() )
-                            .setBody( nativeAd.getDescription() )
-                            .setCallToAction( nativeAd.getCallToAction() )
-                            .setIcon( iconMaxNativeAdImage )
-                            .setOptionsView( nativeAd.getProviderView( getApplicationContext() ) )
-                            .setMediaView( mediaView );
-                    if ( nativeAd.getMainImage() != null )
-                    {
-                        MaxNativeAd.MaxNativeAdImage mainImage = new MaxNativeAd.MaxNativeAdImage( nativeAd.getMainImage().getImage() );
-                        builder.setMainImage( mainImage );
-                    }
-                    final MaxBidMachineNativeAd maxBidMachineNativeAd = new MaxBidMachineNativeAd( builder );
-
-                    final String creativeID = getCreativeId( nativeAd.getAuctionResult() );
-                    Bundle extraInfo = null;
-
-                    if ( !TextUtils.isEmpty( creativeID ) )
-                    {
-                        extraInfo = new Bundle( 1 );
-                        extraInfo.putString( "creative_id", creativeID );
-                    }
-
-                    listener.onNativeAdLoaded( maxBidMachineNativeAd, extraInfo );
-                }
-            } );
-        }
     }
 
     private class MaxBidMachineNativeAd
@@ -837,22 +1013,13 @@ public class BidMachineMediationAdapter
 
             d( "Preparing views for interaction: " + clickableViews + " with container: " + container );
 
-            final Set<View> clickableViewSet = new HashSet<>( clickableViews );
-
-            ImageView iconImageView = null;
+            final List<NativeClickableView> nativeClickableViews = new ArrayList<>( clickableViews.size() );
             for ( final View clickableView : clickableViews )
             {
-                if ( clickableView instanceof ImageView )
-                {
-                    iconImageView = (ImageView) clickableView;
-                    break;
-                }
+                nativeClickableViews.add( new NativeClickableView( clickableView ) );
             }
 
-            nativeAd.registerView( container, iconImageView, (NativeMediaView) getMediaView(), clickableViewSet );
-
-            return true;
+            return nativeAd.bind( container, nativeClickableViews );
         }
     }
 }
-
