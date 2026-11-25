@@ -565,6 +565,14 @@ public class AmazonAdMarketplaceMediationAdapter
         }
     }
 
+    private String buildCreativeId(final ApsAd apsAd)
+    {
+        String crid = ( apsAd.getCrid() != null ) ? apsAd.getCrid() : "null";
+        String bidder = ( apsAd.getBidder() != null ) ? apsAd.getBidder() : "null";
+
+        return crid + "+" + bidder + "+" + apsAd.getBidId();
+    }
+
     private Bundle createExtraInfo(final MaxAdFormat adFormat, String creativeId)
     {
         Bundle extraInfo = new Bundle( 2 );
@@ -624,7 +632,7 @@ public class AmazonAdMarketplaceMediationAdapter
         {
             d( "AdView ad loaded" );
 
-            Bundle extraInfo = createExtraInfo( adFormat, apsAd.getCrid() );
+            Bundle extraInfo = createExtraInfo( adFormat, buildCreativeId( apsAd ) );
             listener.onAdViewAdLoaded( apsAd.getAdView(), extraInfo );
         }
 
@@ -687,7 +695,7 @@ public class AmazonAdMarketplaceMediationAdapter
         {
             d( "Interstitial loaded" );
 
-            Bundle extraInfo = createExtraInfo( MaxAdFormat.INTERSTITIAL, apsAd.getCrid() );
+            Bundle extraInfo = createExtraInfo( MaxAdFormat.INTERSTITIAL, buildCreativeId( apsAd ) );
             listener.onInterstitialAdLoaded( extraInfo );
         }
 
@@ -756,7 +764,7 @@ public class AmazonAdMarketplaceMediationAdapter
         {
             d( "Rewarded ad loaded" );
 
-            Bundle extraInfo = createExtraInfo( MaxAdFormat.REWARDED, apsAd.getCrid() );
+            Bundle extraInfo = createExtraInfo( MaxAdFormat.REWARDED, buildCreativeId( apsAd ) );
             listener.onRewardedAdLoaded( extraInfo );
         }
 

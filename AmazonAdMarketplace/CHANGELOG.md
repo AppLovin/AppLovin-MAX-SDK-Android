@@ -1,5 +1,8 @@
 # Changelog
 
+## 12.0.5.1
+* Updated creative_id value to reflect additional information
+
 ## 12.0.5.0
 * Certified with AmazonAdMarketplace SDK 12.0.5.
 
