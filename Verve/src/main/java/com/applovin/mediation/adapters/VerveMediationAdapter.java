@@ -2,17 +2,26 @@ package com.applovin.mediation.adapters;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.applovin.impl.sdk.utils.BundleUtils;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxReward;
 import com.applovin.mediation.adapter.MaxAdViewAdapter;
 import com.applovin.mediation.adapter.MaxAdapterError;
 import com.applovin.mediation.adapter.MaxInterstitialAdapter;
+import com.applovin.mediation.adapter.MaxNativeAdAdapter;
 import com.applovin.mediation.adapter.MaxRewardedAdapter;
 import com.applovin.mediation.adapter.MaxSignalProvider;
 import com.applovin.mediation.adapter.listeners.MaxAdViewAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxInterstitialAdapterListener;
+import com.applovin.mediation.adapter.listeners.MaxNativeAdAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxRewardedAdapterListener;
 import com.applovin.mediation.adapter.listeners.MaxSignalCollectionListener;
 import com.applovin.mediation.adapter.parameters.MaxAdapterInitializationParameters;
@@ -20,7 +29,9 @@ import com.applovin.mediation.adapter.parameters.MaxAdapterParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterResponseParameters;
 import com.applovin.mediation.adapter.parameters.MaxAdapterSignalCollectionParameters;
 import com.applovin.mediation.adapters.verve.BuildConfig;
+import com.applovin.mediation.nativeAds.MaxNativeAd;
 import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkUtils;
 
 import net.pubnative.lite.sdk.HyBid;
 import net.pubnative.lite.sdk.HyBidError;
@@ -28,9 +39,15 @@ import net.pubnative.lite.sdk.UserDataManager;
 import net.pubnative.lite.sdk.interstitial.HyBidInterstitialAd;
 import net.pubnative.lite.sdk.models.AdSize;
 import net.pubnative.lite.sdk.models.ImpressionTrackingMethod;
+import net.pubnative.lite.sdk.models.NativeAd;
+import net.pubnative.lite.sdk.request.HyBidNativeAdRequest;
 import net.pubnative.lite.sdk.rewarded.HyBidRewardedAd;
 import net.pubnative.lite.sdk.views.HyBidAdView;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -38,7 +55,7 @@ import androidx.annotation.Nullable;
 
 public class VerveMediationAdapter
         extends MediationAdapterBase
-        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxSignalProvider
+        implements MaxInterstitialAdapter, MaxRewardedAdapter, MaxAdViewAdapter, MaxNativeAdAdapter, MaxSignalProvider
 {
     private static final AtomicBoolean        initialized = new AtomicBoolean();
     private static       InitializationStatus status;
@@ -46,6 +63,12 @@ public class VerveMediationAdapter
     private HyBidInterstitialAd interstitialAd;
     private HyBidRewardedAd     rewardedAd;
     private HyBidAdView         adViewAd;
+
+    private HyBidNativeAdRequest nativeAdRequest;
+    private volatile NativeAd nativeAd;
+    private volatile boolean isDestroyed;
+    // Views that got the HyBid click listener, so it can be removed again on destroy
+    private final List<View> clickableViewsWithListener = new ArrayList<>();
 
     // Explicit default constructor declaration
     public VerveMediationAdapter(final AppLovinSdk sdk) { super( sdk ); }
@@ -101,6 +124,8 @@ public class VerveMediationAdapter
     @Override
     public void onDestroy()
     {
+        isDestroyed = true;
+
         if ( interstitialAd != null )
         {
             interstitialAd.destroy();
@@ -117,6 +142,22 @@ public class VerveMediationAdapter
         {
             adViewAd.destroy();
             adViewAd = null;
+        }
+
+        if ( nativeAd != null )
+        {
+            final NativeAd adToStop = nativeAd;
+            nativeAd = null;
+            AppLovinSdkUtils.runOnUiThread( () -> {
+                adToStop.stopTracking();
+
+                // stopTracking() only clears the last clickable view, so clear the others here as well
+                for ( View view : clickableViewsWithListener )
+                {
+                    view.setOnClickListener( null );
+                }
+                clickableViewsWithListener.clear();
+            } );
         }
     }
 
@@ -229,6 +270,27 @@ public class VerveMediationAdapter
         adViewAd = new HyBidAdView( getApplicationContext(), getSize( adFormat ) );
         adViewAd.setTrackingMethod( ImpressionTrackingMethod.AD_VIEWABLE );
         adViewAd.renderAd( parameters.getBidResponse(), new AdViewListener( listener ) );
+    }
+
+    @Override
+    public void loadNativeAd(final MaxAdapterResponseParameters parameters, @Nullable final Activity activity, final MaxNativeAdAdapterListener listener)
+    {
+        log( "Loading native ad..." );
+
+        if ( !HyBid.isInitialized() )
+        {
+            log( "Verve SDK is not initialized: failing native ad load..." );
+            listener.onNativeAdLoadFailed( MaxAdapterError.NOT_INITIALIZED );
+
+            return;
+        }
+
+        updateLocationCollectionEnabled( parameters );
+        updateUserConsent( parameters );
+
+        nativeAdRequest = new HyBidNativeAdRequest();
+        nativeAdRequest.setPreLoadMediaAssets( true );
+        nativeAdRequest.prepareAd( parameters.getBidResponse(), new NativeAdListener( new WeakReference<>(activity), getApplicationContext(), parameters, listener ) );
     }
 
     private void updateUserConsent(final MaxAdapterParameters parameters)
@@ -521,6 +583,186 @@ public class VerveMediationAdapter
         {
             log( "AdView clicked" );
             listener.onAdViewAdClicked();
+        }
+    }
+
+    private class NativeAdListener
+            implements HyBidNativeAdRequest.RequestListener, NativeAd.Listener
+    {
+        private final Bundle                     serverParameters;
+        private final WeakReference<Activity>    activityRef;
+        private final Context                    applicationContext;
+        private final MaxNativeAdAdapterListener listener;
+
+        private NativeAdListener(@Nullable final WeakReference<Activity> weakActivityRef, final Context applicationContext, final MaxAdapterResponseParameters parameters, final MaxNativeAdAdapterListener listener)
+        {
+            this.serverParameters = parameters.getServerParameters();
+            this.activityRef = weakActivityRef;
+            this.applicationContext = applicationContext;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onRequestSuccess(final NativeAd ad)
+        {
+            log( "Native ad loaded" );
+
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad loaded, dropping it." );
+                return;
+            }
+
+            String templateName = BundleUtils.getString( "template", "", serverParameters );
+            boolean isTemplateAd = AppLovinSdkUtils.isValidString( templateName );
+
+            if ( !hasRequiredAssets( isTemplateAd, ad ) )
+            {
+                log( "Native ad (" + ad + ") does not have required assets." );
+                listener.onNativeAdLoadFailed( MaxAdapterError.MISSING_REQUIRED_NATIVE_AD_ASSETS );
+
+                return;
+            }
+
+            // HyBid pre-loads the images but still returns the ad when a download fails, so check it here.
+            if ( !TextUtils.isEmpty( ad.getBannerUrl() ) && ad.getBannerBitmap() == null )
+            {
+                log( "Native ad main image failed to download, loading the ad without it." );
+            }
+
+            if ( !TextUtils.isEmpty( ad.getIconUrl() ) && ad.getIconBitmap() == null )
+            {
+                log( "Native ad icon failed to download, loading the ad without it." );
+            }
+
+            nativeAd = ad;
+
+            AppLovinSdkUtils.runOnUiThread( () -> {
+                if ( isDestroyed || nativeAd != ad )
+                {
+                    log( "Native ad was destroyed before it could be delivered, dropping it." );
+                    return;
+                }
+
+                final Activity activity = activityRef.get();
+                final Context context = activity != null ? activity : applicationContext;
+
+                MaxNativeAd.Builder builder = new MaxNativeAd.Builder().setAdFormat( MaxAdFormat.NATIVE );
+
+                if ( ad.getBannerBitmap() != null )
+                {
+                    ImageView mediaView = new ImageView( context );
+                    mediaView.setScaleType( ImageView.ScaleType.FIT_CENTER );
+                    mediaView.setImageBitmap( ad.getBannerBitmap() );
+                    builder.setMediaView( mediaView );
+                    builder.setMainImage( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( context.getResources(), ad.getBannerBitmap() ) ) );
+                }
+
+                if ( ad.getIconBitmap() != null )
+                {
+                    builder.setIcon( new MaxNativeAd.MaxNativeAdImage( new BitmapDrawable( context.getResources(), ad.getIconBitmap() ) ) );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getTitle() ) )
+                {
+                    builder.setTitle( ad.getTitle() );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getDescription() ) )
+                {
+                    builder.setBody( ad.getDescription() );
+                }
+
+                if ( !TextUtils.isEmpty( ad.getCallToActionText() ) )
+                {
+                    builder.setCallToAction( ad.getCallToActionText() );
+                }
+
+                if ( ad.getRating() > 0 )
+                {
+                    builder.setStarRating( (double) ad.getRating() );
+                }
+
+                View contentInfoView = ad.getContentInfo( context );
+                if ( contentInfoView != null )
+                {
+                    builder.setOptionsView( contentInfoView );
+                }
+
+                listener.onNativeAdLoaded( new MaxVerveNativeAd( builder ), null );
+            } );
+        }
+
+        @Override
+        public void onRequestFail(final Throwable error)
+        {
+            log( "Native ad failed to load with error: " + error );
+
+            if ( isDestroyed )
+            {
+                log( "Adapter was destroyed before the native ad failed to load, ignoring the failure." );
+                return;
+            }
+
+            MaxAdapterError adapterError = toMaxError( error );
+            listener.onNativeAdLoadFailed( adapterError );
+        }
+
+        @Override
+        public void onAdImpression(final NativeAd ad, final View view)
+        {
+            log( "Native ad did track impression" );
+            listener.onNativeAdDisplayed( null );
+        }
+
+        @Override
+        public void onAdClick(final NativeAd ad, final View view)
+        {
+            log( "Native ad clicked" );
+            listener.onNativeAdClicked();
+        }
+
+        private boolean hasRequiredAssets(final boolean isTemplateAd, final NativeAd ad)
+        {
+            return !isTemplateAd || AppLovinSdkUtils.isValidString( ad.getTitle() );
+        }
+
+        private class MaxVerveNativeAd
+                extends MaxNativeAd
+        {
+            private MaxVerveNativeAd(final Builder builder) { super( builder ); }
+
+            @Override
+            public boolean prepareForInteraction(final List<View> clickableViews, final ViewGroup container)
+            {
+                final NativeAd ad = nativeAd;
+                if ( ad == null )
+                {
+                    log( "Failed to register native ad views: Verve native ad is null." );
+                    return false;
+                }
+
+                log( "Preparing views for interaction: " + clickableViews + " with container: " + container );
+
+                // Use the views MAX provides, and fall back to the whole container when there are none
+                final List<View> views = ( clickableViews == null || clickableViews.isEmpty() ) ? Collections.singletonList( container ) : clickableViews;
+
+                // If MAX registers again, release the views from the previous registration first
+                for ( View previousView : clickableViewsWithListener )
+                {
+                    previousView.setOnClickListener( null );
+                }
+                clickableViewsWithListener.clear();
+                clickableViewsWithListener.addAll( views );
+
+                ad.startTracking( container, views.get( 0 ), NativeAdListener.this );
+                for ( int i = 1; i < views.size(); i++ )
+                {
+                    ad.startTrackingClicks( views.get( i ) );
+                }
+
+                return true;
+            }
         }
     }
 }
